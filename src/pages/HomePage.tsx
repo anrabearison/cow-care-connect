@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,6 +7,7 @@ import { Calendar, TrendingUp, Users, Activity } from 'lucide-react';
 import { getRecentEvents } from '@/data/mockData';
 import { useAuth } from '@/contexts/AuthContext';
 import heroImage from '@/assets/hero-cattle.jpg';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString('fr-FR', {
@@ -34,7 +36,17 @@ const getEventIcon = (eventType: string) => {
 
 export default function HomePage() {
   const { user } = useAuth();
-  const recentEvents = getRecentEvents();
+  const [recentEvents, setRecentEvents] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simuler un chargement asynchrone
+    const timer = setTimeout(() => {
+      setRecentEvents(getRecentEvents());
+      setIsLoading(false);
+    }, 600);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-earth">
@@ -135,26 +147,42 @@ export default function HomePage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentEvents.map((event) => (
-                <div key={event.id} className="flex items-center space-x-4 p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
-                  <div className="text-2xl">{getEventIcon(event.type)}</div>
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2">
-                      <h4 className="font-medium">{event.description}</h4>
-                      <Badge variant="secondary" className="text-xs">
-                        {event.cattleName}
-                      </Badge>
+              {isLoading ? (
+                Array.from({ length: 5 }).map((_, index) => (
+                  <div key={index} className="flex items-center space-x-4 p-4 bg-muted/30 rounded-lg">
+                    <Skeleton className="h-8 w-8" />
+                    <div className="flex-1 space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <Skeleton className="h-5 w-32" />
+                        <Skeleton className="h-5 w-20" />
+                      </div>
+                      <Skeleton className="h-4 w-24" />
                     </div>
-                    <p className="text-sm text-muted-foreground">{formatDate(event.date)}</p>
+                    <Skeleton className="h-6 w-16" />
                   </div>
-                  <Badge 
-                    variant="outline" 
-                    className="border-primary/20 text-primary bg-primary/5"
-                  >
-                    {event.type}
-                  </Badge>
-                </div>
-              ))}
+                ))
+              ) : (
+                recentEvents.map((event) => (
+                  <div key={event.id} className="flex items-center space-x-4 p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
+                    <div className="text-2xl">{getEventIcon(event.type)}</div>
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2">
+                        <h4 className="font-medium">{event.description}</h4>
+                        <Badge variant="secondary" className="text-xs">
+                          {event.cattleName}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground">{formatDate(event.date)}</p>
+                    </div>
+                    <Badge 
+                      variant="outline" 
+                      className="border-primary/20 text-primary bg-primary/5"
+                    >
+                      {event.type}
+                    </Badge>
+                  </div>
+                ))
+              )}
             </div>
             
             <div className="mt-6 text-center">

@@ -8,17 +8,30 @@ import { Search, Filter, Users } from 'lucide-react';
 import { CattleCard } from '@/components/CattleCard';
 import { mockCattleData } from '@/data/mockData';
 import { Cattle } from '@/types/cattle';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function CattlePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [genderFilter, setGenderFilter] = useState<string>('all');
   const [characterFilter, setCharacterFilter] = useState<string>('all');
-  const [filteredCattle, setFilteredCattle] = useState<Cattle[]>(mockCattleData);
+  const [filteredCattle, setFilteredCattle] = useState<Cattle[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
   const itemsPerPage = 6;
+
+  // Simuler un chargement initial
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setFilteredCattle(mockCattleData);
+      setIsLoading(false);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Apply filters
   const applyFilters = () => {
+    if (isLoading) return;
+    
     let filtered = mockCattleData;
 
     // Search filter
@@ -44,8 +57,10 @@ export default function CattlePage() {
 
   // Apply filters when dependencies change
   useEffect(() => {
-    applyFilters();
-  }, [searchTerm, genderFilter, characterFilter]);
+    if (!isLoading) {
+      applyFilters();
+    }
+  }, [searchTerm, genderFilter, characterFilter, isLoading]);
 
   const resetFilters = () => {
     setSearchTerm('');
@@ -154,7 +169,39 @@ export default function CattlePage() {
         </div>
 
         {/* Cattle Grid */}
-        {filteredCattle.length > 0 ? (
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {Array.from({ length: itemsPerPage }).map((_, index) => (
+              <Card key={index} className="overflow-hidden">
+                <Skeleton className="h-48 w-full" />
+                <div className="p-6 space-y-4">
+                  <div className="flex justify-between items-start">
+                    <div className="space-y-2">
+                      <Skeleton className="h-6 w-32" />
+                      <Skeleton className="h-4 w-20" />
+                    </div>
+                    <Skeleton className="h-5 w-5" />
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <Skeleton className="h-4 w-16" />
+                      <Skeleton className="h-5 w-20" />
+                    </div>
+                    <div className="flex justify-between">
+                      <Skeleton className="h-4 w-12" />
+                      <Skeleton className="h-4 w-24" />
+                    </div>
+                    <div className="flex justify-between">
+                      <Skeleton className="h-4 w-20" />
+                      <Skeleton className="h-4 w-8" />
+                    </div>
+                  </div>
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              </Card>
+            ))}
+          </div>
+        ) : filteredCattle.length > 0 ? (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               {currentCattle.map((cattle) => (

@@ -1,3 +1,4 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -47,7 +48,7 @@ const getGenderIcon = (gender: string) => {
   return gender === 'M' ? '♂️' : '♀️';
 };
 
-export function CattleCard({ cattle }: CattleCardProps) {
+export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
   // Use a consistent image based on the cattle ID if photo exists
   const imageIndex = parseInt(cattle.id.slice(1)) % cattleImages.length;
   const cattleImage = cattle.photo || cattleImages[imageIndex];
@@ -60,6 +61,8 @@ export function CattleCard({ cattle }: CattleCardProps) {
             src={cattleImage}
             alt={`Photo de ${cattle.nom}`}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            loading="lazy"
+            decoding="async"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/20">
@@ -122,4 +125,4 @@ export function CattleCard({ cattle }: CattleCardProps) {
       </CardContent>
     </Card>
   );
-}
+});
