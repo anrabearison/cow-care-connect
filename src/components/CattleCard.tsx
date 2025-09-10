@@ -48,18 +48,24 @@ const getGenderIcon = (gender: string) => {
 };
 
 export function CattleCard({ cattle }: CattleCardProps) {
-  // Use a consistent image based on the cattle ID
+  // Use a consistent image based on the cattle ID if photo exists
   const imageIndex = parseInt(cattle.id.slice(1)) % cattleImages.length;
-  const cattleImage = cattleImages[imageIndex];
+  const cattleImage = cattle.photo || cattleImages[imageIndex];
 
   return (
     <Card className="overflow-hidden hover:shadow-farm transition-all duration-300 group">
       <div className="relative h-48 overflow-hidden">
-        <img 
-          src={cattleImage}
-          alt={`Photo de ${cattle.nom}`}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-        />
+        {cattle.photo || imageIndex < 3 ? (
+          <img 
+            src={cattleImage}
+            alt={`Photo de ${cattle.nom}`}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/20">
+            <div className="text-6xl">🐄</div>
+          </div>
+        )}
         <div className="absolute top-3 right-3">
           <Badge className="bg-white/90 text-primary border-0 shadow-sm">
             {cattle.id}

@@ -124,6 +124,214 @@ export const mockCattleData: Cattle[] = [
         veterinaire: 'Dr. Rakoto'
       }
     ]
+  },
+  {
+    id: 'B004',
+    nom: 'Toky Mainty',
+    genre: 'F',
+    dateNaissance: '2023-05-12',
+    caractere: 'Docile',
+    source: {
+      type: 'Acheté',
+      fournisseur: 'Marché Ambohimanarina',
+      dateAchat: '2023-06-15'
+    },
+    evenements: [
+      {
+        id: 'E008',
+        type: 'Naissance',
+        date: '2023-05-12',
+        description: 'Née chez l\'ancien propriétaire'
+      }
+    ],
+    traitements: []
+  },
+  {
+    id: 'B005',
+    nom: 'Rambo Masina',
+    genre: 'M',
+    dateNaissance: '2022-08-22',
+    caractere: 'Agressif',
+    source: {
+      type: 'Acheté',
+      fournisseur: 'Ferme Antsirabe',
+      dateAchat: '2023-01-10'
+    },
+    evenements: [
+      {
+        id: 'E009',
+        type: 'Vaccination',
+        date: '2024-02-10',
+        description: 'Vaccination de rappel'
+      }
+    ],
+    traitements: [
+      {
+        id: 'T005',
+        type: 'Vaccin',
+        date: '2024-02-10',
+        produit: 'Vaccin FMD',
+        dose: '3ml',
+        veterinaire: 'Dr. Rasoa'
+      }
+    ]
+  },
+  {
+    id: 'B006',
+    nom: 'Miandry Fotsy',
+    genre: 'F',
+    dateNaissance: '2024-02-14',
+    caractere: 'Timide',
+    source: {
+      type: 'Né dans le troupeau'
+    },
+    evenements: [
+      {
+        id: 'E010',
+        type: 'Naissance',
+        date: '2024-02-14',
+        description: 'Veau femelle née le jour de la Saint-Valentin'
+      }
+    ],
+    traitements: []
+  },
+  {
+    id: 'B007',
+    nom: 'Kely Volamena',
+    genre: 'M',
+    dateNaissance: '2023-11-30',
+    caractere: 'Energique',
+    source: {
+      type: 'Né dans le troupeau'
+    },
+    evenements: [
+      {
+        id: 'E011',
+        type: 'Naissance',
+        date: '2023-11-30',
+        description: 'Dernier né de l\'année 2023'
+      }
+    ],
+    traitements: []
+  },
+  {
+    id: 'B008',
+    nom: 'Ranitra Mendrika',
+    genre: 'F',
+    dateNaissance: '2022-04-08',
+    caractere: 'Docile',
+    source: {
+      type: 'Acheté',
+      fournisseur: 'Coopérative Fianarantsoa',
+      dateAchat: '2022-09-12'
+    },
+    evenements: [
+      {
+        id: 'E012',
+        type: 'Autre',
+        date: '2024-01-05',
+        description: 'Saillie réussie'
+      }
+    ],
+    traitements: [
+      {
+        id: 'T006',
+        type: 'Autre',
+        date: '2024-01-20',
+        produit: 'Vitamines prénatales',
+        dose: '20ml',
+        veterinaire: 'Dr. Hery'
+      }
+    ]
+  },
+  {
+    id: 'B009',
+    nom: 'Lehibe Tandroka',
+    genre: 'M',
+    dateNaissance: '2021-12-10',
+    caractere: 'Agressif',
+    source: {
+      type: 'Acheté',
+      fournisseur: 'Ferme Morondava',
+      dateAchat: '2022-03-15'
+    },
+    evenements: [
+      {
+        id: 'E013',
+        type: 'Changement de pâturage',
+        date: '2024-03-20',
+        description: 'Isolé temporairement'
+      }
+    ],
+    traitements: []
+  },
+  {
+    id: 'B010',
+    nom: 'Soa Mafy',
+    genre: 'F',
+    dateNaissance: '2023-09-05',
+    caractere: 'Energique',
+    source: {
+      type: 'Né dans le troupeau'
+    },
+    evenements: [
+      {
+        id: 'E014',
+        type: 'Pesée',
+        date: '2024-03-15',
+        description: 'Pesée de croissance - 280kg'
+      }
+    ],
+    traitements: []
+  },
+  {
+    id: 'B011',
+    nom: 'Vary Fotsy',
+    genre: 'M',
+    dateNaissance: '2023-03-18',
+    caractere: 'Docile',
+    source: {
+      type: 'Acheté',
+      fournisseur: 'Marché Antananarivo',
+      dateAchat: '2023-07-22'
+    },
+    evenements: [
+      {
+        id: 'E015',
+        type: 'Visite vétérinaire',
+        date: '2024-02-28',
+        description: 'Contrôle sanitaire mensuel'
+      }
+    ],
+    traitements: []
+  },
+  {
+    id: 'B012',
+    nom: 'Malala Tsara',
+    genre: 'F',
+    dateNaissance: '2022-06-25',
+    caractere: 'Timide',
+    source: {
+      type: 'Né dans le troupeau'
+    },
+    evenements: [
+      {
+        id: 'E016',
+        type: 'Autre',
+        date: '2024-02-01',
+        description: 'Gestation confirmée'
+      }
+    ],
+    traitements: [
+      {
+        id: 'T007',
+        type: 'Autre',
+        date: '2024-02-15',
+        produit: 'Calcium',
+        dose: '25ml',
+        veterinaire: 'Dr. Nirina'
+      }
+    ]
   }
 ];
 
