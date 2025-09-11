@@ -1,6 +1,6 @@
 import React from 'react';
 import { Admin, Resource } from 'react-admin';
-import { dataProvider } from './providers/dataProvider';
+import { dataProvider } from './providers/mockDataProvider';
 import { authProvider } from './providers/authProvider';
 import { CattleList, CattleEdit, CattleCreate, CattleShow } from './resources/cattle';
 import { UserList, UserEdit, UserCreate, UserShow } from './resources/users';

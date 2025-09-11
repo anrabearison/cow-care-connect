@@ -93,13 +93,10 @@ export function AppSidebar() {
                 {adminItems.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild className="transition-all duration-200">
-                      <a 
-                        href={item.url} 
-                        className="flex items-center gap-2 p-2 rounded-md hover:bg-muted/50 text-muted-foreground hover:text-foreground"
-                      >
+                      <NavLink to={item.url} end className={getNavCls}>
                         <item.icon className="h-4 w-4" />
                         {!collapsed && <span>{item.title}</span>}
-                      </a>
+                      </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
