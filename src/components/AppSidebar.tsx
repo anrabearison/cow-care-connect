@@ -1,4 +1,4 @@
-import { Home, Beef, User, LogOut } from 'lucide-react';
+import { Home, Beef, User, LogOut, Settings } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import {
@@ -19,6 +19,10 @@ const navigationItems = [
   { title: 'Accueil', url: '/', icon: Home },
   { title: 'Troupeau', url: '/cattle', icon: Beef },
   { title: 'Profil', url: '/profile', icon: User },
+];
+
+const adminItems = [
+  { title: 'Administration', url: '/admin', icon: Settings },
 ];
 
 export function AppSidebar() {
@@ -78,6 +82,31 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {user?.role === 'admin' && (
+          <SidebarGroup>
+            <SidebarGroupLabel className={collapsed ? "sr-only" : ""}>
+              Administration
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {adminItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild className="transition-all duration-200">
+                      <a 
+                        href={item.url} 
+                        className="flex items-center gap-2 p-2 rounded-md hover:bg-muted/50 text-muted-foreground hover:text-foreground"
+                      >
+                        <item.icon className="h-4 w-4" />
+                        {!collapsed && <span>{item.title}</span>}
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
 
         <div className="mt-auto p-4">
           <Button

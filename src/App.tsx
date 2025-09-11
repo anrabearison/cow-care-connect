@@ -12,6 +12,7 @@ import CattlePage from "./pages/CattlePage";
 import CattleDetailsPage from "./pages/CattleDetailsPage";
 import LoginPage from "./pages/LoginPage";
 import NotFound from "./pages/NotFound";
+import { AdminApp } from "@/admin/AdminApp";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/admin/*" element={<AdminApp />} />
             <Route path="/*" element={
               <PrivateRoute>
                 <SidebarProvider>
