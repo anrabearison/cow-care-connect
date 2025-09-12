@@ -10,6 +10,7 @@ import { Layout } from './components/Layout';
 export const AdminApp: React.FC = () => {
   return (
     <Admin
+      basename="/admin"
       dataProvider={dataProvider}
       authProvider={authProvider}
       dashboard={Dashboard}

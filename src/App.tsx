@@ -26,7 +26,7 @@ const App = () => (
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/admin/*" element={<AdminApp />} />
-            <Route path="/" element={
+            <Route path="/*" element={
               <PrivateRoute>
                 <SidebarProvider>
                   <div className="flex min-h-screen w-full">
