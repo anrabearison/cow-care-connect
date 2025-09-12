@@ -26,7 +26,7 @@ const App = () => (
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/admin/*" element={<AdminApp />} />
-            <Route path="/*" element={
+            <Route path="/" element={
               <PrivateRoute>
                 <SidebarProvider>
                   <div className="flex min-h-screen w-full">
@@ -41,10 +41,10 @@ const App = () => (
                         </div>
                       </header>
                       <Routes>
-                        <Route path="/" element={<HomePage />} />
-                        <Route path="/cattle" element={<CattlePage />} />
-                        <Route path="/cattle/:id" element={<CattleDetailsPage />} />
-                        <Route path="/profile" element={<div className="p-8"><h1>Profil utilisateur - En développement</h1></div>} />
+                        <Route index element={<HomePage />} />
+                        <Route path="cattle" element={<CattlePage />} />
+                        <Route path="cattle/:id" element={<CattleDetailsPage />} />
+                        <Route path="profile" element={<div className="p-8"><h1>Profil utilisateur - En développement</h1></div>} />
                         <Route path="*" element={<NotFound />} />
                       </Routes>
                     </main>
