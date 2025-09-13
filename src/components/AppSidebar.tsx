@@ -38,25 +38,37 @@ export function AppSidebar() {
       : "hover:bg-muted/50 text-muted-foreground hover:text-foreground";
 
   const collapsed = state === "collapsed";
+
+  const handleNavClick = (e: React.MouseEvent, url: string) => {
+    // Gérer la fermeture automatique sur mobile après clic
+    if (window.innerWidth < 768 && !collapsed) {
+      // Petit délai pour permettre la navigation avant de fermer
+      setTimeout(() => {
+        if (state === "expanded") {
+          // Le sidebar se fermera automatiquement sur mobile
+        }
+      }, 150);
+    }
+  };
   
   return (
-    <Sidebar className={collapsed ? "w-16" : "w-64"} collapsible="icon">
-      <SidebarHeader className="border-b border-border p-4">
+    <Sidebar className={collapsed ? "w-14" : "w-48"} collapsible="icon">
+      <SidebarHeader className="border-b border-border p-3">
         {!collapsed && (
           <div className="flex items-center space-x-2">
-            <div className="h-8 w-8 rounded-full bg-gradient-primary flex items-center justify-center">
-              <Beef className="h-4 w-4 text-white" />
+            <div className="h-7 w-7 rounded-full bg-gradient-primary flex items-center justify-center">
+              <Beef className="h-3.5 w-3.5 text-white" />
             </div>
             <div>
-              <h2 className="text-sm font-semibold">Gestion Élevage</h2>
-              <p className="text-xs text-muted-foreground">{user?.name}</p>
+              <h2 className="text-xs font-semibold">Gestion Élevage</h2>
+              <p className="text-xs text-muted-foreground truncate">{user?.name}</p>
             </div>
           </div>
         )}
         {collapsed && (
           <div className="flex justify-center">
-            <div className="h-8 w-8 rounded-full bg-gradient-primary flex items-center justify-center">
-              <Beef className="h-4 w-4 text-white" />
+            <div className="h-7 w-7 rounded-full bg-gradient-primary flex items-center justify-center">
+              <Beef className="h-3.5 w-3.5 text-white" />
             </div>
           </div>
         )}
@@ -71,10 +83,15 @@ export function AppSidebar() {
             <SidebarMenu>
               {navigationItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className="transition-all duration-200">
-                    <NavLink to={item.url} end className={getNavCls}>
-                      <item.icon className="h-4 w-4" />
-                      {!collapsed && <span>{item.title}</span>}
+                  <SidebarMenuButton asChild className="transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]">
+                    <NavLink 
+                      to={item.url} 
+                      end 
+                      className={getNavCls}
+                      onClick={(e) => handleNavClick(e, item.url)}
+                    >
+                      <item.icon className="h-4 w-4 shrink-0" />
+                      {!collapsed && <span className="truncate">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -92,10 +109,15 @@ export function AppSidebar() {
               <SidebarMenu>
                 {adminItems.map((item) => (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild className="transition-all duration-200">
-                      <NavLink to={item.url} end className={getNavCls}>
-                        <item.icon className="h-4 w-4" />
-                        {!collapsed && <span>{item.title}</span>}
+                    <SidebarMenuButton asChild className="transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]">
+                      <NavLink 
+                        to={item.url} 
+                        end 
+                        className={getNavCls}
+                        onClick={(e) => handleNavClick(e, item.url)}
+                      >
+                        <item.icon className="h-4 w-4 shrink-0" />
+                        {!collapsed && <span className="truncate">{item.title}</span>}
                       </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -105,15 +127,15 @@ export function AppSidebar() {
           </SidebarGroup>
         )}
 
-        <div className="mt-auto p-4">
+        <div className="mt-auto p-3">
           <Button
             variant="ghost"
-            size={collapsed ? "icon" : "default"}
+            size={collapsed ? "icon" : "sm"}
             onClick={logout}
-            className="w-full text-destructive hover:text-destructive hover:bg-destructive/10"
+            className="w-full text-destructive hover:text-destructive hover:bg-destructive/10 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
           >
-            <LogOut className="h-4 w-4" />
-            {!collapsed && <span className="ml-2">Déconnexion</span>}
+            <LogOut className="h-4 w-4 shrink-0" />
+            {!collapsed && <span className="ml-2 truncate">Déconnexion</span>}
           </Button>
         </div>
       </SidebarContent>
