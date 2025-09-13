@@ -14,6 +14,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const navigationItems = [
   { title: 'Accueil', url: '/', icon: Home },
@@ -26,9 +27,10 @@ const adminItems = [
 ];
 
 export function AppSidebar() {
-  const { state } = useSidebar();
+  const { state, setOpenMobile } = useSidebar();
   const location = useLocation();
   const { user, logout } = useAuth();
+  const isMobile = useIsMobile();
   const currentPath = location.pathname;
 
   const isActive = (path: string) => currentPath === path;
@@ -40,15 +42,19 @@ export function AppSidebar() {
   const collapsed = state === "collapsed";
 
   const handleNavClick = (e: React.MouseEvent, url: string) => {
-    // Gérer la fermeture automatique sur mobile après clic
-    if (window.innerWidth < 768 && !collapsed) {
-      // Petit délai pour permettre la navigation avant de fermer
+    // Fermer automatiquement le sidebar sur mobile après navigation
+    if (isMobile && state === "expanded") {
       setTimeout(() => {
-        if (state === "expanded") {
-          // Le sidebar se fermera automatiquement sur mobile
-        }
-      }, 150);
+        setOpenMobile(false);
+      }, 100);
     }
+  };
+
+  const handleLogout = () => {
+    if (isMobile && state === "expanded") {
+      setOpenMobile(false);
+    }
+    logout();
   };
   
   return (
@@ -131,7 +137,7 @@ export function AppSidebar() {
           <Button
             variant="ghost"
             size={collapsed ? "icon" : "sm"}
-            onClick={logout}
+            onClick={handleLogout}
             className="w-full text-destructive hover:text-destructive hover:bg-destructive/10 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
           >
             <LogOut className="h-4 w-4 shrink-0" />
