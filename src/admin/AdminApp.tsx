@@ -1,6 +1,8 @@
 import React from 'react';
 import { Admin, Resource } from 'react-admin';
-import { dataProvider } from './providers/mockDataProvider';
+import { API_CONFIG } from '@/config/api';
+import { dataProvider as mockDataProvider } from './providers/mockDataProvider';
+import { dataProvider as apiDataProvider } from './providers/dataProvider';
 import { authProvider } from './providers/authProvider';
 import { CattleList, CattleEdit, CattleCreate, CattleShow } from './resources/cattle';
 import { UserList, UserEdit, UserCreate, UserShow } from './resources/users';
@@ -8,6 +10,9 @@ import { Dashboard } from './components/Dashboard';
 import { Layout } from './components/Layout';
 
 export const AdminApp: React.FC = () => {
+  // Sélection du data provider selon la configuration
+  const dataProvider = API_CONFIG.USE_MOCK_DATA ? mockDataProvider : apiDataProvider;
+  
   return (
     <Admin
       basename="/admin"

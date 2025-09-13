@@ -3,8 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
 import { ArrowLeft, Calendar, MapPin, Activity, Stethoscope, User } from 'lucide-react';
-import { mockCattleData } from '@/data/mockData';
+import { useCattleById } from '@/hooks/useCattle';
 import cattlePortrait1 from '@/assets/cattle-portrait-1.jpg';
 import cattlePortrait2 from '@/assets/cattle-portrait-2.jpg';
 import cattlePortrait3 from '@/assets/cattle-portrait-3.jpg';
@@ -83,9 +84,68 @@ const getTreatmentIcon = (treatmentType: string) => {
 
 export default function CattleDetailsPage() {
   const { id } = useParams<{ id: string }>();
-  const cattle = mockCattleData.find(c => c.id === id);
+  const { cattle, loading, error } = useCattleById(id || '');
 
-  if (!cattle) {
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-earth">
+        <div className="container mx-auto px-6 py-8">
+          {/* Header Skeleton */}
+          <div className="flex items-center space-x-4 mb-8">
+            <Skeleton className="h-10 w-10 rounded-md" />
+            <div>
+              <Skeleton className="h-10 w-48" />
+              <Skeleton className="h-4 w-24 mt-2" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left Column Skeleton */}
+            <div className="lg:col-span-1 space-y-6">
+              <Card>
+                <Skeleton className="h-64 w-full" />
+              </Card>
+              <Card>
+                <CardHeader>
+                  <Skeleton className="h-6 w-48" />
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="flex justify-between">
+                      <Skeleton className="h-4 w-20" />
+                      <Skeleton className="h-4 w-32" />
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Right Column Skeleton */}
+            <div className="lg:col-span-2 space-y-6">
+              {Array.from({ length: 2 }).map((_, i) => (
+                <Card key={i}>
+                  <CardHeader>
+                    <Skeleton className="h-6 w-48" />
+                    <Skeleton className="h-4 w-32" />
+                  </CardHeader>
+                  <CardContent>
+                    {Array.from({ length: 3 }).map((_, j) => (
+                      <div key={j} className="mb-4 p-4 rounded-lg bg-muted/30">
+                        <Skeleton className="h-6 w-full mb-2" />
+                        <Skeleton className="h-4 w-3/4" />
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!cattle || error) {
     return <Navigate to="/cattle" replace />;
   }
 

@@ -42,36 +42,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     
-    // Simulate API call - replace with actual authentication
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        if (email === 'admin@ferme.mg' && password === 'admin123') {
-          const mockUser: User = {
-            id: '1',
-            name: 'Jean Rakoto',
-            email: 'admin@ferme.mg',
-            role: 'admin'
-          };
-          
-          const mockToken = 'jwt_token_mock_' + Date.now();
-          
-          localStorage.setItem('auth_token', mockToken);
-          localStorage.setItem('user_data', JSON.stringify(mockUser));
-          setUser(mockUser);
-          setIsLoading(false);
-          resolve(true);
-        } else {
-          setIsLoading(false);
-          resolve(false);
-        }
-      }, 1000);
-    });
+    try {
+      const { authService } = await import('@/services/authService');
+      const response = await authService.login({ email, password });
+      
+      if (response.success) {
+        setUser(response.user);
+        setIsLoading(false);
+        return true;
+      } else {
+        setIsLoading(false);
+        return false;
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setIsLoading(false);
+      return false;
+    }
   };
 
-  const logout = () => {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('user_data');
-    setUser(null);
+  const logout = async () => {
+    try {
+      const { authService } = await import('@/services/authService');
+      await authService.logout();
+      setUser(null);
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Nettoyage local même en cas d'erreur
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_data');
+      setUser(null);
+    }
   };
 
   return (

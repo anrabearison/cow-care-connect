@@ -6,61 +6,42 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Search, Filter, Users } from 'lucide-react';
 import { CattleCard } from '@/components/CattleCard';
-import { mockCattleData } from '@/data/mockData';
 import { Cattle } from '@/types/cattle';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useCattle } from '@/hooks/useCattle';
 
 export default function CattlePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [genderFilter, setGenderFilter] = useState<string>('all');
   const [characterFilter, setCharacterFilter] = useState<string>('all');
-  const [filteredCattle, setFilteredCattle] = useState<Cattle[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(true);
   const itemsPerPage = 6;
 
-  // Simuler un chargement initial
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setFilteredCattle(mockCattleData);
-      setIsLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Apply filters
-  const applyFilters = () => {
-    if (isLoading) return;
-    
-    let filtered = mockCattleData;
-
-    // Search filter
-    if (searchTerm) {
-      filtered = filtered.filter(cattle =>
-        cattle.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        cattle.id.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Gender filter
-    if (genderFilter !== 'all') {
-      filtered = filtered.filter(cattle => cattle.genre === genderFilter);
-    }
-
-    // Character filter
-    if (characterFilter !== 'all') {
-      filtered = filtered.filter(cattle => cattle.caractere === characterFilter);
-    }
-
-    setFilteredCattle(filtered);
+  // Construire les filtres pour le service
+  const filters = {
+    search: searchTerm || undefined,
+    genre: genderFilter !== 'all' ? (genderFilter as 'M' | 'F') : undefined,
+    caractere: characterFilter !== 'all' ? characterFilter : undefined,
+    limit: itemsPerPage,
+    offset: (currentPage - 1) * itemsPerPage,
   };
 
-  // Apply filters when dependencies change
-  useEffect(() => {
-    if (!isLoading) {
-      applyFilters();
+  const { cattle: allCattle, loading: isLoading, error, total, refreshCattle } = useCattle();
+  
+  // Filtrer localement pour une meilleure UX (recherche instantanée)
+  const filteredCattle = allCattle.filter(cattle => {
+    if (searchTerm && !cattle.nom.toLowerCase().includes(searchTerm.toLowerCase()) && 
+        !cattle.id.toLowerCase().includes(searchTerm.toLowerCase())) {
+      return false;
     }
-  }, [searchTerm, genderFilter, characterFilter, isLoading]);
+    if (genderFilter !== 'all' && cattle.genre !== genderFilter) {
+      return false;
+    }
+    if (characterFilter !== 'all' && cattle.caractere !== characterFilter) {
+      return false;
+    }
+    return true;
+  });
 
   const resetFilters = () => {
     setSearchTerm('');
@@ -90,7 +71,7 @@ export default function CattlePage() {
             <h1 className="text-4xl font-bold text-foreground">Gestion du Troupeau</h1>
           </div>
           <p className="text-lg text-muted-foreground">
-            Gérez et surveillez vos {mockCattleData.length} animaux
+            Gérez et surveillez vos {total} animaux
           </p>
         </div>
 

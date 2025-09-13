@@ -1,7 +1,8 @@
 import { DataProvider, fetchUtils } from 'react-admin';
 import { stringify } from 'qs';
+import { API_CONFIG } from '@/config/api';
 
-const apiUrl = 'http://localhost:3001/api';
+const apiUrl = API_CONFIG.ADMIN_API_URL;
 const httpClient = fetchUtils.fetchJson;
 
 export const dataProvider: DataProvider = {
