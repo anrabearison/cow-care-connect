@@ -10,6 +10,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import HomePage from "./pages/HomePage";
 import CattlePage from "./pages/CattlePage";
 import CattleDetailsPage from "./pages/CattleDetailsPage";
+import ProfilePage from "./pages/ProfilePage";
 import LoginPage from "./pages/LoginPage";
 import NotFound from "./pages/NotFound";
 import { AdminApp } from "@/admin/AdminApp";
@@ -44,7 +45,7 @@ const App = () => (
                         <Route index element={<HomePage />} />
                         <Route path="cattle" element={<CattlePage />} />
                         <Route path="cattle/:id" element={<CattleDetailsPage />} />
-                        <Route path="profile" element={<div className="p-8"><h1>Profil utilisateur - En développement</h1></div>} />
+                        <Route path="profile" element={<ProfilePage />} />
                         <Route path="*" element={<NotFound />} />
                       </Routes>
                     </main>
