@@ -4,8 +4,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, Calendar, MapPin, Activity, Stethoscope, User } from 'lucide-react';
-import { useCattleById } from '@/hooks/useCattle';
+import { ArrowLeft, Calendar, MapPin, Activity, Stethoscope, User, ChevronDown, Users, FileText } from 'lucide-react';
+import { useCattleById, useCattle } from '@/hooks/useCattle';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { useState } from 'react';
 import cattlePortrait1 from '@/assets/cattle-portrait-1.jpg';
 import cattlePortrait2 from '@/assets/cattle-portrait-2.jpg';
 import cattlePortrait3 from '@/assets/cattle-portrait-3.jpg';
@@ -85,6 +87,29 @@ const getTreatmentIcon = (treatmentType: string) => {
 export default function CattleDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const { cattle, loading, error } = useCattleById(id || '');
+  const { cattle: allCattle } = useCattle(); // Pour trouver les descendants
+  const [showLineage, setShowLineage] = useState(false);
+
+  // Fonction pour trouver les descendants potentiels
+  const findDescendants = () => {
+    if (!cattle || !allCattle) return [];
+    
+    // Logique simple: chercher les bovins nés dans le troupeau après la date de naissance du bovin actuel
+    // et qui pourraient être ses descendants (nés 9-12 mois après)
+    const currentBirthDate = new Date(cattle.dateNaissance);
+    const minDescendantDate = new Date(currentBirthDate);
+    minDescendantDate.setMonth(minDescendantDate.getMonth() + 9); // Gestation minimum
+    
+    return allCattle.filter(descendant => {
+      if (descendant.id === cattle.id) return false;
+      if (descendant.source.type !== 'Né dans le troupeau') return false;
+      
+      const descendantBirthDate = new Date(descendant.dateNaissance);
+      return descendantBirthDate > minDescendantDate;
+    });
+  };
+
+  const descendants = findDescendants();
 
   if (loading) {
     return (
@@ -233,6 +258,94 @@ export default function CattleDetailsPage() {
                     </p>
                   )}
                 </div>
+
+                {/* Section collapsible pour les bovins nés dans le troupeau */}
+                {cattle.source.type === 'Né dans le troupeau' && (
+                  <>
+                    <Separator />
+                    <Collapsible open={showLineage} onOpenChange={setShowLineage}>
+                      <CollapsibleTrigger className="flex items-center justify-between w-full p-2 hover:bg-accent/10 rounded-md transition-colors">
+                        <div className="flex items-center space-x-2">
+                          <Users className="h-4 w-4 text-primary" />
+                          <span className="font-medium text-foreground">Détails lignée & descendants</span>
+                        </div>
+                        <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${showLineage ? 'rotate-180' : ''}`} />
+                      </CollapsibleTrigger>
+                      
+                      <CollapsibleContent className="pt-4 space-y-4">
+                        {/* Informations sur la lignée */}
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <FileText className="h-4 w-4 text-primary" />
+                            <span className="text-sm font-medium">Informations de naissance</span>
+                          </div>
+                          <div className="pl-6 space-y-1">
+                            <p className="text-sm text-muted-foreground">
+                              Né(e) dans notre troupeau le {formatDate(cattle.dateNaissance)}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              Âge actuel: {calculateAge(cattle.dateNaissance)}
+                            </p>
+                            {cattle.genre === 'F' && (
+                              <p className="text-sm text-primary font-medium">
+                                ♀ Capable de reproduction
+                              </p>
+                            )}
+                            {cattle.genre === 'M' && (
+                              <p className="text-sm text-primary font-medium">
+                                ♂ Reproducteur potentiel
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Liste des descendants potentiels */}
+                        {descendants.length > 0 && (
+                          <div className="space-y-2">
+                            <div className="flex items-center space-x-2">
+                              <Users className="h-4 w-4 text-primary" />
+                              <span className="text-sm font-medium">Descendants potentiels ({descendants.length})</span>
+                            </div>
+                            <div className="pl-6 space-y-2">
+                              {descendants.map((descendant) => (
+                                <div key={descendant.id} className="flex items-center justify-between p-2 bg-muted/20 rounded border border-muted-foreground/10">
+                                  <div className="flex items-center space-x-3">
+                                    <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                                      <span className="text-xs font-medium text-primary">
+                                        {descendant.genre === 'M' ? '♂' : '♀'}
+                                      </span>
+                                    </div>
+                                    <div>
+                                      <p className="text-sm font-medium">{descendant.nom}</p>
+                                      <p className="text-xs text-muted-foreground">
+                                        {descendant.id} • Né le {formatDate(descendant.dateNaissance)}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <Badge variant="outline" className="text-xs">
+                                    {calculateAge(descendant.dateNaissance)}
+                                  </Badge>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {descendants.length === 0 && (
+                          <div className="space-y-2">
+                            <div className="flex items-center space-x-2">
+                              <Users className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-sm text-muted-foreground">Aucun descendant identifié</span>
+                            </div>
+                            <p className="text-xs text-muted-foreground pl-6">
+                              Aucun bovin né dans le troupeau après la période de gestation potentielle.
+                            </p>
+                          </div>
+                        )}
+                      </CollapsibleContent>
+                    </Collapsible>
+                  </>
+                )}
               </CardContent>
             </Card>
           </div>
