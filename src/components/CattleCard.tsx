@@ -89,6 +89,11 @@ export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
               <Calendar className="h-4 w-4" />
               <span>{calculateAge(cattle.dateNaissance)}</span>
             </div>
+            <div className="flex items-center space-x-2 text-sm mt-1">
+              <Badge variant="secondary" className="text-xs">
+                {cattle.categorie}
+              </Badge>
+            </div>
           </div>
           <Heart className="h-5 w-5 text-muted-foreground hover:text-red-500 cursor-pointer transition-colors" />
         </div>

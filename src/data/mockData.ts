@@ -7,6 +7,7 @@ export const mockCattleData: Cattle[] = [
     genre: 'M',
     dateNaissance: '2023-07-15',
     caractere: 'Docile',
+    categorie: 'Taureau',
     photo: '/src/assets/cattle-portrait-1.jpg',
     source: {
       type: 'Acheté',
@@ -61,6 +62,7 @@ export const mockCattleData: Cattle[] = [
     genre: 'F',
     dateNaissance: '2022-12-03',
     caractere: 'Timide',
+    categorie: 'Vache',
     photo: '/src/assets/cattle-portrait-2.jpg',
     source: {
       type: 'Né dans le troupeau'
@@ -96,6 +98,7 @@ export const mockCattleData: Cattle[] = [
     genre: 'M',
     dateNaissance: '2024-01-20',
     caractere: 'Energique',
+    categorie: 'Veau',
     photo: '/src/assets/cattle-portrait-3.jpg',
     source: {
       type: 'Né dans le troupeau'
@@ -131,6 +134,7 @@ export const mockCattleData: Cattle[] = [
     genre: 'F',
     dateNaissance: '2023-05-12',
     caractere: 'Docile',
+    categorie: 'Vache',
     source: {
       type: 'Acheté',
       fournisseur: 'Marché Ambohimanarina',
@@ -152,6 +156,7 @@ export const mockCattleData: Cattle[] = [
     genre: 'M',
     dateNaissance: '2022-08-22',
     caractere: 'Agressif',
+    categorie: 'Taureau',
     source: {
       type: 'Acheté',
       fournisseur: 'Ferme Antsirabe',
@@ -182,6 +187,7 @@ export const mockCattleData: Cattle[] = [
     genre: 'F',
     dateNaissance: '2024-02-14',
     caractere: 'Timide',
+    categorie: 'Veau',
     source: {
       type: 'Né dans le troupeau'
     },
@@ -201,6 +207,7 @@ export const mockCattleData: Cattle[] = [
     genre: 'M',
     dateNaissance: '2023-11-30',
     caractere: 'Energique',
+    categorie: 'Veau',
     source: {
       type: 'Né dans le troupeau'
     },
@@ -220,6 +227,7 @@ export const mockCattleData: Cattle[] = [
     genre: 'F',
     dateNaissance: '2022-04-08',
     caractere: 'Docile',
+    categorie: 'Vache',
     source: {
       type: 'Acheté',
       fournisseur: 'Coopérative Fianarantsoa',
@@ -250,6 +258,7 @@ export const mockCattleData: Cattle[] = [
     genre: 'M',
     dateNaissance: '2021-12-10',
     caractere: 'Agressif',
+    categorie: 'Taureau',
     source: {
       type: 'Acheté',
       fournisseur: 'Ferme Morondava',
@@ -271,6 +280,7 @@ export const mockCattleData: Cattle[] = [
     genre: 'F',
     dateNaissance: '2023-09-05',
     caractere: 'Energique',
+    categorie: 'Vache',
     source: {
       type: 'Né dans le troupeau'
     },
@@ -290,6 +300,7 @@ export const mockCattleData: Cattle[] = [
     genre: 'M',
     dateNaissance: '2023-03-18',
     caractere: 'Docile',
+    categorie: 'Taureau',
     source: {
       type: 'Acheté',
       fournisseur: 'Marché Antananarivo',
@@ -311,6 +322,7 @@ export const mockCattleData: Cattle[] = [
     genre: 'F',
     dateNaissance: '2022-06-25',
     caractere: 'Timide',
+    categorie: 'Vache',
     source: {
       type: 'Né dans le troupeau'
     },

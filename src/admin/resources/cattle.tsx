@@ -27,9 +27,9 @@ export const CattleList = () => (
   <List>
     <Datagrid rowClick="edit">
       <TextField source="id" label="ID" />
-      <TextField source="name" label="Nom" />
-      <TextField source="breed" label="Race" />
-      <TextField source="gender" label="Genre" />
+      <TextField source="nom" label="Nom" />
+      <TextField source="categorie" label="Catégorie" />
+      <TextField source="genre" label="Genre" />
       <NumberField source="age" label="Âge" />
       <NumberField source="weight" label="Poids (kg)" />
       <TextField source="healthStatus" label="État de santé" />
@@ -49,14 +49,25 @@ export const CattleList = () => (
 export const CattleEdit = () => (
   <Edit>
     <SimpleForm>
-      <TextInput source="name" label="Nom" required />
+      <TextInput source="nom" label="Nom" required />
       <TextInput source="breed" label="Race" required />
       <SelectInput
-        source="gender"
+        source="genre"
         label="Genre"
         choices={[
-          { id: 'Mâle', name: 'Mâle' },
-          { id: 'Femelle', name: 'Femelle' },
+          { id: 'M', name: 'Mâle' },
+          { id: 'F', name: 'Femelle' },
+        ]}
+        required
+      />
+      <SelectInput
+        source="categorie"
+        label="Catégorie"
+        choices={[
+          { id: 'Taureau', name: 'Taureau' },
+          { id: 'Veau', name: 'Veau' },
+          { id: 'Zébu', name: 'Zébu' },
+          { id: 'Vache', name: 'Vache' },
         ]}
         required
       />
@@ -87,14 +98,25 @@ export const CattleEdit = () => (
 export const CattleCreate = () => (
   <Create>
     <SimpleForm>
-      <TextInput source="name" label="Nom" required />
+      <TextInput source="nom" label="Nom" required />
       <TextInput source="breed" label="Race" required />
       <SelectInput
-        source="gender"
+        source="genre"
         label="Genre"
         choices={[
-          { id: 'Mâle', name: 'Mâle' },
-          { id: 'Femelle', name: 'Femelle' },
+          { id: 'M', name: 'Mâle' },
+          { id: 'F', name: 'Femelle' },
+        ]}
+        required
+      />
+      <SelectInput
+        source="categorie"
+        label="Catégorie"
+        choices={[
+          { id: 'Taureau', name: 'Taureau' },
+          { id: 'Veau', name: 'Veau' },
+          { id: 'Zébu', name: 'Zébu' },
+          { id: 'Vache', name: 'Vache' },
         ]}
         required
       />
@@ -126,9 +148,9 @@ export const CattleShow = () => (
   <Show>
     <SimpleShowLayout>
       <TextField source="id" label="ID" />
-      <TextField source="name" label="Nom" />
-      <TextField source="breed" label="Race" />
-      <TextField source="gender" label="Genre" />
+      <TextField source="nom" label="Nom" />
+      <TextField source="categorie" label="Catégorie" />
+      <TextField source="genre" label="Genre" />
       <NumberField source="age" label="Âge" />
       <NumberField source="weight" label="Poids (kg)" />
       <TextField source="healthStatus" label="État de santé" />

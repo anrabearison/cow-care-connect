@@ -4,6 +4,7 @@ export interface Cattle {
   genre: 'M' | 'F';
   dateNaissance: string;
   caractere: 'Docile' | 'Agressif' | 'Timide' | 'Energique';
+  categorie: 'Taureau' | 'Veau' | 'Zébu' | 'Vache';
   photo?: string;
   source: {
     type: 'Acheté' | 'Né dans le troupeau';
