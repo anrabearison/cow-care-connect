@@ -12,7 +12,12 @@ export const mockCattleData: Cattle[] = [
     source: {
       type: 'Acheté',
       fournisseur: 'Ferme Mahitsy',
-      dateAchat: '2023-08-01'
+      dateAchat: '2023-08-01',
+      categorieAchat: 'Veau',
+      prixAchat: 180000,
+      poidsAchat: 280,
+      etatSanteAchat: 'Excellent',
+      remarquesAchat: 'Jeune taureau prometteur, bon potentiel reproducteur'
     },
     evenements: [
       {
@@ -138,7 +143,12 @@ export const mockCattleData: Cattle[] = [
     source: {
       type: 'Acheté',
       fournisseur: 'Marché Ambohimanarina',
-      dateAchat: '2023-06-15'
+      dateAchat: '2023-06-15',
+      categorieAchat: 'Vache',
+      prixAchat: 220000,
+      poidsAchat: 340,
+      etatSanteAchat: 'Bon',
+      remarquesAchat: 'Vache laitière, bonne production attendue'
     },
     evenements: [
       {
@@ -160,7 +170,12 @@ export const mockCattleData: Cattle[] = [
     source: {
       type: 'Acheté',
       fournisseur: 'Ferme Antsirabe',
-      dateAchat: '2023-01-10'
+      dateAchat: '2023-01-10',
+      categorieAchat: 'Taureau',
+      prixAchat: 350000,
+      poidsAchat: 520,
+      etatSanteAchat: 'Excellent',
+      remarquesAchat: 'Taureau reproducteur de qualité, lignée pure'
     },
     evenements: [
       {
@@ -231,7 +246,12 @@ export const mockCattleData: Cattle[] = [
     source: {
       type: 'Acheté',
       fournisseur: 'Coopérative Fianarantsoa',
-      dateAchat: '2022-09-12'
+      dateAchat: '2022-09-12',
+      categorieAchat: 'Vache',
+      prixAchat: 195000,
+      poidsAchat: 380,
+      etatSanteAchat: 'Très bon',
+      remarquesAchat: 'Bonne reproductrice, déjà gestante lors de l\'achat'
     },
     evenements: [
       {
@@ -262,7 +282,12 @@ export const mockCattleData: Cattle[] = [
     source: {
       type: 'Acheté',
       fournisseur: 'Ferme Morondava',
-      dateAchat: '2022-03-15'
+      dateAchat: '2022-03-15',
+      categorieAchat: 'Taureau',
+      prixAchat: 420000,
+      poidsAchat: 580,
+      etatSanteAchat: 'Excellent',
+      remarquesAchat: 'Taureau dominant, nécessite enclos renforcé'
     },
     evenements: [
       {
@@ -304,7 +329,12 @@ export const mockCattleData: Cattle[] = [
     source: {
       type: 'Acheté',
       fournisseur: 'Marché Antananarivo',
-      dateAchat: '2023-07-22'
+      dateAchat: '2023-07-22',
+      categorieAchat: 'Veau',
+      prixAchat: 160000,
+      poidsAchat: 250,
+      etatSanteAchat: 'Bon',
+      remarquesAchat: 'Jeune avec bon potentiel de croissance'
     },
     evenements: [
       {

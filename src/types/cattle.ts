@@ -10,6 +10,11 @@ export interface Cattle {
     type: 'Acheté' | 'Né dans le troupeau';
     fournisseur?: string;
     dateAchat?: string;
+    categorieAchat?: 'Taureau' | 'Veau' | 'Zébu' | 'Vache';
+    prixAchat?: number;
+    poidsAchat?: number;
+    etatSanteAchat?: string;
+    remarquesAchat?: string;
   };
   evenements: Event[];
   traitements: Treatment[];
