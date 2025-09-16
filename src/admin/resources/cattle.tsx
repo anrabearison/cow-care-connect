@@ -30,13 +30,15 @@ export const CattleList = () => (
       <TextField source="nom" label="Nom" />
       <TextField source="categorie" label="Catégorie" />
       <TextField source="genre" label="Genre" />
-      <NumberField source="age" label="Âge" />
-      <NumberField source="weight" label="Poids (kg)" />
-      <TextField source="healthStatus" label="État de santé" />
-      <DateField source="birthDate" label="Date de naissance" />
+      <TextField source="caractere" label="Caractère" />
+      <DateField source="dateNaissance" label="Date de naissance" />
+      <FunctionField
+        label="Source"
+        render={(record: any) => record.source?.type || 'Non défini'}
+      />
       <FunctionField
         label="Photo"
-        render={(record: any) => record.image ? 'Oui' : 'Non'}
+        render={(record: any) => record.photo ? 'Oui' : 'Non'}
       />
       <ShowButton />
       <EditButton />
@@ -50,7 +52,6 @@ export const CattleEdit = () => (
   <Edit>
     <SimpleForm>
       <TextInput source="nom" label="Nom" required />
-      <TextInput source="breed" label="Race" required />
       <SelectInput
         source="genre"
         label="Genre"
@@ -71,25 +72,46 @@ export const CattleEdit = () => (
         ]}
         required
       />
-      <NumberInput source="age" label="Âge" required />
-      <NumberInput source="weight" label="Poids (kg)" required />
       <SelectInput
-        source="healthStatus"
-        label="État de santé"
+        source="caractere"
+        label="Caractère"
         choices={[
-          { id: 'Excellent', name: 'Excellent' },
-          { id: 'Bon', name: 'Bon' },
-          { id: 'Moyen', name: 'Moyen' },
-          { id: 'Mauvais', name: 'Mauvais' },
+          { id: 'Docile', name: 'Docile' },
+          { id: 'Agressif', name: 'Agressif' },
+          { id: 'Timide', name: 'Timide' },
+          { id: 'Energique', name: 'Énergique' },
         ]}
         required
       />
-      <DateInput source="birthDate" label="Date de naissance" required />
-      <ImageInput source="image" label="Photo" accept={{ 'image/*': ['.png', '.jpg', '.jpeg'] }}>
+      <DateInput source="dateNaissance" label="Date de naissance" required />
+      <ImageInput source="photo" label="Photo" accept={{ 'image/*': ['.png', '.jpg', '.jpeg'] }}>
         <ImageField source="src" title="title" />
       </ImageInput>
-      <TextInput source="location" label="Localisation" />
-      <TextInput source="notes" label="Notes" multiline rows={4} />
+      <SelectInput
+        source="source.type"
+        label="Type de source"
+        choices={[
+          { id: 'Acheté', name: 'Acheté' },
+          { id: 'Né dans le troupeau', name: 'Né dans le troupeau' },
+        ]}
+        required
+      />
+      <TextInput source="source.fournisseur" label="Fournisseur" />
+      <DateInput source="source.dateAchat" label="Date d'achat" />
+      <SelectInput
+        source="source.categorieAchat"
+        label="Catégorie à l'achat"
+        choices={[
+          { id: 'Taureau', name: 'Taureau' },
+          { id: 'Veau', name: 'Veau' },
+          { id: 'Zébu', name: 'Zébu' },
+          { id: 'Vache', name: 'Vache' },
+        ]}
+      />
+      <NumberInput source="source.prixAchat" label="Prix d'achat (Ar)" />
+      <NumberInput source="source.poidsAchat" label="Poids à l'achat (kg)" />
+      <TextInput source="source.etatSanteAchat" label="État de santé à l'achat" />
+      <TextInput source="source.remarquesAchat" label="Remarques achat" multiline rows={3} />
     </SimpleForm>
   </Edit>
 );
@@ -99,7 +121,6 @@ export const CattleCreate = () => (
   <Create>
     <SimpleForm>
       <TextInput source="nom" label="Nom" required />
-      <TextInput source="breed" label="Race" required />
       <SelectInput
         source="genre"
         label="Genre"
@@ -120,25 +141,46 @@ export const CattleCreate = () => (
         ]}
         required
       />
-      <NumberInput source="age" label="Âge" required />
-      <NumberInput source="weight" label="Poids (kg)" required />
       <SelectInput
-        source="healthStatus"
-        label="État de santé"
+        source="caractere"
+        label="Caractère"
         choices={[
-          { id: 'Excellent', name: 'Excellent' },
-          { id: 'Bon', name: 'Bon' },
-          { id: 'Moyen', name: 'Moyen' },
-          { id: 'Mauvais', name: 'Mauvais' },
+          { id: 'Docile', name: 'Docile' },
+          { id: 'Agressif', name: 'Agressif' },
+          { id: 'Timide', name: 'Timide' },
+          { id: 'Energique', name: 'Énergique' },
         ]}
         required
       />
-      <DateInput source="birthDate" label="Date de naissance" required />
-      <ImageInput source="image" label="Photo" accept={{ 'image/*': ['.png', '.jpg', '.jpeg'] }}>
+      <DateInput source="dateNaissance" label="Date de naissance" required />
+      <ImageInput source="photo" label="Photo" accept={{ 'image/*': ['.png', '.jpg', '.jpeg'] }}>
         <ImageField source="src" title="title" />
       </ImageInput>
-      <TextInput source="location" label="Localisation" />
-      <TextInput source="notes" label="Notes" multiline rows={4} />
+      <SelectInput
+        source="source.type"
+        label="Type de source"
+        choices={[
+          { id: 'Acheté', name: 'Acheté' },
+          { id: 'Né dans le troupeau', name: 'Né dans le troupeau' },
+        ]}
+        required
+      />
+      <TextInput source="source.fournisseur" label="Fournisseur" />
+      <DateInput source="source.dateAchat" label="Date d'achat" />
+      <SelectInput
+        source="source.categorieAchat"
+        label="Catégorie à l'achat"
+        choices={[
+          { id: 'Taureau', name: 'Taureau' },
+          { id: 'Veau', name: 'Veau' },
+          { id: 'Zébu', name: 'Zébu' },
+          { id: 'Vache', name: 'Vache' },
+        ]}
+      />
+      <NumberInput source="source.prixAchat" label="Prix d'achat (Ar)" />
+      <NumberInput source="source.poidsAchat" label="Poids à l'achat (kg)" />
+      <TextInput source="source.etatSanteAchat" label="État de santé à l'achat" />
+      <TextInput source="source.remarquesAchat" label="Remarques achat" multiline rows={3} />
     </SimpleForm>
   </Create>
 );
@@ -151,13 +193,17 @@ export const CattleShow = () => (
       <TextField source="nom" label="Nom" />
       <TextField source="categorie" label="Catégorie" />
       <TextField source="genre" label="Genre" />
-      <NumberField source="age" label="Âge" />
-      <NumberField source="weight" label="Poids (kg)" />
-      <TextField source="healthStatus" label="État de santé" />
-      <DateField source="birthDate" label="Date de naissance" />
-      <ImageField source="image" label="Photo" />
-      <TextField source="location" label="Localisation" />
-      <TextField source="notes" label="Notes" />
+      <TextField source="caractere" label="Caractère" />
+      <DateField source="dateNaissance" label="Date de naissance" />
+      <ImageField source="photo" label="Photo" />
+      <TextField source="source.type" label="Type de source" />
+      <TextField source="source.fournisseur" label="Fournisseur" />
+      <DateField source="source.dateAchat" label="Date d'achat" />
+      <TextField source="source.categorieAchat" label="Catégorie à l'achat" />
+      <NumberField source="source.prixAchat" label="Prix d'achat (Ar)" />
+      <NumberField source="source.poidsAchat" label="Poids à l'achat (kg)" />
+      <TextField source="source.etatSanteAchat" label="État de santé à l'achat" />
+      <TextField source="source.remarquesAchat" label="Remarques achat" />
     </SimpleShowLayout>
   </Show>
 );
