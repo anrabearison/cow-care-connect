@@ -299,7 +299,7 @@ export default function CattleDetailsPage() {
                     </Button>
                   </CollapsibleTrigger>
                   <CollapsibleContent className="space-y-3 pt-3">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {cattle.source.categorieAchat && (
                         <div>
                           <p className="text-sm font-medium text-muted-foreground">Catégorie à l'achat</p>
