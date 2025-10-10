@@ -20,6 +20,11 @@ import {
   ImageField,
   ImageInput,
   FunctionField,
+  ArrayInput,
+  SimpleFormIterator,
+  ArrayField,
+  SingleFieldList,
+  ChipField,
 } from 'react-admin';
 
 // Liste des bovins
@@ -39,6 +44,14 @@ export const CattleList = () => (
       <FunctionField
         label="Photo"
         render={(record: any) => record.photo ? 'Oui' : 'Non'}
+      />
+      <FunctionField
+        label="Événements"
+        render={(record: any) => record.evenements?.length || 0}
+      />
+      <FunctionField
+        label="Traitements"
+        render={(record: any) => record.traitements?.length || 0}
       />
       <ShowButton />
       <EditButton />
@@ -112,6 +125,47 @@ export const CattleEdit = () => (
       <NumberInput source="source.poidsAchat" label="Poids à l'achat (kg)" />
       <TextInput source="source.etatSanteAchat" label="État de santé à l'achat" />
       <TextInput source="source.remarquesAchat" label="Remarques achat" multiline rows={3} />
+      
+      <ArrayInput source="evenements" label="Événements">
+        <SimpleFormIterator inline>
+          <SelectInput
+            source="type"
+            label="Type"
+            choices={[
+              { id: 'Naissance', name: 'Naissance' },
+              { id: 'Changement de pâturage', name: 'Changement de pâturage' },
+              { id: 'Vaccination', name: 'Vaccination' },
+              { id: 'Visite vétérinaire', name: 'Visite vétérinaire' },
+              { id: 'Pesée', name: 'Pesée' },
+              { id: 'Autre', name: 'Autre' },
+            ]}
+          />
+          <DateInput source="date" label="Date" />
+          <TextInput source="description" label="Description" />
+          <TextInput source="details" label="Détails" multiline />
+        </SimpleFormIterator>
+      </ArrayInput>
+
+      <ArrayInput source="traitements" label="Traitements">
+        <SimpleFormIterator inline>
+          <SelectInput
+            source="type"
+            label="Type"
+            choices={[
+              { id: 'Antibiotique', name: 'Antibiotique' },
+              { id: 'Vaccin', name: 'Vaccin' },
+              { id: 'Vermifuge', name: 'Vermifuge' },
+              { id: 'Anti-inflammatoire', name: 'Anti-inflammatoire' },
+              { id: 'Autre', name: 'Autre' },
+            ]}
+          />
+          <DateInput source="date" label="Date" />
+          <TextInput source="produit" label="Produit" />
+          <TextInput source="dose" label="Dose" />
+          <TextInput source="veterinaire" label="Vétérinaire" />
+          <TextInput source="notes" label="Notes" multiline />
+        </SimpleFormIterator>
+      </ArrayInput>
     </SimpleForm>
   </Edit>
 );
@@ -181,6 +235,47 @@ export const CattleCreate = () => (
       <NumberInput source="source.poidsAchat" label="Poids à l'achat (kg)" />
       <TextInput source="source.etatSanteAchat" label="État de santé à l'achat" />
       <TextInput source="source.remarquesAchat" label="Remarques achat" multiline rows={3} />
+      
+      <ArrayInput source="evenements" label="Événements">
+        <SimpleFormIterator inline>
+          <SelectInput
+            source="type"
+            label="Type"
+            choices={[
+              { id: 'Naissance', name: 'Naissance' },
+              { id: 'Changement de pâturage', name: 'Changement de pâturage' },
+              { id: 'Vaccination', name: 'Vaccination' },
+              { id: 'Visite vétérinaire', name: 'Visite vétérinaire' },
+              { id: 'Pesée', name: 'Pesée' },
+              { id: 'Autre', name: 'Autre' },
+            ]}
+          />
+          <DateInput source="date" label="Date" />
+          <TextInput source="description" label="Description" />
+          <TextInput source="details" label="Détails" multiline />
+        </SimpleFormIterator>
+      </ArrayInput>
+
+      <ArrayInput source="traitements" label="Traitements">
+        <SimpleFormIterator inline>
+          <SelectInput
+            source="type"
+            label="Type"
+            choices={[
+              { id: 'Antibiotique', name: 'Antibiotique' },
+              { id: 'Vaccin', name: 'Vaccin' },
+              { id: 'Vermifuge', name: 'Vermifuge' },
+              { id: 'Anti-inflammatoire', name: 'Anti-inflammatoire' },
+              { id: 'Autre', name: 'Autre' },
+            ]}
+          />
+          <DateInput source="date" label="Date" />
+          <TextInput source="produit" label="Produit" />
+          <TextInput source="dose" label="Dose" />
+          <TextInput source="veterinaire" label="Vétérinaire" />
+          <TextInput source="notes" label="Notes" multiline />
+        </SimpleFormIterator>
+      </ArrayInput>
     </SimpleForm>
   </Create>
 );
@@ -204,6 +299,26 @@ export const CattleShow = () => (
       <NumberField source="source.poidsAchat" label="Poids à l'achat (kg)" />
       <TextField source="source.etatSanteAchat" label="État de santé à l'achat" />
       <TextField source="source.remarquesAchat" label="Remarques achat" />
+      
+      <ArrayField source="evenements" label="Événements">
+        <Datagrid bulkActionButtons={false}>
+          <TextField source="type" label="Type" />
+          <DateField source="date" label="Date" />
+          <TextField source="description" label="Description" />
+          <TextField source="details" label="Détails" />
+        </Datagrid>
+      </ArrayField>
+
+      <ArrayField source="traitements" label="Traitements">
+        <Datagrid bulkActionButtons={false}>
+          <TextField source="type" label="Type" />
+          <DateField source="date" label="Date" />
+          <TextField source="produit" label="Produit" />
+          <TextField source="dose" label="Dose" />
+          <TextField source="veterinaire" label="Vétérinaire" />
+          <TextField source="notes" label="Notes" />
+        </Datagrid>
+      </ArrayField>
     </SimpleShowLayout>
   </Show>
 );
