@@ -25,6 +25,9 @@ import {
   ArrayField,
   SingleFieldList,
   ChipField,
+  ReferenceInput,
+  AutocompleteInput,
+  ReferenceField,
 } from 'react-admin';
 
 // Liste des bovins
@@ -162,7 +165,9 @@ export const CattleEdit = () => (
           <DateInput source="date" label="Date" />
           <TextInput source="produit" label="Produit" />
           <TextInput source="dose" label="Dose" />
-          <TextInput source="veterinaire" label="Intervenant" />
+          <ReferenceInput source="veterinaire" reference="veterinarians" label="Intervenant">
+            <AutocompleteInput optionText="nom" />
+          </ReferenceInput>
           <TextInput source="notes" label="Notes" multiline />
         </SimpleFormIterator>
       </ArrayInput>
@@ -272,7 +277,9 @@ export const CattleCreate = () => (
           <DateInput source="date" label="Date" />
           <TextInput source="produit" label="Produit" />
           <TextInput source="dose" label="Dose" />
-          <TextInput source="veterinaire" label="Intervenant" />
+          <ReferenceInput source="veterinaire" reference="veterinarians" label="Intervenant">
+            <AutocompleteInput optionText="nom" />
+          </ReferenceInput>
           <TextInput source="notes" label="Notes" multiline />
         </SimpleFormIterator>
       </ArrayInput>
@@ -315,7 +322,9 @@ export const CattleShow = () => (
           <DateField source="date" label="Date" />
           <TextField source="produit" label="Produit" />
           <TextField source="dose" label="Dose" />
-          <TextField source="veterinaire" label="Intervenant" />
+          <ReferenceField source="veterinaire" reference="veterinarians" label="Intervenant">
+            <TextField source="nom" />
+          </ReferenceField>
           <TextField source="notes" label="Notes" />
         </Datagrid>
       </ArrayField>

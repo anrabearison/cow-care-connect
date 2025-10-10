@@ -1,5 +1,16 @@
 import { Cattle } from '@/types/cattle';
 
+// Liste des intervenants (vétérinaires et soignants)
+const veterinarians: Record<string, string> = {
+  'V001': 'Dr. Rakoto',
+  'V002': 'Razafy',
+  'V003': 'Dr. Nivo',
+};
+
+export const getVeterinarianName = (id: string): string => {
+  return veterinarians[id] || id;
+};
+
 export const mockCattleData: Cattle[] = [
   {
     id: 'B001',
@@ -48,7 +59,7 @@ export const mockCattleData: Cattle[] = [
         date: '2024-03-05',
         produit: 'Amoxicilline',
         dose: '10ml',
-        veterinaire: 'Dr. Rakoto',
+        veterinaire: 'V001',
         notes: 'Infection respiratoire légère'
       },
       {
@@ -57,7 +68,7 @@ export const mockCattleData: Cattle[] = [
         date: '2024-03-01',
         produit: 'Vaccin polyvalent',
         dose: '2ml',
-        veterinaire: 'Dr. Rakoto'
+        veterinaire: 'V001'
       }
     ]
   },
@@ -93,7 +104,7 @@ export const mockCattleData: Cattle[] = [
         date: '2024-02-20',
         produit: 'Ivermectine',
         dose: '15ml',
-        veterinaire: 'Dr. Andry'
+        veterinaire: 'V002'
       }
     ]
   },
@@ -129,7 +140,7 @@ export const mockCattleData: Cattle[] = [
         date: '2024-02-20',
         produit: 'Vaccin veau',
         dose: '1ml',
-        veterinaire: 'Dr. Rakoto'
+        veterinaire: 'V001'
       }
     ]
   },
@@ -192,7 +203,7 @@ export const mockCattleData: Cattle[] = [
         date: '2024-02-10',
         produit: 'Vaccin FMD',
         dose: '3ml',
-        veterinaire: 'Dr. Rasoa'
+        veterinaire: 'V003'
       }
     ]
   },
@@ -268,7 +279,7 @@ export const mockCattleData: Cattle[] = [
         date: '2024-01-20',
         produit: 'Vitamines prénatales',
         dose: '20ml',
-        veterinaire: 'Dr. Hery'
+        veterinaire: 'V001'
       }
     ]
   },
@@ -371,7 +382,7 @@ export const mockCattleData: Cattle[] = [
         date: '2024-02-15',
         produit: 'Calcium',
         dose: '25ml',
-        veterinaire: 'Dr. Nirina'
+        veterinaire: 'V002'
       }
     ]
   }
