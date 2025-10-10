@@ -6,6 +6,7 @@ import { dataProvider as apiDataProvider } from './providers/dataProvider';
 import { authProvider } from './providers/authProvider';
 import { CattleList, CattleEdit, CattleCreate, CattleShow } from './resources/cattle';
 import { UserList, UserEdit, UserCreate, UserShow } from './resources/users';
+import { VeterinarianList, VeterinarianEdit, VeterinarianCreate, VeterinarianShow } from './resources/veterinarians';
 import { Dashboard } from './components/Dashboard';
 import { Layout } from './components/Layout';
 
@@ -37,6 +38,14 @@ export const AdminApp: React.FC = () => {
         create={UserCreate}
         show={UserShow}
         options={{ label: 'Utilisateurs' }}
+      />
+      <Resource
+        name="veterinarians"
+        list={VeterinarianList}
+        edit={VeterinarianEdit}
+        create={VeterinarianCreate}
+        show={VeterinarianShow}
+        options={{ label: 'Intervenants' }}
       />
     </Admin>
   );

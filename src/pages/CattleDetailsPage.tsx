@@ -480,7 +480,7 @@ export default function CattleDetailsPage() {
                   <span>Historique des traitements</span>
                 </CardTitle>
                 <CardDescription>
-                  Suivi médical et vétérinaire
+                  Suivi médical et traitements
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -495,7 +495,7 @@ export default function CattleDetailsPage() {
                           <div>
                             <h4 className="font-medium">{treatment.produit}</h4>
                             <p className="text-sm text-muted-foreground">
-                              Dose: {treatment.dose} • Vétérinaire: {treatment.veterinaire}
+                              Dose: {treatment.dose} • Intervenant: {treatment.veterinaire}
                             </p>
                             {treatment.notes && (
                               <p className="text-sm text-muted-foreground mt-1">

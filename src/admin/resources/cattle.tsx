@@ -162,7 +162,7 @@ export const CattleEdit = () => (
           <DateInput source="date" label="Date" />
           <TextInput source="produit" label="Produit" />
           <TextInput source="dose" label="Dose" />
-          <TextInput source="veterinaire" label="Vétérinaire" />
+          <TextInput source="veterinaire" label="Intervenant" />
           <TextInput source="notes" label="Notes" multiline />
         </SimpleFormIterator>
       </ArrayInput>
@@ -272,7 +272,7 @@ export const CattleCreate = () => (
           <DateInput source="date" label="Date" />
           <TextInput source="produit" label="Produit" />
           <TextInput source="dose" label="Dose" />
-          <TextInput source="veterinaire" label="Vétérinaire" />
+          <TextInput source="veterinaire" label="Intervenant" />
           <TextInput source="notes" label="Notes" multiline />
         </SimpleFormIterator>
       </ArrayInput>
@@ -315,7 +315,7 @@ export const CattleShow = () => (
           <DateField source="date" label="Date" />
           <TextField source="produit" label="Produit" />
           <TextField source="dose" label="Dose" />
-          <TextField source="veterinaire" label="Vétérinaire" />
+          <TextField source="veterinaire" label="Intervenant" />
           <TextField source="notes" label="Notes" />
         </Datagrid>
       </ArrayField>
