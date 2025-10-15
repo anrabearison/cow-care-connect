@@ -11,6 +11,7 @@ import { useState } from 'react';
 import cattlePortrait1 from '@/assets/cattle-portrait-1.jpg';
 import cattlePortrait2 from '@/assets/cattle-portrait-2.jpg';
 import cattlePortrait3 from '@/assets/cattle-portrait-3.jpg';
+import { getVeterinarianName, getMedicamentName } from '@/data/mockData';
 
 const cattleImages = [cattlePortrait1, cattlePortrait2, cattlePortrait3];
 
@@ -493,9 +494,9 @@ export default function CattleDetailsPage() {
                       <div className="flex-1">
                         <div className="flex items-start justify-between">
                           <div>
-                            <h4 className="font-medium">{treatment.produit}</h4>
+                            <h4 className="font-medium">{getMedicamentName(treatment.produit)}</h4>
                             <p className="text-sm text-muted-foreground">
-                              Dose: {treatment.dose} • Intervenant: {treatment.veterinaire}
+                              Dose: {treatment.dose} • Intervenant: {getVeterinarianName(treatment.veterinaire)}
                             </p>
                             {treatment.notes && (
                               <p className="text-sm text-muted-foreground mt-1">

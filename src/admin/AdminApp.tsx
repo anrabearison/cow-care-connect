@@ -7,6 +7,7 @@ import { authProvider } from './providers/authProvider';
 import { CattleList, CattleEdit, CattleCreate, CattleShow } from './resources/cattle';
 import { UserList, UserEdit, UserCreate, UserShow } from './resources/users';
 import { VeterinarianList, VeterinarianEdit, VeterinarianCreate, VeterinarianShow } from './resources/veterinarians';
+import { MedicamentList, MedicamentEdit, MedicamentCreate, MedicamentShow } from './resources/medicaments';
 import { Dashboard } from './components/Dashboard';
 import { Layout } from './components/Layout';
 
@@ -46,6 +47,14 @@ export const AdminApp: React.FC = () => {
         create={VeterinarianCreate}
         show={VeterinarianShow}
         options={{ label: 'Intervenants' }}
+      />
+      <Resource
+        name="medicaments"
+        list={MedicamentList}
+        edit={MedicamentEdit}
+        create={MedicamentCreate}
+        show={MedicamentShow}
+        options={{ label: 'Médicaments' }}
       />
     </Admin>
   );

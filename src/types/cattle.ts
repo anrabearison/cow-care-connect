@@ -30,7 +30,7 @@ export interface Event {
 
 export interface Treatment {
   id: string;
-  type: 'Antibiotique' | 'Vaccin' | 'Vermifuge' | 'Anti-inflammatoire' | 'Autre';
+  type: 'Antibiotique' | 'Vaccin' | 'Vermifuge' | 'Anti-inflammatoire' | 'Vitamine' | 'Autre';
   date: string;
   produit: string;
   dose: string;

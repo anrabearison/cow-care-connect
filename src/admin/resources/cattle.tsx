@@ -159,11 +159,14 @@ export const CattleEdit = () => (
               { id: 'Vaccin', name: 'Vaccin' },
               { id: 'Vermifuge', name: 'Vermifuge' },
               { id: 'Anti-inflammatoire', name: 'Anti-inflammatoire' },
+              { id: 'Vitamine', name: 'Vitamine' },
               { id: 'Autre', name: 'Autre' },
             ]}
           />
           <DateInput source="date" label="Date" />
-          <TextInput source="produit" label="Produit" />
+          <ReferenceInput source="produit" reference="medicaments" label="Médicament">
+            <AutocompleteInput optionText="nom" />
+          </ReferenceInput>
           <TextInput source="dose" label="Dose" />
           <ReferenceInput source="veterinaire" reference="veterinarians" label="Intervenant">
             <AutocompleteInput optionText="nom" />
@@ -271,11 +274,14 @@ export const CattleCreate = () => (
               { id: 'Vaccin', name: 'Vaccin' },
               { id: 'Vermifuge', name: 'Vermifuge' },
               { id: 'Anti-inflammatoire', name: 'Anti-inflammatoire' },
+              { id: 'Vitamine', name: 'Vitamine' },
               { id: 'Autre', name: 'Autre' },
             ]}
           />
           <DateInput source="date" label="Date" />
-          <TextInput source="produit" label="Produit" />
+          <ReferenceInput source="produit" reference="medicaments" label="Médicament">
+            <AutocompleteInput optionText="nom" />
+          </ReferenceInput>
           <TextInput source="dose" label="Dose" />
           <ReferenceInput source="veterinaire" reference="veterinarians" label="Intervenant">
             <AutocompleteInput optionText="nom" />
@@ -320,7 +326,9 @@ export const CattleShow = () => (
         <Datagrid bulkActionButtons={false}>
           <TextField source="type" label="Type" />
           <DateField source="date" label="Date" />
-          <TextField source="produit" label="Produit" />
+          <ReferenceField source="produit" reference="medicaments" label="Médicament">
+            <TextField source="nom" />
+          </ReferenceField>
           <TextField source="dose" label="Dose" />
           <ReferenceField source="veterinaire" reference="veterinarians" label="Intervenant">
             <TextField source="nom" />

@@ -11,6 +11,21 @@ export const getVeterinarianName = (id: string): string => {
   return veterinarians[id] || id;
 };
 
+// Liste des médicaments
+const medicaments: Record<string, string> = {
+  'M001': 'Amoxicilline',
+  'M002': 'Vaccin polyvalent',
+  'M003': 'Ivermectine',
+  'M004': 'Vaccin veau',
+  'M005': 'Vaccin FMD',
+  'M006': 'Vitamines prénatales',
+  'M007': 'Calcium injectable',
+};
+
+export const getMedicamentName = (id: string): string => {
+  return medicaments[id] || id;
+};
+
 export const mockCattleData: Cattle[] = [
   {
     id: 'B001',
@@ -57,7 +72,7 @@ export const mockCattleData: Cattle[] = [
         id: 'T001',
         type: 'Antibiotique',
         date: '2024-03-05',
-        produit: 'Amoxicilline',
+        produit: 'M001',
         dose: '10ml',
         veterinaire: 'V001',
         notes: 'Infection respiratoire légère'
@@ -66,7 +81,7 @@ export const mockCattleData: Cattle[] = [
         id: 'T002',
         type: 'Vaccin',
         date: '2024-03-01',
-        produit: 'Vaccin polyvalent',
+        produit: 'M002',
         dose: '2ml',
         veterinaire: 'V001'
       }
@@ -102,7 +117,7 @@ export const mockCattleData: Cattle[] = [
         id: 'T003',
         type: 'Vermifuge',
         date: '2024-02-20',
-        produit: 'Ivermectine',
+        produit: 'M003',
         dose: '15ml',
         veterinaire: 'V002'
       }
@@ -138,7 +153,7 @@ export const mockCattleData: Cattle[] = [
         id: 'T004',
         type: 'Vaccin',
         date: '2024-02-20',
-        produit: 'Vaccin veau',
+        produit: 'M004',
         dose: '1ml',
         veterinaire: 'V001'
       }
@@ -201,7 +216,7 @@ export const mockCattleData: Cattle[] = [
         id: 'T005',
         type: 'Vaccin',
         date: '2024-02-10',
-        produit: 'Vaccin FMD',
+        produit: 'M005',
         dose: '3ml',
         veterinaire: 'V003'
       }
@@ -275,9 +290,9 @@ export const mockCattleData: Cattle[] = [
     traitements: [
       {
         id: 'T006',
-        type: 'Autre',
+        type: 'Vitamine',
         date: '2024-01-20',
-        produit: 'Vitamines prénatales',
+        produit: 'M006',
         dose: '20ml',
         veterinaire: 'V001'
       }
@@ -378,9 +393,9 @@ export const mockCattleData: Cattle[] = [
     traitements: [
       {
         id: 'T007',
-        type: 'Autre',
+        type: 'Vitamine',
         date: '2024-02-15',
-        produit: 'Calcium',
+        produit: 'M007',
         dose: '25ml',
         veterinaire: 'V002'
       }
