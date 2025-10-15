@@ -8,6 +8,7 @@ import { CattleList, CattleEdit, CattleCreate, CattleShow } from './resources/ca
 import { UserList, UserEdit, UserCreate, UserShow } from './resources/users';
 import { VeterinarianList, VeterinarianEdit, VeterinarianCreate, VeterinarianShow } from './resources/veterinarians';
 import { MedicamentList, MedicamentEdit, MedicamentCreate, MedicamentShow } from './resources/medicaments';
+import { TypeEvenementList, TypeEvenementEdit, TypeEvenementCreate, TypeEvenementShow } from './resources/typeEvenements';
 import { Dashboard } from './components/Dashboard';
 import { Layout } from './components/Layout';
 
@@ -55,6 +56,14 @@ export const AdminApp: React.FC = () => {
         create={MedicamentCreate}
         show={MedicamentShow}
         options={{ label: 'Médicaments' }}
+      />
+      <Resource
+        name="typeEvenements"
+        list={TypeEvenementList}
+        edit={TypeEvenementEdit}
+        create={TypeEvenementCreate}
+        show={TypeEvenementShow}
+        options={{ label: 'Types d\'événements' }}
       />
     </Admin>
   );

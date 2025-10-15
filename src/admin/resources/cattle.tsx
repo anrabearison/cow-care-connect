@@ -131,18 +131,9 @@ export const CattleEdit = () => (
       
       <ArrayInput source="evenements" label="Événements">
         <SimpleFormIterator inline>
-          <SelectInput
-            source="type"
-            label="Type"
-            choices={[
-              { id: 'Naissance', name: 'Naissance' },
-              { id: 'Changement de pâturage', name: 'Changement de pâturage' },
-              { id: 'Vaccination', name: 'Vaccination' },
-              { id: 'Visite vétérinaire', name: 'Visite vétérinaire' },
-              { id: 'Pesée', name: 'Pesée' },
-              { id: 'Autre', name: 'Autre' },
-            ]}
-          />
+          <ReferenceInput source="type" reference="typeEvenements" label="Type">
+            <AutocompleteInput optionText="nom" />
+          </ReferenceInput>
           <DateInput source="date" label="Date" />
           <TextInput source="description" label="Description" />
           <TextInput source="details" label="Détails" multiline />
@@ -246,18 +237,9 @@ export const CattleCreate = () => (
       
       <ArrayInput source="evenements" label="Événements">
         <SimpleFormIterator inline>
-          <SelectInput
-            source="type"
-            label="Type"
-            choices={[
-              { id: 'Naissance', name: 'Naissance' },
-              { id: 'Changement de pâturage', name: 'Changement de pâturage' },
-              { id: 'Vaccination', name: 'Vaccination' },
-              { id: 'Visite vétérinaire', name: 'Visite vétérinaire' },
-              { id: 'Pesée', name: 'Pesée' },
-              { id: 'Autre', name: 'Autre' },
-            ]}
-          />
+          <ReferenceInput source="type" reference="typeEvenements" label="Type">
+            <AutocompleteInput optionText="nom" />
+          </ReferenceInput>
           <DateInput source="date" label="Date" />
           <TextInput source="description" label="Description" />
           <TextInput source="details" label="Détails" multiline />
@@ -315,7 +297,9 @@ export const CattleShow = () => (
       
       <ArrayField source="evenements" label="Événements">
         <Datagrid bulkActionButtons={false}>
-          <TextField source="type" label="Type" />
+          <ReferenceField source="type" reference="typeEvenements" label="Type">
+            <TextField source="nom" />
+          </ReferenceField>
           <DateField source="date" label="Date" />
           <TextField source="description" label="Description" />
           <TextField source="details" label="Détails" />

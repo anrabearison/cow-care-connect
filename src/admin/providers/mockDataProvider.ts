@@ -23,6 +23,14 @@ const db = {
     { id: 'M005', nom: 'Vaccin FMD', type: 'Vaccin', dosageRecommande: '3ml', fabricant: 'VetPharma', notes: 'Fièvre aphteuse' },
     { id: 'M006', nom: 'Vitamines prénatales', type: 'Vitamine', dosageRecommande: '20ml', fabricant: 'NutriVet', notes: 'Pour vaches gestantes' },
     { id: 'M007', nom: 'Calcium injectable', type: 'Vitamine', dosageRecommande: '25ml', fabricant: 'NutriVet', notes: 'Prévention fièvre de lait' }
+  ],
+  typeEvenements: [
+    { id: 'TE001', nom: 'Naissance', description: 'Naissance d\'un bovin', icone: '🐄' },
+    { id: 'TE002', nom: 'Changement de pâturage', description: 'Déplacement vers un nouveau pâturage', icone: '🌱' },
+    { id: 'TE003', nom: 'Vaccination', description: 'Administration d\'un vaccin', icone: '💉' },
+    { id: 'TE004', nom: 'Visite vétérinaire', description: 'Visite de contrôle ou de soins', icone: '🩺' },
+    { id: 'TE005', nom: 'Pesée', description: 'Pesée de contrôle', icone: '⚖️' },
+    { id: 'TE006', nom: 'Autre', description: 'Autre type d\'événement', icone: '📝' }
   ]
 };
 

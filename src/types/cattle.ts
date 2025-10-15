@@ -22,7 +22,7 @@ export interface Cattle {
 
 export interface Event {
   id: string;
-  type: 'Naissance' | 'Changement de pâturage' | 'Vaccination' | 'Visite vétérinaire' | 'Pesée' | 'Autre';
+  type: string; // ID du type d'événement (ex: TE001, TE002, etc.)
   date: string;
   description: string;
   details?: string;

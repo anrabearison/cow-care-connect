@@ -11,7 +11,7 @@ import { useState } from 'react';
 import cattlePortrait1 from '@/assets/cattle-portrait-1.jpg';
 import cattlePortrait2 from '@/assets/cattle-portrait-2.jpg';
 import cattlePortrait3 from '@/assets/cattle-portrait-3.jpg';
-import { getVeterinarianName, getMedicamentName } from '@/data/mockData';
+import { getVeterinarianName, getMedicamentName, getTypeEvenementName, getTypeEvenementIcon } from '@/data/mockData';
 
 const cattleImages = [cattlePortrait1, cattlePortrait2, cattlePortrait3];
 
@@ -65,23 +65,6 @@ const getCategoryColor = (category: string) => {
       return 'bg-indigo-100 text-indigo-800 border-indigo-200';
     default:
       return 'bg-gray-100 text-gray-800 border-gray-200';
-  }
-};
-
-const getEventIcon = (eventType: string) => {
-  switch (eventType) {
-    case 'Naissance':
-      return '🐄';
-    case 'Changement de pâturage':
-      return '🌱';
-    case 'Vaccination':
-      return '💉';
-    case 'Visite vétérinaire':
-      return '🩺';
-    case 'Pesée':
-      return '⚖️';
-    default:
-      return '📝';
   }
 };
 
@@ -447,7 +430,7 @@ export default function CattleDetailsPage() {
                     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                     .map((event) => (
                     <div key={event.id} className="flex space-x-4 p-4 bg-muted/30 rounded-lg">
-                      <div className="text-2xl">{getEventIcon(event.type)}</div>
+                      <div className="text-2xl">{getTypeEvenementIcon(event.type)}</div>
                       <div className="flex-1">
                         <div className="flex items-start justify-between">
                           <div>
@@ -459,7 +442,7 @@ export default function CattleDetailsPage() {
                             )}
                           </div>
                           <Badge variant="outline" className="border-primary/20 text-primary">
-                            {event.type}
+                            {getTypeEvenementName(event.type)}
                           </Badge>
                         </div>
                         <div className="flex items-center space-x-1 mt-2 text-sm text-muted-foreground">

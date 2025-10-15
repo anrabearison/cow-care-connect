@@ -26,6 +26,34 @@ export const getMedicamentName = (id: string): string => {
   return medicaments[id] || id;
 };
 
+// Liste des types d'événements
+const typeEvenements: Record<string, string> = {
+  'TE001': 'Naissance',
+  'TE002': 'Changement de pâturage',
+  'TE003': 'Vaccination',
+  'TE004': 'Visite vétérinaire',
+  'TE005': 'Pesée',
+  'TE006': 'Autre',
+};
+
+export const getTypeEvenementName = (id: string): string => {
+  return typeEvenements[id] || id;
+};
+
+// Icônes des types d'événements
+const typeEvenementIcons: Record<string, string> = {
+  'TE001': '🐄',
+  'TE002': '🌱',
+  'TE003': '💉',
+  'TE004': '🩺',
+  'TE005': '⚖️',
+  'TE006': '📝',
+};
+
+export const getTypeEvenementIcon = (id: string): string => {
+  return typeEvenementIcons[id] || '📝';
+};
+
 export const mockCattleData: Cattle[] = [
   {
     id: 'B001',
@@ -48,21 +76,21 @@ export const mockCattleData: Cattle[] = [
     evenements: [
       {
         id: 'E001',
-        type: 'Naissance',
+        type: 'TE001',
         date: '2023-07-15',
         description: 'Né dans l\'enclos 3',
         details: 'Naissance sans complications, poids 35kg'
       },
       {
         id: 'E002',
-        type: 'Changement de pâturage',
+        type: 'TE002',
         date: '2024-01-10',
         description: 'Transféré vers pâturage nord',
         details: 'Meilleure qualité d\'herbe, plus d\'espace'
       },
       {
         id: 'E003',
-        type: 'Vaccination',
+        type: 'TE003',
         date: '2024-03-01',
         description: 'Vaccination annuelle complète'
       }
@@ -101,13 +129,13 @@ export const mockCattleData: Cattle[] = [
     evenements: [
       {
         id: 'E004',
-        type: 'Naissance',
+        type: 'TE001',
         date: '2022-12-03',
         description: 'Née dans le troupeau principal'
       },
       {
         id: 'E005',
-        type: 'Pesée',
+        type: 'TE005',
         date: '2024-02-15',
         description: 'Pesée mensuelle - 380kg'
       }
@@ -137,13 +165,13 @@ export const mockCattleData: Cattle[] = [
     evenements: [
       {
         id: 'E006',
-        type: 'Naissance',
+        type: 'TE001',
         date: '2024-01-20',
         description: 'Veau né en bonne santé'
       },
       {
         id: 'E007',
-        type: 'Visite vétérinaire',
+        type: 'TE004',
         date: '2024-03-10',
         description: 'Contrôle de routine - excellent état'
       }
@@ -179,7 +207,7 @@ export const mockCattleData: Cattle[] = [
     evenements: [
       {
         id: 'E008',
-        type: 'Naissance',
+        type: 'TE001',
         date: '2023-05-12',
         description: 'Née chez l\'ancien propriétaire'
       }
@@ -206,7 +234,7 @@ export const mockCattleData: Cattle[] = [
     evenements: [
       {
         id: 'E009',
-        type: 'Vaccination',
+        type: 'TE003',
         date: '2024-02-10',
         description: 'Vaccination de rappel'
       }
@@ -235,7 +263,7 @@ export const mockCattleData: Cattle[] = [
     evenements: [
       {
         id: 'E010',
-        type: 'Naissance',
+        type: 'TE001',
         date: '2024-02-14',
         description: 'Veau femelle née le jour de la Saint-Valentin'
       }
@@ -255,7 +283,7 @@ export const mockCattleData: Cattle[] = [
     evenements: [
       {
         id: 'E011',
-        type: 'Naissance',
+        type: 'TE001',
         date: '2023-11-30',
         description: 'Dernier né de l\'année 2023'
       }
@@ -282,7 +310,7 @@ export const mockCattleData: Cattle[] = [
     evenements: [
       {
         id: 'E012',
-        type: 'Autre',
+        type: 'TE006',
         date: '2024-01-05',
         description: 'Saillie réussie'
       }
@@ -318,7 +346,7 @@ export const mockCattleData: Cattle[] = [
     evenements: [
       {
         id: 'E013',
-        type: 'Changement de pâturage',
+        type: 'TE002',
         date: '2024-03-20',
         description: 'Isolé temporairement'
       }
@@ -338,7 +366,7 @@ export const mockCattleData: Cattle[] = [
     evenements: [
       {
         id: 'E014',
-        type: 'Pesée',
+        type: 'TE005',
         date: '2024-03-15',
         description: 'Pesée de croissance - 280kg'
       }
@@ -365,7 +393,7 @@ export const mockCattleData: Cattle[] = [
     evenements: [
       {
         id: 'E015',
-        type: 'Visite vétérinaire',
+        type: 'TE004',
         date: '2024-02-28',
         description: 'Contrôle sanitaire mensuel'
       }
@@ -385,7 +413,7 @@ export const mockCattleData: Cattle[] = [
     evenements: [
       {
         id: 'E016',
-        type: 'Autre',
+        type: 'TE006',
         date: '2024-02-01',
         description: 'Gestation confirmée'
       }

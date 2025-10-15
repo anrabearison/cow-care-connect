@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, TrendingUp, Users, Activity } from 'lucide-react';
-import { getRecentEvents } from '@/data/mockData';
+import { getRecentEvents, getTypeEvenementIcon, getTypeEvenementName } from '@/data/mockData';
 import { useAuth } from '@/contexts/AuthContext';
 import heroImage from '@/assets/hero-cattle.jpg';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -15,23 +15,6 @@ const formatDate = (dateString: string) => {
     month: 'long',
     year: 'numeric'
   });
-};
-
-const getEventIcon = (eventType: string) => {
-  switch (eventType) {
-    case 'Naissance':
-      return '🐄';
-    case 'Changement de pâturage':
-      return '🌱';
-    case 'Vaccination':
-      return '💉';
-    case 'Visite vétérinaire':
-      return '🩺';
-    case 'Pesée':
-      return '⚖️';
-    default:
-      return '📝';
-  }
 };
 
 export default function HomePage() {
@@ -165,7 +148,7 @@ export default function HomePage() {
                 recentEvents.map((event) => (
                   <div key={event.id} className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 p-3 sm:p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
                     <div className="flex items-center space-x-3 sm:space-x-4">
-                      <div className="text-xl sm:text-2xl">{getEventIcon(event.type)}</div>
+                      <div className="text-xl sm:text-2xl">{getTypeEvenementIcon(event.type)}</div>
                       <div className="flex-1">
                         <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
                           <h4 className="font-medium text-sm sm:text-base">{event.description}</h4>
@@ -180,7 +163,7 @@ export default function HomePage() {
                       variant="outline" 
                       className="border-primary/20 text-primary bg-primary/5 text-xs w-fit sm:ml-auto"
                     >
-                      {event.type}
+                      {getTypeEvenementName(event.type)}
                     </Badge>
                   </div>
                 ))
