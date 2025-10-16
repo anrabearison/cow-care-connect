@@ -2,8 +2,25 @@ import fakeRestProvider from 'ra-data-fakerest';
 import type { DataProvider } from 'react-admin';
 import { mockCattleData } from '@/data/mockData';
 
+// Aplatir les événements et traitements de tous les bovins
+const allEvenements = mockCattleData.flatMap(cattle => 
+  cattle.evenements.map(event => ({
+    ...event,
+    cattleId: cattle.id
+  }))
+);
+
+const allTraitements = mockCattleData.flatMap(cattle => 
+  cattle.traitements.map(treatment => ({
+    ...treatment,
+    cattleId: cattle.id
+  }))
+);
+
 const db = {
   cattle: mockCattleData,
+  evenements: allEvenements,
+  traitements: allTraitements,
   users: [
     { id: 1, name: 'Jean Rakoto', email: 'admin@ferme.mg', role: 'admin', password: 'admin123' },
     { id: 2, name: 'Livia Raso', email: 'livia@ferme.mg', role: 'manager', password: 'secret' },

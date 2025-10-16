@@ -9,6 +9,8 @@ import { UserList, UserEdit, UserCreate, UserShow } from './resources/users';
 import { VeterinarianList, VeterinarianEdit, VeterinarianCreate, VeterinarianShow } from './resources/veterinarians';
 import { MedicamentList, MedicamentEdit, MedicamentCreate, MedicamentShow } from './resources/medicaments';
 import { TypeEvenementList, TypeEvenementEdit, TypeEvenementCreate, TypeEvenementShow } from './resources/typeEvenements';
+import { EvenementList, EvenementEdit, EvenementCreate, EvenementShow } from './resources/evenements';
+import { TraitementList, TraitementEdit, TraitementCreate, TraitementShow } from './resources/traitements';
 import { Dashboard } from './components/Dashboard';
 import { Layout } from './components/Layout';
 
@@ -64,6 +66,22 @@ export const AdminApp: React.FC = () => {
         create={TypeEvenementCreate}
         show={TypeEvenementShow}
         options={{ label: 'Types d\'événements' }}
+      />
+      <Resource
+        name="evenements"
+        list={EvenementList}
+        edit={EvenementEdit}
+        create={EvenementCreate}
+        show={EvenementShow}
+        options={{ label: 'Historique des événements' }}
+      />
+      <Resource
+        name="traitements"
+        list={TraitementList}
+        edit={TraitementEdit}
+        create={TraitementCreate}
+        show={TraitementShow}
+        options={{ label: 'Historique des traitements' }}
       />
     </Admin>
   );
