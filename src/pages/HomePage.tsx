@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Calendar, TrendingUp, Users, Activity } from 'lucide-react';
 import { getRecentEvents, getTypeEvenementIcon, getTypeEvenementName } from '@/data/mockData';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth/AuthContext';
 import heroImage from '@/assets/hero-cattle.jpg';
 import { Skeleton } from '@/components/ui/skeleton';
 

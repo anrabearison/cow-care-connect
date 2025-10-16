@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Cattle } from '@/types/cattle';
-import { cattleService, CattleFilters } from '@/services/cattleService';
+import { Cattle } from './types';
+import { cattleService, CattleFilters } from './services';
 import { useToast } from '@/hooks/use-toast';
 
 export const useCattle = (filters?: CattleFilters) => {

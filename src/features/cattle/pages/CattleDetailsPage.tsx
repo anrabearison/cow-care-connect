@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ArrowLeft, Calendar, MapPin, Activity, Stethoscope, User, ChevronDown, Users, FileText } from 'lucide-react';
-import { useCattleById, useCattle } from '@/hooks/useCattle';
+import { useCattleById, useCattle } from '@/features/cattle/hooks';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useState } from 'react';
 import cattlePortrait1 from '@/assets/cattle-portrait-1.jpg';

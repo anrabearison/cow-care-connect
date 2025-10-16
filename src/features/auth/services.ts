@@ -1,4 +1,4 @@
-import { User } from '@/types/cattle';
+import { User } from '@/features/cattle/types';
 import { API_CONFIG, buildApiUrl } from '@/config/api';
 
 export interface LoginCredentials {

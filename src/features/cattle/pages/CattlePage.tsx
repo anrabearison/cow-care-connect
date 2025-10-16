@@ -5,10 +5,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Search, Filter, Users } from 'lucide-react';
-import { CattleCard } from '@/components/CattleCard';
-import { Cattle } from '@/types/cattle';
+import { CattleCard } from '@/features/cattle/components/CattleCard';
+import { Cattle } from '@/features/cattle/types';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useCattle } from '@/hooks/useCattle';
+import { useCattle } from '@/features/cattle/hooks';
 
 export default function CattlePage() {
   const [searchTerm, setSearchTerm] = useState('');

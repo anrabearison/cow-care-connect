@@ -16,11 +16,11 @@ export interface Cattle {
     etatSanteAchat?: string;
     remarquesAchat?: string;
   };
-  evenements: Event[];
+  evenements: CattleEvent[];
   traitements: Treatment[];
 }
 
-export interface Event {
+export interface CattleEvent {
   id: string;
   type: string; // ID du type d'événement (ex: TE001, TE002, etc.)
   date: string;
@@ -32,9 +32,9 @@ export interface Treatment {
   id: string;
   type: 'Antibiotique' | 'Vaccin' | 'Vermifuge' | 'Anti-inflammatoire' | 'Vitamine' | 'Autre';
   date: string;
-  produit: string;
+  produit: string; // ID du médicament
   dose: string;
-  veterinaire: string;
+  veterinaire: string; // ID de l'intervenant
   notes?: string;
 }
 

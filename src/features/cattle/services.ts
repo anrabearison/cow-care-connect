@@ -1,4 +1,4 @@
-import { Cattle } from '@/types/cattle';
+import { Cattle } from './types';
 import { API_CONFIG, buildApiUrl } from '@/config/api';
 import { mockCattleData } from '@/data/mockData';
 

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User } from '@/types/cattle';
+import { User } from '@/features/cattle/types';
 
 interface AuthContextType {
   user: User | null;
@@ -43,7 +43,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     
     try {
-      const { authService } = await import('@/services/authService');
+      const { authService } = await import('./services');
       const response = await authService.login({ email, password });
       
       if (response.success) {
@@ -63,7 +63,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async () => {
     try {
-      const { authService } = await import('@/services/authService');
+      const { authService } = await import('./services');
       await authService.logout();
       setUser(null);
     } catch (error) {

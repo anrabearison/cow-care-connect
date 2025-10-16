@@ -1,4 +1,4 @@
-import { Cattle } from '@/types/cattle';
+import { Cattle } from '@/features/cattle/types';
 
 // Liste des intervenants (vétérinaires et soignants)
 const veterinarians: Record<string, string> = {

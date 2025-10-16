@@ -1,6 +1,6 @@
 import { Home, Beef, User, LogOut, Settings } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/features/auth/AuthContext';
 import {
   Sidebar,
   SidebarContent,
