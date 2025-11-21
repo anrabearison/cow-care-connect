@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, TrendingUp, Users, Activity } from 'lucide-react';
-import { getRecentEvents, getTypeEvenementIcon, getTypeEvenementName } from '@/data/mockData';
+import { getTypeEvenementIcon, getTypeEvenementName } from '@/data/mockData';
 import { useAuth } from '@/features/auth/AuthContext';
 import heroImage from '@/assets/hero-cattle.jpg';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useRecentEvents } from '@/hooks/useRecentEvents';
+import { CARD_HOVER_CLASSES } from '@/constants/ui';
 
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString('fr-FR', {
@@ -19,17 +20,7 @@ const formatDate = (dateString: string) => {
 
 export default function HomePage() {
   const { user } = useAuth();
-  const [recentEvents, setRecentEvents] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // Simuler un chargement asynchrone
-    const timer = setTimeout(() => {
-      setRecentEvents(getRecentEvents());
-      setIsLoading(false);
-    }, 600);
-    return () => clearTimeout(timer);
-  }, []);
+  const { events: recentEvents, isLoading } = useRecentEvents();
 
   return (
     <div className="min-h-screen bg-gradient-earth">
@@ -60,7 +51,7 @@ export default function HomePage() {
       <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
         {/* Statistics Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
-          <Card className="shadow-card-soft hover:shadow-farm transition-all duration-300">
+          <Card className={CARD_HOVER_CLASSES}>
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center space-x-2 sm:space-x-4">
                 <div className="p-2 sm:p-3 bg-primary/10 rounded-full">
@@ -74,7 +65,7 @@ export default function HomePage() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-card-soft hover:shadow-farm transition-all duration-300">
+          <Card className={CARD_HOVER_CLASSES}>
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center space-x-2 sm:space-x-4">
                 <div className="p-2 sm:p-3 bg-accent/20 rounded-full">
@@ -88,7 +79,7 @@ export default function HomePage() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-card-soft hover:shadow-farm transition-all duration-300">
+          <Card className={CARD_HOVER_CLASSES}>
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center space-x-2 sm:space-x-4">
                 <div className="p-2 sm:p-3 bg-secondary/20 rounded-full">
@@ -102,7 +93,7 @@ export default function HomePage() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-card-soft hover:shadow-farm transition-all duration-300">
+          <Card className={CARD_HOVER_CLASSES}>
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center space-x-2 sm:space-x-4">
                 <div className="p-2 sm:p-3 bg-muted/20 rounded-full">
@@ -132,7 +123,7 @@ export default function HomePage() {
             <div className="space-y-4">
               {isLoading ? (
                 Array.from({ length: 5 }).map((_, index) => (
-                  <div key={index} className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-muted/30 rounded-lg">
+                  <div key={`skeleton-event-${index}`} className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-muted/30 rounded-lg">
                     <Skeleton className="h-6 w-6 sm:h-8 sm:w-8" />
                     <div className="flex-1 space-y-2">
                       <div className="flex items-center space-x-2">

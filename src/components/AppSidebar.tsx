@@ -1,4 +1,4 @@
-import { Home, Beef, User, LogOut, Settings } from 'lucide-react';
+import { Home, Beef, User, LogOut, Settings, LucideIcon } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
 import {
@@ -15,47 +15,71 @@ import {
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useCallback } from 'react';
+import { MOBILE_SIDEBAR_CLOSE_DELAY_MS, BUTTON_SCALE_CLASSES } from '@/constants/ui';
 
-const navigationItems = [
+// Données statiques déplacées hors du composant
+const NAVIGATION_ITEMS = [
   { title: 'Accueil', url: '/', icon: Home },
   { title: 'Troupeau', url: '/cattle', icon: Beef },
   { title: 'Profil', url: '/profile', icon: User },
 ];
 
-const adminItems = [
+const ADMIN_ITEMS = [
   { title: 'Administration', url: '/admin', icon: Settings },
 ];
 
+// Fonction utilitaire pure déplacée hors du composant
+const getNavCls = ({ isActive }: { isActive: boolean }) =>
+  isActive
+    ? "bg-primary/10 text-primary font-medium"
+    : "hover:bg-muted/50 text-muted-foreground hover:text-foreground";
+
+// Sous-composant pour éviter la duplication
+interface NavItemProps {
+  item: { title: string; url: string; icon: LucideIcon };
+  collapsed: boolean;
+  onNavClick: (e: React.MouseEvent, url: string) => void;
+}
+
+const NavItem = ({ item, collapsed, onNavClick }: NavItemProps) => (
+  <SidebarMenuItem key={item.title}>
+    <SidebarMenuButton asChild className={BUTTON_SCALE_CLASSES}>
+      <NavLink
+        to={item.url}
+        end
+        className={getNavCls}
+        onClick={(e) => onNavClick(e, item.url)}
+      >
+        <item.icon className="h-5 w-5 shrink-0" />
+        {!collapsed && <span>{item.title}</span>}
+      </NavLink>
+    </SidebarMenuButton>
+  </SidebarMenuItem>
+);
+
 export function AppSidebar() {
   const { state, setOpenMobile } = useSidebar();
-  const location = useLocation();
   const { user, logout } = useAuth();
   const isMobile = useIsMobile();
-  const currentPath = location.pathname;
-
-  const isActive = (path: string) => currentPath === path;
-  const getNavCls = ({ isActive }: { isActive: boolean }) =>
-    isActive
-      ? "bg-primary/10 text-primary font-medium"
-      : "hover:bg-muted/50 text-muted-foreground hover:text-foreground";
 
   const collapsed = state === "collapsed";
 
-  const handleNavClick = (e: React.MouseEvent, url: string) => {
+  const handleNavClick = useCallback((e: React.MouseEvent, url: string) => {
     // Fermer automatiquement le sidebar sur mobile après navigation
     if (isMobile && state === "expanded") {
       setTimeout(() => {
         setOpenMobile(false);
-      }, 100);
+      }, MOBILE_SIDEBAR_CLOSE_DELAY_MS);
     }
-  };
+  }, [isMobile, state, setOpenMobile]);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     if (isMobile && state === "expanded") {
       setOpenMobile(false);
     }
     logout();
-  };
+  }, [isMobile, state, setOpenMobile, logout]);
 
   return (
     <Sidebar className={collapsed ? "w-14" : "w-64"} collapsible="icon">
@@ -87,20 +111,13 @@ export function AppSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navigationItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className="transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]">
-                    <NavLink
-                      to={item.url}
-                      end
-                      className={getNavCls}
-                      onClick={(e) => handleNavClick(e, item.url)}
-                    >
-                      <item.icon className="h-5 w-5 shrink-0" />
-                      {!collapsed && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+              {NAVIGATION_ITEMS.map((item) => (
+                <NavItem
+                  key={item.title}
+                  item={item}
+                  collapsed={collapsed}
+                  onNavClick={handleNavClick}
+                />
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
@@ -113,20 +130,13 @@ export function AppSidebar() {
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {adminItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild className="transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]">
-                      <NavLink
-                        to={item.url}
-                        end
-                        className={getNavCls}
-                        onClick={(e) => handleNavClick(e, item.url)}
-                      >
-                        <item.icon className="h-5 w-5 shrink-0" />
-                        {!collapsed && <span>{item.title}</span>}
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
+                {ADMIN_ITEMS.map((item) => (
+                  <NavItem
+                    key={item.title}
+                    item={item}
+                    collapsed={collapsed}
+                    onNavClick={handleNavClick}
+                  />
                 ))}
               </SidebarMenu>
             </SidebarGroupContent>
@@ -138,7 +148,7 @@ export function AppSidebar() {
             variant="ghost"
             size={collapsed ? "icon" : "sm"}
             onClick={handleLogout}
-            className="w-full text-destructive hover:text-destructive hover:bg-destructive/10 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+            className={`w-full text-destructive hover:text-destructive hover:bg-destructive/10 ${BUTTON_SCALE_CLASSES}`}
           >
             <LogOut className="h-5 w-5 shrink-0" />
             {!collapsed && <span className="ml-2">Déconnexion</span>}

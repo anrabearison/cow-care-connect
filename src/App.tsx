@@ -14,8 +14,19 @@ import ProfilePage from "@/features/auth/pages/ProfilePage";
 import LoginPage from "@/features/auth/pages/LoginPage";
 import NotFound from "./pages/NotFound";
 import { AdminApp } from "@/admin/AdminApp";
+import { QUERY_STALE_TIME_MS, QUERY_CACHE_TIME_MS } from "@/constants/ui";
 
-const queryClient = new QueryClient();
+// Créer QueryClient en dehors du composant pour éviter la recréation à chaque render
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: QUERY_STALE_TIME_MS,
+      gcTime: QUERY_CACHE_TIME_MS,
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>

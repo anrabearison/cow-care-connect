@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { User } from '@/features/cattle/types';
+import { toast } from 'sonner';
 
 interface AuthContextType {
   user: User | null;
@@ -26,12 +27,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Check for stored token on app load
     const token = localStorage.getItem('auth_token');
     const userData = localStorage.getItem('user_data');
-    
+
     if (token && userData) {
       try {
         const parsedUser = JSON.parse(userData);
         setUser(parsedUser);
       } catch (error) {
+        console.error('Failed to parse user data:', error);
+        toast.error('Session invalide, veuillez vous reconnecter');
         localStorage.removeItem('auth_token');
         localStorage.removeItem('user_data');
       }
@@ -41,11 +44,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
-    
+
     try {
       const { authService } = await import('./services');
       const response = await authService.login({ email, password });
-      
+
       if (response.success) {
         setUser(response.user);
         setIsLoading(false);
@@ -56,24 +59,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     } catch (error) {
       console.error('Login error:', error);
+      toast.error('Erreur lors de la connexion');
       setIsLoading(false);
       return false;
     }
   };
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       const { authService } = await import('./services');
       await authService.logout();
-      setUser(null);
     } catch (error) {
       console.error('Logout error:', error);
-      // Nettoyage local même en cas d'erreur
+      toast.error('Erreur lors de la déconnexion');
+    } finally {
+      // Toujours nettoyer localement
       localStorage.removeItem('auth_token');
       localStorage.removeItem('user_data');
       setUser(null);
     }
-  };
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, login, logout, isLoading }}>
