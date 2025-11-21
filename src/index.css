@@ -122,3 +122,41 @@ Modern pastoral design with natural earth tones and elegant agricultural aesthet
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  /* Amélioration du rendu des images */
+  .image-crisp {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+
+  /* Amélioration de la netteté du texte */
+  .text-crisp {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Gradient personnalisés */
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
+  }
+
+  .bg-gradient-earth {
+    background: var(--gradient-earth);
+  }
+
+  .bg-gradient-pasture {
+    background: var(--gradient-pasture);
+  }
+
+  /* Ombres personnalisées */
+  .shadow-farm {
+    box-shadow: var(--shadow-farm);
+  }
+
+  .shadow-card-soft {
+    box-shadow: var(--shadow-card);
+  }
+}
+

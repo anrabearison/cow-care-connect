@@ -34,9 +34,9 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-earth">
       {/* Hero Section */}
-      <div className="relative h-64 sm:h-80 lg:h-96 overflow-hidden">
-        <div 
-          className="absolute inset-0 bg-cover bg-center"
+      <div className="relative h-80 sm:h-96 lg:h-[48rem] xl:h-[56rem] 2xl:h-[64rem] overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center scale-105"
           style={{ backgroundImage: `url(${heroImage})` }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-primary/70 to-primary/30" />
@@ -159,8 +159,8 @@ export default function HomePage() {
                         <p className="text-xs sm:text-sm text-muted-foreground mt-1">{formatDate(event.date)}</p>
                       </div>
                     </div>
-                    <Badge 
-                      variant="outline" 
+                    <Badge
+                      variant="outline"
                       className="border-primary/20 text-primary bg-primary/5 text-xs w-fit sm:ml-auto"
                     >
                       {getTypeEvenementName(event.type)}
@@ -169,7 +169,7 @@ export default function HomePage() {
                 ))
               )}
             </div>
-            
+
             <div className="mt-6 text-center">
               <Link to="/cattle">
                 <Button variant="outline" className="border-primary/20 text-primary hover:bg-primary/5">
