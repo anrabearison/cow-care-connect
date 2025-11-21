@@ -2,11 +2,12 @@
 export const API_CONFIG = {
   // Mode de développement: utilise les données mockées
   // Mode production: utilise les vraies APIs
-  USE_MOCK_DATA: true, // Force l'utilisation des données mockées pour éviter les erreurs de fetch
-  
+  // Par défaut à true si non défini
+  USE_MOCK_DATA: import.meta.env.VITE_USE_MOCK === 'true',
+
   // URLs des vraies APIs
-  BASE_URL: import.meta.env.VITE_API_URL || 'https://api.ferme-mg.com',
-  
+  BASE_URL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
+
   ENDPOINTS: {
     CATTLE: '/api/cattle',
     USERS: '/api/users',
@@ -14,9 +15,9 @@ export const API_CONFIG = {
     EVENTS: '/api/events',
     TREATMENTS: '/api/treatments'
   },
-  
+
   // Configuration pour React Admin
-  ADMIN_API_URL: import.meta.env.VITE_ADMIN_API_URL || 'https://api.ferme-mg.com/admin'
+  ADMIN_API_URL: import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:3000/admin'
 };
 
 // Helper pour construire les URLs complètes

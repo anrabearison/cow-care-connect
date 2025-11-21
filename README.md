@@ -48,6 +48,25 @@ npm install
 npm run dev
 ```
 
+
+## ⚙️ Configuration
+
+Le projet utilise des variables d'environnement pour gérer la connexion à l'API.
+
+1. Copier le fichier d'exemple :
+```bash
+cp .env.example .env
+```
+
+2. Configurer les variables dans `.env` :
+```env
+# URL de l'API Backend
+VITE_API_URL=http://localhost:3000
+
+# Activer/Désactiver les données mockées (false pour utiliser la vraie API)
+VITE_USE_MOCK=false
+```
+
 ## 🧪 Scripts
 
 - `npm run dev` : Lance le serveur de développement
