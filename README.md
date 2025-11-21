@@ -1,73 +1,72 @@
-# Welcome to your Lovable project
+# 🐮 Ombiko (Cow Care Front)
 
-## Project info
+Application de gestion d'élevage bovin moderne, construite avec React, TypeScript et Vite.
 
-**URL**: https://lovable.dev/projects/18783d41-b72c-4bb5-816d-13d8e7f3394b
+## 🚀 Fonctionnalités
 
-## How can I edit this code?
+- **Tableau de bord** : Vue d'ensemble du troupeau, statistiques de santé et événements récents.
+- **Gestion du Troupeau** : Suivi détaillé de chaque animal (santé, reproduction, généalogie).
+- **Authentification** : Système de connexion sécurisé avec gestion des rôles (Admin/Utilisateur).
+- **Interface Responsive** : Optimisée pour mobile, tablette et desktop.
 
-There are several ways of editing your application.
+## 🛠 Technologies
 
-**Use Lovable**
+- **Core** : React 18, TypeScript, Vite
+- **State Management** : React Query (TanStack Query)
+- **UI/UX** : Tailwind CSS, shadcn/ui, Lucide Icons
+- **Routing** : React Router DOM
+- **Feedback** : Sonner (Toasts)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/18783d41-b72c-4bb5-816d-13d8e7f3394b) and start prompting.
+## 🏗 Architecture et Optimisations
 
-Changes made via Lovable will be committed automatically to this repo.
+Le projet suit une architecture modulaire et a bénéficié d'optimisations majeures :
 
-**Use your preferred IDE**
+- **Performance** :
+  - Gestion optimisée du cache avec QueryClient
+  - Mémorisation des composants et fonctions critiques (useCallback, memo)
+  - Lazy loading des ressources
+- **Code Quality** :
+  - Typage strict TypeScript (pas de `any`)
+  - Hooks personnalisés (ex: `useRecentEvents`)
+  - Constantes centralisées pour la maintenance
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 📦 Installation
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+1. Cloner le dépôt :
+```bash
+git clone <votre-repo>
+cd cow-care-front
+```
 
-Follow these steps:
+2. Installer les dépendances :
+```bash
+npm install
+```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+3. Lancer le serveur de développement :
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## 🧪 Scripts
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- `npm run dev` : Lance le serveur de développement
+- `npm run build` : Compile l'application pour la production
+- `npm run preview` : Prévisualise la version de production
+- `npm run lint` : Vérifie la qualité du code
 
-**Use GitHub Codespaces**
+## 📄 Structure du Projet
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/18783d41-b72c-4bb5-816d-13d8e7f3394b) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+```
+src/
+├── admin/          # Interface d'administration
+├── assets/         # Images et ressources statiques
+├── components/     # Composants réutilisables (UI, Layout)
+├── constants/      # Constantes globales (UI, Config)
+├── data/           # Données mockées (pour le développement)
+├── features/       # Modules fonctionnels (Auth, Cattle, etc.)
+├── hooks/          # Hooks personnalisés
+├── pages/          # Pages principales
+├── types/          # Définitions de types TypeScript
+└── lib/            # Utilitaires et configurations
+```
