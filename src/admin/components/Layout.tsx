@@ -1,11 +1,27 @@
 import React from 'react';
-import { Layout as RALayout, AppBar, UserMenu } from 'react-admin';
+import { Layout as RALayout, AppBar, UserMenu, MenuItemLink, Logout } from 'react-admin';
 import { Settings, HelpCircle, ArrowLeft } from 'lucide-react';
 
+const CustomUserMenu = () => (
+  <UserMenu>
+    <MenuItemLink
+      to="/settings"
+      primaryText="Paramètres"
+      leftIcon={<Settings />}
+    />
+    <MenuItemLink
+      to="/help"
+      primaryText="Aide"
+      leftIcon={<HelpCircle />}
+    />
+    <Logout />
+  </UserMenu>
+);
+
 const CustomAppBar = () => (
-  <AppBar>
-    <a 
-      href="/" 
+  <AppBar userMenu={<CustomUserMenu />}>
+    <a
+      href="/"
       className="flex items-center gap-2 px-3 py-2 text-white hover:bg-white/10 rounded-md transition-colors"
       title="Retour au front office"
     >
@@ -13,16 +29,6 @@ const CustomAppBar = () => (
       <span className="hidden sm:inline">Front Office</span>
     </a>
     <span className="flex-1" />
-    <UserMenu>
-      <div className="flex items-center gap-2 p-2">
-        <Settings className="h-4 w-4" />
-        <span>Paramètres</span>
-      </div>
-      <div className="flex items-center gap-2 p-2">
-        <HelpCircle className="h-4 w-4" />
-        <span>Aide</span>
-      </div>
-    </UserMenu>
   </AppBar>
 );
 
