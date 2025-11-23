@@ -17,9 +17,18 @@ import {
   PasswordInput,
 } from 'react-admin';
 
+const userFilters = [
+  <TextInput source="q" label="Rechercher" alwaysOn />,
+  <SelectInput source="role" label="Rôle" choices={[
+    { id: 'admin', name: 'Administrateur' },
+    { id: 'manager', name: 'Gestionnaire' },
+    { id: 'viewer', name: 'Visiteur' },
+  ]} />,
+];
+
 // Liste des utilisateurs
 export const UserList = () => (
-  <List>
+  <List filters={userFilters}>
     <Datagrid rowClick="edit">
       <TextField source="id" label="ID" />
       <TextField source="name" label="Nom" />

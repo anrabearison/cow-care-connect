@@ -19,9 +19,21 @@ import {
   ReferenceField,
 } from 'react-admin';
 
+// Filtres pour la liste des événements
+const evenementFilters = [
+  <TextInput source="q" label="Rechercher" alwaysOn />,
+  <ReferenceInput source="type" reference="typeEvenements" label="Type">
+    <AutocompleteInput optionText="nom" />
+  </ReferenceInput>,
+  <ReferenceInput source="cattleId" reference="cattle" label="Bovin">
+    <AutocompleteInput optionText="nom" />
+  </ReferenceInput>,
+  <DateInput source="date" label="Date" />,
+];
+
 // Liste des événements
 export const EvenementList = () => (
-  <List>
+  <List filters={evenementFilters}>
     <Datagrid rowClick="edit">
       <TextField source="id" label="ID" />
       <ReferenceField source="cattleId" reference="cattle" label="Bovin">

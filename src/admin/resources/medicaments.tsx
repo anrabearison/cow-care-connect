@@ -15,8 +15,21 @@ import {
   SimpleShowLayout,
 } from 'react-admin';
 
+const medicamentFilters = [
+  <TextInput source="q" label="Rechercher" alwaysOn />,
+  <SelectInput source="type" label="Type" choices={[
+    { id: 'Antibiotique', name: 'Antibiotique' },
+    { id: 'Vaccin', name: 'Vaccin' },
+    { id: 'Vermifuge', name: 'Vermifuge' },
+    { id: 'Anti-inflammatoire', name: 'Anti-inflammatoire' },
+    { id: 'Vitamine', name: 'Vitamine' },
+    { id: 'Autre', name: 'Autre' },
+  ]} />,
+  <TextInput source="fabricant" label="Fabricant" />,
+];
+
 export const MedicamentList = () => (
-  <List>
+  <List filters={medicamentFilters}>
     <Datagrid rowClick="edit">
       <TextField source="id" label="ID" />
       <TextField source="nom" label="Nom" />

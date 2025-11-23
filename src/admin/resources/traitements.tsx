@@ -20,9 +20,32 @@ import {
   ReferenceField,
 } from 'react-admin';
 
+// Filtres pour la liste des traitements
+const traitementFilters = [
+  <TextInput source="q" label="Rechercher" alwaysOn />,
+  <SelectInput source="type" label="Type" choices={[
+    { id: 'Antibiotique', name: 'Antibiotique' },
+    { id: 'Vaccin', name: 'Vaccin' },
+    { id: 'Vermifuge', name: 'Vermifuge' },
+    { id: 'Anti-inflammatoire', name: 'Anti-inflammatoire' },
+    { id: 'Vitamine', name: 'Vitamine' },
+    { id: 'Autre', name: 'Autre' },
+  ]} />,
+  <ReferenceInput source="cattleId" reference="cattle" label="Bovin">
+    <AutocompleteInput optionText="nom" />
+  </ReferenceInput>,
+  <ReferenceInput source="produit" reference="medicaments" label="Médicament">
+    <AutocompleteInput optionText="nom" />
+  </ReferenceInput>,
+  <ReferenceInput source="veterinaire" reference="veterinarians" label="Intervenant">
+    <AutocompleteInput optionText="nom" />
+  </ReferenceInput>,
+  <DateInput source="date" label="Date" />,
+];
+
 // Liste des traitements
 export const TraitementList = () => (
-  <List>
+  <List filters={traitementFilters}>
     <Datagrid rowClick="edit">
       <TextField source="id" label="ID" />
       <ReferenceField source="cattleId" reference="cattle" label="Bovin">

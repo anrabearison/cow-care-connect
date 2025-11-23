@@ -33,14 +33,37 @@ import {
   useRecordContext,
 } from 'react-admin';
 
+// Filtres pour la liste des bovins
+const cattleFilters = [
+  <TextInput source="q" label="Rechercher" alwaysOn />,
+  <SelectInput source="genre" label="Genre" choices={[
+    { id: 'M', name: 'Mâle' },
+    { id: 'F', name: 'Femelle' },
+  ]} />,
+  <SelectInput source="categorie" label="Catégorie" choices={[
+    { id: 'Taureau', name: 'Taureau' },
+    { id: 'Veau', name: 'Veau' },
+    { id: 'Zébu', name: 'Zébu' },
+    { id: 'Vache', name: 'Vache' },
+  ]} />,
+  <SelectInput source="caractere" label="Caractère" choices={[
+    { id: 'Docile', name: 'Docile' },
+    { id: 'Agressif', name: 'Agressif' },
+    { id: 'Timide', name: 'Timide' },
+    { id: 'Energique', name: 'Énergique' },
+  ]} />,
+];
+
 // Liste des bovins
 export const CattleList = () => (
-  <List>
+  <List filters={cattleFilters}>
     <Datagrid rowClick="edit">
       <TextField source="id" label="ID" />
       <TextField source="nom" label="Nom" />
       <TextField source="categorie" label="Catégorie" />
       <TextField source="genre" label="Genre" />
+      <TextField source="marque" label="Marque" />
+      <TextField source="signeParticulier" label="Signe Particulier" />
       <TextField source="caractere" label="Caractère" />
       <DateField source="dateNaissance" label="Date de naissance" />
       <FunctionField
@@ -71,6 +94,8 @@ export const CattleEdit = () => (
   <Edit>
     <SimpleForm>
       <TextInput source="nom" label="Nom" required />
+      <TextInput source="marque" label="Marque" />
+      <TextInput source="signeParticulier" label="Signe Particulier" />
       <SelectInput
         source="genre"
         label="Genre"
@@ -177,6 +202,8 @@ export const CattleCreate = () => (
   <Create>
     <SimpleForm>
       <TextInput source="nom" label="Nom" required />
+      <TextInput source="marque" label="Marque" />
+      <TextInput source="signeParticulier" label="Signe Particulier" />
       <SelectInput
         source="genre"
         label="Genre"
@@ -308,6 +335,8 @@ export const CattleShow = () => (
             <InlineField label="Nom"><TextField source="nom" /></InlineField>
             <InlineField label="Catégorie"><TextField source="categorie" /></InlineField>
             <InlineField label="Genre"><TextField source="genre" /></InlineField>
+            <InlineField label="Marque"><TextField source="marque" /></InlineField>
+            <InlineField label="Signe Particulier"><TextField source="signeParticulier" /></InlineField>
             <InlineField label="Caractère"><TextField source="caractere" /></InlineField>
             <InlineField label="Date de naissance"><DateField source="dateNaissance" /></InlineField>
           </div>

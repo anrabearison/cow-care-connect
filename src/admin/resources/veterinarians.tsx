@@ -15,9 +15,14 @@ import {
   EmailField,
 } from 'react-admin';
 
+const veterinarianFilters = [
+  <TextInput source="q" label="Rechercher" alwaysOn />,
+  <TextInput source="specialite" label="Spécialité" />,
+];
+
 // Liste des intervenants
 export const VeterinarianList = () => (
-  <List>
+  <List filters={veterinarianFilters}>
     <Datagrid rowClick="edit">
       <TextField source="id" label="ID" />
       <TextField source="nom" label="Nom" />
