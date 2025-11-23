@@ -88,6 +88,7 @@ export default function CattleDetailsPage() {
   const { cattle, loading, error } = useCattleById(id || '');
   const { cattle: allCattle } = useCattle(); // Pour trouver les descendants
   const [showLineage, setShowLineage] = useState(false);
+  const [showPurchaseDetails, setShowPurchaseDetails] = useState(false);
 
   // Fonction pour trouver les descendants potentiels
   const findDescendants = () => {
@@ -265,43 +266,34 @@ export default function CattleDetailsPage() {
 
                 <Separator />
 
-                <div className="space-y-2">
-                  <span className="text-muted-foreground">Source</span>
-                  <div className="flex items-center space-x-2">
-                    <MapPin className="h-4 w-4 text-primary" />
-                    <span className="font-medium">{cattle.source.type}</span>
-                  </div>
-                  {cattle.source.fournisseur && (
-                    <p className="text-sm text-muted-foreground">
-                      Fournisseur: {cattle.source.fournisseur}
-                    </p>
-                  )}
-                  {cattle.source.dateAchat && (
-                    <p className="text-sm text-muted-foreground">
-                      Date d'achat: {formatDate(cattle.source.dateAchat)}
-                    </p>
-                  )}
-                </div>
-
-                {/* Section collapsible pour les bovins nés dans le troupeau */}
+                {/* Section pour les bovins achetés */}
                 {cattle.source.type === 'Acheté' && (
-                  <Collapsible>
+                  <Collapsible open={showPurchaseDetails} onOpenChange={setShowPurchaseDetails}>
                     <CollapsibleTrigger asChild>
                       <Button variant="ghost" className="w-full justify-between p-3 h-auto">
                         <div className="text-left">
                           <div className="flex items-center gap-2">
                             <MapPin className="h-4 w-4" />
-                            <span className="font-medium">Détails de l'achat</span>
+                            <span className="font-medium">Acheté</span>
                           </div>
-                          <p className="text-sm text-muted-foreground mt-1">
-                            Acheté le {formatDate(cattle.source.dateAchat!)} chez {cattle.source.fournisseur}
-                          </p>
                         </div>
                         <ChevronDown className="h-4 w-4 transition-transform duration-200" />
                       </Button>
                     </CollapsibleTrigger>
                     <CollapsibleContent className="space-y-3 pt-3">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {cattle.source.fournisseur && (
+                          <div>
+                            <p className="text-sm font-medium text-muted-foreground">Fournisseur</p>
+                            <p className="text-sm font-medium">{cattle.source.fournisseur}</p>
+                          </div>
+                        )}
+                        {cattle.source.dateAchat && (
+                          <div>
+                            <p className="text-sm font-medium text-muted-foreground">Date d'achat</p>
+                            <p className="text-sm font-medium">{formatDate(cattle.source.dateAchat)}</p>
+                          </div>
+                        )}
                         {cattle.source.categorieAchat && (
                           <div>
                             <p className="text-sm font-medium text-muted-foreground">Catégorie à l'achat</p>
@@ -316,18 +308,7 @@ export default function CattleDetailsPage() {
                             <p className="text-sm font-medium">{cattle.source.prixAchat.toLocaleString('fr-FR')} Ar</p>
                           </div>
                         )}
-                        {cattle.source.poidsAchat && (
-                          <div>
-                            <p className="text-sm font-medium text-muted-foreground">Poids à l'achat</p>
-                            <p className="text-sm font-medium">{cattle.source.poidsAchat} kg</p>
-                          </div>
-                        )}
-                        {cattle.source.etatSanteAchat && (
-                          <div>
-                            <p className="text-sm font-medium text-muted-foreground">État de santé</p>
-                            <p className="text-sm font-medium">{cattle.source.etatSanteAchat}</p>
-                          </div>
-                        )}
+
                       </div>
                       {cattle.source.remarquesAchat && (
                         <div className="pt-2 border-t">
@@ -339,8 +320,17 @@ export default function CattleDetailsPage() {
                   </Collapsible>
                 )}
 
+                {/* Section pour les bovins nés dans le troupeau */}
                 {cattle.source.type === 'Né dans le troupeau' && (
                   <>
+                    <div className="space-y-2">
+                      <span className="text-muted-foreground">Source</span>
+                      <div className="flex items-center space-x-2">
+                        <MapPin className="h-4 w-4 text-primary" />
+                        <span className="font-medium">{cattle.source.type}</span>
+                      </div>
+                    </div>
+
                     <Separator />
                     <Collapsible open={showLineage} onOpenChange={setShowLineage}>
                       <CollapsibleTrigger className="flex items-center justify-between w-full p-2 hover:bg-accent/10 rounded-md transition-colors">
