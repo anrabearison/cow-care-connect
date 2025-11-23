@@ -58,6 +58,7 @@ export const mockCattleData: Cattle[] = [
   {
     id: 'B001',
     nom: 'Zébu Alpha',
+    surnom: 'Le Chef',
     genre: 'M',
     dateNaissance: '2023-07-15',
     caractere: 'Docile',
@@ -120,6 +121,7 @@ export const mockCattleData: Cattle[] = [
   {
     id: 'B002',
     nom: 'Belle Mahitsy',
+    surnom: 'Bella',
     genre: 'F',
     dateNaissance: '2022-12-03',
     caractere: 'Timide',
@@ -157,6 +159,7 @@ export const mockCattleData: Cattle[] = [
   {
     id: 'B003',
     nom: 'Petit Vato',
+    surnom: 'Vato',
     genre: 'M',
     dateNaissance: '2024-01-20',
     caractere: 'Energique',

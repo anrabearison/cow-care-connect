@@ -60,6 +60,7 @@ export const CattleList = () => (
     <Datagrid rowClick="edit">
       <TextField source="id" label="ID" />
       <TextField source="nom" label="Nom" />
+      <TextField source="surnom" label="Surnom" />
       <TextField source="categorie" label="Catégorie" />
       <TextField source="genre" label="Genre" />
       <TextField source="marque" label="Marque" />
@@ -94,6 +95,7 @@ export const CattleEdit = () => (
   <Edit>
     <SimpleForm>
       <TextInput source="nom" label="Nom" required />
+      <TextInput source="surnom" label="Surnom" />
       <TextInput source="marque" label="Marque" />
       <TextInput source="signeParticulier" label="Signe Particulier" />
       <SelectInput
@@ -202,6 +204,7 @@ export const CattleCreate = () => (
   <Create>
     <SimpleForm>
       <TextInput source="nom" label="Nom" required />
+      <TextInput source="surnom" label="Surnom" />
       <TextInput source="marque" label="Marque" />
       <TextInput source="signeParticulier" label="Signe Particulier" />
       <SelectInput
@@ -333,6 +336,7 @@ export const CattleShow = () => (
             <h3 className="text-lg font-semibold mb-4 border-b pb-2">Identité</h3>
             <InlineField label="Identifiant"><TextField source="id" /></InlineField>
             <InlineField label="Nom"><TextField source="nom" /></InlineField>
+            <InlineField label="Surnom"><TextField source="surnom" /></InlineField>
             <InlineField label="Catégorie"><TextField source="categorie" /></InlineField>
             <InlineField label="Genre"><TextField source="genre" /></InlineField>
             <InlineField label="Marque"><TextField source="marque" /></InlineField>

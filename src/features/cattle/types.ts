@@ -1,6 +1,7 @@
 export interface Cattle {
   id: string;
   nom: string;
+  surnom?: string;
   genre: 'M' | 'F';
   dateNaissance: string;
   caractere: 'Docile' | 'Agressif' | 'Timide' | 'Energique';

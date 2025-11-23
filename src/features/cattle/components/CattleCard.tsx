@@ -84,7 +84,9 @@ export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
       <CardContent className="p-6">
         <div className="flex items-start justify-between mb-3">
           <div>
-            <h3 className="text-xl font-bold text-foreground">{cattle.nom}</h3>
+            <h3 className="text-xl font-bold text-foreground">
+              {cattle.nom}{cattle.surnom && ` (${cattle.surnom})`}
+            </h3>
             <div className="flex items-center space-x-2 text-sm text-muted-foreground mt-1">
               <Calendar className="h-4 w-4" />
               <span>{calculateAge(cattle.dateNaissance)}</span>

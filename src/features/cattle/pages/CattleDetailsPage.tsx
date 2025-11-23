@@ -189,7 +189,9 @@ export default function CattleDetailsPage() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-4xl font-bold text-foreground">{cattle.nom}</h1>
+            <h1 className="text-4xl font-bold text-foreground">
+              {cattle.nom}{cattle.surnom && ` (${cattle.surnom})`}
+            </h1>
             <p className="text-muted-foreground">ID: {cattle.id}</p>
           </div>
         </div>
