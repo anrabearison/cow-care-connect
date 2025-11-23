@@ -408,6 +408,7 @@ export default function CattleDetailsPage() {
                                 <HoverCardTrigger asChild>
                                   <span className="text-sm text-primary hover:underline font-medium cursor-pointer">
                                     {allCattle.find(c => c.id === cattle.source.mereId)?.nom}
+                                    {allCattle.find(c => c.id === cattle.source.mereId)?.surnom && ` (${allCattle.find(c => c.id === cattle.source.mereId)?.surnom})`}
                                   </span>
                                 </HoverCardTrigger>
                                 <HoverCardContent className="w-80">
@@ -420,7 +421,10 @@ export default function CattleDetailsPage() {
                                     return (
                                       <div className="grid gap-4">
                                         <div className="space-y-2">
-                                          <h4 className="font-medium leading-none">{mother.nom}</h4>
+                                          <h4 className="font-medium leading-none">
+                                            {mother.nom}
+                                            {mother.surnom && <span className="text-muted-foreground font-normal"> ({mother.surnom})</span>}
+                                          </h4>
                                           <p className="text-sm text-muted-foreground">ID: {mother.id}</p>
                                         </div>
                                         <div className="flex items-center gap-4">
@@ -483,7 +487,10 @@ export default function CattleDetailsPage() {
                                       </span>
                                     </div>
                                     <div>
-                                      <p className="text-sm font-medium text-primary hover:underline">{descendant.nom}</p>
+                                      <p className="text-sm font-medium text-primary hover:underline">
+                                        {descendant.nom}
+                                        {descendant.surnom && <span className="text-muted-foreground font-normal"> ({descendant.surnom})</span>}
+                                      </p>
                                       <p className="text-xs text-muted-foreground">
                                         {descendant.id} • Né le {formatDate(descendant.dateNaissance)}
                                       </p>
@@ -502,7 +509,10 @@ export default function CattleDetailsPage() {
                                   return (
                                     <div className="grid gap-4">
                                       <div className="space-y-2">
-                                        <h4 className="font-medium leading-none">{descendant.nom}</h4>
+                                        <h4 className="font-medium leading-none">
+                                          {descendant.nom}
+                                          {descendant.surnom && <span className="text-muted-foreground font-normal"> ({descendant.surnom})</span>}
+                                        </h4>
                                         <p className="text-sm text-muted-foreground">ID: {descendant.id}</p>
                                       </div>
                                       <div className="flex items-center gap-4">
