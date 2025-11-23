@@ -32,8 +32,18 @@ const CustomAppBar = () => (
   </AppBar>
 );
 
+const CustomFooter = () => {
+  const currentYear = new Date().getFullYear();
+  return (
+    <div className="text-center py-4 text-sm text-gray-600 border-t">
+      © {currentYear} Njara Rabearison. Tous droits réservés.
+    </div>
+  );
+};
+
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <RALayout appBar={CustomAppBar}>
     {children}
+    <CustomFooter />
   </RALayout>
 );
