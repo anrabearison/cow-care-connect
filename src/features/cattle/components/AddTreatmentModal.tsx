@@ -146,7 +146,7 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                         <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                             Annuler
                         </Button>
-                        <Button type="submit">Ajouter</Button>
+                        <Button type="submit">Enregistrer</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

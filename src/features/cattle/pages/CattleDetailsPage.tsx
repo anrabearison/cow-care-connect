@@ -15,7 +15,8 @@ import cattlePortrait3 from '@/assets/cattle-portrait-3.jpg';
 import { getVeterinarianName, getMedicamentName, getTypeEvenementName, getTypeEvenementIcon } from '@/data/mockData';
 import { AddTreatmentModal } from '@/features/cattle/components/AddTreatmentModal';
 import { AddEventModal } from '@/features/cattle/components/AddEventModal';
-import { Treatment, CattleEvent } from '@/features/cattle/types';
+import { AddBirthModal } from '@/features/cattle/components/AddBirthModal';
+import { Treatment, CattleEvent, Cattle } from '@/features/cattle/types';
 
 const cattleImages = [cattlePortrait1, cattlePortrait2, cattlePortrait3];
 
@@ -95,6 +96,7 @@ export default function CattleDetailsPage() {
   const [showPurchaseDetails, setShowPurchaseDetails] = useState(false);
   const [showAddTreatment, setShowAddTreatment] = useState(false);
   const [showAddEvent, setShowAddEvent] = useState(false);
+  const [showAddBirth, setShowAddBirth] = useState(false);
   const [localTreatments, setLocalTreatments] = useState<Treatment[]>([]);
   const [localEvents, setLocalEvents] = useState<CattleEvent[]>([]);
 
@@ -147,6 +149,14 @@ export default function CattleDetailsPage() {
       id: `E${Date.now()}`
     };
     setLocalEvents([...localEvents, newEvent]);
+  };
+
+  const handleAddBirth = (calfData: Omit<Cattle, 'id' | 'events' | 'treatments'>) => {
+    // In a real app, this would call an API to create the new cattle record
+    // For now, we'll just show a success message and close the modal
+    console.log('New calf data:', calfData);
+    alert(`Naissance enregistrée avec succès pour ${calfData.name} !`);
+    // TODO: Implement actual API call to create cattle record
   };
 
   if (loading) {
@@ -570,20 +580,32 @@ export default function CattleDetailsPage() {
                   <div>
                     <CardTitle className="flex items-center space-x-2">
                       <Activity className="h-5 w-5 text-primary" />
-                      <span>Historique des événements</span>
+                      <span>Événements</span>
                     </CardTitle>
                     <CardDescription>
                       Chronologie des événements importants
                     </CardDescription>
                   </div>
-                  <Button
-                    onClick={() => setShowAddEvent(true)}
-                    size="sm"
-                    className="gap-2"
-                  >
-                    <Plus className="h-4 w-4" />
-                    Ajouter
-                  </Button>
+                  <div className="flex gap-2">
+                    {cattle.gender === 'F' && (
+                      <Button
+                        onClick={() => setShowAddBirth(true)}
+                        size="sm"
+                        variant="outline"
+                        className="gap-2"
+                      >
+                        <Plus className="h-4 w-4" />
+                        Naissance
+                      </Button>
+                    )}
+                    <Button
+                      onClick={() => setShowAddEvent(true)}
+                      size="sm"
+                      className="gap-2"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
@@ -637,7 +659,6 @@ export default function CattleDetailsPage() {
                     className="gap-2"
                   >
                     <Plus className="h-4 w-4" />
-                    Ajouter
                   </Button>
                 </div>
               </CardHeader>
@@ -691,6 +712,13 @@ export default function CattleDetailsPage() {
         onOpenChange={setShowAddEvent}
         onAdd={handleAddEvent}
         cattleName={`${cattle.name}${cattle.nickname ? ` (${cattle.nickname})` : ''}`}
+      />
+      <AddBirthModal
+        open={showAddBirth}
+        onOpenChange={setShowAddBirth}
+        onAdd={handleAddBirth}
+        motherName={`${cattle.name}${cattle.nickname ? ` (${cattle.nickname})` : ''}`}
+        motherId={cattle.id}
       />
     </div>
   );
