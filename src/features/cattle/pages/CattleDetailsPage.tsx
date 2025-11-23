@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ArrowLeft, Calendar, MapPin, Activity, Stethoscope, User, ChevronDown, Users, FileText, Plus } from 'lucide-react';
 import { useCattleById, useCattle } from '@/features/cattle/hooks';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { useState } from 'react';
 import cattlePortrait1 from '@/assets/cattle-portrait-1.jpg';
 import cattlePortrait2 from '@/assets/cattle-portrait-2.jpg';
@@ -393,9 +394,39 @@ export default function CattleDetailsPage() {
                               <div className="flex items-center space-x-1">
                                 <span className="text-sm text-muted-foreground">Mère:</span>
                                 {allCattle?.find(c => c.id === cattle.source.mereId) ? (
-                                  <Link to={`/cattle/${cattle.source.mereId}`} className="text-sm text-primary hover:underline font-medium">
-                                    {allCattle.find(c => c.id === cattle.source.mereId)?.nom}
-                                  </Link>
+                                  <HoverCard>
+                                    <HoverCardTrigger asChild>
+                                      <span className="text-sm text-primary hover:underline font-medium cursor-pointer">
+                                        {allCattle.find(c => c.id === cattle.source.mereId)?.nom}
+                                      </span>
+                                    </HoverCardTrigger>
+                                    <HoverCardContent className="w-80">
+                                      {(() => {
+                                        const mother = allCattle.find(c => c.id === cattle.source.mereId);
+                                        if (!mother) return null;
+                                        const motherImageIndex = parseInt(mother.id.slice(1)) % cattleImages.length;
+                                        const motherImage = mother.photo || cattleImages[motherImageIndex];
+
+                                        return (
+                                          <div className="grid gap-4">
+                                            <div className="space-y-2">
+                                              <h4 className="font-medium leading-none">{mother.nom}</h4>
+                                              <p className="text-sm text-muted-foreground">ID: {mother.id}</p>
+                                            </div>
+                                            <div className="flex items-center gap-4">
+                                              <div className="h-16 w-16 rounded-md overflow-hidden">
+                                                <img src={motherImage} alt={mother.nom} className="h-full w-full object-cover" />
+                                              </div>
+                                              <div className="space-y-1">
+                                                <Badge className={getCategoryColor(mother.categorie)}>{mother.categorie}</Badge>
+                                                <p className="text-xs text-muted-foreground">{calculateAge(mother.dateNaissance)}</p>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        );
+                                      })()}
+                                    </HoverCardContent>
+                                  </HoverCard>
                                 ) : (
                                   <span className="text-sm text-muted-foreground">{cattle.source.mereId}</span>
                                 )}
