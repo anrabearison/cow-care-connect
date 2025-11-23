@@ -1,18 +1,18 @@
 import React from 'react';
-import {Admin, Resource} from 'react-admin';
-import {API_CONFIG} from '@/config/api';
-import {dataProvider as mockDataProvider} from './providers/mockDataProvider';
-import {dataProvider as apiDataProvider} from './providers/dataProvider';
-import {authProvider} from './providers/authProvider';
-import {CattleList, CattleEdit, CattleCreate, CattleShow} from './resources/cattle';
-import {UserList, UserEdit, UserCreate, UserShow} from './resources/users';
-import {VeterinarianList, VeterinarianEdit, VeterinarianCreate, VeterinarianShow} from './resources/veterinarians';
-import {MedicamentList, MedicamentEdit, MedicamentCreate, MedicamentShow} from './resources/medicaments';
-import {TraitementList, TraitementEdit, TraitementCreate, TraitementShow} from './resources/traitements';
-import {EvenementList, EvenementEdit, EvenementCreate, EvenementShow} from './resources/evenements';
-import {CategoryList, CategoryEdit, CategoryCreate, CategoryShow} from './resources/categories';
-import {Dashboard} from './components/Dashboard';
-import {Layout} from './components/Layout';
+import { Admin, Resource } from 'react-admin';
+import { API_CONFIG } from '@/config/api';
+import { dataProvider as mockDataProvider } from './providers/mockDataProvider';
+import { dataProvider as apiDataProvider } from './providers/dataProvider';
+import { authProvider } from './providers/authProvider';
+import { CattleList, CattleEdit, CattleCreate, CattleShow } from './resources/cattle';
+import { UserList, UserEdit, UserCreate, UserShow } from './resources/users';
+import { VeterinarianList, VeterinarianEdit, VeterinarianCreate, VeterinarianShow } from './resources/veterinarians';
+import { MedicamentList, MedicamentEdit, MedicamentCreate, MedicamentShow } from './resources/medicaments';
+import { TraitementList, TraitementEdit, TraitementCreate, TraitementShow } from './resources/traitements';
+import { EvenementList, EvenementEdit, EvenementCreate, EvenementShow } from './resources/evenements';
+import { CategoryList, CategoryEdit, CategoryCreate, CategoryShow } from './resources/categories';
+import { Dashboard } from './components/Dashboard';
+import { Layout } from './components/Layout';
 import {
     TypeEvenementCreate,
     TypeEvenementEdit,
@@ -39,7 +39,7 @@ export const AdminApp: React.FC = () => {
                 edit={CattleEdit}
                 create={CattleCreate}
                 show={CattleShow}
-                options={{label: 'Bovins'}}
+                options={{ label: 'Bovins' }}
             />
             <Resource
                 name="users"
@@ -47,7 +47,7 @@ export const AdminApp: React.FC = () => {
                 edit={UserEdit}
                 create={UserCreate}
                 show={UserShow}
-                options={{label: 'Utilisateurs'}}
+                options={{ label: 'Utilisateurs' }}
             />
             <Resource
                 name="veterinarians"
@@ -55,7 +55,7 @@ export const AdminApp: React.FC = () => {
                 edit={VeterinarianEdit}
                 create={VeterinarianCreate}
                 show={VeterinarianShow}
-                options={{label: 'Intervenants'}}
+                options={{ label: 'Intervenants' }}
             />
             <Resource
                 name="medicaments"
@@ -63,7 +63,7 @@ export const AdminApp: React.FC = () => {
                 edit={MedicamentEdit}
                 create={MedicamentCreate}
                 show={MedicamentShow}
-                options={{label: 'Médicaments'}}
+                options={{ label: 'Médicaments' }}
             />
             <Resource
                 name="typeEvenements"
@@ -71,23 +71,23 @@ export const AdminApp: React.FC = () => {
                 edit={TypeEvenementEdit}
                 create={TypeEvenementCreate}
                 show={TypeEvenementShow}
-                options={{label: 'Types d\'événements'}}
+                options={{ label: 'Types d\'événements' }}
             />
             <Resource
-                name="evenements"
+                name="events"
                 list={EvenementList}
                 edit={EvenementEdit}
                 create={EvenementCreate}
                 show={EvenementShow}
-                options={{label: 'Historique des événements'}}
+                options={{ label: 'Historique des événements' }}
             />
             <Resource
-                name="traitements"
+                name="treatments"
                 list={TraitementList}
                 edit={TraitementEdit}
                 create={TraitementCreate}
                 show={TraitementShow}
-                options={{label: 'Historique des traitements'}}
+                options={{ label: 'Historique des traitements' }}
             />
             <Resource
                 name="categories"
@@ -95,7 +95,7 @@ export const AdminApp: React.FC = () => {
                 edit={CategoryEdit}
                 create={CategoryCreate}
                 show={CategoryShow}
-                options={{label: 'Catégories'}}
+                options={{ label: 'Catégories' }}
             />
         </Admin>
     );
