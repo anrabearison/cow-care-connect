@@ -109,12 +109,10 @@ export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
 
           </div>
 
-          {cattle.marque && (
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Marque</span>
-              <span className="text-sm font-medium text-foreground">{cattle.marque}</span>
-            </div>
-          )}
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">Sexe</span>
+            <span className="text-sm font-medium text-foreground">{cattle.genre === 'M' ? 'Mâle' : 'Femelle'}</span>
+          </div>
 
 
 
