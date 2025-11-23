@@ -102,8 +102,11 @@ export default function CattleDetailsPage() {
   const findDescendants = () => {
     if (!cattle || !allCattle) return [];
 
-    // Logique simple: chercher les bovins nés dans le troupeau après la date de naissance du bovin actuel
-    // et qui pourraient être ses descendants (nés 9-12 mois après)
+    // Priorité à la liaison explicite via mereId
+    const directDescendants = allCattle.filter(c => c.source.mereId === cattle.id);
+    if (directDescendants.length > 0) return directDescendants;
+
+    // Fallback: Logique basée sur la date pour les anciens enregistrements sans mereId
     const currentBirthDate = new Date(cattle.dateNaissance);
     const minDescendantDate = new Date(currentBirthDate);
     minDescendantDate.setMonth(minDescendantDate.getMonth() + 9); // Gestation minimum
@@ -111,6 +114,8 @@ export default function CattleDetailsPage() {
     return allCattle.filter(descendant => {
       if (descendant.id === cattle.id) return false;
       if (descendant.source.type !== 'Né dans le troupeau') return false;
+      // Si le descendant a une mère définie mais ce n'est pas ce bovin, on l'exclut
+      if (descendant.source.mereId && descendant.source.mereId !== cattle.id) return false;
 
       const descendantBirthDate = new Date(descendant.dateNaissance);
       return descendantBirthDate > minDescendantDate;
@@ -365,135 +370,138 @@ export default function CattleDetailsPage() {
                         <span className="font-medium">{cattle.source.type}</span>
                       </div>
                     </div>
-
-                    <Separator />
-                    <Collapsible open={showLineage} onOpenChange={setShowLineage}>
-                      <CollapsibleTrigger className="flex items-center justify-between w-full p-2 hover:bg-accent/10 rounded-md transition-colors">
-                        <div className="flex items-center space-x-2">
-                          <Users className="h-4 w-4 text-primary" />
-                          <span className="font-medium text-foreground">Détails lignée & descendants</span>
-                        </div>
-                        <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${showLineage ? 'rotate-180' : ''}`} />
-                      </CollapsibleTrigger>
-
-                      <CollapsibleContent className="pt-4 space-y-4">
-                        {/* Informations sur la lignée */}
-                        <div className="space-y-2">
-                          <div className="flex items-center space-x-2">
-                            <FileText className="h-4 w-4 text-primary" />
-                            <span className="text-sm font-medium">Informations de naissance</span>
-                          </div>
-                          <div className="pl-6 space-y-1">
-                            <p className="text-sm text-muted-foreground">
-                              Né(e) dans notre troupeau le {formatDate(cattle.dateNaissance)}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              Âge actuel: {calculateAge(cattle.dateNaissance)}
-                            </p>
-                            {cattle.source.mereId && (
-                              <div className="flex items-center space-x-1">
-                                <span className="text-sm text-muted-foreground">Mère:</span>
-                                {allCattle?.find(c => c.id === cattle.source.mereId) ? (
-                                  <HoverCard>
-                                    <HoverCardTrigger asChild>
-                                      <span className="text-sm text-primary hover:underline font-medium cursor-pointer">
-                                        {allCattle.find(c => c.id === cattle.source.mereId)?.nom}
-                                      </span>
-                                    </HoverCardTrigger>
-                                    <HoverCardContent className="w-80">
-                                      {(() => {
-                                        const mother = allCattle.find(c => c.id === cattle.source.mereId);
-                                        if (!mother) return null;
-                                        const motherImageIndex = parseInt(mother.id.slice(1)) % cattleImages.length;
-                                        const motherImage = mother.photo || cattleImages[motherImageIndex];
-
-                                        return (
-                                          <div className="grid gap-4">
-                                            <div className="space-y-2">
-                                              <h4 className="font-medium leading-none">{mother.nom}</h4>
-                                              <p className="text-sm text-muted-foreground">ID: {mother.id}</p>
-                                            </div>
-                                            <div className="flex items-center gap-4">
-                                              <div className="h-16 w-16 rounded-md overflow-hidden">
-                                                <img src={motherImage} alt={mother.nom} className="h-full w-full object-cover" />
-                                              </div>
-                                              <div className="space-y-1">
-                                                <Badge className={getCategoryColor(mother.categorie)}>{mother.categorie}</Badge>
-                                                <p className="text-xs text-muted-foreground">{calculateAge(mother.dateNaissance)}</p>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        );
-                                      })()}
-                                    </HoverCardContent>
-                                  </HoverCard>
-                                ) : (
-                                  <span className="text-sm text-muted-foreground">{cattle.source.mereId}</span>
-                                )}
-                              </div>
-                            )}
-                            {cattle.genre === 'F' && (
-                              <p className="text-sm text-primary font-medium">
-                                ♀ Capable de reproduction
-                              </p>
-                            )}
-                            {cattle.genre === 'M' && (
-                              <p className="text-sm text-primary font-medium">
-                                ♂ Reproducteur potentiel
-                              </p>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Liste des descendants potentiels */}
-                        {descendants.length > 0 && (
-                          <div className="space-y-2">
-                            <div className="flex items-center space-x-2">
-                              <Users className="h-4 w-4 text-primary" />
-                              <span className="text-sm font-medium">Descendants potentiels ({descendants.length})</span>
-                            </div>
-                            <div className="pl-6 space-y-2">
-                              {descendants.map((descendant) => (
-                                <Link to={`/cattle/${descendant.id}`} key={descendant.id} className="block">
-                                  <div className="flex items-center justify-between p-2 bg-muted/20 rounded border border-muted-foreground/10 hover:bg-muted/40 transition-colors cursor-pointer">
-                                    <div className="flex items-center space-x-3">
-                                      <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                                        <span className="text-xs font-medium text-primary">
-                                          {descendant.genre === 'M' ? '♂' : '♀'}
-                                        </span>
-                                      </div>
-                                      <div>
-                                        <p className="text-sm font-medium text-primary hover:underline">{descendant.nom}</p>
-                                        <p className="text-xs text-muted-foreground">
-                                          {descendant.id} • Né le {formatDate(descendant.dateNaissance)}
-                                        </p>
-                                      </div>
-                                    </div>
-                                    <Badge variant="outline" className="text-xs">
-                                      {calculateAge(descendant.dateNaissance)}
-                                    </Badge>
-                                  </div>
-                                </Link>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {descendants.length === 0 && (
-                          <div className="space-y-2">
-                            <div className="flex items-center space-x-2">
-                              <Users className="h-4 w-4 text-muted-foreground" />
-                              <span className="text-sm text-muted-foreground">Aucun descendant identifié</span>
-                            </div>
-                            <p className="text-xs text-muted-foreground pl-6">
-                              Aucun bovin né dans le troupeau après la période de gestation potentielle.
-                            </p>
-                          </div>
-                        )}
-                      </CollapsibleContent>
-                    </Collapsible>
                   </>
                 )}
+
+                <Separator />
+                <Collapsible open={showLineage} onOpenChange={setShowLineage}>
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 hover:bg-accent/10 rounded-md transition-colors">
+                    <div className="flex items-center space-x-2">
+                      <Users className="h-4 w-4 text-primary" />
+                      <span className="font-medium text-foreground">Détails lignée & descendants</span>
+                    </div>
+                    <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${showLineage ? 'rotate-180' : ''}`} />
+                  </CollapsibleTrigger>
+
+                  <CollapsibleContent className="pt-4 space-y-4">
+                    {/* Informations sur la lignée */}
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <FileText className="h-4 w-4 text-primary" />
+                        <span className="text-sm font-medium">Informations de naissance</span>
+                      </div>
+                      <div className="pl-6 space-y-1">
+                        <p className="text-sm text-muted-foreground">
+                          {cattle.source.type === 'Né dans le troupeau'
+                            ? `Né(e) dans notre troupeau le ${formatDate(cattle.dateNaissance)}`
+                            : `Né(e) le ${formatDate(cattle.dateNaissance)}`
+                          }
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Âge actuel: {calculateAge(cattle.dateNaissance)}
+                        </p>
+                        {cattle.source.mereId && (
+                          <div className="flex items-center space-x-1">
+                            <span className="text-sm text-muted-foreground">Mère:</span>
+                            {allCattle?.find(c => c.id === cattle.source.mereId) ? (
+                              <HoverCard>
+                                <HoverCardTrigger asChild>
+                                  <span className="text-sm text-primary hover:underline font-medium cursor-pointer">
+                                    {allCattle.find(c => c.id === cattle.source.mereId)?.nom}
+                                  </span>
+                                </HoverCardTrigger>
+                                <HoverCardContent className="w-80">
+                                  {(() => {
+                                    const mother = allCattle.find(c => c.id === cattle.source.mereId);
+                                    if (!mother) return null;
+                                    const motherImageIndex = parseInt(mother.id.slice(1)) % cattleImages.length;
+                                    const motherImage = mother.photo || cattleImages[motherImageIndex];
+
+                                    return (
+                                      <div className="grid gap-4">
+                                        <div className="space-y-2">
+                                          <h4 className="font-medium leading-none">{mother.nom}</h4>
+                                          <p className="text-sm text-muted-foreground">ID: {mother.id}</p>
+                                        </div>
+                                        <div className="flex items-center gap-4">
+                                          <div className="h-16 w-16 rounded-md overflow-hidden">
+                                            <img src={motherImage} alt={mother.nom} className="h-full w-full object-cover" />
+                                          </div>
+                                          <div className="space-y-1">
+                                            <Badge className={getCategoryColor(mother.categorie)}>{mother.categorie}</Badge>
+                                            <p className="text-xs text-muted-foreground">{calculateAge(mother.dateNaissance)}</p>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    );
+                                  })()}
+                                </HoverCardContent>
+                              </HoverCard>
+                            ) : (
+                              <span className="text-sm text-muted-foreground">{cattle.source.mereId}</span>
+                            )}
+                          </div>
+                        )}
+                        {cattle.genre === 'F' && (
+                          <p className="text-sm text-primary font-medium">
+                            ♀ Capable de reproduction
+                          </p>
+                        )}
+                        {cattle.genre === 'M' && (
+                          <p className="text-sm text-primary font-medium">
+                            ♂ Reproducteur potentiel
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Liste des descendants potentiels */}
+                    {descendants.length > 0 && (
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <Users className="h-4 w-4 text-primary" />
+                          <span className="text-sm font-medium">Descendants ({descendants.length})</span>
+                        </div>
+                        <div className="pl-6 space-y-2">
+                          {descendants.map((descendant) => (
+                            <Link to={`/cattle/${descendant.id}`} key={descendant.id} className="block">
+                              <div className="flex items-center justify-between p-2 bg-muted/20 rounded border border-muted-foreground/10 hover:bg-muted/40 transition-colors cursor-pointer">
+                                <div className="flex items-center space-x-3">
+                                  <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                                    <span className="text-xs font-medium text-primary">
+                                      {descendant.genre === 'M' ? '♂' : '♀'}
+                                    </span>
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-medium text-primary hover:underline">{descendant.nom}</p>
+                                    <p className="text-xs text-muted-foreground">
+                                      {descendant.id} • Né le {formatDate(descendant.dateNaissance)}
+                                    </p>
+                                  </div>
+                                </div>
+                                <Badge variant="outline" className="text-xs">
+                                  {calculateAge(descendant.dateNaissance)}
+                                </Badge>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {descendants.length === 0 && (
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <Users className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground">Aucun descendant identifié</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground pl-6">
+                          Aucun bovin né dans le troupeau après la période de gestation potentielle.
+                        </p>
+                      </div>
+                    )}
+                  </CollapsibleContent>
+                </Collapsible>
               </CardContent>
             </Card>
           </div>
