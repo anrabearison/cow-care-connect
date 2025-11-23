@@ -114,14 +114,7 @@ export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
             </div>
           )}
 
-          {cattle.signeParticulier && (
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Signe</span>
-              <span className="text-sm font-medium text-foreground truncate max-w-[150px]" title={cattle.signeParticulier}>
-                {cattle.signeParticulier}
-              </span>
-            </div>
-          )}
+
 
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Source</span>
