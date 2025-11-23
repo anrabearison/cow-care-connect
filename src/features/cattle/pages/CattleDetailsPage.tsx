@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, Calendar, MapPin, Activity, Stethoscope, User, ChevronDown, Users, FileText } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Activity, Stethoscope, User, ChevronDown, Users, FileText, Plus } from 'lucide-react';
 import { useCattleById, useCattle } from '@/features/cattle/hooks';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useState } from 'react';
@@ -12,6 +12,9 @@ import cattlePortrait1 from '@/assets/cattle-portrait-1.jpg';
 import cattlePortrait2 from '@/assets/cattle-portrait-2.jpg';
 import cattlePortrait3 from '@/assets/cattle-portrait-3.jpg';
 import { getVeterinarianName, getMedicamentName, getTypeEvenementName, getTypeEvenementIcon } from '@/data/mockData';
+import { AddTreatmentModal } from '@/features/cattle/components/AddTreatmentModal';
+import { AddEventModal } from '@/features/cattle/components/AddEventModal';
+import { Treatment, CattleEvent } from '@/features/cattle/types';
 
 const cattleImages = [cattlePortrait1, cattlePortrait2, cattlePortrait3];
 
@@ -89,6 +92,10 @@ export default function CattleDetailsPage() {
   const { cattle: allCattle } = useCattle(); // Pour trouver les descendants
   const [showLineage, setShowLineage] = useState(false);
   const [showPurchaseDetails, setShowPurchaseDetails] = useState(false);
+  const [showAddTreatment, setShowAddTreatment] = useState(false);
+  const [showAddEvent, setShowAddEvent] = useState(false);
+  const [localTreatments, setLocalTreatments] = useState<Treatment[]>([]);
+  const [localEvents, setLocalEvents] = useState<CattleEvent[]>([]);
 
   // Fonction pour trouver les descendants potentiels
   const findDescendants = () => {
@@ -110,6 +117,31 @@ export default function CattleDetailsPage() {
   };
 
   const descendants = findDescendants();
+
+  // Initialize local state when cattle data loads
+  if (cattle && localTreatments.length === 0 && cattle.traitements.length > 0) {
+    setLocalTreatments(cattle.traitements);
+  }
+  if (cattle && localEvents.length === 0 && cattle.evenements.length > 0) {
+    setLocalEvents(cattle.evenements);
+  }
+
+  // Handlers for adding treatments and events
+  const handleAddTreatment = (treatment: Omit<Treatment, 'id'>) => {
+    const newTreatment: Treatment = {
+      ...treatment,
+      id: `T${Date.now()}`
+    };
+    setLocalTreatments([...localTreatments, newTreatment]);
+  };
+
+  const handleAddEvent = (event: Omit<CattleEvent, 'id'>) => {
+    const newEvent: CattleEvent = {
+      ...event,
+      id: `E${Date.now()}`
+    };
+    setLocalEvents([...localEvents, newEvent]);
+  };
 
   if (loading) {
     return (
@@ -426,17 +458,29 @@ export default function CattleDetailsPage() {
             {/* Event Timeline */}
             <Card className="shadow-farm">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Activity className="h-5 w-5 text-primary" />
-                  <span>Historique des événements</span>
-                </CardTitle>
-                <CardDescription>
-                  Chronologie des événements importants
-                </CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center space-x-2">
+                      <Activity className="h-5 w-5 text-primary" />
+                      <span>Historique des événements</span>
+                    </CardTitle>
+                    <CardDescription>
+                      Chronologie des événements importants
+                    </CardDescription>
+                  </div>
+                  <Button
+                    onClick={() => setShowAddEvent(true)}
+                    size="sm"
+                    className="gap-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Ajouter
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {cattle.evenements
+                  {localEvents
                     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                     .map((event) => (
                       <div key={event.id} className="flex space-x-4 p-4 bg-muted/30 rounded-lg">
@@ -469,17 +513,29 @@ export default function CattleDetailsPage() {
             {/* Treatment History */}
             <Card className="shadow-farm">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Stethoscope className="h-5 w-5 text-primary" />
-                  <span>Historique des traitements</span>
-                </CardTitle>
-                <CardDescription>
-                  Suivi médical et traitements
-                </CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center space-x-2">
+                      <Stethoscope className="h-5 w-5 text-primary" />
+                      <span>Historique des traitements</span>
+                    </CardTitle>
+                    <CardDescription>
+                      Suivi médical et traitements
+                    </CardDescription>
+                  </div>
+                  <Button
+                    onClick={() => setShowAddTreatment(true)}
+                    size="sm"
+                    className="gap-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Ajouter
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {cattle.traitements
+                  {localTreatments
                     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                     .map((treatment) => (
                       <div key={treatment.id} className="flex space-x-4 p-4 bg-accent/10 rounded-lg border border-accent/20">
@@ -514,6 +570,20 @@ export default function CattleDetailsPage() {
           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      <AddTreatmentModal
+        open={showAddTreatment}
+        onOpenChange={setShowAddTreatment}
+        onAdd={handleAddTreatment}
+        cattleName={`${cattle.nom}${cattle.surnom ? ` (${cattle.surnom})` : ''}`}
+      />
+      <AddEventModal
+        open={showAddEvent}
+        onOpenChange={setShowAddEvent}
+        onAdd={handleAddEvent}
+        cattleName={`${cattle.nom}${cattle.surnom ? ` (${cattle.surnom})` : ''}`}
+      />
     </div>
   );
 }
