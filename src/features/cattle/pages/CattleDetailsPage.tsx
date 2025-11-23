@@ -282,6 +282,7 @@ export default function CattleDetailsPage() {
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Catégorie</span>
                   <Badge className={getCategoryColor(cattle.categorie)}>
+                    {cattle.categorie}
                   </Badge>
                 </div>
 

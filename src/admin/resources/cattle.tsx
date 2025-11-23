@@ -31,6 +31,7 @@ import {
   TabbedShowLayout,
   Tab,
   useRecordContext,
+  required,
 } from 'react-admin';
 
 // Filtres pour la liste des bovins

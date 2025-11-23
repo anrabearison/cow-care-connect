@@ -51,6 +51,21 @@ const getCharacterColor = (character: string) => {
   }
 };
 
+const getCategoryColor = (category: string) => {
+  switch (category) {
+    case 'Taureau':
+      return 'bg-purple-100 text-purple-800 border-purple-200';
+    case 'Vache':
+      return 'bg-pink-100 text-pink-800 border-pink-200';
+    case 'Veau':
+      return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+    case 'Zébu':
+      return 'bg-indigo-100 text-indigo-800 border-indigo-200';
+    default:
+      return 'bg-gray-100 text-gray-800 border-gray-200';
+  }
+};
+
 const getGenderIcon = (gender: string) => {
   return gender === 'M' ? '♂️' : '♀️';
 };
@@ -98,21 +113,19 @@ export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
               <Calendar className="h-4 w-4" />
               <span>{calculateAge(cattle.dateNaissance)}</span>
             </div>
-            <div className="flex items-center space-x-2 text-sm mt-1">
-              {cattle.categorie && (
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Catégorie</span>
-                  <span className="text-sm font-medium text-foreground">
-                    {getCategoryDescription(cattle.categorie)}
-                  </span>
-                </div>
-              )}
-            </div>
           </div>
           <Heart className="h-5 w-5 text-muted-foreground hover:text-red-500 cursor-pointer transition-colors" />
         </div>
 
         <div className="space-y-3 mb-4">
+          {cattle.categorie && (
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Catégorie</span>
+              <Badge className={getCategoryColor(cattle.categorie)}>
+                {getCategoryDescription(cattle.categorie)}
+              </Badge>
+            </div>
+          )}
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Caractère</span>
             <Badge className={`text-xs ${getCharacterColor(cattle.caractere)}`}>
