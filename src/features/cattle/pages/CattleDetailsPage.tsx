@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, Calendar, MapPin, Activity, Stethoscope, User, ChevronDown, Users, FileText, Plus } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Activity, Stethoscope, User, ChevronDown, Users, FileText, Plus, ExternalLink } from 'lucide-react';
 import { useCattleById, useCattle } from '@/features/cattle/hooks';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
@@ -432,6 +432,15 @@ export default function CattleDetailsPage() {
                                             <p className="text-xs text-muted-foreground">{calculateAge(mother.dateNaissance)}</p>
                                           </div>
                                         </div>
+                                        <Link
+                                          to={`/cattle/${mother.id}`}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="flex items-center justify-center w-full p-2 text-sm font-medium text-primary bg-primary/10 rounded-md hover:bg-primary/20 transition-colors"
+                                        >
+                                          <ExternalLink className="w-4 h-4 mr-2" />
+                                          Voir détails
+                                        </Link>
                                       </div>
                                     );
                                   })()}
@@ -505,6 +514,15 @@ export default function CattleDetailsPage() {
                                           <p className="text-xs text-muted-foreground">{calculateAge(descendant.dateNaissance)}</p>
                                         </div>
                                       </div>
+                                      <Link
+                                        to={`/cattle/${descendant.id}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center justify-center w-full p-2 text-sm font-medium text-primary bg-primary/10 rounded-md hover:bg-primary/20 transition-colors"
+                                      >
+                                        <ExternalLink className="w-4 h-4 mr-2" />
+                                        Voir détails
+                                      </Link>
                                     </div>
                                   );
                                 })()}
