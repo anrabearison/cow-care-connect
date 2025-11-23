@@ -167,7 +167,8 @@ export const mockCattleData: Cattle[] = [
     signeParticulier: 'Oreille droite fendue',
     photo: '/src/assets/cattle-portrait-3.jpg',
     source: {
-      type: 'Né dans le troupeau'
+      type: 'Né dans le troupeau',
+      mereId: 'B008' // Ranitra Mendrika
     },
     evenements: [
       {
@@ -265,7 +266,8 @@ export const mockCattleData: Cattle[] = [
     caractere: 'Timide',
     categorie: 'Veau',
     source: {
-      type: 'Né dans le troupeau'
+      type: 'Né dans le troupeau',
+      mereId: 'B002' // Belle Mahitsy
     },
     evenements: [
       {
@@ -368,7 +370,8 @@ export const mockCattleData: Cattle[] = [
     caractere: 'Energique',
     categorie: 'Vache',
     source: {
-      type: 'Né dans le troupeau'
+      type: 'Né dans le troupeau',
+      mereId: 'B004' // Toky Mainty
     },
     evenements: [
       {

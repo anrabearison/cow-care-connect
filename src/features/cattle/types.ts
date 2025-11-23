@@ -18,6 +18,7 @@ export interface Cattle {
     poidsAchat?: number;
     etatSanteAchat?: string;
     remarquesAchat?: string;
+    mereId?: string;
   };
   evenements: CattleEvent[];
   traitements: Treatment[];

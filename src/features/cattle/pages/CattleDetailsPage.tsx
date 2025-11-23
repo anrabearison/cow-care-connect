@@ -389,6 +389,18 @@ export default function CattleDetailsPage() {
                             <p className="text-sm text-muted-foreground">
                               Âge actuel: {calculateAge(cattle.dateNaissance)}
                             </p>
+                            {cattle.source.mereId && (
+                              <div className="flex items-center space-x-1">
+                                <span className="text-sm text-muted-foreground">Mère:</span>
+                                {allCattle?.find(c => c.id === cattle.source.mereId) ? (
+                                  <Link to={`/cattle/${cattle.source.mereId}`} className="text-sm text-primary hover:underline font-medium">
+                                    {allCattle.find(c => c.id === cattle.source.mereId)?.nom}
+                                  </Link>
+                                ) : (
+                                  <span className="text-sm text-muted-foreground">{cattle.source.mereId}</span>
+                                )}
+                              </div>
+                            )}
                             {cattle.genre === 'F' && (
                               <p className="text-sm text-primary font-medium">
                                 ♀ Capable de reproduction
@@ -411,24 +423,26 @@ export default function CattleDetailsPage() {
                             </div>
                             <div className="pl-6 space-y-2">
                               {descendants.map((descendant) => (
-                                <div key={descendant.id} className="flex items-center justify-between p-2 bg-muted/20 rounded border border-muted-foreground/10">
-                                  <div className="flex items-center space-x-3">
-                                    <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                                      <span className="text-xs font-medium text-primary">
-                                        {descendant.genre === 'M' ? '♂' : '♀'}
-                                      </span>
+                                <Link to={`/cattle/${descendant.id}`} key={descendant.id} className="block">
+                                  <div className="flex items-center justify-between p-2 bg-muted/20 rounded border border-muted-foreground/10 hover:bg-muted/40 transition-colors cursor-pointer">
+                                    <div className="flex items-center space-x-3">
+                                      <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                                        <span className="text-xs font-medium text-primary">
+                                          {descendant.genre === 'M' ? '♂' : '♀'}
+                                        </span>
+                                      </div>
+                                      <div>
+                                        <p className="text-sm font-medium text-primary hover:underline">{descendant.nom}</p>
+                                        <p className="text-xs text-muted-foreground">
+                                          {descendant.id} • Né le {formatDate(descendant.dateNaissance)}
+                                        </p>
+                                      </div>
                                     </div>
-                                    <div>
-                                      <p className="text-sm font-medium">{descendant.nom}</p>
-                                      <p className="text-xs text-muted-foreground">
-                                        {descendant.id} • Né le {formatDate(descendant.dateNaissance)}
-                                      </p>
-                                    </div>
+                                    <Badge variant="outline" className="text-xs">
+                                      {calculateAge(descendant.dateNaissance)}
+                                    </Badge>
                                   </div>
-                                  <Badge variant="outline" className="text-xs">
-                                    {calculateAge(descendant.dateNaissance)}
-                                  </Badge>
-                                </div>
+                                </Link>
                               ))}
                             </div>
                           </div>
