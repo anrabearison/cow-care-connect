@@ -32,12 +32,12 @@ const traitementFilters = [
     { id: 'Autre', name: 'Autre' },
   ]} />,
   <ReferenceInput source="cattleId" reference="cattle" label="Bovin">
+    <AutocompleteInput optionText="name" />
+  </ReferenceInput>,
+  <ReferenceInput source="product" reference="medicaments" label="Médicament">
     <AutocompleteInput optionText="nom" />
   </ReferenceInput>,
-  <ReferenceInput source="produit" reference="medicaments" label="Médicament">
-    <AutocompleteInput optionText="nom" />
-  </ReferenceInput>,
-  <ReferenceInput source="veterinaire" reference="veterinarians" label="Intervenant">
+  <ReferenceInput source="veterinarian" reference="veterinarians" label="Intervenant">
     <AutocompleteInput optionText="nom" />
   </ReferenceInput>,
   <DateInput source="date" label="Date" />,
@@ -49,15 +49,15 @@ export const TraitementList = () => (
     <Datagrid rowClick="edit">
       <TextField source="id" label="ID" />
       <ReferenceField source="cattleId" reference="cattle" label="Bovin">
-        <TextField source="nom" />
+        <TextField source="name" />
       </ReferenceField>
       <TextField source="type" label="Type" />
       <DateField source="date" label="Date" />
-      <ReferenceField source="produit" reference="medicaments" label="Médicament">
+      <ReferenceField source="product" reference="medicaments" label="Médicament">
         <TextField source="nom" />
       </ReferenceField>
-      <TextField source="dose" label="Dose" />
-      <ReferenceField source="veterinaire" reference="veterinarians" label="Intervenant">
+      <TextField source="dosage" label="Dose" />
+      <ReferenceField source="veterinarian" reference="veterinarians" label="Intervenant">
         <TextField source="nom" />
       </ReferenceField>
       <ShowButton />
@@ -72,7 +72,7 @@ export const TraitementEdit = () => (
   <Edit>
     <SimpleForm>
       <ReferenceInput source="cattleId" reference="cattle" label="Bovin">
-        <AutocompleteInput optionText="nom" />
+        <AutocompleteInput optionText="name" />
       </ReferenceInput>
       <SelectInput
         source="type"
@@ -88,11 +88,11 @@ export const TraitementEdit = () => (
         required
       />
       <DateInput source="date" label="Date" required />
-      <ReferenceInput source="produit" reference="medicaments" label="Médicament">
+      <ReferenceInput source="product" reference="medicaments" label="Médicament">
         <AutocompleteInput optionText="nom" />
       </ReferenceInput>
-      <TextInput source="dose" label="Dose" required />
-      <ReferenceInput source="veterinaire" reference="veterinarians" label="Intervenant">
+      <TextInput source="dosage" label="Dose" required />
+      <ReferenceInput source="veterinarian" reference="veterinarians" label="Intervenant">
         <AutocompleteInput optionText="nom" />
       </ReferenceInput>
       <TextInput source="notes" label="Notes" multiline rows={3} />
@@ -105,7 +105,7 @@ export const TraitementCreate = () => (
   <Create>
     <SimpleForm>
       <ReferenceInput source="cattleId" reference="cattle" label="Bovin">
-        <AutocompleteInput optionText="nom" />
+        <AutocompleteInput optionText="name" />
       </ReferenceInput>
       <SelectInput
         source="type"
@@ -121,11 +121,11 @@ export const TraitementCreate = () => (
         required
       />
       <DateInput source="date" label="Date" required />
-      <ReferenceInput source="produit" reference="medicaments" label="Médicament">
+      <ReferenceInput source="product" reference="medicaments" label="Médicament">
         <AutocompleteInput optionText="nom" />
       </ReferenceInput>
-      <TextInput source="dose" label="Dose" required />
-      <ReferenceInput source="veterinaire" reference="veterinarians" label="Intervenant">
+      <TextInput source="dosage" label="Dose" required />
+      <ReferenceInput source="veterinarian" reference="veterinarians" label="Intervenant">
         <AutocompleteInput optionText="nom" />
       </ReferenceInput>
       <TextInput source="notes" label="Notes" multiline rows={3} />
@@ -139,15 +139,15 @@ export const TraitementShow = () => (
     <SimpleShowLayout>
       <TextField source="id" label="ID" />
       <ReferenceField source="cattleId" reference="cattle" label="Bovin">
-        <TextField source="nom" />
+        <TextField source="name" />
       </ReferenceField>
       <TextField source="type" label="Type" />
       <DateField source="date" label="Date" />
-      <ReferenceField source="produit" reference="medicaments" label="Médicament">
+      <ReferenceField source="product" reference="medicaments" label="Médicament">
         <TextField source="nom" />
       </ReferenceField>
-      <TextField source="dose" label="Dose" />
-      <ReferenceField source="veterinaire" reference="veterinarians" label="Intervenant">
+      <TextField source="dosage" label="Dose" />
+      <ReferenceField source="veterinarian" reference="veterinarians" label="Intervenant">
         <TextField source="nom" />
       </ReferenceField>
       <TextField source="notes" label="Notes" />

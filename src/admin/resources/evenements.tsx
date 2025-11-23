@@ -37,7 +37,7 @@ export const EvenementList = () => (
     <Datagrid rowClick="edit">
       <TextField source="id" label="ID" />
       <ReferenceField source="cattleId" reference="cattle" label="Bovin">
-        <TextField source="nom" />
+        <TextField source="name" />
       </ReferenceField>
       <ReferenceField source="type" reference="typeEvenements" label="Type">
         <TextField source="nom" />
@@ -56,7 +56,7 @@ export const EvenementEdit = () => (
   <Edit>
     <SimpleForm>
       <ReferenceInput source="cattleId" reference="cattle" label="Bovin">
-        <AutocompleteInput optionText="nom" />
+        <AutocompleteInput optionText="name" />
       </ReferenceInput>
       <ReferenceInput source="type" reference="typeEvenements" label="Type">
         <AutocompleteInput optionText="nom" />
@@ -73,7 +73,7 @@ export const EvenementCreate = () => (
   <Create>
     <SimpleForm>
       <ReferenceInput source="cattleId" reference="cattle" label="Bovin">
-        <AutocompleteInput optionText="nom" />
+        <AutocompleteInput optionText="name" />
       </ReferenceInput>
       <ReferenceInput source="type" reference="typeEvenements" label="Type">
         <AutocompleteInput optionText="nom" />
@@ -91,7 +91,7 @@ export const EvenementShow = () => (
     <SimpleShowLayout>
       <TextField source="id" label="ID" />
       <ReferenceField source="cattleId" reference="cattle" label="Bovin">
-        <TextField source="nom" />
+        <TextField source="name" />
       </ReferenceField>
       <ReferenceField source="type" reference="typeEvenements" label="Type">
         <TextField source="nom" />

@@ -102,12 +102,12 @@ export default function CattleDetailsPage() {
   const findDescendants = () => {
     if (!cattle || !allCattle) return [];
 
-    // Priorité à la liaison explicite via mereId
-    const directDescendants = allCattle.filter(c => c.source.mereId === cattle.id);
+    // Priorité à la liaison explicite via motherId
+    const directDescendants = allCattle.filter(c => c.source.motherId === cattle.id);
     if (directDescendants.length > 0) return directDescendants;
 
-    // Fallback: Logique basée sur la date pour les anciens enregistrements sans mereId
-    const currentBirthDate = new Date(cattle.dateNaissance);
+    // Fallback: Logique basée sur la date pour les anciens enregistrements sans motherId
+    const currentBirthDate = new Date(cattle.birthDate);
     const minDescendantDate = new Date(currentBirthDate);
     minDescendantDate.setMonth(minDescendantDate.getMonth() + 9); // Gestation minimum
 
@@ -115,9 +115,9 @@ export default function CattleDetailsPage() {
       if (descendant.id === cattle.id) return false;
       if (descendant.source.type !== 'Né dans le troupeau') return false;
       // Si le descendant a une mère définie mais ce n'est pas ce bovin, on l'exclut
-      if (descendant.source.mereId && descendant.source.mereId !== cattle.id) return false;
+      if (descendant.source.motherId && descendant.source.motherId !== cattle.id) return false;
 
-      const descendantBirthDate = new Date(descendant.dateNaissance);
+      const descendantBirthDate = new Date(descendant.birthDate);
       return descendantBirthDate > minDescendantDate;
     });
   };
@@ -125,11 +125,11 @@ export default function CattleDetailsPage() {
   const descendants = findDescendants();
 
   // Initialize local state when cattle data loads
-  if (cattle && localTreatments.length === 0 && cattle.traitements.length > 0) {
-    setLocalTreatments(cattle.traitements);
+  if (cattle && localTreatments.length === 0 && cattle.treatments.length > 0) {
+    setLocalTreatments(cattle.treatments);
   }
-  if (cattle && localEvents.length === 0 && cattle.evenements.length > 0) {
-    setLocalEvents(cattle.evenements);
+  if (cattle && localEvents.length === 0 && cattle.events.length > 0) {
+    setLocalEvents(cattle.events);
   }
 
   // Handlers for adding treatments and events
@@ -228,7 +228,7 @@ export default function CattleDetailsPage() {
           </Link>
           <div>
             <h1 className="text-4xl font-bold text-foreground">
-              {cattle.nom}{cattle.surnom && ` (${cattle.surnom})`}
+              {cattle.name}{cattle.nickname && ` (${cattle.nickname})`}
             </h1>
             <p className="text-muted-foreground">ID: {cattle.id}</p>
           </div>
@@ -242,12 +242,12 @@ export default function CattleDetailsPage() {
               <div className="relative h-64">
                 <img
                   src={cattleImage}
-                  alt={`Photo de ${cattle.nom}`}
+                  alt={`Photo de ${cattle.name}`}
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute top-4 right-4">
                   <Badge className="bg-white/90 text-primary">
-                    {cattle.genre === 'M' ? 'Mâle' : 'Femelle'}
+                    {cattle.gender === 'M' ? 'Mâle' : 'Femelle'}
                   </Badge>
                 </div>
               </div>
@@ -264,44 +264,44 @@ export default function CattleDetailsPage() {
               <CardContent className="space-y-4">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Âge</span>
-                  <span className="font-medium">{calculateAge(cattle.dateNaissance)}</span>
+                  <span className="font-medium">{calculateAge(cattle.birthDate)}</span>
                 </div>
 
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Date de naissance</span>
-                  <span className="font-medium">{formatDate(cattle.dateNaissance)}</span>
+                  <span className="font-medium">{formatDate(cattle.birthDate)}</span>
                 </div>
 
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Caractère</span>
-                  <Badge className={getCharacterColor(cattle.caractere)}>
-                    {cattle.caractere}
+                  <Badge className={getCharacterColor(cattle.character)}>
+                    {cattle.character}
                   </Badge>
                 </div>
 
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Catégorie</span>
-                  <Badge className={getCategoryColor(cattle.categorie)}>
-                    {cattle.categorie}
+                  <Badge className={getCategoryColor(cattle.category)}>
+                    {cattle.category}
                   </Badge>
                 </div>
 
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Sexe</span>
-                  <span className="font-medium">{cattle.genre === 'M' ? 'Mâle' : 'Femelle'}</span>
+                  <span className="font-medium">{cattle.gender === 'M' ? 'Mâle' : 'Femelle'}</span>
                 </div>
 
-                {cattle.marque && (
+                {cattle.brand && (
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">Marque</span>
-                    <span className="font-medium">{cattle.marque}</span>
+                    <span className="font-medium">{cattle.brand}</span>
                   </div>
                 )}
 
-                {cattle.signeParticulier && (
+                {cattle.distinctiveSign && (
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">Signe particulier</span>
-                    <span className="font-medium">{cattle.signeParticulier}</span>
+                    <span className="font-medium">{cattle.distinctiveSign}</span>
                   </div>
                 )}
 
@@ -323,38 +323,38 @@ export default function CattleDetailsPage() {
                     </CollapsibleTrigger>
                     <CollapsibleContent className="space-y-3 pt-3">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {cattle.source.fournisseur && (
+                        {cattle.source.supplier && (
                           <div>
                             <p className="text-sm font-medium text-muted-foreground">Fournisseur</p>
-                            <p className="text-sm font-medium">{cattle.source.fournisseur}</p>
+                            <p className="text-sm font-medium">{cattle.source.supplier}</p>
                           </div>
                         )}
-                        {cattle.source.dateAchat && (
+                        {cattle.source.purchaseDate && (
                           <div>
                             <p className="text-sm font-medium text-muted-foreground">Date d'achat</p>
-                            <p className="text-sm font-medium">{formatDate(cattle.source.dateAchat)}</p>
+                            <p className="text-sm font-medium">{formatDate(cattle.source.purchaseDate)}</p>
                           </div>
                         )}
-                        {cattle.source.categorieAchat && (
+                        {cattle.source.purchaseCategory && (
                           <div>
                             <p className="text-sm font-medium text-muted-foreground">Catégorie à l'achat</p>
-                            <Badge variant="outline" className={getCategoryColor(cattle.source.categorieAchat)}>
-                              {cattle.source.categorieAchat}
+                            <Badge variant="outline" className={getCategoryColor(cattle.source.purchaseCategory)}>
+                              {cattle.source.purchaseCategory}
                             </Badge>
                           </div>
                         )}
-                        {cattle.source.prixAchat && (
+                        {cattle.source.purchasePrice && (
                           <div>
                             <p className="text-sm font-medium text-muted-foreground">Prix d'achat</p>
-                            <p className="text-sm font-medium">{cattle.source.prixAchat.toLocaleString('fr-FR')} Ar</p>
+                            <p className="text-sm font-medium">{cattle.source.purchasePrice.toLocaleString('fr-FR')} Ar</p>
                           </div>
                         )}
 
                       </div>
-                      {cattle.source.remarquesAchat && (
+                      {cattle.source.purchaseNotes && (
                         <div className="pt-2 border-t">
                           <p className="text-sm font-medium text-muted-foreground mb-2">Remarques</p>
-                          <p className="text-sm text-muted-foreground italic">"{cattle.source.remarquesAchat}"</p>
+                          <p className="text-sm text-muted-foreground italic">"{cattle.source.purchaseNotes}"</p>
                         </div>
                       )}
                     </CollapsibleContent>
@@ -394,27 +394,27 @@ export default function CattleDetailsPage() {
                       <div className="pl-6 space-y-1">
                         <p className="text-sm text-muted-foreground">
                           {cattle.source.type === 'Né dans le troupeau'
-                            ? `Né(e) dans notre troupeau le ${formatDate(cattle.dateNaissance)}`
-                            : `Né(e) le ${formatDate(cattle.dateNaissance)}`
+                            ? `Né(e) dans notre troupeau le ${formatDate(cattle.birthDate)}`
+                            : `Né(e) le ${formatDate(cattle.birthDate)}`
                           }
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          Âge actuel: {calculateAge(cattle.dateNaissance)}
+                          Âge actuel: {calculateAge(cattle.birthDate)}
                         </p>
-                        {cattle.source.mereId && (
+                        {cattle.source.motherId && (
                           <div className="flex items-center space-x-1">
                             <span className="text-sm text-muted-foreground">Mère:</span>
-                            {allCattle?.find(c => c.id === cattle.source.mereId) ? (
+                            {allCattle?.find(c => c.id === cattle.source.motherId) ? (
                               <HoverCard>
                                 <HoverCardTrigger asChild>
                                   <span className="text-sm text-primary hover:underline font-medium cursor-pointer">
-                                    {allCattle.find(c => c.id === cattle.source.mereId)?.nom}
-                                    {allCattle.find(c => c.id === cattle.source.mereId)?.surnom && ` (${allCattle.find(c => c.id === cattle.source.mereId)?.surnom})`}
+                                    {allCattle.find(c => c.id === cattle.source.motherId)?.name}
+                                    {allCattle.find(c => c.id === cattle.source.motherId)?.nickname && ` (${allCattle.find(c => c.id === cattle.source.motherId)?.nickname})`}
                                   </span>
                                 </HoverCardTrigger>
                                 <HoverCardContent className="w-80">
                                   {(() => {
-                                    const mother = allCattle.find(c => c.id === cattle.source.mereId);
+                                    const mother = allCattle.find(c => c.id === cattle.source.motherId);
                                     if (!mother) return null;
                                     const motherImageIndex = parseInt(mother.id.slice(1)) % cattleImages.length;
                                     const motherImage = mother.photo || cattleImages[motherImageIndex];
@@ -423,18 +423,18 @@ export default function CattleDetailsPage() {
                                       <div className="grid gap-4">
                                         <div className="space-y-2">
                                           <h4 className="font-medium leading-none">
-                                            {mother.nom}
-                                            {mother.surnom && <span className="text-muted-foreground font-normal"> ({mother.surnom})</span>}
+                                            {mother.name}
+                                            {mother.nickname && <span className="text-muted-foreground font-normal"> ({mother.nickname})</span>}
                                           </h4>
                                           <p className="text-sm text-muted-foreground">ID: {mother.id}</p>
                                         </div>
                                         <div className="flex items-center gap-4">
                                           <div className="h-16 w-16 rounded-md overflow-hidden">
-                                            <img src={motherImage} alt={mother.nom} className="h-full w-full object-cover" />
+                                            <img src={motherImage} alt={mother.name} className="h-full w-full object-cover" />
                                           </div>
                                           <div className="space-y-1">
-                                            <Badge className={getCategoryColor(mother.categorie)}>{mother.categorie}</Badge>
-                                            <p className="text-xs text-muted-foreground">{calculateAge(mother.dateNaissance)}</p>
+                                            <Badge className={getCategoryColor(mother.category)}>{mother.category}</Badge>
+                                            <p className="text-xs text-muted-foreground">{calculateAge(mother.birthDate)}</p>
                                           </div>
                                         </div>
                                         <Link
@@ -452,16 +452,16 @@ export default function CattleDetailsPage() {
                                 </HoverCardContent>
                               </HoverCard>
                             ) : (
-                              <span className="text-sm text-muted-foreground">{cattle.source.mereId}</span>
+                              <span className="text-sm text-muted-foreground">{cattle.source.motherId}</span>
                             )}
                           </div>
                         )}
-                        {cattle.genre === 'F' && (
+                        {cattle.gender === 'F' && (
                           <p className="text-sm text-primary font-medium">
                             ♀ Capable de reproduction
                           </p>
                         )}
-                        {cattle.genre === 'M' && (
+                        {cattle.gender === 'M' && (
                           <p className="text-sm text-primary font-medium">
                             ♂ Reproducteur potentiel
                           </p>
@@ -484,21 +484,21 @@ export default function CattleDetailsPage() {
                                   <div className="flex items-center space-x-3">
                                     <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
                                       <span className="text-xs font-medium text-primary">
-                                        {descendant.genre === 'M' ? '♂' : '♀'}
+                                        {descendant.gender === 'M' ? '♂' : '♀'}
                                       </span>
                                     </div>
                                     <div>
                                       <p className="text-sm font-medium text-primary hover:underline">
-                                        {descendant.nom}
-                                        {descendant.surnom && <span className="text-muted-foreground font-normal"> ({descendant.surnom})</span>}
+                                        {descendant.name}
+                                        {descendant.nickname && <span className="text-muted-foreground font-normal"> ({descendant.nickname})</span>}
                                       </p>
                                       <p className="text-xs text-muted-foreground">
-                                        {descendant.id} • Né le {formatDate(descendant.dateNaissance)}
+                                        {descendant.id} • Né le {formatDate(descendant.birthDate)}
                                       </p>
                                     </div>
                                   </div>
                                   <Badge variant="outline" className="text-xs">
-                                    {calculateAge(descendant.dateNaissance)}
+                                    {calculateAge(descendant.birthDate)}
                                   </Badge>
                                 </div>
                               </HoverCardTrigger>
@@ -511,18 +511,18 @@ export default function CattleDetailsPage() {
                                     <div className="grid gap-4">
                                       <div className="space-y-2">
                                         <h4 className="font-medium leading-none">
-                                          {descendant.nom}
-                                          {descendant.surnom && <span className="text-muted-foreground font-normal"> ({descendant.surnom})</span>}
+                                          {descendant.name}
+                                          {descendant.nickname && <span className="text-muted-foreground font-normal"> ({descendant.nickname})</span>}
                                         </h4>
                                         <p className="text-sm text-muted-foreground">ID: {descendant.id}</p>
                                       </div>
                                       <div className="flex items-center gap-4">
                                         <div className="h-16 w-16 rounded-md overflow-hidden">
-                                          <img src={descendantImage} alt={descendant.nom} className="h-full w-full object-cover" />
+                                          <img src={descendantImage} alt={descendant.name} className="h-full w-full object-cover" />
                                         </div>
                                         <div className="space-y-1">
-                                          <Badge className={getCategoryColor(descendant.categorie)}>{descendant.categorie}</Badge>
-                                          <p className="text-xs text-muted-foreground">{calculateAge(descendant.dateNaissance)}</p>
+                                          <Badge className={getCategoryColor(descendant.category)}>{descendant.category}</Badge>
+                                          <p className="text-xs text-muted-foreground">{calculateAge(descendant.birthDate)}</p>
                                         </div>
                                       </div>
                                       <Link
@@ -651,9 +651,9 @@ export default function CattleDetailsPage() {
                         <div className="flex-1">
                           <div className="flex items-start justify-between">
                             <div>
-                              <h4 className="font-medium">{getMedicamentName(treatment.produit)}</h4>
+                              <h4 className="font-medium">{getMedicamentName(treatment.product)}</h4>
                               <p className="text-sm text-muted-foreground">
-                                Dose: {treatment.dose} • Intervenant: {getVeterinarianName(treatment.veterinaire)}
+                                Dose: {treatment.dosage} • Intervenant: {getVeterinarianName(treatment.veterinarian)}
                               </p>
                               {treatment.notes && (
                                 <p className="text-sm text-muted-foreground mt-1">
@@ -684,13 +684,13 @@ export default function CattleDetailsPage() {
         open={showAddTreatment}
         onOpenChange={setShowAddTreatment}
         onAdd={handleAddTreatment}
-        cattleName={`${cattle.nom}${cattle.surnom ? ` (${cattle.surnom})` : ''}`}
+        cattleName={`${cattle.name}${cattle.nickname ? ` (${cattle.nickname})` : ''}`}
       />
       <AddEventModal
         open={showAddEvent}
         onOpenChange={setShowAddEvent}
         onAdd={handleAddEvent}
-        cattleName={`${cattle.nom}${cattle.surnom ? ` (${cattle.surnom})` : ''}`}
+        cattleName={`${cattle.name}${cattle.nickname ? ` (${cattle.nickname})` : ''}`}
       />
     </div>
   );

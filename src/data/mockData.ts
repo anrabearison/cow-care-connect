@@ -57,26 +57,26 @@ export const getTypeEvenementIcon = (id: string): string => {
 export const mockCattleData: Cattle[] = [
   {
     id: 'B001',
-    nom: 'Zébu Alpha',
-    surnom: 'Le Chef',
-    genre: 'M',
-    dateNaissance: '2023-07-15',
-    caractere: 'Docile',
-    categorie: 'Taureau',
-    marque: 'M-001',
-    signeParticulier: 'Tache blanche sur le flanc gauche',
+    name: 'Zébu Alpha',
+    nickname: 'Le Chef',
+    gender: 'M',
+    birthDate: '2023-07-15',
+    character: 'Docile',
+    category: 'Taureau',
+    brand: 'M-001',
+    distinctiveSign: 'Tache blanche sur le flanc gauche',
     photo: '/src/assets/cattle-portrait-1.jpg',
     source: {
       type: 'Acheté',
-      fournisseur: 'Ferme Mahitsy',
-      dateAchat: '2023-08-01',
-      categorieAchat: 'Veau',
-      prixAchat: 180000,
-      poidsAchat: 280,
-      etatSanteAchat: 'Excellent',
-      remarquesAchat: 'Jeune taureau prometteur, bon potentiel reproducteur'
+      supplier: 'Ferme Mahitsy',
+      purchaseDate: '2023-08-01',
+      purchaseCategory: 'Veau',
+      purchasePrice: 180000,
+      purchaseWeight: 280,
+      purchaseHealthStatus: 'Excellent',
+      purchaseNotes: 'Jeune taureau prometteur, bon potentiel reproducteur'
     },
-    evenements: [
+    events: [
       {
         id: 'E001',
         type: 'TE001',
@@ -98,40 +98,40 @@ export const mockCattleData: Cattle[] = [
         description: 'Vaccination annuelle complète'
       }
     ],
-    traitements: [
+    treatments: [
       {
         id: 'T001',
         type: 'Antibiotique',
         date: '2024-03-05',
-        produit: 'M001',
-        dose: '10ml',
-        veterinaire: 'V001',
+        product: 'M001',
+        dosage: '10ml',
+        veterinarian: 'V001',
         notes: 'Infection respiratoire légère'
       },
       {
         id: 'T002',
         type: 'Vaccin',
         date: '2024-03-01',
-        produit: 'M002',
-        dose: '2ml',
-        veterinaire: 'V001'
+        product: 'M002',
+        dosage: '2ml',
+        veterinarian: 'V001'
       }
     ]
   },
   {
     id: 'B002',
-    nom: 'Belle Mahitsy',
-    surnom: 'Bella',
-    genre: 'F',
-    dateNaissance: '2022-12-03',
-    caractere: 'Timide',
-    categorie: 'Vache',
-    marque: 'M-002',
+    name: 'Belle Mahitsy',
+    nickname: 'Bella',
+    gender: 'F',
+    birthDate: '2022-12-03',
+    character: 'Timide',
+    category: 'Vache',
+    brand: 'M-002',
     photo: '/src/assets/cattle-portrait-2.jpg',
     source: {
       type: 'Né dans le troupeau'
     },
-    evenements: [
+    events: [
       {
         id: 'E004',
         type: 'TE001',
@@ -145,32 +145,32 @@ export const mockCattleData: Cattle[] = [
         description: 'Pesée mensuelle - 380kg'
       }
     ],
-    traitements: [
+    treatments: [
       {
         id: 'T003',
         type: 'Vermifuge',
         date: '2024-02-20',
-        produit: 'M003',
-        dose: '15ml',
-        veterinaire: 'V002'
+        product: 'M003',
+        dosage: '15ml',
+        veterinarian: 'V002'
       }
     ]
   },
   {
     id: 'B003',
-    nom: 'Petit Vato',
-    surnom: 'Vato',
-    genre: 'M',
-    dateNaissance: '2024-01-20',
-    caractere: 'Energique',
-    categorie: 'Veau',
-    signeParticulier: 'Oreille droite fendue',
+    name: 'Petit Vato',
+    nickname: 'Vato',
+    gender: 'M',
+    birthDate: '2024-01-20',
+    character: 'Energique',
+    category: 'Veau',
+    distinctiveSign: 'Oreille droite fendue',
     photo: '/src/assets/cattle-portrait-3.jpg',
     source: {
       type: 'Né dans le troupeau',
-      mereId: 'B008' // Ranitra Mendrika
+      motherId: 'B008' // Ranitra Mendrika
     },
-    evenements: [
+    events: [
       {
         id: 'E006',
         type: 'TE001',
@@ -184,35 +184,35 @@ export const mockCattleData: Cattle[] = [
         description: 'Contrôle de routine - excellent état'
       }
     ],
-    traitements: [
+    treatments: [
       {
         id: 'T004',
         type: 'Vaccin',
         date: '2024-02-20',
-        produit: 'M004',
-        dose: '1ml',
-        veterinaire: 'V001'
+        product: 'M004',
+        dosage: '1ml',
+        veterinarian: 'V001'
       }
     ]
   },
   {
     id: 'B004',
-    nom: 'Toky Mainty',
-    genre: 'F',
-    dateNaissance: '2023-05-12',
-    caractere: 'Docile',
-    categorie: 'Vache',
+    name: 'Toky Mainty',
+    gender: 'F',
+    birthDate: '2023-05-12',
+    character: 'Docile',
+    category: 'Vache',
     source: {
       type: 'Acheté',
-      fournisseur: 'Marché Ambohimanarina',
-      dateAchat: '2023-06-15',
-      categorieAchat: 'Vache',
-      prixAchat: 220000,
-      poidsAchat: 340,
-      etatSanteAchat: 'Bon',
-      remarquesAchat: 'Vache laitière, bonne production attendue'
+      supplier: 'Marché Ambohimanarina',
+      purchaseDate: '2023-06-15',
+      purchaseCategory: 'Vache',
+      purchasePrice: 220000,
+      purchaseWeight: 340,
+      purchaseHealthStatus: 'Bon',
+      purchaseNotes: 'Vache laitière, bonne production attendue'
     },
-    evenements: [
+    events: [
       {
         id: 'E008',
         type: 'TE001',
@@ -220,26 +220,26 @@ export const mockCattleData: Cattle[] = [
         description: 'Née chez l\'ancien propriétaire'
       }
     ],
-    traitements: []
+    treatments: []
   },
   {
     id: 'B005',
-    nom: 'Rambo Masina',
-    genre: 'M',
-    dateNaissance: '2022-08-22',
-    caractere: 'Agressif',
-    categorie: 'Taureau',
+    name: 'Rambo Masina',
+    gender: 'M',
+    birthDate: '2022-08-22',
+    character: 'Agressif',
+    category: 'Taureau',
     source: {
       type: 'Acheté',
-      fournisseur: 'Ferme Antsirabe',
-      dateAchat: '2023-01-10',
-      categorieAchat: 'Taureau',
-      prixAchat: 350000,
-      poidsAchat: 520,
-      etatSanteAchat: 'Excellent',
-      remarquesAchat: 'Taureau reproducteur de qualité, lignée pure'
+      supplier: 'Ferme Antsirabe',
+      purchaseDate: '2023-01-10',
+      purchaseCategory: 'Taureau',
+      purchasePrice: 350000,
+      purchaseWeight: 520,
+      purchaseHealthStatus: 'Excellent',
+      purchaseNotes: 'Taureau reproducteur de qualité, lignée pure'
     },
-    evenements: [
+    events: [
       {
         id: 'E009',
         type: 'TE003',
@@ -247,29 +247,29 @@ export const mockCattleData: Cattle[] = [
         description: 'Vaccination de rappel'
       }
     ],
-    traitements: [
+    treatments: [
       {
         id: 'T005',
         type: 'Vaccin',
         date: '2024-02-10',
-        produit: 'M005',
-        dose: '3ml',
-        veterinaire: 'V003'
+        product: 'M005',
+        dosage: '3ml',
+        veterinarian: 'V003'
       }
     ]
   },
   {
     id: 'B006',
-    nom: 'Miandry Fotsy',
-    genre: 'F',
-    dateNaissance: '2024-02-14',
-    caractere: 'Timide',
-    categorie: 'Veau',
+    name: 'Miandry Fotsy',
+    gender: 'F',
+    birthDate: '2024-02-14',
+    character: 'Timide',
+    category: 'Veau',
     source: {
       type: 'Né dans le troupeau',
-      mereId: 'B002' // Belle Mahitsy
+      motherId: 'B002' // Belle Mahitsy
     },
-    evenements: [
+    events: [
       {
         id: 'E010',
         type: 'TE001',
@@ -277,19 +277,19 @@ export const mockCattleData: Cattle[] = [
         description: 'Veau femelle née le jour de la Saint-Valentin'
       }
     ],
-    traitements: []
+    treatments: []
   },
   {
     id: 'B007',
-    nom: 'Kely Volamena',
-    genre: 'M',
-    dateNaissance: '2023-11-30',
-    caractere: 'Energique',
-    categorie: 'Veau',
+    name: 'Kely Volamena',
+    gender: 'M',
+    birthDate: '2023-11-30',
+    character: 'Energique',
+    category: 'Veau',
     source: {
       type: 'Né dans le troupeau'
     },
-    evenements: [
+    events: [
       {
         id: 'E011',
         type: 'TE001',
@@ -297,26 +297,26 @@ export const mockCattleData: Cattle[] = [
         description: 'Dernier né de l\'année 2023'
       }
     ],
-    traitements: []
+    treatments: []
   },
   {
     id: 'B008',
-    nom: 'Ranitra Mendrika',
-    genre: 'F',
-    dateNaissance: '2022-04-08',
-    caractere: 'Docile',
-    categorie: 'Vache',
+    name: 'Ranitra Mendrika',
+    gender: 'F',
+    birthDate: '2022-04-08',
+    character: 'Docile',
+    category: 'Vache',
     source: {
       type: 'Acheté',
-      fournisseur: 'Coopérative Fianarantsoa',
-      dateAchat: '2022-09-12',
-      categorieAchat: 'Vache',
-      prixAchat: 195000,
-      poidsAchat: 380,
-      etatSanteAchat: 'Très bon',
-      remarquesAchat: 'Bonne reproductrice, déjà gestante lors de l\'achat'
+      supplier: 'Coopérative Fianarantsoa',
+      purchaseDate: '2022-09-12',
+      purchaseCategory: 'Vache',
+      purchasePrice: 195000,
+      purchaseWeight: 380,
+      purchaseHealthStatus: 'Très bon',
+      purchaseNotes: 'Bonne reproductrice, déjà gestante lors de l\'achat'
     },
-    evenements: [
+    events: [
       {
         id: 'E012',
         type: 'TE006',
@@ -324,35 +324,35 @@ export const mockCattleData: Cattle[] = [
         description: 'Saillie réussie'
       }
     ],
-    traitements: [
+    treatments: [
       {
         id: 'T006',
         type: 'Vitamine',
         date: '2024-01-20',
-        produit: 'M006',
-        dose: '20ml',
-        veterinaire: 'V001'
+        product: 'M006',
+        dosage: '20ml',
+        veterinarian: 'V001'
       }
     ]
   },
   {
     id: 'B009',
-    nom: 'Lehibe Tandroka',
-    genre: 'M',
-    dateNaissance: '2021-12-10',
-    caractere: 'Agressif',
-    categorie: 'Taureau',
+    name: 'Lehibe Tandroka',
+    gender: 'M',
+    birthDate: '2021-12-10',
+    character: 'Agressif',
+    category: 'Taureau',
     source: {
       type: 'Acheté',
-      fournisseur: 'Ferme Morondava',
-      dateAchat: '2022-03-15',
-      categorieAchat: 'Taureau',
-      prixAchat: 420000,
-      poidsAchat: 580,
-      etatSanteAchat: 'Excellent',
-      remarquesAchat: 'Taureau dominant, nécessite enclos renforcé'
+      supplier: 'Ferme Morondava',
+      purchaseDate: '2022-03-15',
+      purchaseCategory: 'Taureau',
+      purchasePrice: 420000,
+      purchaseWeight: 580,
+      purchaseHealthStatus: 'Excellent',
+      purchaseNotes: 'Taureau dominant, nécessite enclos renforcé'
     },
-    evenements: [
+    events: [
       {
         id: 'E013',
         type: 'TE002',
@@ -360,20 +360,20 @@ export const mockCattleData: Cattle[] = [
         description: 'Isolé temporairement'
       }
     ],
-    traitements: []
+    treatments: []
   },
   {
     id: 'B010',
-    nom: 'Soa Mafy',
-    genre: 'F',
-    dateNaissance: '2023-09-05',
-    caractere: 'Energique',
-    categorie: 'Vache',
+    name: 'Soa Mafy',
+    gender: 'F',
+    birthDate: '2023-09-05',
+    character: 'Energique',
+    category: 'Vache',
     source: {
       type: 'Né dans le troupeau',
-      mereId: 'B004' // Toky Mainty
+      motherId: 'B004' // Toky Mainty
     },
-    evenements: [
+    events: [
       {
         id: 'E014',
         type: 'TE005',
@@ -381,26 +381,26 @@ export const mockCattleData: Cattle[] = [
         description: 'Pesée de croissance - 280kg'
       }
     ],
-    traitements: []
+    treatments: []
   },
   {
     id: 'B011',
-    nom: 'Vary Fotsy',
-    genre: 'M',
-    dateNaissance: '2023-03-18',
-    caractere: 'Docile',
-    categorie: 'Taureau',
+    name: 'Vary Fotsy',
+    gender: 'M',
+    birthDate: '2023-03-18',
+    character: 'Docile',
+    category: 'Taureau',
     source: {
       type: 'Acheté',
-      fournisseur: 'Marché Antananarivo',
-      dateAchat: '2023-07-22',
-      categorieAchat: 'Veau',
-      prixAchat: 160000,
-      poidsAchat: 250,
-      etatSanteAchat: 'Bon',
-      remarquesAchat: 'Jeune avec bon potentiel de croissance'
+      supplier: 'Marché Antananarivo',
+      purchaseDate: '2023-07-22',
+      purchaseCategory: 'Veau',
+      purchasePrice: 160000,
+      purchaseWeight: 250,
+      purchaseHealthStatus: 'Bon',
+      purchaseNotes: 'Jeune avec bon potentiel de croissance'
     },
-    evenements: [
+    events: [
       {
         id: 'E015',
         type: 'TE004',
@@ -408,19 +408,19 @@ export const mockCattleData: Cattle[] = [
         description: 'Contrôle sanitaire mensuel'
       }
     ],
-    traitements: []
+    treatments: []
   },
   {
     id: 'B012',
-    nom: 'Malala Tsara',
-    genre: 'F',
-    dateNaissance: '2022-06-25',
-    caractere: 'Timide',
-    categorie: 'Vache',
+    name: 'Malala Tsara',
+    gender: 'F',
+    birthDate: '2022-06-25',
+    character: 'Timide',
+    category: 'Vache',
     source: {
       type: 'Né dans le troupeau'
     },
-    evenements: [
+    events: [
       {
         id: 'E016',
         type: 'TE006',
@@ -428,14 +428,14 @@ export const mockCattleData: Cattle[] = [
         description: 'Gestation confirmée'
       }
     ],
-    traitements: [
+    treatments: [
       {
         id: 'T007',
         type: 'Vitamine',
         date: '2024-02-15',
-        produit: 'M007',
-        dose: '25ml',
-        veterinaire: 'V002'
+        product: 'M007',
+        dosage: '25ml',
+        veterinarian: 'V002'
       }
     ]
   }
@@ -443,10 +443,10 @@ export const mockCattleData: Cattle[] = [
 
 export const getRecentEvents = () => {
   const allEvents = mockCattleData.flatMap(cattle =>
-    cattle.evenements.map(event => ({
+    cattle.events.map(event => ({
       ...event,
       cattleId: cattle.id,
-      cattleName: cattle.nom
+      cattleName: cattle.name
     }))
   );
 

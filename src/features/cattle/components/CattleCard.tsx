@@ -32,8 +32,8 @@ const calculateAge = (birthDate: string) => {
 
 // Helper to get category description from mock data
 const getCategoryDescription = (key: string) => {
-  const cat = categories.find((c) => c.nom === key);
-  return cat ? cat.nom : key;
+  const cat = categories.find((c) => c.name === key);
+  return cat ? cat.name : key;
 };
 
 const getCharacterColor = (character: string) => {
@@ -81,7 +81,7 @@ export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
         {cattle.photo || imageIndex < 3 ? (
           <img
             src={cattleImage}
-            alt={`Photo de ${cattle.nom}`}
+            alt={`Photo de ${cattle.name}`}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             loading="lazy"
             decoding="async"
@@ -98,7 +98,7 @@ export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
         </div>
         <div className="absolute top-3 left-3">
           <div className="text-2xl bg-white/90 rounded-full w-8 h-8 flex items-center justify-center">
-            {getGenderIcon(cattle.genre)}
+            {getGenderIcon(cattle.gender)}
           </div>
         </div>
       </div>
@@ -107,36 +107,36 @@ export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
         <div className="flex items-start justify-between mb-3">
           <div>
             <h3 className="text-xl font-bold text-foreground">
-              {cattle.nom}{cattle.surnom && ` (${cattle.surnom})`}
+              {cattle.name}{cattle.nickname && ` (${cattle.nickname})`}
             </h3>
             <div className="flex items-center space-x-2 text-sm text-muted-foreground mt-1">
               <Calendar className="h-4 w-4" />
-              <span>{calculateAge(cattle.dateNaissance)}</span>
+              <span>{calculateAge(cattle.birthDate)}</span>
             </div>
           </div>
           <Heart className="h-5 w-5 text-muted-foreground hover:text-red-500 cursor-pointer transition-colors" />
         </div>
 
         <div className="space-y-3 mb-4">
-          {cattle.categorie && (
+          {cattle.category && (
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Catégorie</span>
-              <Badge className={getCategoryColor(cattle.categorie)}>
-                {getCategoryDescription(cattle.categorie)}
+              <Badge className={getCategoryColor(cattle.category)}>
+                {getCategoryDescription(cattle.category)}
               </Badge>
             </div>
           )}
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Caractère</span>
-            <Badge className={`text-xs ${getCharacterColor(cattle.caractere)}`}>
-              {cattle.caractere}
+            <Badge className={`text-xs ${getCharacterColor(cattle.character)}`}>
+              {cattle.character}
             </Badge>
 
           </div>
 
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Sexe</span>
-            <span className="text-sm font-medium text-foreground">{cattle.genre === 'M' ? 'Mâle' : 'Femelle'}</span>
+            <span className="text-sm font-medium text-foreground">{cattle.gender === 'M' ? 'Mâle' : 'Femelle'}</span>
           </div>
 
 
@@ -152,7 +152,7 @@ export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Événements</span>
             <span className="text-sm font-medium text-primary">
-              {cattle.evenements.length}
+              {cattle.events.length}
             </span>
           </div>
         </div>

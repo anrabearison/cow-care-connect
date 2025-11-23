@@ -1,27 +1,27 @@
 export interface Cattle {
   id: string;
-  nom: string;
-  surnom?: string;
-  genre: 'M' | 'F';
-  dateNaissance: string;
-  caractere: 'Docile' | 'Agressif' | 'Timide' | 'Energique';
-  categorie: 'Taureau' | 'Veau' | 'Zébu' | 'Vache';
-  marque?: string;
-  signeParticulier?: string;
+  name: string;
+  nickname?: string;
+  gender: 'M' | 'F';
+  birthDate: string;
+  character: 'Docile' | 'Agressif' | 'Timide' | 'Energique';
+  category: 'Taureau' | 'Veau' | 'Zébu' | 'Vache';
+  brand?: string;
+  distinctiveSign?: string;
   photo?: string;
   source: {
     type: 'Acheté' | 'Né dans le troupeau';
-    fournisseur?: string;
-    dateAchat?: string;
-    categorieAchat?: 'Taureau' | 'Veau' | 'Zébu' | 'Vache';
-    prixAchat?: number;
-    poidsAchat?: number;
-    etatSanteAchat?: string;
-    remarquesAchat?: string;
-    mereId?: string;
+    supplier?: string;
+    purchaseDate?: string;
+    purchaseCategory?: 'Taureau' | 'Veau' | 'Zébu' | 'Vache';
+    purchasePrice?: number;
+    purchaseWeight?: number;
+    purchaseHealthStatus?: string;
+    purchaseNotes?: string;
+    motherId?: string;
   };
-  evenements: CattleEvent[];
-  traitements: Treatment[];
+  events: CattleEvent[];
+  treatments: Treatment[];
 }
 
 export interface CattleEvent {
@@ -36,9 +36,9 @@ export interface Treatment {
   id: string;
   type: 'Antibiotique' | 'Vaccin' | 'Vermifuge' | 'Anti-inflammatoire' | 'Vitamine' | 'Autre';
   date: string;
-  produit: string; // ID du médicament
-  dose: string;
-  veterinaire: string; // ID de l'intervenant
+  product: string; // ID du médicament
+  dosage: string;
+  veterinarian: string; // ID de l'intervenant
   notes?: string;
 }
 

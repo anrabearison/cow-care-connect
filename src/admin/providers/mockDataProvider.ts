@@ -5,14 +5,14 @@ import { categories } from '@/data/categories';
 
 // Aplatir les événements et traitements de tous les bovins
 const allEvenements = mockCattleData.flatMap(cattle =>
-  cattle.evenements.map(event => ({
+  cattle.events.map(event => ({
     ...event,
     cattleId: cattle.id
   }))
 );
 
 const allTraitements = mockCattleData.flatMap(cattle =>
-  cattle.traitements.map(treatment => ({
+  cattle.treatments.map(treatment => ({
     ...treatment,
     cattleId: cattle.id
   }))
@@ -20,8 +20,8 @@ const allTraitements = mockCattleData.flatMap(cattle =>
 
 const db = {
   cattle: mockCattleData,
-  evenements: allEvenements,
-  traitements: allTraitements,
+  events: allEvenements,
+  treatments: allTraitements,
   categories: categories,
   users: [
     { id: 1, name: 'Jean Rakoto', email: 'admin@ferme.mg', role: 'admin', password: 'admin123' },
@@ -63,13 +63,13 @@ export const dataProvider: DataProvider = {
     if (resource === 'categories') {
       // Vérifier l'unicité du nom
       const { data: existingData } = await baseDataProvider.getList('categories', {
-        filter: { q: params.data.nom }, // fakeRestProvider utilise 'q' pour la recherche textuelle ou filtre exact si supporté
+        filter: { q: params.data.name }, // fakeRestProvider utilise 'q' pour la recherche textuelle ou filtre exact si supporté
         pagination: { page: 1, perPage: 100 },
         sort: { field: 'id', order: 'ASC' }
       });
 
       // Filtrage manuel car le mock provider peut être limité
-      const exists = existingData.some((c: any) => c.nom.toLowerCase() === params.data.nom.toLowerCase());
+      const exists = existingData.some((c: any) => c.name.toLowerCase() === params.data.name.toLowerCase());
       if (exists) {
         return Promise.reject(new Error('Une catégorie avec ce nom existe déjà.'));
       }
@@ -98,7 +98,7 @@ export const dataProvider: DataProvider = {
       });
 
       const exists = existingData.some((c: any) =>
-        c.nom.toLowerCase() === params.data.nom.toLowerCase() && c.id !== params.id
+        c.name.toLowerCase() === params.data.name.toLowerCase() && c.id !== params.id
       );
 
       if (exists) {

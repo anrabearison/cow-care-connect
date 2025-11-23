@@ -18,22 +18,22 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
     const [formData, setFormData] = useState({
         type: '' as Treatment['type'],
         date: new Date().toISOString().split('T')[0],
-        produit: '',
-        dose: '',
-        veterinaire: '',
+        product: '',
+        dosage: '',
+        veterinarian: '',
         notes: ''
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (formData.type && formData.date && formData.produit && formData.dose && formData.veterinaire) {
+        if (formData.type && formData.date && formData.product && formData.dosage && formData.veterinarian) {
             onAdd(formData);
             setFormData({
                 type: '' as Treatment['type'],
                 date: new Date().toISOString().split('T')[0],
-                produit: '',
-                dose: '',
-                veterinaire: '',
+                product: '',
+                dosage: '',
+                veterinarian: '',
                 notes: ''
             });
             onOpenChange(false);
@@ -83,12 +83,12 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="produit">Médicament *</Label>
+                            <Label htmlFor="product">Médicament *</Label>
                             <Select
-                                value={formData.produit}
-                                onValueChange={(value) => setFormData({ ...formData, produit: value })}
+                                value={formData.product}
+                                onValueChange={(value) => setFormData({ ...formData, product: value })}
                             >
-                                <SelectTrigger id="produit">
+                                <SelectTrigger id="product">
                                     <SelectValue placeholder="Sélectionner un médicament" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -104,23 +104,23 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="dose">Dose *</Label>
+                            <Label htmlFor="dosage">Dose *</Label>
                             <Input
-                                id="dose"
+                                id="dosage"
                                 placeholder="Ex: 10ml"
-                                value={formData.dose}
-                                onChange={(e) => setFormData({ ...formData, dose: e.target.value })}
+                                value={formData.dosage}
+                                onChange={(e) => setFormData({ ...formData, dosage: e.target.value })}
                                 required
                             />
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="veterinaire">Intervenant *</Label>
+                            <Label htmlFor="veterinarian">Intervenant *</Label>
                             <Select
-                                value={formData.veterinaire}
-                                onValueChange={(value) => setFormData({ ...formData, veterinaire: value })}
+                                value={formData.veterinarian}
+                                onValueChange={(value) => setFormData({ ...formData, veterinarian: value })}
                             >
-                                <SelectTrigger id="veterinaire">
+                                <SelectTrigger id="veterinarian">
                                     <SelectValue placeholder="Sélectionner un intervenant" />
                                 </SelectTrigger>
                                 <SelectContent>

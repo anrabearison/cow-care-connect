@@ -4,7 +4,7 @@ export const CategoryList = () => (
     <List>
         <Datagrid rowClick="edit">
             <TextField source="id" label="ID" />
-            <TextField source="nom" label="Nom" />
+            <TextField source="name" label="Nom" />
             <EditButton />
         </Datagrid>
     </List>
@@ -14,7 +14,7 @@ export const CategoryEdit = () => (
     <Edit>
         <SimpleForm>
             <TextInput source="id" label="ID" disabled />
-            <TextInput source="nom" label="Nom" />
+            <TextInput source="name" label="Nom" />
         </SimpleForm>
     </Edit>
 );
@@ -22,7 +22,7 @@ export const CategoryEdit = () => (
 export const CategoryCreate = () => (
     <Create>
         <SimpleForm>
-            <TextInput source="nom" label="Nom" />
+            <TextInput source="name" label="Nom" />
         </SimpleForm>
     </Create>
 );
@@ -31,7 +31,7 @@ export const CategoryShow = () => (
     <Show>
         <SimpleShowLayout>
             <TextField source="id" label="ID" />
-            <TextField source="nom" label="Nom" />
+            <TextField source="name" label="Nom" />
         </SimpleShowLayout>
     </Show>
 );

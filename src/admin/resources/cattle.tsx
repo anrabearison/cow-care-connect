@@ -37,17 +37,17 @@ import {
 // Filtres pour la liste des bovins
 const cattleFilters = [
   <TextInput source="q" label="Rechercher" alwaysOn />,
-  <SelectInput source="genre" label="Genre" choices={[
+  <SelectInput source="gender" label="Genre" choices={[
     { id: 'M', name: 'Mâle' },
     { id: 'F', name: 'Femelle' },
   ]} />,
-  <SelectInput source="categorie" label="Catégorie" choices={[
+  <SelectInput source="category" label="Catégorie" choices={[
     { id: 'Taureau', name: 'Taureau' },
     { id: 'Veau', name: 'Veau' },
     { id: 'Zébu', name: 'Zébu' },
     { id: 'Vache', name: 'Vache' },
   ]} />,
-  <SelectInput source="caractere" label="Caractère" choices={[
+  <SelectInput source="character" label="Caractère" choices={[
     { id: 'Docile', name: 'Docile' },
     { id: 'Agressif', name: 'Agressif' },
     { id: 'Timide', name: 'Timide' },
@@ -60,14 +60,14 @@ export const CattleList = () => (
   <List filters={cattleFilters}>
     <Datagrid rowClick="edit">
       <TextField source="id" label="ID" />
-      <TextField source="nom" label="Nom" />
-      <TextField source="surnom" label="Surnom" />
-      <TextField source="categorie" label="Catégorie" />
-      <TextField source="genre" label="Genre" />
-      <TextField source="marque" label="Marque" />
-      <TextField source="signeParticulier" label="Signe Particulier" />
-      <TextField source="caractere" label="Caractère" />
-      <DateField source="dateNaissance" label="Date de naissance" />
+      <TextField source="name" label="Nom" />
+      <TextField source="nickname" label="Surnom" />
+      <TextField source="category" label="Catégorie" />
+      <TextField source="gender" label="Genre" />
+      <TextField source="brand" label="Marque" />
+      <TextField source="distinctiveSign" label="Signe Particulier" />
+      <TextField source="character" label="Caractère" />
+      <DateField source="birthDate" label="Date de naissance" />
       <FunctionField
         label="Source"
         render={(record: any) => record.source?.type || 'Non défini'}
@@ -78,11 +78,11 @@ export const CattleList = () => (
       />
       <FunctionField
         label="Événements"
-        render={(record: any) => record.evenements?.length || 0}
+        render={(record: any) => record.events?.length || 0}
       />
       <FunctionField
         label="Traitements"
-        render={(record: any) => record.traitements?.length || 0}
+        render={(record: any) => record.treatments?.length || 0}
       />
       <ShowButton />
       <EditButton />
@@ -95,12 +95,12 @@ export const CattleList = () => (
 export const CattleEdit = () => (
   <Edit>
     <SimpleForm>
-      <TextInput source="nom" label="Nom" required />
-      <TextInput source="surnom" label="Surnom" />
-      <TextInput source="marque" label="Marque" />
-      <TextInput source="signeParticulier" label="Signe Particulier" />
+      <TextInput source="name" label="Nom" required />
+      <TextInput source="nickname" label="Surnom" />
+      <TextInput source="brand" label="Marque" />
+      <TextInput source="distinctiveSign" label="Signe Particulier" />
       <SelectInput
-        source="genre"
+        source="gender"
         label="Genre"
         choices={[
           { id: 'M', name: 'Mâle' },
@@ -109,7 +109,7 @@ export const CattleEdit = () => (
         required
       />
       <SelectInput
-        source="categorie"
+        source="category"
         label="Catégorie"
         choices={[
           { id: 'Taureau', name: 'Taureau' },
@@ -120,7 +120,7 @@ export const CattleEdit = () => (
         required
       />
       <SelectInput
-        source="caractere"
+        source="character"
         label="Caractère"
         choices={[
           { id: 'Docile', name: 'Docile' },
@@ -130,7 +130,7 @@ export const CattleEdit = () => (
         ]}
         required
       />
-      <DateInput source="dateNaissance" label="Date de naissance" required />
+      <DateInput source="birthDate" label="Date de naissance" required />
       <ImageInput source="photo" label="Photo" accept={{ 'image/*': ['.png', '.jpg', '.jpeg'] }}>
         <ImageField source="src" title="title" />
       </ImageInput>
@@ -143,10 +143,10 @@ export const CattleEdit = () => (
         ]}
         required
       />
-      <TextInput source="source.fournisseur" label="Fournisseur" />
-      <DateInput source="source.dateAchat" label="Date d'achat" />
+      <TextInput source="source.supplier" label="Fournisseur" />
+      <DateInput source="source.purchaseDate" label="Date d'achat" />
       <SelectInput
-        source="source.categorieAchat"
+        source="source.purchaseCategory"
         label="Catégorie à l'achat"
         choices={[
           { id: 'Taureau', name: 'Taureau' },
@@ -155,12 +155,12 @@ export const CattleEdit = () => (
           { id: 'Vache', name: 'Vache' },
         ]}
       />
-      <NumberInput source="source.prixAchat" label="Prix d'achat (Ar)" />
-      <NumberInput source="source.poidsAchat" label="Poids à l'achat (kg)" />
-      <TextInput source="source.etatSanteAchat" label="État de santé à l'achat" />
-      <TextInput source="source.remarquesAchat" label="Remarques achat" multiline rows={3} />
+      <NumberInput source="source.purchasePrice" label="Prix d'achat (Ar)" />
+      <NumberInput source="source.purchaseWeight" label="Poids à l'achat (kg)" />
+      <TextInput source="source.purchaseHealthStatus" label="État de santé à l'achat" />
+      <TextInput source="source.purchaseNotes" label="Remarques achat" multiline rows={3} />
 
-      <ArrayInput source="evenements" label="Événements">
+      <ArrayInput source="events" label="Événements">
         <SimpleFormIterator inline>
           <ReferenceInput source="type" reference="typeEvenements" label="Type">
             <AutocompleteInput optionText="nom" />
@@ -171,7 +171,7 @@ export const CattleEdit = () => (
         </SimpleFormIterator>
       </ArrayInput>
 
-      <ArrayInput source="traitements" label="Traitements">
+      <ArrayInput source="treatments" label="Traitements">
         <SimpleFormIterator inline>
           <SelectInput
             source="type"
@@ -186,11 +186,11 @@ export const CattleEdit = () => (
             ]}
           />
           <DateInput source="date" label="Date" />
-          <ReferenceInput source="produit" reference="medicaments" label="Médicament">
+          <ReferenceInput source="product" reference="medicaments" label="Médicament">
             <AutocompleteInput optionText="nom" />
           </ReferenceInput>
-          <TextInput source="dose" label="Dose" />
-          <ReferenceInput source="veterinaire" reference="veterinarians" label="Intervenant">
+          <TextInput source="dosage" label="Dose" />
+          <ReferenceInput source="veterinarian" reference="veterinarians" label="Intervenant">
             <AutocompleteInput optionText="nom" />
           </ReferenceInput>
           <TextInput source="notes" label="Notes" multiline />
@@ -204,12 +204,12 @@ export const CattleEdit = () => (
 export const CattleCreate = () => (
   <Create>
     <SimpleForm>
-      <TextInput source="nom" label="Nom" required />
-      <TextInput source="surnom" label="Surnom" />
-      <TextInput source="marque" label="Marque" />
-      <TextInput source="signeParticulier" label="Signe Particulier" />
+      <TextInput source="name" label="Nom" required />
+      <TextInput source="nickname" label="Surnom" />
+      <TextInput source="brand" label="Marque" />
+      <TextInput source="distinctiveSign" label="Signe Particulier" />
       <SelectInput
-        source="genre"
+        source="gender"
         label="Genre"
         choices={[
           { id: 'M', name: 'Mâle' },
@@ -218,7 +218,7 @@ export const CattleCreate = () => (
         required
       />
       <SelectInput
-        source="categorie"
+        source="category"
         label="Catégorie"
         choices={[
           { id: 'Taureau', name: 'Taureau' },
@@ -229,7 +229,7 @@ export const CattleCreate = () => (
         required
       />
       <SelectInput
-        source="caractere"
+        source="character"
         label="Caractère"
         choices={[
           { id: 'Docile', name: 'Docile' },
@@ -239,7 +239,7 @@ export const CattleCreate = () => (
         ]}
         required
       />
-      <DateInput source="dateNaissance" label="Date de naissance" required />
+      <DateInput source="birthDate" label="Date de naissance" required />
       <ImageInput source="photo" label="Photo" accept={{ 'image/*': ['.png', '.jpg', '.jpeg'] }}>
         <ImageField source="src" title="title" />
       </ImageInput>
@@ -252,10 +252,10 @@ export const CattleCreate = () => (
         ]}
         required
       />
-      <TextInput source="source.fournisseur" label="Fournisseur" />
-      <DateInput source="source.dateAchat" label="Date d'achat" />
+      <TextInput source="source.supplier" label="Fournisseur" />
+      <DateInput source="source.purchaseDate" label="Date d'achat" />
       <SelectInput
-        source="source.categorieAchat"
+        source="source.purchaseCategory"
         label="Catégorie à l'achat"
         choices={[
           { id: 'Taureau', name: 'Taureau' },
@@ -264,12 +264,12 @@ export const CattleCreate = () => (
           { id: 'Vache', name: 'Vache' },
         ]}
       />
-      <NumberInput source="source.prixAchat" label="Prix d'achat (Ar)" />
-      <NumberInput source="source.poidsAchat" label="Poids à l'achat (kg)" />
-      <TextInput source="source.etatSanteAchat" label="État de santé à l'achat" />
-      <TextInput source="source.remarquesAchat" label="Remarques achat" multiline rows={3} />
+      <NumberInput source="source.purchasePrice" label="Prix d'achat (Ar)" />
+      <NumberInput source="source.purchaseWeight" label="Poids à l'achat (kg)" />
+      <TextInput source="source.purchaseHealthStatus" label="État de santé à l'achat" />
+      <TextInput source="source.purchaseNotes" label="Remarques achat" multiline rows={3} />
 
-      <ArrayInput source="evenements" label="Événements">
+      <ArrayInput source="events" label="Événements">
         <SimpleFormIterator inline>
           <ReferenceInput source="type" reference="typeEvenements" label="Type">
             <AutocompleteInput optionText="nom" />
@@ -280,7 +280,7 @@ export const CattleCreate = () => (
         </SimpleFormIterator>
       </ArrayInput>
 
-      <ArrayInput source="traitements" label="Traitements">
+      <ArrayInput source="treatments" label="Traitements">
         <SimpleFormIterator inline>
           <SelectInput
             source="type"
@@ -295,11 +295,11 @@ export const CattleCreate = () => (
             ]}
           />
           <DateInput source="date" label="Date" />
-          <ReferenceInput source="produit" reference="medicaments" label="Médicament">
+          <ReferenceInput source="product" reference="medicaments" label="Médicament">
             <AutocompleteInput optionText="nom" />
           </ReferenceInput>
-          <TextInput source="dose" label="Dose" />
-          <ReferenceInput source="veterinaire" reference="veterinarians" label="Intervenant">
+          <TextInput source="dosage" label="Dose" />
+          <ReferenceInput source="veterinarian" reference="veterinarians" label="Intervenant">
             <AutocompleteInput optionText="nom" />
           </ReferenceInput>
           <TextInput source="notes" label="Notes" multiline />
@@ -336,14 +336,14 @@ export const CattleShow = () => (
           <div className="space-y-2">
             <h3 className="text-lg font-semibold mb-4 border-b pb-2">Identité</h3>
             <InlineField label="Identifiant"><TextField source="id" /></InlineField>
-            <InlineField label="Nom"><TextField source="nom" /></InlineField>
-            <InlineField label="Surnom"><TextField source="surnom" /></InlineField>
-            <InlineField label="Catégorie"><TextField source="categorie" /></InlineField>
-            <InlineField label="Genre"><TextField source="genre" /></InlineField>
-            <InlineField label="Marque"><TextField source="marque" /></InlineField>
-            <InlineField label="Signe Particulier"><TextField source="signeParticulier" /></InlineField>
-            <InlineField label="Caractère"><TextField source="caractere" /></InlineField>
-            <InlineField label="Date de naissance"><DateField source="dateNaissance" /></InlineField>
+            <InlineField label="Nom"><TextField source="name" /></InlineField>
+            <InlineField label="Surnom"><TextField source="nickname" /></InlineField>
+            <InlineField label="Catégorie"><TextField source="category" /></InlineField>
+            <InlineField label="Genre"><TextField source="gender" /></InlineField>
+            <InlineField label="Marque"><TextField source="brand" /></InlineField>
+            <InlineField label="Signe Particulier"><TextField source="distinctiveSign" /></InlineField>
+            <InlineField label="Caractère"><TextField source="character" /></InlineField>
+            <InlineField label="Date de naissance"><DateField source="birthDate" /></InlineField>
           </div>
         </div>
       </Tab>
@@ -353,19 +353,19 @@ export const CattleShow = () => (
           <div className="space-y-2">
             <h3 className="text-lg font-semibold mb-4 border-b pb-2">Source</h3>
             <InlineField label="Type de source"><TextField source="source.type" /></InlineField>
-            <InlineField label="Fournisseur"><TextField source="source.fournisseur" /></InlineField>
+            <InlineField label="Fournisseur"><TextField source="source.supplier" /></InlineField>
           </div>
           <div className="space-y-2">
             <h3 className="text-lg font-semibold mb-4 border-b pb-2">Détails de l'achat</h3>
-            <InlineField label="Date d'achat"><DateField source="source.dateAchat" /></InlineField>
-            <InlineField label="Catégorie à l'achat"><TextField source="source.categorieAchat" /></InlineField>
-            <InlineField label="Prix d'achat"><NumberField source="source.prixAchat" options={{ style: 'currency', currency: 'MGA' }} /></InlineField>
-            <InlineField label="Poids à l'achat"><NumberField source="source.poidsAchat" /> kg</InlineField>
+            <InlineField label="Date d'achat"><DateField source="source.purchaseDate" /></InlineField>
+            <InlineField label="Catégorie à l'achat"><TextField source="source.purchaseCategory" /></InlineField>
+            <InlineField label="Prix d'achat"><NumberField source="source.purchasePrice" options={{ style: 'currency', currency: 'MGA' }} /></InlineField>
+            <InlineField label="Poids à l'achat"><NumberField source="source.purchaseWeight" /> kg</InlineField>
           </div>
           <div className="col-span-full space-y-2">
             <h3 className="text-lg font-semibold mb-4 border-b pb-2">État initial</h3>
-            <InlineField label="État de santé"><TextField source="source.etatSanteAchat" /></InlineField>
-            <InlineField label="Remarques"><TextField source="source.remarquesAchat" /></InlineField>
+            <InlineField label="État de santé"><TextField source="source.purchaseHealthStatus" /></InlineField>
+            <InlineField label="Remarques"><TextField source="source.purchaseNotes" /></InlineField>
           </div>
         </div>
       </Tab>
@@ -374,7 +374,7 @@ export const CattleShow = () => (
         <div className="space-y-8">
           <div>
             <h3 className="text-lg font-semibold mb-4">Historique des Événements</h3>
-            <ArrayField source="evenements" label={false}>
+            <ArrayField source="events" label={false}>
               <Datagrid bulkActionButtons={false} hover={false}>
                 <ReferenceField source="type" reference="typeEvenements" label="Type">
                   <TextField source="nom" />
@@ -388,15 +388,15 @@ export const CattleShow = () => (
 
           <div>
             <h3 className="text-lg font-semibold mb-4">Traitements Vétérinaires</h3>
-            <ArrayField source="traitements" label={false}>
+            <ArrayField source="treatments" label={false}>
               <Datagrid bulkActionButtons={false} hover={false}>
                 <TextField source="type" label="Type" />
                 <DateField source="date" label="Date" />
-                <ReferenceField source="produit" reference="medicaments" label="Médicament">
+                <ReferenceField source="product" reference="medicaments" label="Médicament">
                   <TextField source="nom" />
                 </ReferenceField>
-                <TextField source="dose" label="Dose" />
-                <ReferenceField source="veterinaire" reference="veterinarians" label="Intervenant">
+                <TextField source="dosage" label="Dose" />
+                <ReferenceField source="veterinarian" reference="veterinarians" label="Intervenant">
                   <TextField source="nom" />
                 </ReferenceField>
                 <TextField source="notes" label="Notes" />
