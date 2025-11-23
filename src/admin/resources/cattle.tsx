@@ -327,8 +327,8 @@ const InlineField = ({ label, children }: { label: string, children: React.React
 // Affichage détaillé d'un bovin
 export const CattleShow = () => (
   <Show>
-    <TabbedShowLayout>
-      <Tab label="Informations Générales">
+    <TabbedShowLayout syncWithLocation={false}>
+      <Tab label={<>Informations<br />Générales</>}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <ImageField source="photo" label={false} className="[&_img]:max-w-full [&_img]:max-h-80 [&_img]:rounded-lg [&_img]:shadow-md [&_img]:object-cover" />
@@ -348,7 +348,7 @@ export const CattleShow = () => (
         </div>
       </Tab>
 
-      <Tab label="Origine & Achat">
+      <Tab label={<>Origine &<br />Achat</>}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-2">
             <h3 className="text-lg font-semibold mb-4 border-b pb-2">Source</h3>
@@ -370,7 +370,7 @@ export const CattleShow = () => (
         </div>
       </Tab>
 
-      <Tab label="Santé & Suivi">
+      <Tab label={<>Santé &<br />Suivi</>}>
         <div className="space-y-8">
           <div>
             <h3 className="text-lg font-semibold mb-4">Historique des Événements</h3>
