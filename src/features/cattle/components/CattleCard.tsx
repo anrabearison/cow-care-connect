@@ -18,9 +18,9 @@ interface CattleCardProps {
 const calculateAge = (birthDate: string) => {
   const birth = new Date(birthDate);
   const today = new Date();
-  const ageInMonths = (today.getFullYear() - birth.getFullYear()) * 12 + 
-                     (today.getMonth() - birth.getMonth());
-  
+  const ageInMonths = (today.getFullYear() - birth.getFullYear()) * 12 +
+    (today.getMonth() - birth.getMonth());
+
   if (ageInMonths < 12) {
     return `${ageInMonths} mois`;
   } else {
@@ -57,7 +57,7 @@ export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
     <Card className="overflow-hidden hover:shadow-farm transition-all duration-300 group">
       <div className="relative h-48 overflow-hidden">
         {cattle.photo || imageIndex < 3 ? (
-          <img 
+          <img
             src={cattleImage}
             alt={`Photo de ${cattle.nom}`}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -80,7 +80,7 @@ export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
           </div>
         </div>
       </div>
-      
+
       <CardContent className="p-6">
         <div className="flex items-start justify-between mb-3">
           <div>
@@ -104,8 +104,25 @@ export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
             <Badge className={`text-xs ${getCharacterColor(cattle.caractere)}`}>
               {cattle.caractere}
             </Badge>
+
           </div>
-          
+
+          {cattle.marque && (
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Marque</span>
+              <span className="text-sm font-medium text-foreground">{cattle.marque}</span>
+            </div>
+          )}
+
+          {cattle.signeParticulier && (
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Signe</span>
+              <span className="text-sm font-medium text-foreground truncate max-w-[150px]" title={cattle.signeParticulier}>
+                {cattle.signeParticulier}
+              </span>
+            </div>
+          )}
+
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Source</span>
             <div className="flex items-center space-x-1 text-sm">
@@ -128,6 +145,6 @@ export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
           </Button>
         </Link>
       </CardContent>
-    </Card>
+    </Card >
   );
 });

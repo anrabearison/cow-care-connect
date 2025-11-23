@@ -5,6 +5,8 @@ export interface Cattle {
   dateNaissance: string;
   caractere: 'Docile' | 'Agressif' | 'Timide' | 'Energique';
   categorie: 'Taureau' | 'Veau' | 'Zébu' | 'Vache';
+  marque?: string;
+  signeParticulier?: string;
   photo?: string;
   source: {
     type: 'Acheté' | 'Né dans le troupeau';

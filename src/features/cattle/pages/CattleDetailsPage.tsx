@@ -18,9 +18,9 @@ const cattleImages = [cattlePortrait1, cattlePortrait2, cattlePortrait3];
 const calculateAge = (birthDate: string) => {
   const birth = new Date(birthDate);
   const today = new Date();
-  const ageInMonths = (today.getFullYear() - birth.getFullYear()) * 12 + 
-                     (today.getMonth() - birth.getMonth());
-  
+  const ageInMonths = (today.getFullYear() - birth.getFullYear()) * 12 +
+    (today.getMonth() - birth.getMonth());
+
   if (ageInMonths < 12) {
     return `${ageInMonths} mois`;
   } else {
@@ -92,17 +92,17 @@ export default function CattleDetailsPage() {
   // Fonction pour trouver les descendants potentiels
   const findDescendants = () => {
     if (!cattle || !allCattle) return [];
-    
+
     // Logique simple: chercher les bovins nés dans le troupeau après la date de naissance du bovin actuel
     // et qui pourraient être ses descendants (nés 9-12 mois après)
     const currentBirthDate = new Date(cattle.dateNaissance);
     const minDescendantDate = new Date(currentBirthDate);
     minDescendantDate.setMonth(minDescendantDate.getMonth() + 9); // Gestation minimum
-    
+
     return allCattle.filter(descendant => {
       if (descendant.id === cattle.id) return false;
       if (descendant.source.type !== 'Né dans le troupeau') return false;
-      
+
       const descendantBirthDate = new Date(descendant.dateNaissance);
       return descendantBirthDate > minDescendantDate;
     });
@@ -199,7 +199,7 @@ export default function CattleDetailsPage() {
             {/* Photo */}
             <Card className="overflow-hidden shadow-farm">
               <div className="relative h-64">
-                <img 
+                <img
                   src={cattleImage}
                   alt={`Photo de ${cattle.nom}`}
                   className="w-full h-full object-cover"
@@ -225,12 +225,12 @@ export default function CattleDetailsPage() {
                   <span className="text-muted-foreground">Âge</span>
                   <span className="font-medium">{calculateAge(cattle.dateNaissance)}</span>
                 </div>
-                
+
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Date de naissance</span>
                   <span className="font-medium">{formatDate(cattle.dateNaissance)}</span>
                 </div>
-                
+
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Caractère</span>
                   <Badge className={getCharacterColor(cattle.caractere)}>
@@ -241,9 +241,27 @@ export default function CattleDetailsPage() {
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Catégorie</span>
                   <Badge className={getCategoryColor(cattle.categorie)}>
-                    {cattle.categorie}
                   </Badge>
                 </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">Sexe</span>
+                  <span className="font-medium">{cattle.genre === 'M' ? 'Mâle' : 'Femelle'}</span>
+                </div>
+
+                {cattle.marque && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Marque</span>
+                    <span className="font-medium">{cattle.marque}</span>
+                  </div>
+                )}
+
+                {cattle.signeParticulier && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Signe particulier</span>
+                    <span className="font-medium">{cattle.signeParticulier}</span>
+                  </div>
+                )}
 
                 <Separator />
 
@@ -266,62 +284,62 @@ export default function CattleDetailsPage() {
                 </div>
 
                 {/* Section collapsible pour les bovins nés dans le troupeau */}
-              {cattle.source.type === 'Acheté' && (
-                <Collapsible>
-                  <CollapsibleTrigger asChild>
-                    <Button variant="ghost" className="w-full justify-between p-3 h-auto">
-                      <div className="text-left">
-                        <div className="flex items-center gap-2">
-                          <MapPin className="h-4 w-4" />
-                          <span className="font-medium">Détails de l'achat</span>
+                {cattle.source.type === 'Acheté' && (
+                  <Collapsible>
+                    <CollapsibleTrigger asChild>
+                      <Button variant="ghost" className="w-full justify-between p-3 h-auto">
+                        <div className="text-left">
+                          <div className="flex items-center gap-2">
+                            <MapPin className="h-4 w-4" />
+                            <span className="font-medium">Détails de l'achat</span>
+                          </div>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Acheté le {formatDate(cattle.source.dateAchat!)} chez {cattle.source.fournisseur}
+                          </p>
                         </div>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          Acheté le {formatDate(cattle.source.dateAchat!)} chez {cattle.source.fournisseur}
-                        </p>
+                        <ChevronDown className="h-4 w-4 transition-transform duration-200" />
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="space-y-3 pt-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {cattle.source.categorieAchat && (
+                          <div>
+                            <p className="text-sm font-medium text-muted-foreground">Catégorie à l'achat</p>
+                            <Badge variant="outline" className={getCategoryColor(cattle.source.categorieAchat)}>
+                              {cattle.source.categorieAchat}
+                            </Badge>
+                          </div>
+                        )}
+                        {cattle.source.prixAchat && (
+                          <div>
+                            <p className="text-sm font-medium text-muted-foreground">Prix d'achat</p>
+                            <p className="text-sm font-medium">{cattle.source.prixAchat.toLocaleString('fr-FR')} Ar</p>
+                          </div>
+                        )}
+                        {cattle.source.poidsAchat && (
+                          <div>
+                            <p className="text-sm font-medium text-muted-foreground">Poids à l'achat</p>
+                            <p className="text-sm font-medium">{cattle.source.poidsAchat} kg</p>
+                          </div>
+                        )}
+                        {cattle.source.etatSanteAchat && (
+                          <div>
+                            <p className="text-sm font-medium text-muted-foreground">État de santé</p>
+                            <p className="text-sm font-medium">{cattle.source.etatSanteAchat}</p>
+                          </div>
+                        )}
                       </div>
-                      <ChevronDown className="h-4 w-4 transition-transform duration-200" />
-                    </Button>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent className="space-y-3 pt-3">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {cattle.source.categorieAchat && (
-                        <div>
-                          <p className="text-sm font-medium text-muted-foreground">Catégorie à l'achat</p>
-                          <Badge variant="outline" className={getCategoryColor(cattle.source.categorieAchat)}>
-                            {cattle.source.categorieAchat}
-                          </Badge>
+                      {cattle.source.remarquesAchat && (
+                        <div className="pt-2 border-t">
+                          <p className="text-sm font-medium text-muted-foreground mb-2">Remarques</p>
+                          <p className="text-sm text-muted-foreground italic">"{cattle.source.remarquesAchat}"</p>
                         </div>
                       )}
-                      {cattle.source.prixAchat && (
-                        <div>
-                          <p className="text-sm font-medium text-muted-foreground">Prix d'achat</p>
-                          <p className="text-sm font-medium">{cattle.source.prixAchat.toLocaleString('fr-FR')} Ar</p>
-                        </div>
-                      )}
-                      {cattle.source.poidsAchat && (
-                        <div>
-                          <p className="text-sm font-medium text-muted-foreground">Poids à l'achat</p>
-                          <p className="text-sm font-medium">{cattle.source.poidsAchat} kg</p>
-                        </div>
-                      )}
-                      {cattle.source.etatSanteAchat && (
-                        <div>
-                          <p className="text-sm font-medium text-muted-foreground">État de santé</p>
-                          <p className="text-sm font-medium">{cattle.source.etatSanteAchat}</p>
-                        </div>
-                      )}
-                    </div>
-                    {cattle.source.remarquesAchat && (
-                      <div className="pt-2 border-t">
-                        <p className="text-sm font-medium text-muted-foreground mb-2">Remarques</p>
-                        <p className="text-sm text-muted-foreground italic">"{cattle.source.remarquesAchat}"</p>
-                      </div>
-                    )}
-                  </CollapsibleContent>
-                </Collapsible>
-              )}
+                    </CollapsibleContent>
+                  </Collapsible>
+                )}
 
-              {cattle.source.type === 'Né dans le troupeau' && (
+                {cattle.source.type === 'Né dans le troupeau' && (
                   <>
                     <Separator />
                     <Collapsible open={showLineage} onOpenChange={setShowLineage}>
@@ -332,7 +350,7 @@ export default function CattleDetailsPage() {
                         </div>
                         <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${showLineage ? 'rotate-180' : ''}`} />
                       </CollapsibleTrigger>
-                      
+
                       <CollapsibleContent className="pt-4 space-y-4">
                         {/* Informations sur la lignée */}
                         <div className="space-y-2">
@@ -429,29 +447,29 @@ export default function CattleDetailsPage() {
                   {cattle.evenements
                     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                     .map((event) => (
-                    <div key={event.id} className="flex space-x-4 p-4 bg-muted/30 rounded-lg">
-                      <div className="text-2xl">{getTypeEvenementIcon(event.type)}</div>
-                      <div className="flex-1">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <h4 className="font-medium">{event.description}</h4>
-                            {event.details && (
-                              <p className="text-sm text-muted-foreground mt-1">
-                                {event.details}
-                              </p>
-                            )}
+                      <div key={event.id} className="flex space-x-4 p-4 bg-muted/30 rounded-lg">
+                        <div className="text-2xl">{getTypeEvenementIcon(event.type)}</div>
+                        <div className="flex-1">
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <h4 className="font-medium">{event.description}</h4>
+                              {event.details && (
+                                <p className="text-sm text-muted-foreground mt-1">
+                                  {event.details}
+                                </p>
+                              )}
+                            </div>
+                            <Badge variant="outline" className="border-primary/20 text-primary">
+                              {getTypeEvenementName(event.type)}
+                            </Badge>
                           </div>
-                          <Badge variant="outline" className="border-primary/20 text-primary">
-                            {getTypeEvenementName(event.type)}
-                          </Badge>
-                        </div>
-                        <div className="flex items-center space-x-1 mt-2 text-sm text-muted-foreground">
-                          <Calendar className="h-3 w-3" />
-                          <span>{formatDate(event.date)}</span>
+                          <div className="flex items-center space-x-1 mt-2 text-sm text-muted-foreground">
+                            <Calendar className="h-3 w-3" />
+                            <span>{formatDate(event.date)}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </CardContent>
             </Card>
@@ -472,32 +490,32 @@ export default function CattleDetailsPage() {
                   {cattle.traitements
                     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                     .map((treatment) => (
-                    <div key={treatment.id} className="flex space-x-4 p-4 bg-accent/10 rounded-lg border border-accent/20">
-                      <div className="text-2xl">{getTreatmentIcon(treatment.type)}</div>
-                      <div className="flex-1">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <h4 className="font-medium">{getMedicamentName(treatment.produit)}</h4>
-                            <p className="text-sm text-muted-foreground">
-                              Dose: {treatment.dose} • Intervenant: {getVeterinarianName(treatment.veterinaire)}
-                            </p>
-                            {treatment.notes && (
-                              <p className="text-sm text-muted-foreground mt-1">
-                                {treatment.notes}
+                      <div key={treatment.id} className="flex space-x-4 p-4 bg-accent/10 rounded-lg border border-accent/20">
+                        <div className="text-2xl">{getTreatmentIcon(treatment.type)}</div>
+                        <div className="flex-1">
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <h4 className="font-medium">{getMedicamentName(treatment.produit)}</h4>
+                              <p className="text-sm text-muted-foreground">
+                                Dose: {treatment.dose} • Intervenant: {getVeterinarianName(treatment.veterinaire)}
                               </p>
-                            )}
+                              {treatment.notes && (
+                                <p className="text-sm text-muted-foreground mt-1">
+                                  {treatment.notes}
+                                </p>
+                              )}
+                            </div>
+                            <Badge className="bg-accent/20 text-accent-foreground border-accent/30">
+                              {treatment.type}
+                            </Badge>
                           </div>
-                          <Badge className="bg-accent/20 text-accent-foreground border-accent/30">
-                            {treatment.type}
-                          </Badge>
-                        </div>
-                        <div className="flex items-center space-x-1 mt-2 text-sm text-muted-foreground">
-                          <Calendar className="h-3 w-3" />
-                          <span>{formatDate(treatment.date)}</span>
+                          <div className="flex items-center space-x-1 mt-2 text-sm text-muted-foreground">
+                            <Calendar className="h-3 w-3" />
+                            <span>{formatDate(treatment.date)}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </CardContent>
             </Card>

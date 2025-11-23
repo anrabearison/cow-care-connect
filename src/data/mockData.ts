@@ -62,6 +62,8 @@ export const mockCattleData: Cattle[] = [
     dateNaissance: '2023-07-15',
     caractere: 'Docile',
     categorie: 'Taureau',
+    marque: 'M-001',
+    signeParticulier: 'Tache blanche sur le flanc gauche',
     photo: '/src/assets/cattle-portrait-1.jpg',
     source: {
       type: 'Acheté',
@@ -122,6 +124,7 @@ export const mockCattleData: Cattle[] = [
     dateNaissance: '2022-12-03',
     caractere: 'Timide',
     categorie: 'Vache',
+    marque: 'M-002',
     photo: '/src/assets/cattle-portrait-2.jpg',
     source: {
       type: 'Né dans le troupeau'
@@ -158,6 +161,7 @@ export const mockCattleData: Cattle[] = [
     dateNaissance: '2024-01-20',
     caractere: 'Energique',
     categorie: 'Veau',
+    signeParticulier: 'Oreille droite fendue',
     photo: '/src/assets/cattle-portrait-3.jpg',
     source: {
       type: 'Né dans le troupeau'
@@ -432,14 +436,14 @@ export const mockCattleData: Cattle[] = [
 ];
 
 export const getRecentEvents = () => {
-  const allEvents = mockCattleData.flatMap(cattle => 
+  const allEvents = mockCattleData.flatMap(cattle =>
     cattle.evenements.map(event => ({
       ...event,
       cattleId: cattle.id,
       cattleName: cattle.nom
     }))
   );
-  
+
   return allEvents
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 5);
