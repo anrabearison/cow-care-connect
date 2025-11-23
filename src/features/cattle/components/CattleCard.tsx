@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Calendar, MapPin, Heart } from 'lucide-react';
 import { Cattle } from '@/features/cattle/types';
+import { categories } from '@/data/categories';
 import cattlePortrait1 from '@/assets/cattle-portrait-1.jpg';
 import cattlePortrait2 from '@/assets/cattle-portrait-2.jpg';
 import cattlePortrait3 from '@/assets/cattle-portrait-3.jpg';
@@ -27,6 +28,12 @@ const calculateAge = (birthDate: string) => {
     const years = Math.floor(ageInMonths / 12);
     return `${years} an${years > 1 ? 's' : ''}`;
   }
+};
+
+// Helper to get category description from mock data
+const getCategoryDescription = (key: string) => {
+  const cat = categories.find((c) => c.nom === key);
+  return cat ? cat.nom : key;
 };
 
 const getCharacterColor = (character: string) => {
@@ -92,9 +99,14 @@ export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
               <span>{calculateAge(cattle.dateNaissance)}</span>
             </div>
             <div className="flex items-center space-x-2 text-sm mt-1">
-              <Badge variant="secondary" className="text-xs">
-                {cattle.categorie}
-              </Badge>
+              {cattle.categorie && (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Catégorie</span>
+                  <span className="text-sm font-medium text-foreground">
+                    {getCategoryDescription(cattle.categorie)}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
           <Heart className="h-5 w-5 text-muted-foreground hover:text-red-500 cursor-pointer transition-colors" />
