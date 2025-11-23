@@ -464,26 +464,52 @@ export default function CattleDetailsPage() {
                         </div>
                         <div className="pl-6 space-y-2">
                           {descendants.map((descendant) => (
-                            <Link to={`/cattle/${descendant.id}`} key={descendant.id} className="block">
-                              <div className="flex items-center justify-between p-2 bg-muted/20 rounded border border-muted-foreground/10 hover:bg-muted/40 transition-colors cursor-pointer">
-                                <div className="flex items-center space-x-3">
-                                  <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                                    <span className="text-xs font-medium text-primary">
-                                      {descendant.genre === 'M' ? '♂' : '♀'}
-                                    </span>
+                            <HoverCard key={descendant.id}>
+                              <HoverCardTrigger asChild>
+                                <div className="flex items-center justify-between p-2 bg-muted/20 rounded border border-muted-foreground/10 hover:bg-muted/40 transition-colors cursor-pointer">
+                                  <div className="flex items-center space-x-3">
+                                    <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                                      <span className="text-xs font-medium text-primary">
+                                        {descendant.genre === 'M' ? '♂' : '♀'}
+                                      </span>
+                                    </div>
+                                    <div>
+                                      <p className="text-sm font-medium text-primary hover:underline">{descendant.nom}</p>
+                                      <p className="text-xs text-muted-foreground">
+                                        {descendant.id} • Né le {formatDate(descendant.dateNaissance)}
+                                      </p>
+                                    </div>
                                   </div>
-                                  <div>
-                                    <p className="text-sm font-medium text-primary hover:underline">{descendant.nom}</p>
-                                    <p className="text-xs text-muted-foreground">
-                                      {descendant.id} • Né le {formatDate(descendant.dateNaissance)}
-                                    </p>
-                                  </div>
+                                  <Badge variant="outline" className="text-xs">
+                                    {calculateAge(descendant.dateNaissance)}
+                                  </Badge>
                                 </div>
-                                <Badge variant="outline" className="text-xs">
-                                  {calculateAge(descendant.dateNaissance)}
-                                </Badge>
-                              </div>
-                            </Link>
+                              </HoverCardTrigger>
+                              <HoverCardContent className="w-80">
+                                {(() => {
+                                  const descendantImageIndex = parseInt(descendant.id.slice(1)) % cattleImages.length;
+                                  const descendantImage = descendant.photo || cattleImages[descendantImageIndex];
+
+                                  return (
+                                    <div className="grid gap-4">
+                                      <div className="space-y-2">
+                                        <h4 className="font-medium leading-none">{descendant.nom}</h4>
+                                        <p className="text-sm text-muted-foreground">ID: {descendant.id}</p>
+                                      </div>
+                                      <div className="flex items-center gap-4">
+                                        <div className="h-16 w-16 rounded-md overflow-hidden">
+                                          <img src={descendantImage} alt={descendant.nom} className="h-full w-full object-cover" />
+                                        </div>
+                                        <div className="space-y-1">
+                                          <Badge className={getCategoryColor(descendant.categorie)}>{descendant.categorie}</Badge>
+                                          <p className="text-xs text-muted-foreground">{calculateAge(descendant.dateNaissance)}</p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  );
+                                })()}
+                              </HoverCardContent>
+                            </HoverCard>
                           ))}
                         </div>
                       </div>
