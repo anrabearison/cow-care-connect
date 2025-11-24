@@ -20,6 +20,12 @@ import {
     TypeEvenementShow
 } from "@/admin/resources/typeEvenements.tsx";
 
+// Configuration globale pour les confirmations
+const defaultOptions = {
+    // Activer les confirmations pour toutes les suppressions
+    mutationMode: 'pessimistic' as const,
+};
+
 export const AdminApp: React.FC = () => {
     // Sélection du data provider selon la configuration
     const dataProvider = API_CONFIG.USE_MOCK_DATA ? mockDataProvider : apiDataProvider;
@@ -32,6 +38,7 @@ export const AdminApp: React.FC = () => {
             dashboard={Dashboard}
             layout={Layout}
             title="Administration - Gestion du Bétail"
+            {...defaultOptions}
         >
             <Resource
                 name="cattle"
