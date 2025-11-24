@@ -13,7 +13,9 @@ import {
   Create,
   Show,
   SimpleShowLayout,
+  useRecordContext,
 } from 'react-admin';
+import { EditToolbar, CreateToolbar, ConfirmDeleteButton } from '../components/ConfirmToolbars';
 
 const medicamentFilters = [
   <TextInput source="q" label="Rechercher" alwaysOn />,
@@ -28,6 +30,18 @@ const medicamentFilters = [
   <TextInput source="fabricant" label="Fabricant" />,
 ];
 
+const DeleteButtonField = () => {
+  const record = useRecordContext();
+  return (
+    <ConfirmDeleteButton
+      record={record}
+      resource="medicaments"
+      title="Supprimer ce médicament"
+      message="Êtes-vous sûr de vouloir supprimer ce médicament ?"
+    />
+  );
+};
+
 export const MedicamentList = () => (
   <List filters={medicamentFilters}>
     <Datagrid rowClick="edit">
@@ -38,14 +52,14 @@ export const MedicamentList = () => (
       <TextField source="fabricant" label="Fabricant" />
       <ShowButton />
       <EditButton />
-      <DeleteButton />
+      <DeleteButtonField />
     </Datagrid>
   </List>
 );
 
 export const MedicamentEdit = () => (
   <Edit>
-    <SimpleForm>
+    <SimpleForm toolbar={<EditToolbar />}>
       <TextInput source="nom" label="Nom" required />
       <SelectInput
         source="type"
@@ -69,7 +83,7 @@ export const MedicamentEdit = () => (
 
 export const MedicamentCreate = () => (
   <Create>
-    <SimpleForm>
+    <SimpleForm toolbar={<CreateToolbar />}>
       <TextInput source="nom" label="Nom" required />
       <SelectInput
         source="type"

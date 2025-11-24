@@ -13,12 +13,26 @@ import {
   Show,
   SimpleShowLayout,
   EmailField,
+  useRecordContext,
 } from 'react-admin';
+import { EditToolbar, CreateToolbar, ConfirmDeleteButton } from '../components/ConfirmToolbars';
 
 const veterinarianFilters = [
   <TextInput source="q" label="Rechercher" alwaysOn />,
   <TextInput source="specialite" label="Spécialité" />,
 ];
+
+const DeleteButtonField = () => {
+  const record = useRecordContext();
+  return (
+    <ConfirmDeleteButton
+      record={record}
+      resource="veterinarians"
+      title="Supprimer cet intervenant"
+      message="Êtes-vous sûr de vouloir supprimer cet intervenant ?"
+    />
+  );
+};
 
 // Liste des intervenants
 export const VeterinarianList = () => (
@@ -31,7 +45,7 @@ export const VeterinarianList = () => (
       <EmailField source="email" label="Email" />
       <ShowButton />
       <EditButton />
-      <DeleteButton />
+      <DeleteButtonField />
     </Datagrid>
   </List>
 );
@@ -39,7 +53,7 @@ export const VeterinarianList = () => (
 // Édition d'un intervenant
 export const VeterinarianEdit = () => (
   <Edit>
-    <SimpleForm>
+    <SimpleForm toolbar={<EditToolbar />}>
       <TextInput source="nom" label="Nom" required />
       <TextInput source="specialite" label="Spécialité" />
       <TextInput source="telephone" label="Téléphone" />
@@ -53,7 +67,7 @@ export const VeterinarianEdit = () => (
 // Création d'un intervenant
 export const VeterinarianCreate = () => (
   <Create>
-    <SimpleForm>
+    <SimpleForm toolbar={<CreateToolbar />}>
       <TextInput source="nom" label="Nom" required />
       <TextInput source="specialite" label="Spécialité" />
       <TextInput source="telephone" label="Téléphone" />

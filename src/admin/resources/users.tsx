@@ -15,7 +15,9 @@ import {
   Show,
   SimpleShowLayout,
   PasswordInput,
+  useRecordContext,
 } from 'react-admin';
+import { EditToolbar, CreateToolbar, ConfirmDeleteButton } from '../components/ConfirmToolbars';
 
 const userFilters = [
   <TextInput source="q" label="Rechercher" alwaysOn />,
@@ -25,6 +27,18 @@ const userFilters = [
     { id: 'viewer', name: 'Visiteur' },
   ]} />,
 ];
+
+const DeleteButtonField = () => {
+  const record = useRecordContext();
+  return (
+    <ConfirmDeleteButton
+      record={record}
+      resource="users"
+      title="Supprimer cet utilisateur"
+      message="Êtes-vous sûr de vouloir supprimer cet utilisateur ? Toutes ses données seront perdues."
+    />
+  );
+};
 
 // Liste des utilisateurs
 export const UserList = () => (
@@ -36,7 +50,7 @@ export const UserList = () => (
       <TextField source="role" label="Rôle" />
       <ShowButton />
       <EditButton />
-      <DeleteButton />
+      <DeleteButtonField />
     </Datagrid>
   </List>
 );
@@ -44,7 +58,7 @@ export const UserList = () => (
 // Édition d'un utilisateur
 export const UserEdit = () => (
   <Edit>
-    <SimpleForm>
+    <SimpleForm toolbar={<EditToolbar />}>
       <TextInput source="name" label="Nom complet" required />
       <TextInput source="email" label="Email" type="email" required />
       <SelectInput
@@ -65,7 +79,7 @@ export const UserEdit = () => (
 // Création d'un utilisateur
 export const UserCreate = () => (
   <Create>
-    <SimpleForm>
+    <SimpleForm toolbar={<CreateToolbar />}>
       <TextInput source="name" label="Nom complet" required />
       <TextInput source="email" label="Email" type="email" required />
       <SelectInput
