@@ -12,7 +12,21 @@ import {
   Create,
   Show,
   SimpleShowLayout,
+  useRecordContext,
 } from 'react-admin';
+import { EditToolbar, CreateToolbar, ConfirmDeleteButton } from '../components/ConfirmToolbars';
+
+const DeleteButtonField = () => {
+  const record = useRecordContext();
+  return (
+    <ConfirmDeleteButton
+      record={record}
+      resource="typeEvenements"
+      title="Supprimer ce type d'événement"
+      message="Êtes-vous sûr de vouloir supprimer ce type d'événement ? Tous les événements de ce type devront être réassignés."
+    />
+  );
+};
 
 // Liste des types d'événements
 export const TypeEvenementList = () => (
@@ -24,7 +38,7 @@ export const TypeEvenementList = () => (
       <TextField source="icone" label="Icône" />
       <ShowButton />
       <EditButton />
-      <DeleteButton />
+      <DeleteButtonField />
     </Datagrid>
   </List>
 );
@@ -32,7 +46,7 @@ export const TypeEvenementList = () => (
 // Édition d'un type d'événement
 export const TypeEvenementEdit = () => (
   <Edit>
-    <SimpleForm>
+    <SimpleForm toolbar={<EditToolbar />}>
       <TextInput source="nom" label="Nom" required />
       <TextInput source="description" label="Description" multiline rows={3} />
       <TextInput source="icone" label="Icône (emoji)" />
@@ -43,7 +57,7 @@ export const TypeEvenementEdit = () => (
 // Création d'un type d'événement
 export const TypeEvenementCreate = () => (
   <Create>
-    <SimpleForm>
+    <SimpleForm toolbar={<CreateToolbar />}>
       <TextInput source="nom" label="Nom" required />
       <TextInput source="description" label="Description" multiline rows={3} />
       <TextInput source="icone" label="Icône (emoji)" />

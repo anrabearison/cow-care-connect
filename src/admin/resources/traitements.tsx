@@ -18,7 +18,9 @@ import {
   ReferenceInput,
   AutocompleteInput,
   ReferenceField,
+  useRecordContext,
 } from 'react-admin';
+import { EditToolbar, CreateToolbar, ConfirmDeleteButton } from '../components/ConfirmToolbars';
 
 // Filtres pour la liste des traitements
 const traitementFilters = [
@@ -43,6 +45,18 @@ const traitementFilters = [
   <DateInput source="date" label="Date" />,
 ];
 
+const DeleteButtonField = () => {
+  const record = useRecordContext();
+  return (
+    <ConfirmDeleteButton
+      record={record}
+      resource="treatments"
+      title="Supprimer ce traitement"
+      message="Êtes-vous sûr de vouloir supprimer ce traitement de l'historique ?"
+    />
+  );
+};
+
 // Liste des traitements
 export const TraitementList = () => (
   <List filters={traitementFilters}>
@@ -62,7 +76,7 @@ export const TraitementList = () => (
       </ReferenceField>
       <ShowButton />
       <EditButton />
-      <DeleteButton />
+      <DeleteButtonField />
     </Datagrid>
   </List>
 );
@@ -70,7 +84,7 @@ export const TraitementList = () => (
 // Édition d'un traitement
 export const TraitementEdit = () => (
   <Edit>
-    <SimpleForm>
+    <SimpleForm toolbar={<EditToolbar />}>
       <ReferenceInput source="cattleId" reference="cattle" label="Bovin">
         <AutocompleteInput optionText="name" />
       </ReferenceInput>
@@ -103,7 +117,7 @@ export const TraitementEdit = () => (
 // Création d'un traitement
 export const TraitementCreate = () => (
   <Create>
-    <SimpleForm>
+    <SimpleForm toolbar={<CreateToolbar />}>
       <ReferenceInput source="cattleId" reference="cattle" label="Bovin">
         <AutocompleteInput optionText="name" />
       </ReferenceInput>

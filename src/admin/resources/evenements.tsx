@@ -17,7 +17,9 @@ import {
   ReferenceInput,
   AutocompleteInput,
   ReferenceField,
+  useRecordContext,
 } from 'react-admin';
+import { EditToolbar, CreateToolbar, ConfirmDeleteButton } from '../components/ConfirmToolbars';
 
 // Filtres pour la liste des événements
 const evenementFilters = [
@@ -30,6 +32,18 @@ const evenementFilters = [
   </ReferenceInput>,
   <DateInput source="date" label="Date" />,
 ];
+
+const DeleteButtonField = () => {
+  const record = useRecordContext();
+  return (
+    <ConfirmDeleteButton
+      record={record}
+      resource="events"
+      title="Supprimer cet événement"
+      message="Êtes-vous sûr de vouloir supprimer cet événement de l'historique ?"
+    />
+  );
+};
 
 // Liste des événements
 export const EvenementList = () => (
@@ -46,7 +60,7 @@ export const EvenementList = () => (
       <TextField source="description" label="Description" />
       <ShowButton />
       <EditButton />
-      <DeleteButton />
+      <DeleteButtonField />
     </Datagrid>
   </List>
 );
@@ -54,7 +68,7 @@ export const EvenementList = () => (
 // Édition d'un événement
 export const EvenementEdit = () => (
   <Edit>
-    <SimpleForm>
+    <SimpleForm toolbar={<EditToolbar />}>
       <ReferenceInput source="cattleId" reference="cattle" label="Bovin">
         <AutocompleteInput optionText="name" />
       </ReferenceInput>
@@ -71,7 +85,7 @@ export const EvenementEdit = () => (
 // Création d'un événement
 export const EvenementCreate = () => (
   <Create>
-    <SimpleForm>
+    <SimpleForm toolbar={<CreateToolbar />}>
       <ReferenceInput source="cattleId" reference="cattle" label="Bovin">
         <AutocompleteInput optionText="name" />
       </ReferenceInput>
