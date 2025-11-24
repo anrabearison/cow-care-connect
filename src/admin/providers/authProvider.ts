@@ -1,19 +1,36 @@
 import { AuthProvider } from 'react-admin';
+import { API_CONFIG } from '@/config/api';
+
+const API_URL = API_CONFIG.BASE_URL;
 
 export const authProvider: AuthProvider = {
-  login: ({ username, password }) => {
-    // Simulation d'authentification - remplacez par votre API
-    if (username === 'admin@ferme.mg' && password === 'admin123') {
-      localStorage.setItem('admin_token', 'admin_jwt_token');
-      localStorage.setItem('admin_user', JSON.stringify({
-        id: 1,
-        name: 'Jean Rakoto',
-        email: 'admin@ferme.mg',
-        role: 'admin'
-      }));
+  login: async ({ username, password }) => {
+    try {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: username,
+          password: password,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Identifiants incorrects');
+      }
+
+      const data = await response.json();
+
+      // Stocker le token et les informations utilisateur
+      localStorage.setItem('admin_token', data.access_token);
+      localStorage.setItem('admin_user', JSON.stringify(data.user));
+
       return Promise.resolve();
+    } catch (error) {
+      return Promise.reject(error);
     }
-    return Promise.reject(new Error('Identifiants incorrects'));
   },
 
   logout: () => {

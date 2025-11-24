@@ -20,7 +20,7 @@ const mockData = {
       notes: 'Excellent producteur de lait'
     },
     {
-      id: 'B002', 
+      id: 'B002',
       name: 'Hercule',
       breed: 'Charolais',
       gender: 'Mâle',
@@ -34,7 +34,7 @@ const mockData = {
     },
     {
       id: 'B003',
-      name: 'Marguerite', 
+      name: 'Marguerite',
       breed: 'Normande',
       gender: 'Femelle',
       age: 3,
@@ -57,7 +57,7 @@ const mockData = {
     {
       id: 2,
       username: 'fermier',
-      email: 'fermier@ferme-mg.com', 
+      email: 'fermier@ferme-mg.com',
       role: 'farmer',
       name: 'Jean Dupont'
     }
@@ -66,22 +66,35 @@ const mockData = {
 
 // Provider pour les vraies APIs
 const apiUrl = API_CONFIG.ADMIN_API_URL;
-const httpClient = fetchUtils.fetchJson;
+
+// Custom HTTP client avec authentification JWT
+const httpClient = (url: string, options: any = {}) => {
+  const token = localStorage.getItem('auth_token');
+  if (!options.headers) {
+    options.headers = new Headers({ Accept: 'application/json' });
+  }
+  if (token) {
+    options.headers.set('Authorization', `Bearer ${token}`);
+  }
+  return fetchUtils.fetchJson(url, options);
+};
 
 const realDataProvider: DataProvider = {
   getList: (resource, params) => {
     const { page, perPage } = params.pagination;
     const { field, order } = params.sort;
     const query = {
-      sort: JSON.stringify([field, order]),
-      range: JSON.stringify([(page - 1) * perPage, page * perPage - 1]),
-      filter: JSON.stringify(params.filter),
+      page,
+      per_page: perPage,
+      sort: field,
+      order: order,
+      ...params.filter,
     };
     const url = `${apiUrl}/${resource}?${stringify(query)}`;
 
     return httpClient(url).then(({ headers, json }) => ({
-      data: json,
-      total: parseInt(headers.get('content-range')?.split('/').pop() || '0', 10),
+      data: json.data || json,
+      total: json.total || parseInt(headers.get('x-total-count') || '0', 10),
     }));
   },
 
@@ -102,18 +115,18 @@ const realDataProvider: DataProvider = {
     const { page, perPage } = params.pagination;
     const { field, order } = params.sort;
     const query = {
-      sort: JSON.stringify([field, order]),
-      range: JSON.stringify([(page - 1) * perPage, page * perPage - 1]),
-      filter: JSON.stringify({
-        ...params.filter,
-        [params.target]: params.id,
-      }),
+      page,
+      per_page: perPage,
+      sort: field,
+      order: order,
+      ...params.filter,
+      [params.target]: params.id,
     };
     const url = `${apiUrl}/${resource}?${stringify(query)}`;
 
     return httpClient(url).then(({ headers, json }) => ({
-      data: json,
-      total: parseInt(headers.get('content-range')?.split('/').pop() || '0', 10),
+      data: json.data || json,
+      total: json.total || parseInt(headers.get('x-total-count') || '0', 10),
     }));
   },
 
@@ -160,6 +173,6 @@ const realDataProvider: DataProvider = {
 const mockDataProvider = fakeRestProvider(mockData, true);
 
 // Export du bon provider selon le mode
-export const dataProvider: DataProvider = API_CONFIG.USE_MOCK_DATA 
-  ? mockDataProvider 
+export const dataProvider: DataProvider = API_CONFIG.USE_MOCK_DATA
+  ? mockDataProvider
   : realDataProvider;

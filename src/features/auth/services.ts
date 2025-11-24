@@ -18,25 +18,16 @@ class AuthService {
     if (API_CONFIG.USE_MOCK_DATA) {
       return this.mockLogin(credentials);
     }
-    
+
     return this.apiLogin(credentials);
   }
 
   async logout(): Promise<void> {
     if (!API_CONFIG.USE_MOCK_DATA) {
-      // Appel API pour invalider le token côté serveur
-      try {
-        await fetch(buildApiUrl(`${API_CONFIG.ENDPOINTS.AUTH}/logout`), {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${this.getToken()}`,
-          },
-        });
-      } catch (error) {
-        console.error('Error during logout:', error);
-      }
+      // Pas d'appel API nécessaire pour JWT stateless
+      // Le token est simplement supprimé côté client
     }
-    
+
     // Nettoyage local
     localStorage.removeItem('auth_token');
     localStorage.removeItem('user_data');
@@ -46,7 +37,7 @@ class AuthService {
     if (API_CONFIG.USE_MOCK_DATA) {
       return this.getToken(); // Mock: retourne le token existant
     }
-    
+
     try {
       const response = await fetch(buildApiUrl(`${API_CONFIG.ENDPOINTS.AUTH}/refresh`), {
         method: 'POST',
@@ -54,19 +45,19 @@ class AuthService {
           'Authorization': `Bearer ${this.getToken()}`,
         },
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to refresh token');
       }
-      
+
       const result = await response.json();
       const newToken = result.token;
-      
+
       if (newToken) {
         localStorage.setItem('auth_token', newToken);
         return newToken;
       }
-      
+
       return null;
     } catch (error) {
       console.error('Error refreshing token:', error);
@@ -123,18 +114,18 @@ class AuthService {
             password: 'secret'
           }
         ];
-        
-        const user = mockUsers.find(u => 
+
+        const user = mockUsers.find(u =>
           u.email === credentials.email && u.password === credentials.password
         );
-        
+
         if (user) {
           const { password, ...userWithoutPassword } = user;
           const token = `mock_token_${Date.now()}_${user.id}`;
-          
+
           localStorage.setItem('auth_token', token);
           localStorage.setItem('user_data', JSON.stringify(userWithoutPassword));
-          
+
           resolve({
             user: userWithoutPassword,
             token,
@@ -163,29 +154,29 @@ class AuthService {
         },
         body: JSON.stringify(credentials),
       });
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const result = await response.json();
-      
-      if (result.success && result.token && result.user) {
-        localStorage.setItem('auth_token', result.token);
+
+      if (result.access_token && result.user) {
+        localStorage.setItem('auth_token', result.access_token);
         localStorage.setItem('user_data', JSON.stringify(result.user));
-        
+
         return {
           user: result.user,
-          token: result.token,
+          token: result.access_token,
           success: true,
-          message: result.message || 'Connexion réussie'
+          message: 'Connexion réussie'
         };
       } else {
         return {
           user: {} as User,
           token: '',
           success: false,
-          message: result.message || 'Erreur de connexion'
+          message: 'Erreur de connexion'
         };
       }
     } catch (error) {

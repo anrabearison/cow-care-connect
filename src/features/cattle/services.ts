@@ -22,7 +22,7 @@ class CattleService {
     if (API_CONFIG.USE_MOCK_DATA) {
       return this.getMockCattleList(filters);
     }
-    
+
     return this.getApiCattleList(filters);
   }
 
@@ -30,7 +30,7 @@ class CattleService {
     if (API_CONFIG.USE_MOCK_DATA) {
       return this.getMockCattleById(id);
     }
-    
+
     return this.getApiCattleById(id);
   }
 
@@ -38,7 +38,7 @@ class CattleService {
     if (API_CONFIG.USE_MOCK_DATA) {
       return this.createMockCattle(cattle);
     }
-    
+
     return this.createApiCattle(cattle);
   }
 
@@ -46,7 +46,7 @@ class CattleService {
     if (API_CONFIG.USE_MOCK_DATA) {
       return this.updateMockCattle(id, cattle);
     }
-    
+
     return this.updateApiCattle(id, cattle);
   }
 
@@ -54,7 +54,7 @@ class CattleService {
     if (API_CONFIG.USE_MOCK_DATA) {
       return this.deleteMockCattle(id);
     }
-    
+
     return this.deleteApiCattle(id);
   }
 
@@ -63,27 +63,27 @@ class CattleService {
     return new Promise((resolve) => {
       setTimeout(() => {
         let filteredData = [...mockCattleData];
-        
+
         if (filters?.search) {
           filteredData = filteredData.filter(cattle =>
             cattle.nom.toLowerCase().includes(filters.search!.toLowerCase()) ||
             cattle.id.toLowerCase().includes(filters.search!.toLowerCase())
           );
         }
-        
+
         if (filters?.genre) {
           filteredData = filteredData.filter(cattle => cattle.genre === filters.genre);
         }
-        
+
         if (filters?.caractere) {
           filteredData = filteredData.filter(cattle => cattle.caractere === filters.caractere);
         }
-        
+
         if (filters?.limit) {
           const offset = filters.offset || 0;
           filteredData = filteredData.slice(offset, offset + filters.limit);
         }
-        
+
         resolve({
           data: filteredData,
           total: mockCattleData.length,
@@ -120,9 +120,9 @@ class CattleService {
           ...cattle,
           id: `B${String(mockCattleData.length + 1).padStart(3, '0')}`
         };
-        
+
         mockCattleData.push(newCattle);
-        
+
         resolve({
           data: newCattle,
           success: true,
@@ -176,6 +176,15 @@ class CattleService {
     });
   }
 
+  // Helper pour récupérer les headers avec le token
+  private getHeaders(): HeadersInit {
+    const token = localStorage.getItem('auth_token');
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': token ? `Bearer ${token}` : '',
+    };
+  }
+
   // Méthodes pour les vraies APIs
   private async getApiCattleList(filters?: CattleFilters): Promise<ApiResponse<Cattle[]>> {
     try {
@@ -187,12 +196,14 @@ class CattleService {
       if (filters?.offset) params.append('offset', filters.offset.toString());
 
       const url = `${buildApiUrl(API_CONFIG.ENDPOINTS.CATTLE)}?${params}`;
-      const response = await fetch(url);
-      
+      const response = await fetch(url, {
+        headers: this.getHeaders()
+      });
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const result = await response.json();
       return {
         data: result.data || result,
@@ -212,12 +223,14 @@ class CattleService {
   private async getApiCattleById(id: string): Promise<ApiResponse<Cattle>> {
     try {
       const url = buildApiUrl(`${API_CONFIG.ENDPOINTS.CATTLE}/${id}`);
-      const response = await fetch(url);
-      
+      const response = await fetch(url, {
+        headers: this.getHeaders()
+      });
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const result = await response.json();
       return {
         data: result.data || result,
@@ -238,16 +251,14 @@ class CattleService {
       const url = buildApiUrl(API_CONFIG.ENDPOINTS.CATTLE);
       const response = await fetch(url, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: this.getHeaders(),
         body: JSON.stringify(cattle),
       });
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const result = await response.json();
       return {
         data: result.data || result,
@@ -269,16 +280,14 @@ class CattleService {
       const url = buildApiUrl(`${API_CONFIG.ENDPOINTS.CATTLE}/${id}`);
       const response = await fetch(url, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: this.getHeaders(),
         body: JSON.stringify(cattle),
       });
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const result = await response.json();
       return {
         data: result.data || result,
@@ -300,12 +309,13 @@ class CattleService {
       const url = buildApiUrl(`${API_CONFIG.ENDPOINTS.CATTLE}/${id}`);
       const response = await fetch(url, {
         method: 'DELETE',
+        headers: this.getHeaders()
       });
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       return {
         data: true,
         success: true,

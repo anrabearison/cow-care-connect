@@ -10,7 +10,7 @@ import { Beef, Loader2 } from 'lucide-react';
 import heroImage from '@/assets/hero-cattle.jpg';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('admin@ferme.mg');
+  const [email, setEmail] = useState('admin@ombiko.mg');
   const [password, setPassword] = useState('admin123');
   const [error, setError] = useState('');
   const { user, login, isLoading } = useAuth();
@@ -23,7 +23,7 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
+
     const success = await login(email, password);
     if (success) {
       navigate('/');
@@ -36,7 +36,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex">
       {/* Left side - Hero image */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${heroImage})` }}
         />
@@ -52,7 +52,7 @@ export default function LoginPage() {
             Gérez votre troupeau avec simplicité
           </h2>
           <p className="text-xl opacity-90">
-            Suivez vos animaux, leurs traitements et leur historique 
+            Suivez vos animaux, leurs traitements et leur historique
             dans une interface moderne et intuitive.
           </p>
         </div>
@@ -72,7 +72,7 @@ export default function LoginPage() {
               Connectez-vous pour accéder à votre dashboard
             </CardDescription>
           </CardHeader>
-          
+
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
@@ -82,7 +82,7 @@ export default function LoginPage() {
                   </AlertDescription>
                 </Alert>
               )}
-              
+
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -90,11 +90,11 @@ export default function LoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@ferme.mg"
+                  placeholder="admin@ombiko.mg"
                   required
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="password">Mot de passe</Label>
                 <Input
@@ -106,9 +106,9 @@ export default function LoginPage() {
                   required
                 />
               </div>
-              
-              <Button 
-                type="submit" 
+
+              <Button
+                type="submit"
                 className="w-full bg-gradient-primary hover:opacity-90 transition-opacity"
                 disabled={isLoading}
               >
@@ -122,11 +122,11 @@ export default function LoginPage() {
                 )}
               </Button>
             </form>
-            
+
             <div className="mt-6 p-4 bg-muted/50 rounded-lg">
               <p className="text-sm text-muted-foreground text-center">
                 <strong>Compte de démonstration :</strong><br />
-                Email: admin@ferme.mg<br />
+                Email: admin@ombiko.mg<br />
                 Mot de passe: admin123
               </p>
             </div>
