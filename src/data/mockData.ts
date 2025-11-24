@@ -5,6 +5,9 @@ const veterinarians: Record<string, string> = {
   'V001': 'Dr. Rakoto',
   'V002': 'Razafy',
   'V003': 'Dr. Nivo',
+  '1': 'Dr. Rakoto',
+  '2': 'Razafy',
+  '3': 'Dr. Nivo',
 };
 
 export const getVeterinarianName = (id: string | number): string => {
@@ -20,6 +23,10 @@ const medicaments: Record<string, string> = {
   'M005': 'Vaccin FMD',
   'M006': 'Vitamines prénatales',
   'M007': 'Calcium injectable',
+  '1': 'Amoxicilline',
+  '2': 'Vaccin polyvalent',
+  '3': 'Ivermectine',
+  '4': 'Vaccin veau',
 };
 
 export const getMedicamentName = (id: string | number): string => {
@@ -34,6 +41,12 @@ const typeEvenements: Record<string, string> = {
   'TE004': 'Visite vétérinaire',
   'TE005': 'Pesée',
   'TE006': 'Autre',
+  '1': 'Naissance',
+  '2': 'Changement de pâturage',
+  '3': 'Vaccination',
+  '4': 'Visite vétérinaire',
+  '5': 'Pesée',
+  '6': 'Autre',
 };
 
 export const getTypeEvenementName = (id: string | number): string => {
@@ -48,6 +61,12 @@ const typeEvenementIcons: Record<string, string> = {
   'TE004': '🩺',
   'TE005': '⚖️',
   'TE006': '📝',
+  '1': '🐄',
+  '2': '🌱',
+  '3': '💉',
+  '4': '🩺',
+  '5': '⚖️',
+  '6': '📝',
 };
 
 export const getTypeEvenementIcon = (id: string | number): string => {

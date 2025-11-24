@@ -79,6 +79,15 @@ const httpClient = (url: string, options: any = {}) => {
   return fetchUtils.fetchJson(url, options);
 };
 
+// Map React Admin resource names to API endpoints
+const getResourcePath = (resource: string) => {
+  const resourceMap: Record<string, string> = {
+    'typeEvenements': 'event-types',
+    // Add other mappings if needed
+  };
+  return resourceMap[resource] || resource;
+};
+
 const realDataProvider: DataProvider = {
   getList: (resource, params) => {
     const { page, perPage } = params.pagination;
@@ -90,7 +99,7 @@ const realDataProvider: DataProvider = {
       order: order,
       ...params.filter,
     };
-    const url = `${apiUrl}/${resource}?${stringify(query)}`;
+    const url = `${apiUrl}/${getResourcePath(resource)}?${stringify(query)}`;
 
     return httpClient(url).then(({ headers, json }) => ({
       data: json.data || json,
@@ -99,16 +108,14 @@ const realDataProvider: DataProvider = {
   },
 
   getOne: (resource, params) =>
-    httpClient(`${apiUrl}/${resource}/${params.id}`).then(({ json }) => ({
+    httpClient(`${apiUrl}/${getResourcePath(resource)}/${params.id}`).then(({ json }) => ({
       data: json,
     })),
 
   getMany: (resource, params) => {
-    const query = {
-      filter: JSON.stringify({ id: params.ids }),
-    };
-    const url = `${apiUrl}/${resource}?${stringify(query)}`;
-    return httpClient(url).then(({ json }) => ({ data: json }));
+    const query = stringify({ id: params.ids }, { arrayFormat: 'repeat' });
+    const url = `${apiUrl}/${getResourcePath(resource)}?${query}`;
+    return httpClient(url).then(({ json }) => ({ data: json.data || json }));
   },
 
   getManyReference: (resource, params) => {
@@ -122,7 +129,7 @@ const realDataProvider: DataProvider = {
       ...params.filter,
       [params.target]: params.id,
     };
-    const url = `${apiUrl}/${resource}?${stringify(query)}`;
+    const url = `${apiUrl}/${getResourcePath(resource)}?${stringify(query)}`;
 
     return httpClient(url).then(({ headers, json }) => ({
       data: json.data || json,
@@ -131,23 +138,21 @@ const realDataProvider: DataProvider = {
   },
 
   update: (resource, params) =>
-    httpClient(`${apiUrl}/${resource}/${params.id}`, {
+    httpClient(`${apiUrl}/${getResourcePath(resource)}/${params.id}`, {
       method: 'PUT',
       body: JSON.stringify(params.data),
     }).then(({ json }) => ({ data: json })),
 
   updateMany: (resource, params) => {
-    const query = {
-      filter: JSON.stringify({ id: params.ids }),
-    };
-    return httpClient(`${apiUrl}/${resource}?${stringify(query)}`, {
+    const query = stringify({ id: params.ids }, { arrayFormat: 'repeat' });
+    return httpClient(`${apiUrl}/${getResourcePath(resource)}?${query}`, {
       method: 'PUT',
       body: JSON.stringify(params.data),
     }).then(({ json }) => ({ data: params.ids }));
   },
 
   create: (resource, params) =>
-    httpClient(`${apiUrl}/${resource}`, {
+    httpClient(`${apiUrl}/${getResourcePath(resource)}`, {
       method: 'POST',
       body: JSON.stringify(params.data),
     }).then(({ json }) => ({
@@ -155,15 +160,13 @@ const realDataProvider: DataProvider = {
     })),
 
   delete: (resource, params) =>
-    httpClient(`${apiUrl}/${resource}/${params.id}`, {
+    httpClient(`${apiUrl}/${getResourcePath(resource)}/${params.id}`, {
       method: 'DELETE',
     }).then(({ json }) => ({ data: json })),
 
   deleteMany: (resource, params) => {
-    const query = {
-      filter: JSON.stringify({ id: params.ids }),
-    };
-    return httpClient(`${apiUrl}/${resource}?${stringify(query)}`, {
+    const query = stringify({ id: params.ids }, { arrayFormat: 'repeat' });
+    return httpClient(`${apiUrl}/${getResourcePath(resource)}?${query}`, {
       method: 'DELETE',
     }).then(({ json }) => ({ data: params.ids }));
   },
