@@ -24,8 +24,8 @@ export const authProvider: AuthProvider = {
       const data = await response.json();
 
       // Stocker le token et les informations utilisateur
-      localStorage.setItem('admin_token', data.access_token);
-      localStorage.setItem('admin_user', JSON.stringify(data.user));
+      localStorage.setItem('auth_token', data.access_token);
+      localStorage.setItem('user_data', JSON.stringify(data.user));
 
       return Promise.resolve();
     } catch (error) {
@@ -34,28 +34,28 @@ export const authProvider: AuthProvider = {
   },
 
   logout: () => {
-    localStorage.removeItem('admin_token');
-    localStorage.removeItem('admin_user');
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('user_data');
     return Promise.resolve();
   },
 
   checkError: ({ status }: { status: number }) => {
     if (status === 401 || status === 403) {
-      localStorage.removeItem('admin_token');
-      localStorage.removeItem('admin_user');
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_data');
       return Promise.reject();
     }
     return Promise.resolve();
   },
 
   checkAuth: () => {
-    return localStorage.getItem('admin_token')
+    return localStorage.getItem('auth_token')
       ? Promise.resolve()
       : Promise.reject();
   },
 
   getPermissions: () => {
-    const user = localStorage.getItem('admin_user');
+    const user = localStorage.getItem('user_data');
     if (user) {
       const userData = JSON.parse(user);
       return Promise.resolve(userData.role);
@@ -64,7 +64,7 @@ export const authProvider: AuthProvider = {
   },
 
   getIdentity: () => {
-    const user = localStorage.getItem('admin_user');
+    const user = localStorage.getItem('user_data');
     if (user) {
       const userData = JSON.parse(user);
       return Promise.resolve({

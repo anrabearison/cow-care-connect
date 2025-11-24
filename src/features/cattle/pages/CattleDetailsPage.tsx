@@ -6,13 +6,13 @@ import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ArrowLeft, Calendar, MapPin, Activity, Stethoscope, User, ChevronDown, Users, FileText, Plus, ExternalLink } from 'lucide-react';
 import { useCattleById, useCattle } from '@/features/cattle/hooks';
+import { useEventTypes, useVeterinarians, useMedicaments } from '@/features/common/hooks/useReferences';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import cattlePortrait1 from '@/assets/cattle-portrait-1.jpg';
 import cattlePortrait2 from '@/assets/cattle-portrait-2.jpg';
 import cattlePortrait3 from '@/assets/cattle-portrait-3.jpg';
-import { getVeterinarianName, getMedicamentName, getTypeEvenementName, getTypeEvenementIcon } from '@/data/mockData';
 import { categories } from '@/data/categories';
 import { AddTreatmentModal } from '@/features/cattle/components/AddTreatmentModal';
 import { AddEventModal } from '@/features/cattle/components/AddEventModal';
@@ -96,6 +96,12 @@ export default function CattleDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const { cattle, loading, error } = useCattleById(id || '');
   const { cattle: allCattle } = useCattle(); // Pour trouver les descendants
+
+  // Fetch reference data
+  const { data: eventTypesData } = useEventTypes();
+  const { data: veterinariansData } = useVeterinarians();
+  const { data: medicamentsData } = useMedicaments();
+
   const [showLineage, setShowLineage] = useState(false);
   const [showPurchaseDetails, setShowPurchaseDetails] = useState(false);
   const [showAddTreatment, setShowAddTreatment] = useState(false);
@@ -103,6 +109,27 @@ export default function CattleDetailsPage() {
   const [showAddBirth, setShowAddBirth] = useState(false);
   const [localTreatments, setLocalTreatments] = useState<Treatment[]>([]);
   const [localEvents, setLocalEvents] = useState<CattleEvent[]>([]);
+
+  // Helper functions using fetched data
+  const getVeterinarianName = (id: number) => {
+    const vet = veterinariansData?.data?.find(v => v.id === id);
+    return vet ? vet.nom : `Vétérinaire ${id}`;
+  };
+
+  const getMedicamentName = (id: number) => {
+    const med = medicamentsData?.data?.find(m => m.id === id);
+    return med ? med.nom : `Médicament ${id}`;
+  };
+
+  const getTypeEvenementName = (id: number) => {
+    const type = eventTypesData?.data?.find(t => t.id === id);
+    return type ? type.nom : `Type ${id}`;
+  };
+
+  const getTypeEvenementIcon = (id: number) => {
+    const type = eventTypesData?.data?.find(t => t.id === id);
+    return type?.icone || '📝';
+  };
 
   // Fonction pour trouver les descendants potentiels
   const findDescendants = () => {

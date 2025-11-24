@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Cattle } from '@/features/cattle/types';
 
-interface AddBirthModalProps {
+interface c {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onAdd: (calfData: Omit<Cattle, 'id' | 'events' | 'treatments'>) => void;

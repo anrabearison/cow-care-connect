@@ -1,6 +1,7 @@
 import { Cattle } from './types';
 import { API_CONFIG, buildApiUrl } from '@/config/api';
 import { mockCattleData } from '@/data/mockData';
+import { fetchWithAuth } from '@/utils/fetchUtils';
 
 export interface CattleFilters {
   search?: string;
@@ -176,15 +177,6 @@ class CattleService {
     });
   }
 
-  // Helper pour récupérer les headers avec le token
-  private getHeaders(): HeadersInit {
-    const token = localStorage.getItem('auth_token');
-    return {
-      'Content-Type': 'application/json',
-      'Authorization': token ? `Bearer ${token}` : '',
-    };
-  }
-
   // Méthodes pour les vraies APIs
   private async getApiCattleList(filters?: CattleFilters): Promise<ApiResponse<Cattle[]>> {
     try {
@@ -196,9 +188,7 @@ class CattleService {
       if (filters?.offset) params.append('offset', filters.offset.toString());
 
       const url = `${buildApiUrl(API_CONFIG.ENDPOINTS.CATTLE)}?${params}`;
-      const response = await fetch(url, {
-        headers: this.getHeaders()
-      });
+      const response = await fetchWithAuth(url);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -223,9 +213,7 @@ class CattleService {
   private async getApiCattleById(id: number): Promise<ApiResponse<Cattle>> {
     try {
       const url = buildApiUrl(`${API_CONFIG.ENDPOINTS.CATTLE}/${id}`);
-      const response = await fetch(url, {
-        headers: this.getHeaders()
-      });
+      const response = await fetchWithAuth(url);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -249,9 +237,8 @@ class CattleService {
   private async createApiCattle(cattle: Omit<Cattle, 'id'>): Promise<ApiResponse<Cattle>> {
     try {
       const url = buildApiUrl(API_CONFIG.ENDPOINTS.CATTLE);
-      const response = await fetch(url, {
+      const response = await fetchWithAuth(url, {
         method: 'POST',
-        headers: this.getHeaders(),
         body: JSON.stringify(cattle),
       });
 
@@ -278,9 +265,8 @@ class CattleService {
   private async updateApiCattle(id: number, cattle: Partial<Cattle>): Promise<ApiResponse<Cattle>> {
     try {
       const url = buildApiUrl(`${API_CONFIG.ENDPOINTS.CATTLE}/${id}`);
-      const response = await fetch(url, {
+      const response = await fetchWithAuth(url, {
         method: 'PUT',
-        headers: this.getHeaders(),
         body: JSON.stringify(cattle),
       });
 
@@ -307,9 +293,8 @@ class CattleService {
   private async deleteApiCattle(id: number): Promise<ApiResponse<boolean>> {
     try {
       const url = buildApiUrl(`${API_CONFIG.ENDPOINTS.CATTLE}/${id}`);
-      const response = await fetch(url, {
+      const response = await fetchWithAuth(url, {
         method: 'DELETE',
-        headers: this.getHeaders()
       });
 
       if (!response.ok) {
