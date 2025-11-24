@@ -7,12 +7,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Cattle } from '@/features/cattle/types';
 
-interface c {
+interface AddBirthModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onAdd: (calfData: Omit<Cattle, 'id' | 'events' | 'treatments'>) => void;
     motherName: string;
-    motherId: string;
+    motherId: number;
 }
 
 export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange, onAdd, motherName, motherId }) => {
@@ -36,7 +36,7 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                 gender: formData.gender as 'M' | 'F',
                 birthDate: formData.birthDate,
                 character: formData.character,
-                category: 'Veau',
+                category: 3,
                 brand: formData.brand || undefined,
                 distinctiveSign: formData.distinctiveSign || undefined,
                 photo: undefined,
