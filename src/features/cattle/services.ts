@@ -315,6 +315,47 @@ class CattleService {
       };
     }
   }
+
+  async registerBirth(motherId: number, birthData: Omit<Cattle, 'id' | 'events' | 'treatments'>): Promise<ApiResponse<Cattle>> {
+    if (API_CONFIG.USE_MOCK_DATA) {
+      // Mock implementation
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            data: { ...birthData, id: Date.now() } as Cattle,
+            success: true,
+            message: 'Naissance enregistrée avec succès'
+          });
+        }, 500);
+      });
+    }
+
+    try {
+      const url = buildApiUrl(`${API_CONFIG.ENDPOINTS.CATTLE}/${motherId}/birth`);
+      const response = await fetchWithAuth(url, {
+        method: 'POST',
+        body: JSON.stringify(birthData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      return {
+        data: result.data || result,
+        success: true,
+        message: 'Naissance enregistrée avec succès'
+      };
+    } catch (error) {
+      console.error('Error registering birth:', error);
+      return {
+        data: {} as Cattle,
+        success: false,
+        message: "Erreur lors de l'enregistrement de la naissance"
+      };
+    }
+  }
 }
 
 export const cattleService = new CattleService();

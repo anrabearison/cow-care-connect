@@ -18,6 +18,7 @@ import { AddTreatmentModal } from '@/features/cattle/components/AddTreatmentModa
 import { AddEventModal } from '@/features/cattle/components/AddEventModal';
 import { AddBirthModal } from '@/features/cattle/components/AddBirthModal';
 import { Treatment, CattleEvent, Cattle } from '@/features/cattle/types';
+import {cattleService} from "@/features/cattle";
 
 const cattleImages = [cattlePortrait1, cattlePortrait2, cattlePortrait3];
 
@@ -182,12 +183,23 @@ export default function CattleDetailsPage() {
     setLocalEvents([...localEvents, newEvent]);
   };
 
-  const handleAddBirth = (calfData: Omit<Cattle, 'id' | 'events' | 'treatments'>) => {
-    // In a real app, this would call an API to create the new cattle record
-    // For now, we'll just show a success message and close the modal
-    console.log('New calf data:', calfData);
-    alert(`Naissance enregistrée avec succès pour ${calfData.name} !`);
-    // TODO: Implement actual API call to create cattle record
+  const handleAddBirth = async (calfData: Omit<Cattle, 'id' | 'events' | 'treatments'>) => {
+    if (!cattle) return;
+
+    try {
+      const response = await cattleService.registerBirth(cattle.id, calfData);
+
+      if (response.success) {
+        alert(`Naissance enregistrée avec succès pour ${calfData.name} !`);
+        // Refresh cattle data to show new descendant/event
+        window.location.reload();
+      } else {
+        alert(response.message || "Erreur lors de l'enregistrement de la naissance");
+      }
+    } catch (error) {
+      console.error("Error registering birth:", error);
+      alert("Une erreur est survenue lors de l'enregistrement");
+    }
   };
 
   if (loading) {
