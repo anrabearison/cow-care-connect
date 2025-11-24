@@ -31,9 +31,9 @@ const calculateAge = (birthDate: string) => {
 };
 
 // Helper to get category description from mock data
-const getCategoryDescription = (key: string) => {
-  const cat = categories.find((c) => c.name === key);
-  return cat ? cat.name : key;
+const getCategoryDescription = (id: number) => {
+  const cat = categories.find((c) => c.id === id);
+  return cat ? cat.name : id.toString();
 };
 
 const getCharacterColor = (character: string) => {
@@ -51,8 +51,11 @@ const getCharacterColor = (character: string) => {
   }
 };
 
-const getCategoryColor = (category: string) => {
-  switch (category) {
+const getCategoryColor = (id: number) => {
+  const cat = categories.find((c) => c.id === id);
+  const name = cat ? cat.name : '';
+
+  switch (name) {
     case 'Taureau':
       return 'bg-purple-100 text-purple-800 border-purple-200';
     case 'Vache':
@@ -72,7 +75,7 @@ const getGenderIcon = (gender: string) => {
 
 export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
   // Use a consistent image based on the cattle ID if photo exists
-  const imageIndex = parseInt(cattle.id.slice(1)) % cattleImages.length;
+  const imageIndex = cattle.id % cattleImages.length;
   const cattleImage = cattle.photo || cattleImages[imageIndex];
 
   return (

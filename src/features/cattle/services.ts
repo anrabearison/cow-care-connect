@@ -26,7 +26,7 @@ class CattleService {
     return this.getApiCattleList(filters);
   }
 
-  async getCattleById(id: string): Promise<ApiResponse<Cattle>> {
+  async getCattleById(id: number): Promise<ApiResponse<Cattle>> {
     if (API_CONFIG.USE_MOCK_DATA) {
       return this.getMockCattleById(id);
     }
@@ -42,7 +42,7 @@ class CattleService {
     return this.createApiCattle(cattle);
   }
 
-  async updateCattle(id: string, cattle: Partial<Cattle>): Promise<ApiResponse<Cattle>> {
+  async updateCattle(id: number, cattle: Partial<Cattle>): Promise<ApiResponse<Cattle>> {
     if (API_CONFIG.USE_MOCK_DATA) {
       return this.updateMockCattle(id, cattle);
     }
@@ -50,7 +50,7 @@ class CattleService {
     return this.updateApiCattle(id, cattle);
   }
 
-  async deleteCattle(id: string): Promise<ApiResponse<boolean>> {
+  async deleteCattle(id: number): Promise<ApiResponse<boolean>> {
     if (API_CONFIG.USE_MOCK_DATA) {
       return this.deleteMockCattle(id);
     }
@@ -66,17 +66,17 @@ class CattleService {
 
         if (filters?.search) {
           filteredData = filteredData.filter(cattle =>
-            cattle.nom.toLowerCase().includes(filters.search!.toLowerCase()) ||
-            cattle.id.toLowerCase().includes(filters.search!.toLowerCase())
+            cattle.name.toLowerCase().includes(filters.search!.toLowerCase()) ||
+            cattle.id.toString().includes(filters.search!)
           );
         }
 
         if (filters?.genre) {
-          filteredData = filteredData.filter(cattle => cattle.genre === filters.genre);
+          filteredData = filteredData.filter(cattle => cattle.gender === filters.genre);
         }
 
         if (filters?.caractere) {
-          filteredData = filteredData.filter(cattle => cattle.caractere === filters.caractere);
+          filteredData = filteredData.filter(cattle => cattle.character === filters.caractere);
         }
 
         if (filters?.limit) {
@@ -93,7 +93,7 @@ class CattleService {
     });
   }
 
-  private async getMockCattleById(id: string): Promise<ApiResponse<Cattle>> {
+  private async getMockCattleById(id: number): Promise<ApiResponse<Cattle>> {
     return new Promise((resolve) => {
       setTimeout(() => {
         const cattle = mockCattleData.find(c => c.id === id);
@@ -118,7 +118,7 @@ class CattleService {
       setTimeout(() => {
         const newCattle: Cattle = {
           ...cattle,
-          id: `B${String(mockCattleData.length + 1).padStart(3, '0')}`
+          id: mockCattleData.length + 1
         };
 
         mockCattleData.push(newCattle);
@@ -132,7 +132,7 @@ class CattleService {
     });
   }
 
-  private async updateMockCattle(id: string, cattle: Partial<Cattle>): Promise<ApiResponse<Cattle>> {
+  private async updateMockCattle(id: number, cattle: Partial<Cattle>): Promise<ApiResponse<Cattle>> {
     return new Promise((resolve) => {
       setTimeout(() => {
         const index = mockCattleData.findIndex(c => c.id === id);
@@ -154,7 +154,7 @@ class CattleService {
     });
   }
 
-  private async deleteMockCattle(id: string): Promise<ApiResponse<boolean>> {
+  private async deleteMockCattle(id: number): Promise<ApiResponse<boolean>> {
     return new Promise((resolve) => {
       setTimeout(() => {
         const index = mockCattleData.findIndex(c => c.id === id);
@@ -220,7 +220,7 @@ class CattleService {
     }
   }
 
-  private async getApiCattleById(id: string): Promise<ApiResponse<Cattle>> {
+  private async getApiCattleById(id: number): Promise<ApiResponse<Cattle>> {
     try {
       const url = buildApiUrl(`${API_CONFIG.ENDPOINTS.CATTLE}/${id}`);
       const response = await fetch(url, {
@@ -275,7 +275,7 @@ class CattleService {
     }
   }
 
-  private async updateApiCattle(id: string, cattle: Partial<Cattle>): Promise<ApiResponse<Cattle>> {
+  private async updateApiCattle(id: number, cattle: Partial<Cattle>): Promise<ApiResponse<Cattle>> {
     try {
       const url = buildApiUrl(`${API_CONFIG.ENDPOINTS.CATTLE}/${id}`);
       const response = await fetch(url, {
@@ -304,7 +304,7 @@ class CattleService {
     }
   }
 
-  private async deleteApiCattle(id: string): Promise<ApiResponse<boolean>> {
+  private async deleteApiCattle(id: number): Promise<ApiResponse<boolean>> {
     try {
       const url = buildApiUrl(`${API_CONFIG.ENDPOINTS.CATTLE}/${id}`);
       const response = await fetch(url, {

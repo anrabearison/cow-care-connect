@@ -7,8 +7,8 @@ const veterinarians: Record<string, string> = {
   'V003': 'Dr. Nivo',
 };
 
-export const getVeterinarianName = (id: string): string => {
-  return veterinarians[id] || id;
+export const getVeterinarianName = (id: string | number): string => {
+  return veterinarians[id.toString()] || `Vétérinaire ${id}`;
 };
 
 // Liste des médicaments
@@ -22,8 +22,8 @@ const medicaments: Record<string, string> = {
   'M007': 'Calcium injectable',
 };
 
-export const getMedicamentName = (id: string): string => {
-  return medicaments[id] || id;
+export const getMedicamentName = (id: string | number): string => {
+  return medicaments[id.toString()] || `Médicament ${id}`;
 };
 
 // Liste des types d'événements
@@ -36,8 +36,8 @@ const typeEvenements: Record<string, string> = {
   'TE006': 'Autre',
 };
 
-export const getTypeEvenementName = (id: string): string => {
-  return typeEvenements[id] || id;
+export const getTypeEvenementName = (id: string | number): string => {
+  return typeEvenements[id.toString()] || `Type ${id}`;
 };
 
 // Icônes des types d'événements
@@ -50,8 +50,8 @@ const typeEvenementIcons: Record<string, string> = {
   'TE006': '📝',
 };
 
-export const getTypeEvenementIcon = (id: string): string => {
-  return typeEvenementIcons[id] || '📝';
+export const getTypeEvenementIcon = (id: string | number): string => {
+  return typeEvenementIcons[id.toString()] || '📝';
 };
 
 export const mockCattleData: Cattle[] = [

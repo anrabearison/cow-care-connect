@@ -13,6 +13,7 @@ import cattlePortrait1 from '@/assets/cattle-portrait-1.jpg';
 import cattlePortrait2 from '@/assets/cattle-portrait-2.jpg';
 import cattlePortrait3 from '@/assets/cattle-portrait-3.jpg';
 import { getVeterinarianName, getMedicamentName, getTypeEvenementName, getTypeEvenementIcon } from '@/data/mockData';
+import { categories } from '@/data/categories';
 import { AddTreatmentModal } from '@/features/cattle/components/AddTreatmentModal';
 import { AddEventModal } from '@/features/cattle/components/AddEventModal';
 import { AddBirthModal } from '@/features/cattle/components/AddBirthModal';
@@ -58,8 +59,11 @@ const getCharacterColor = (character: string) => {
   }
 };
 
-const getCategoryColor = (category: string) => {
-  switch (category) {
+const getCategoryColor = (id: number) => {
+  const cat = categories.find((c) => c.id === id);
+  const name = cat ? cat.name : '';
+
+  switch (name) {
     case 'Taureau':
       return 'bg-purple-100 text-purple-800 border-purple-200';
     case 'Vache':
@@ -138,7 +142,7 @@ export default function CattleDetailsPage() {
   const handleAddTreatment = (treatment: Omit<Treatment, 'id'>) => {
     const newTreatment: Treatment = {
       ...treatment,
-      id: `T${Date.now()}`
+      id: Date.now()
     };
     setLocalTreatments([...localTreatments, newTreatment]);
   };
@@ -146,7 +150,7 @@ export default function CattleDetailsPage() {
   const handleAddEvent = (event: Omit<CattleEvent, 'id'>) => {
     const newEvent: CattleEvent = {
       ...event,
-      id: `E${Date.now()}`
+      id: Date.now()
     };
     setLocalEvents([...localEvents, newEvent]);
   };
@@ -223,7 +227,7 @@ export default function CattleDetailsPage() {
   }
 
   // Use a consistent image based on the cattle ID
-  const imageIndex = parseInt(cattle.id.slice(1)) % cattleImages.length;
+  const imageIndex = cattle.id % cattleImages.length;
   const cattleImage = cattleImages[imageIndex];
 
   return (
@@ -426,7 +430,7 @@ export default function CattleDetailsPage() {
                                   {(() => {
                                     const mother = allCattle.find(c => c.id === cattle.source.motherId);
                                     if (!mother) return null;
-                                    const motherImageIndex = parseInt(mother.id.slice(1)) % cattleImages.length;
+                                    const motherImageIndex = mother.id % cattleImages.length;
                                     const motherImage = mother.photo || cattleImages[motherImageIndex];
 
                                     return (
@@ -514,7 +518,7 @@ export default function CattleDetailsPage() {
                               </HoverCardTrigger>
                               <HoverCardContent className="w-80">
                                 {(() => {
-                                  const descendantImageIndex = parseInt(descendant.id.slice(1)) % cattleImages.length;
+                                  const descendantImageIndex = descendant.id % cattleImages.length;
                                   const descendantImage = descendant.photo || cattleImages[descendantImageIndex];
 
                                   return (
