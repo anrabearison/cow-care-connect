@@ -29,7 +29,7 @@ export class CattleExportService {
     yPos += 7;
     doc.text(`Date de naissance: ${format(new Date(cattle.birthDate), 'dd MMMM yyyy', { locale: fr })}`, 14, yPos);
     yPos += 7;
-    doc.text(`Caractère: ${cattle.character}`, 14, yPos);
+    doc.text(`Caractère: ${cattle.character.name}`, 14, yPos);
     yPos += 7;
     doc.text(`Catégorie: ${cattle.category}`, 14, yPos);
     yPos += 10;

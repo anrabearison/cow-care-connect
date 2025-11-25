@@ -77,7 +77,7 @@ class CattleService {
         }
 
         if (filters?.caractere) {
-          filteredData = filteredData.filter(cattle => cattle.character === filters.caractere);
+          filteredData = filteredData.filter(cattle => cattle.character.name === filters.caractere);
         }
 
         if (filters?.limit) {
@@ -353,6 +353,30 @@ class CattleService {
         data: {} as Cattle,
         success: false,
         message: "Erreur lors de l'enregistrement de la naissance"
+      };
+    }
+  }
+
+  async getCharacters(): Promise<ApiResponse<{ id: number; name: string }[]>> {
+    try {
+      const url = buildApiUrl('/characters');
+      const response = await fetchWithAuth(url);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      return {
+        data: result,
+        success: true
+      };
+    } catch (error) {
+      console.error('Error fetching characters:', error);
+      return {
+        data: [],
+        success: false,
+        message: 'Erreur lors du chargement des caractères'
       };
     }
   }

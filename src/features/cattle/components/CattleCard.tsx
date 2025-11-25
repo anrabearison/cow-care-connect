@@ -144,8 +144,8 @@ export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
           )}
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Caractère</span>
-            <Badge className={`text-xs ${getCharacterColor(cattle.character)}`}>
-              {cattle.character}
+            <Badge className={`text-xs ${getCharacterColor(cattle.character.name)}`}>
+              {cattle.character.name}
             </Badge>
 
           </div>

@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Cattle } from '@/features/cattle/types';
 import { referenceService } from '@/features/common/services/referenceService';
+import { cattleService } from '@/features/cattle/services';
 import { useToast } from '@/hooks/use-toast';
 
 interface AddCattleModalProps {
@@ -18,13 +19,14 @@ interface AddCattleModalProps {
 export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChange, onAdd }) => {
     const { toast } = useToast();
     const [categories, setCategories] = useState<{ id: number, name: string }[]>([]);
+    const [characters, setCharacters] = useState<{ id: number, name: string }[]>([]);
 
     const [formData, setFormData] = useState({
         name: '',
         nickname: '',
         gender: '' as 'M' | 'F' | '',
         birthDate: '',
-        character: 'Docile' as 'Docile' | 'Timide' | 'Energique' | 'Agressif',
+        character: 1,
         category: '',
         brand: '',
         herdBookNumber: '',
@@ -53,8 +55,22 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
             }
         };
 
+        const fetchCharacters = async () => {
+            const response = await cattleService.getCharacters();
+            if (response.success) {
+                setCharacters(response.data);
+            } else {
+                toast({
+                    variant: "destructive",
+                    title: "Erreur",
+                    description: "Impossible de charger les caractères"
+                });
+            }
+        };
+
         if (open) {
             fetchCategories();
+            fetchCharacters();
         }
     }, [open, toast]);
 
@@ -75,7 +91,10 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
             nickname: formData.nickname || undefined,
             gender: formData.gender as 'M' | 'F',
             birthDate: formData.birthDate,
-            character: formData.character,
+            character: {
+                id: formData.character,
+                name: characters.find(c => c.id === formData.character)?.name || 'Docile'
+            },
             category: parseInt(formData.category),
             brand: formData.brand || undefined,
             herdBookNumber: formData.herdBookNumber ? parseInt(formData.herdBookNumber) : undefined,
@@ -108,7 +127,7 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
             nickname: '',
             gender: '',
             birthDate: '',
-            character: 'Docile',
+            character: 1,
             category: '',
             brand: '',
             herdBookNumber: '',
@@ -201,17 +220,18 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                 <div className="grid gap-2">
                                     <Label htmlFor="character">Caractère</Label>
                                     <Select
-                                        value={formData.character}
-                                        onValueChange={(value) => setFormData({ ...formData, character: value as any })}
+                                        value={formData.character.toString()}
+                                        onValueChange={(value) => setFormData({ ...formData, character: parseInt(value) })}
                                     >
                                         <SelectTrigger id="character">
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="Docile">Docile</SelectItem>
-                                            <SelectItem value="Timide">Timide</SelectItem>
-                                            <SelectItem value="Energique">Énergique</SelectItem>
-                                            <SelectItem value="Agressif">Agressif</SelectItem>
+                                            {characters.map((char) => (
+                                                <SelectItem key={char.id} value={char.id.toString()}>
+                                                    {char.name}
+                                                </SelectItem>
+                                            ))}
                                         </SelectContent>
                                     </Select>
                                 </div>

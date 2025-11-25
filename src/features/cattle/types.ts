@@ -4,7 +4,10 @@ export interface Cattle {
   nickname?: string;
   gender: 'M' | 'F';
   birthDate: string;
-  character: 'Docile' | 'Agressif' | 'Timide' | 'Energique';
+  character: {
+    id: number;
+    name: string;
+  };
   category: number;
   brand?: string;
   herdBookNumber?: number;
@@ -52,4 +55,9 @@ export interface User {
   name: string;
   email: string;
   role: 'admin' | 'eleveur' | 'veterinaire';
+}
+
+export interface Character {
+  id: number;
+  name: string;
 }

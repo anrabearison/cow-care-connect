@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Cattle } from '@/features/cattle/types';
+import { cattleService } from '@/features/cattle/services';
+import { useEffect } from 'react';
 
 interface AddBirthModalProps {
     open: boolean;
@@ -16,16 +18,30 @@ interface AddBirthModalProps {
 }
 
 export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange, onAdd, motherName, motherId }) => {
+    const [characters, setCharacters] = useState<{ id: number, name: string }[]>([]);
     const [formData, setFormData] = useState({
         name: '',
         nickname: '',
         gender: '' as 'M' | 'F' | '',
         birthDate: new Date().toISOString().split('T')[0],
-        character: 'Docile' as 'Docile' | 'Timide' | 'Energique' | 'Agressif',
+        character: 1,
         brand: '',
         distinctiveSign: '',
         birthDescription: ''
     });
+
+    useEffect(() => {
+        const fetchCharacters = async () => {
+            const response = await cattleService.getCharacters();
+            if (response.success) {
+                setCharacters(response.data);
+            }
+        };
+
+        if (open) {
+            fetchCharacters();
+        }
+    }, [open]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -35,11 +51,18 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                 nickname: formData.nickname || undefined,
                 gender: formData.gender as 'M' | 'F',
                 birthDate: formData.birthDate,
-                character: formData.character,
+                character: {
+                    id: formData.character,
+                    name: characters.find(c => c.id === formData.character)?.name || 'Docile'
+                },
                 category: 3,
                 brand: formData.brand || undefined,
                 distinctiveSign: formData.distinctiveSign || undefined,
                 photo: undefined,
+                status: {
+                    id: 1,
+                    name: 'Vivant'
+                },
                 source: {
                     type: 'Né dans le troupeau',
                     motherId: motherId
@@ -54,7 +77,7 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                 nickname: '',
                 gender: '',
                 birthDate: new Date().toISOString().split('T')[0],
-                character: 'Docile',
+                character: 1,
                 brand: '',
                 distinctiveSign: '',
                 birthDescription: ''
@@ -129,17 +152,18 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                         <div className="grid gap-2">
                             <Label htmlFor="character">Caractère</Label>
                             <Select
-                                value={formData.character}
-                                onValueChange={(value) => setFormData({ ...formData, character: value as typeof formData.character })}
+                                value={formData.character.toString()}
+                                onValueChange={(value) => setFormData({ ...formData, character: parseInt(value) })}
                             >
                                 <SelectTrigger id="character">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="Docile">Docile</SelectItem>
-                                    <SelectItem value="Timide">Timide</SelectItem>
-                                    <SelectItem value="Energique">Énergique</SelectItem>
-                                    <SelectItem value="Agressif">Agressif</SelectItem>
+                                    {characters.map((char) => (
+                                        <SelectItem key={char.id} value={char.id.toString()}>
+                                            {char.name}
+                                        </SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </div>

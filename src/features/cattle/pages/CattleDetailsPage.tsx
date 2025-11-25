@@ -340,8 +340,8 @@ export default function CattleDetailsPage() {
 
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Caractère</span>
-                  <Badge className={getCharacterColor(cattle.character)}>
-                    {cattle.character}
+                  <Badge className={getCharacterColor(cattle.character.name)}>
+                    {cattle.character.name}
                   </Badge>
                 </div>
 
