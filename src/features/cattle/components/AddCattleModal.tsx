@@ -95,7 +95,10 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                 id: formData.character,
                 name: characters.find(c => c.id === formData.character)?.name || 'Docile'
             },
-            category: parseInt(formData.category),
+            category: {
+                id: parseInt(formData.category),
+                name: categories.find(c => c.id === parseInt(formData.category))?.name || ''
+            },
             brand: formData.brand || undefined,
             herdBookNumber: formData.herdBookNumber ? parseInt(formData.herdBookNumber) : undefined,
             distinctiveSign: formData.distinctiveSign || undefined,

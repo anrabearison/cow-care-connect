@@ -8,7 +8,10 @@ export interface Cattle {
     id: number;
     name: string;
   };
-  category: number;
+  category: {
+    id: number;
+    name: string;
+  };
   brand?: string;
   herdBookNumber?: number;
   distinctiveSign?: string;
@@ -58,6 +61,11 @@ export interface User {
 }
 
 export interface Character {
+  id: number;
+  name: string;
+}
+
+export interface Category {
   id: number;
   name: string;
 }

@@ -347,8 +347,8 @@ export default function CattleDetailsPage() {
 
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Catégorie</span>
-                  <Badge className={getCategoryColor(cattle.category)}>
-                    {cattle.category}
+                  <Badge className={getCategoryColor(cattle.category.id)}>
+                    {cattle.category.name}
                   </Badge>
                 </div>
 
@@ -506,7 +506,7 @@ export default function CattleDetailsPage() {
                                             <img src={motherImage} alt={mother.name} className="h-full w-full object-cover" />
                                           </div>
                                           <div className="space-y-1">
-                                            <Badge className={getCategoryColor(mother.category)}>{mother.category}</Badge>
+                                            <Badge className={getCategoryColor(mother.category.id)}>{mother.category.name}</Badge>
                                             <p className="text-xs text-muted-foreground">{calculateAge(mother.birthDate)}</p>
                                           </div>
                                         </div>
@@ -594,7 +594,7 @@ export default function CattleDetailsPage() {
                                           <img src={descendantImage} alt={descendant.name} className="h-full w-full object-cover" />
                                         </div>
                                         <div className="space-y-1">
-                                          <Badge className={getCategoryColor(descendant.category)}>{descendant.category}</Badge>
+                                          <Badge className={getCategoryColor(descendant.category.id)}>{descendant.category.name}</Badge>
                                           <p className="text-xs text-muted-foreground">{calculateAge(descendant.birthDate)}</p>
                                         </div>
                                       </div>

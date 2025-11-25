@@ -31,7 +31,7 @@ export class CattleExportService {
     yPos += 7;
     doc.text(`Caractère: ${cattle.character.name}`, 14, yPos);
     yPos += 7;
-    doc.text(`Catégorie: ${cattle.category}`, 14, yPos);
+    doc.text(`Catégorie: ${cattle.category.name}`, 14, yPos);
     yPos += 10;
 
     // Source

@@ -55,7 +55,10 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                     id: formData.character,
                     name: characters.find(c => c.id === formData.character)?.name || 'Docile'
                 },
-                category: 3,
+                category: {
+                    id: 3,
+                    name: 'Veau'
+                },
                 brand: formData.brand || undefined,
                 distinctiveSign: formData.distinctiveSign || undefined,
                 photo: undefined,
