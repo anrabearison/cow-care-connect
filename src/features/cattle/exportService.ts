@@ -72,7 +72,7 @@ export class CattleExportService {
 
       const eventsData = cattle.events.map(event => [
         format(new Date(event.date), 'dd/MM/yyyy', { locale: fr }),
-        getTypeEvenementName(event.type),
+        getTypeEvenementName(event.type.toString()),
         event.description,
         event.details || '-'
       ]);
@@ -104,9 +104,9 @@ export class CattleExportService {
       const treatmentsData = cattle.treatments.map(treatment => [
         format(new Date(treatment.date), 'dd/MM/yyyy', { locale: fr }),
         treatment.type,
-        getMedicamentName(treatment.product),
+        getMedicamentName(treatment.product.toString()),
         treatment.dosage,
-        getVeterinarianName(treatment.veterinarian),
+        getVeterinarianName(treatment.veterinarian.toString()),
         treatment.notes || '-'
       ]);
 
