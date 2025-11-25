@@ -24,7 +24,7 @@ import {
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { Save, Trash2, Plus, AlertTriangle } from 'lucide-react';
+import { Save, Trash2, Plus, AlertTriangle, X } from 'lucide-react';
 
 /**
  * Toolbar personnalisée pour les formulaires d'édition
@@ -40,7 +40,6 @@ export const EditToolbar = (props: ToolbarProps) => {
     const [deleteOne, { isLoading: isDeleting }] = useDelete();
 
     const [showSaveDialog, setShowSaveDialog] = useState(false);
-    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
     const handleSaveConfirm = () => {
         if (!record || !resource) return;
@@ -62,28 +61,24 @@ export const EditToolbar = (props: ToolbarProps) => {
         setShowSaveDialog(false);
     };
 
-    const handleDeleteConfirm = () => {
-        if (!record || !resource) return;
-
-        deleteOne(
-            resource,
-            { id: record.id, previousData: record },
-            {
-                onSuccess: () => {
-                    notify('Élément supprimé avec succès', { type: 'success' });
-                    redirect('list', resource);
-                },
-                onError: (error: any) => {
-                    notify(error?.message || 'Erreur lors de la suppression', { type: 'error' });
-                },
-            }
-        );
-        setShowDeleteDialog(false);
+    const handleCancel = () => {
+        if (!resource) return;
+        redirect('list', resource);
     };
 
     return (
         <>
             <Toolbar {...props} className="flex gap-2">
+                <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleCancel}
+                    className="gap-2"
+                >
+                    <X className="h-4 w-4" />
+                    Annuler
+                </Button>
+
                 <Button
                     type="button"
                     onClick={() => setShowSaveDialog(true)}
@@ -92,17 +87,6 @@ export const EditToolbar = (props: ToolbarProps) => {
                 >
                     <Save className="h-4 w-4" />
                     Enregistrer
-                </Button>
-
-                <Button
-                    type="button"
-                    variant="destructive"
-                    onClick={() => setShowDeleteDialog(true)}
-                    disabled={isDeleting}
-                    className="gap-2"
-                >
-                    <Trash2 className="h-4 w-4" />
-                    Supprimer
                 </Button>
             </Toolbar>
 
@@ -123,33 +107,6 @@ export const EditToolbar = (props: ToolbarProps) => {
                         <AlertDialogCancel>Annuler</AlertDialogCancel>
                         <AlertDialogAction onClick={handleSaveConfirm}>
                             Confirmer
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-
-            {/* Dialogue de confirmation pour la suppression */}
-            <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle className="flex items-center gap-2 text-destructive">
-                            <AlertTriangle className="h-5 w-5" />
-                            Confirmer la suppression
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Êtes-vous sûr de vouloir supprimer cet élément ?
-                            <span className="block mt-2 font-semibold text-destructive">
-                                Cette action est irréversible.
-                            </span>
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Annuler</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={handleDeleteConfirm}
-                            className="bg-destructive hover:bg-destructive/90"
-                        >
-                            Supprimer définitivement
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
@@ -191,9 +148,24 @@ export const CreateToolbar = (props: ToolbarProps) => {
         setShowDialog(false);
     };
 
+    const handleCancel = () => {
+        if (!resource) return;
+        redirect('list', resource);
+    };
+
     return (
         <>
-            <Toolbar {...props}>
+            <Toolbar {...props} className="flex gap-2">
+                <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleCancel}
+                    className="gap-2"
+                >
+                    <X className="h-4 w-4" />
+                    Annuler
+                </Button>
+
                 <Button
                     type="button"
                     onClick={() => setShowDialog(true)}
