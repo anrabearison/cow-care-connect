@@ -65,11 +65,14 @@ export const mockCattleData: Cattle[] = [
     nickname: 'Le Chef',
     gender: 'M',
     birthDate: '2023-07-15',
-    character: 'Docile',
-    category: 1, // Taureau
+    character: { id: 1, name: 'Docile' },
+    category: { id: 1, name: 'Taureau' },
     brand: 'M-001',
     distinctiveSign: 'Tache blanche sur le flanc gauche',
+    status: { id: 1, name: 'Vivant' },
     photo: '/src/assets/cattle-portrait-1.jpg',
+    status: { id: 1, name: 'Vivant' },
+    status: { id: 1, name: 'Vivant' },
     source: {
       type: 'Acheté',
       supplier: 'Ferme Mahitsy',
@@ -128,10 +131,11 @@ export const mockCattleData: Cattle[] = [
     nickname: 'Bella',
     gender: 'F',
     birthDate: '2022-12-03',
-    character: 'Timide',
-    category: 2, // Vache
+    character: { id: 2, name: 'Timide' },
+    category: { id: 2, name: 'Vache' },
     brand: 'M-002',
     photo: '/src/assets/cattle-portrait-2.jpg',
+    status: { id: 1, name: 'Vivant' },
     source: {
       type: 'Né dans le troupeau'
     },
@@ -166,10 +170,12 @@ export const mockCattleData: Cattle[] = [
     nickname: 'Vato',
     gender: 'M',
     birthDate: '2024-01-20',
-    character: 'Energique',
-    category: 3, // Veau
+    character: { id: 3, name: 'Énergique' },
+    category: { id: 3, name: 'Veau' },
     distinctiveSign: 'Oreille droite fendue',
+    status: { id: 1, name: 'Vivant' },
     photo: '/src/assets/cattle-portrait-3.jpg',
+    status: { id: 1, name: 'Vivant' },
     source: {
       type: 'Né dans le troupeau',
       motherId: 8 // Ranitra Mendrika
@@ -204,8 +210,8 @@ export const mockCattleData: Cattle[] = [
     name: 'Toky Mainty',
     gender: 'F',
     birthDate: '2023-05-12',
-    character: 'Docile',
-    category: 2, // Vache
+    character: { id: 1, name: 'Docile' },
+    category: { id: 2, name: 'Vache' },
     source: {
       type: 'Acheté',
       supplier: 'Marché Ambohimanarina',
@@ -231,8 +237,8 @@ export const mockCattleData: Cattle[] = [
     name: 'Rambo Masina',
     gender: 'M',
     birthDate: '2022-08-22',
-    character: 'Agressif',
-    category: 1, // Taureau
+    character: { id: 3, name: 'Énergique' },
+    category: { id: 1, name: 'Taureau' },
     source: {
       type: 'Acheté',
       supplier: 'Ferme Antsirabe',
@@ -267,8 +273,8 @@ export const mockCattleData: Cattle[] = [
     name: 'Miandry Fotsy',
     gender: 'F',
     birthDate: '2024-02-14',
-    character: 'Timide',
-    category: 3, // Veau
+    character: { id: 2, name: 'Timide' },
+    category: { id: 3, name: 'Veau' },
     source: {
       type: 'Né dans le troupeau',
       motherId: 2 // Belle Mahitsy
@@ -288,8 +294,8 @@ export const mockCattleData: Cattle[] = [
     name: 'Kely Volamena',
     gender: 'M',
     birthDate: '2023-11-30',
-    character: 'Energique',
-    category: 3, // Veau
+    character: { id: 3, name: 'Énergique' },
+    category: { id: 3, name: 'Veau' },
     source: {
       type: 'Né dans le troupeau'
     },
@@ -308,8 +314,8 @@ export const mockCattleData: Cattle[] = [
     name: 'Ranitra Mendrika',
     gender: 'F',
     birthDate: '2022-04-08',
-    character: 'Docile',
-    category: 2, // Vache
+    character: { id: 1, name: 'Docile' },
+    category: { id: 2, name: 'Vache' },
     source: {
       type: 'Acheté',
       supplier: 'Coopérative Fianarantsoa',
@@ -344,8 +350,8 @@ export const mockCattleData: Cattle[] = [
     name: 'Lehibe Tandroka',
     gender: 'M',
     birthDate: '2021-12-10',
-    character: 'Agressif',
-    category: 1, // Taureau
+    character: { id: 3, name: 'Énergique' },
+    category: { id: 1, name: 'Taureau' },
     source: {
       type: 'Acheté',
       supplier: 'Ferme Morondava',
@@ -371,8 +377,8 @@ export const mockCattleData: Cattle[] = [
     name: 'Soa Mafy',
     gender: 'F',
     birthDate: '2023-09-05',
-    character: 'Energique',
-    category: 2, // Vache
+    character: { id: 3, name: 'Énergique' },
+    category: { id: 2, name: 'Vache' },
     source: {
       type: 'Né dans le troupeau',
       motherId: 4 // Toky Mainty
@@ -392,8 +398,8 @@ export const mockCattleData: Cattle[] = [
     name: 'Vary Fotsy',
     gender: 'M',
     birthDate: '2023-03-18',
-    character: 'Docile',
-    category: 1, // Taureau
+    character: { id: 1, name: 'Docile' },
+    category: { id: 1, name: 'Taureau' },
     source: {
       type: 'Acheté',
       supplier: 'Marché Antananarivo',
@@ -419,8 +425,8 @@ export const mockCattleData: Cattle[] = [
     name: 'Malala Tsara',
     gender: 'F',
     birthDate: '2022-06-25',
-    character: 'Timide',
-    category: 2, // Vache
+    character: { id: 2, name: 'Timide' },
+    category: { id: 2, name: 'Vache' },
     source: {
       type: 'Né dans le troupeau'
     },
