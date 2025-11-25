@@ -19,6 +19,7 @@ import { AddEventModal } from '@/features/cattle/components/AddEventModal';
 import { AddBirthModal } from '@/features/cattle/components/AddBirthModal';
 import { Treatment, CattleEvent, Cattle } from '@/features/cattle/types';
 import { cattleService } from "@/features/cattle";
+import { useToast } from '@/hooks/use-toast';
 
 const cattleImages = [cattlePortrait1, cattlePortrait2, cattlePortrait3];
 
@@ -110,6 +111,7 @@ export default function CattleDetailsPage() {
   const [showAddBirth, setShowAddBirth] = useState(false);
   const [localTreatments, setLocalTreatments] = useState<Treatment[]>([]);
   const [localEvents, setLocalEvents] = useState<CattleEvent[]>([]);
+  const { toast } = useToast();
 
   // Helper functions using fetched data
   const getVeterinarianName = (id: number) => {
@@ -190,15 +192,26 @@ export default function CattleDetailsPage() {
       const response = await cattleService.registerBirth(cattle.id, calfData);
 
       if (response.success) {
-        alert(`Naissance enregistrée avec succès pour ${calfData.name} !`);
+        toast({
+          title: "Succès",
+          description: `Naissance enregistrée avec succès pour ${calfData.name} !`,
+        });
         // Refresh cattle data to show new descendant/event
         window.location.reload();
       } else {
-        alert(response.message || "Erreur lors de l'enregistrement de la naissance");
+        toast({
+          variant: "destructive",
+          title: "Erreur",
+          description: response.message || "Erreur lors de l'enregistrement de la naissance",
+        });
       }
     } catch (error) {
       console.error("Error registering birth:", error);
-      alert("Une erreur est survenue lors de l'enregistrement");
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Une erreur est survenue lors de l'enregistrement",
+      });
     }
   };
 
