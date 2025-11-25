@@ -18,7 +18,7 @@ import { AddTreatmentModal } from '@/features/cattle/components/AddTreatmentModa
 import { AddEventModal } from '@/features/cattle/components/AddEventModal';
 import { AddBirthModal } from '@/features/cattle/components/AddBirthModal';
 import { Treatment, CattleEvent, Cattle } from '@/features/cattle/types';
-import {cattleService} from "@/features/cattle";
+import { cattleService } from "@/features/cattle";
 
 const cattleImages = [cattlePortrait1, cattlePortrait2, cattlePortrait3];
 
@@ -348,6 +348,13 @@ export default function CattleDetailsPage() {
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">Marque</span>
                     <span className="font-medium">{cattle.brand}</span>
+                  </div>
+                )}
+
+                {cattle.herdBookNumber && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">N° Carnet</span>
+                    <span className="font-medium">{cattle.herdBookNumber}</span>
                   </div>
                 )}
 

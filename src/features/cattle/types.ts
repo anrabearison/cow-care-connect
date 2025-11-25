@@ -7,6 +7,7 @@ export interface Cattle {
   character: 'Docile' | 'Agressif' | 'Timide' | 'Energique';
   category: number;
   brand?: string;
+  herdBookNumber?: number;
   distinctiveSign?: string;
   photo?: string;
   source: {

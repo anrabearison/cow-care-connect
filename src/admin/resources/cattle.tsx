@@ -64,6 +64,7 @@ export const CattleList = () => (
       <TextField source="nickname" label="Surnom" />
       <TextField source="category" label="Catégorie" />
       <TextField source="gender" label="Genre" />
+      <NumberField source="herdBookNumber" label="N° Carnet" />
       <TextField source="brand" label="Marque" />
       <TextField source="distinctiveSign" label="Signe Particulier" />
       <TextField source="character" label="Caractère" />
@@ -97,6 +98,7 @@ export const CattleEdit = () => (
     <SimpleForm>
       <TextInput source="name" label="Nom" required />
       <TextInput source="nickname" label="Surnom" />
+      <NumberInput source="herdBookNumber" label="N° Carnet" />
       <TextInput source="brand" label="Marque" />
       <TextInput source="distinctiveSign" label="Signe Particulier" />
       <SelectInput
@@ -206,6 +208,7 @@ export const CattleCreate = () => (
     <SimpleForm>
       <TextInput source="name" label="Nom" required />
       <TextInput source="nickname" label="Surnom" />
+      <NumberInput source="herdBookNumber" label="N° Carnet" />
       <TextInput source="brand" label="Marque" />
       <TextInput source="distinctiveSign" label="Signe Particulier" />
       <SelectInput
@@ -338,6 +341,7 @@ export const CattleShow = () => (
             <InlineField label="Identifiant"><TextField source="id" /></InlineField>
             <InlineField label="Nom"><TextField source="name" /></InlineField>
             <InlineField label="Surnom"><TextField source="nickname" /></InlineField>
+            <InlineField label="N° Carnet"><NumberField source="herdBookNumber" /></InlineField>
             <InlineField label="Catégorie"><TextField source="category" /></InlineField>
             <InlineField label="Genre"><TextField source="gender" /></InlineField>
             <InlineField label="Marque"><TextField source="brand" /></InlineField>
