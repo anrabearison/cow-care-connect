@@ -33,6 +33,20 @@ import {
   useRecordContext,
   required,
 } from 'react-admin';
+import { EditToolbar, CreateToolbar, ConfirmDeleteButton } from '../components/ConfirmToolbars';
+
+// Delete button component with confirmation
+const DeleteButtonField = () => {
+  const record = useRecordContext();
+  return (
+    <ConfirmDeleteButton
+      record={record}
+      resource="cattle"
+      title="Supprimer ce bovin"
+      message="Êtes-vous sûr de vouloir supprimer ce bovin ? Cette action supprimera également tous les événements et traitements associés."
+    />
+  );
+};
 
 // Filtres pour la liste des bovins
 const cattleFilters = [
@@ -87,7 +101,7 @@ export const CattleList = () => (
       />
       <ShowButton />
       <EditButton />
-      <DeleteButton />
+      <DeleteButtonField />
     </Datagrid>
   </List>
 );
@@ -95,7 +109,7 @@ export const CattleList = () => (
 // Édition d'un bovin
 export const CattleEdit = () => (
   <Edit>
-    <SimpleForm>
+    <SimpleForm toolbar={<EditToolbar />}>
       <TextInput source="name" label="Nom" required />
       <TextInput source="nickname" label="Surnom" />
       <NumberInput source="herdBookNumber" label="N° Carnet" />
@@ -205,7 +219,7 @@ export const CattleEdit = () => (
 // Création d'un bovin
 export const CattleCreate = () => (
   <Create>
-    <SimpleForm>
+    <SimpleForm toolbar={<CreateToolbar />}>
       <TextInput source="name" label="Nom" required />
       <TextInput source="nickname" label="Surnom" />
       <NumberInput source="herdBookNumber" label="N° Carnet" />
