@@ -31,22 +31,7 @@ export default function CattlePage() {
     offset: (currentPage - 1) * itemsPerPage,
   };
 
-  const { cattle: allCattle, loading: isLoading, error, total, refreshCattle } = useCattle();
-
-  // Filtrer localement pour une meilleure UX (recherche instantanée)
-  const filteredCattle = allCattle.filter(cattle => {
-    if (searchTerm && !cattle.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      !cattle.id.toString().includes(searchTerm)) {
-      return false;
-    }
-    if (genderFilter !== 'all' && cattle.gender !== genderFilter) {
-      return false;
-    }
-    if (characterFilter !== 'all' && cattle.character !== characterFilter) {
-      return false;
-    }
-    return true;
-  });
+  const { cattle, loading: isLoading, error, total, refreshCattle } = useCattle(filters);
 
   const resetFilters = () => {
     setSearchTerm('');
@@ -56,10 +41,7 @@ export default function CattlePage() {
   };
 
   // Calculate pagination
-  const totalPages = Math.ceil(filteredCattle.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentCattle = filteredCattle.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(total / itemsPerPage);
 
   // Reset to first page when filters change
   useEffect(() => {
@@ -181,8 +163,8 @@ export default function CattlePage() {
         {/* Results Info */}
         <div className="flex justify-between items-center mb-6">
           <p className="text-muted-foreground">
-            {filteredCattle.length} animal{filteredCattle.length > 1 ? 'aux' : ''} trouvé{filteredCattle.length > 1 ? 's' : ''}
-            {filteredCattle.length > itemsPerPage && (
+            {total} animal{total > 1 ? 'aux' : ''} trouvé{total > 1 ? 's' : ''}
+            {total > itemsPerPage && (
               <span className="ml-2">
                 (Page {currentPage} sur {totalPages})
               </span>
@@ -223,10 +205,10 @@ export default function CattlePage() {
               </Card>
             ))}
           </div>
-        ) : filteredCattle.length > 0 ? (
+        ) : cattle.length > 0 ? (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {currentCattle.map((cattle) => (
+              {cattle.map((cattle) => (
                 <CattleCard key={cattle.id} cattle={cattle} />
               ))}
             </div>

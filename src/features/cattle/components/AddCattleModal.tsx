@@ -81,6 +81,10 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
             herdBookNumber: formData.herdBookNumber ? parseInt(formData.herdBookNumber) : undefined,
             distinctiveSign: formData.distinctiveSign || undefined,
             photo: undefined,
+            status: {
+                id: 1,
+                name: 'Vivant'
+            },
             source: {
                 type: formData.sourceType,
                 supplier: formData.sourceType === 'Acheté' ? formData.supplier : undefined,

@@ -83,6 +83,22 @@ class ReferenceService {
             return { data: [], success: false, message: 'Erreur chargement catégories' };
         }
     }
+
+    async getStatuses(): Promise<ApiResponse<{ id: number, name: string }[]>> {
+        try {
+            const url = buildApiUrl('/api/status');
+            const response = await fetchWithAuth(url);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const result = await response.json();
+            return {
+                data: result.data || result,
+                success: true
+            };
+        } catch (error) {
+            console.error('Error fetching statuses:', error);
+            return { data: [], success: false, message: 'Erreur chargement statuts' };
+        }
+    }
 }
 
 export const referenceService = new ReferenceService();

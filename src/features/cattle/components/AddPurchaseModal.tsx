@@ -78,6 +78,10 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
             brand: formData.brand || undefined,
             distinctiveSign: formData.distinctiveSign || undefined,
             photo: undefined,
+            status: {
+                id: 1,
+                name: 'Vivant'
+            },
             source: {
                 type: 'Acheté',
                 supplier: formData.supplier || undefined,

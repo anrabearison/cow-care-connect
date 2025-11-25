@@ -10,6 +10,10 @@ export interface Cattle {
   herdBookNumber?: number;
   distinctiveSign?: string;
   photo?: string;
+  status: {
+    id: number;
+    name: string;
+  };
   source: {
     type: 'Acheté' | 'Né dans le troupeau';
     supplier?: string;

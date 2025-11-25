@@ -84,6 +84,10 @@ export const CattleList = () => (
       <TextField source="character" label="Caractère" />
       <DateField source="birthDate" label="Date de naissance" />
       <FunctionField
+        label="Statut"
+        render={(record: any) => record.status?.name || 'Non défini'}
+      />
+      <FunctionField
         label="Source"
         render={(record: any) => record.source?.type || 'Non défini'}
       />

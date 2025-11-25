@@ -73,6 +73,19 @@ const getGenderIcon = (gender: string) => {
   return gender === 'M' ? '♂️' : '♀️';
 };
 
+const getStatusColor = (statusName: string) => {
+  switch (statusName) {
+    case 'Vivant':
+      return 'bg-green-100 text-green-800 border-green-200';
+    case 'Décédé':
+      return 'bg-gray-100 text-gray-800 border-gray-200';
+    case 'Vendu':
+      return 'bg-blue-100 text-blue-800 border-blue-200';
+    default:
+      return 'bg-gray-100 text-gray-800 border-gray-200';
+  }
+};
+
 export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
   // Use a consistent image based on the cattle ID if photo exists
   const imageIndex = cattle.id % cattleImages.length;
@@ -148,6 +161,13 @@ export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
               <span className="text-sm font-medium text-foreground">{cattle.herdBookNumber}</span>
             </div>
           )}
+
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">Statut</span>
+            <Badge className={`text-xs ${getStatusColor(cattle.status.name)}`}>
+              {cattle.status.name}
+            </Badge>
+          </div>
 
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Source</span>
