@@ -4,14 +4,19 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
-import { Search, Filter, Users } from 'lucide-react';
+import { Search, Filter, Users, Plus } from 'lucide-react';
 import { CattleCard } from '@/features/cattle/components/CattleCard';
 import { Cattle } from '@/features/cattle/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCattle } from '@/features/cattle/hooks';
+import { AddPurchaseModal } from '@/features/cattle/components/AddPurchaseModal';
+import { cattleService } from '@/features/cattle/services';
+import { useToast } from '@/hooks/use-toast';
 
 export default function CattlePage() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const { toast } = useToast();
   const [genderFilter, setGenderFilter] = useState<string>('all');
   const [characterFilter, setCharacterFilter] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,17 +32,17 @@ export default function CattlePage() {
   };
 
   const { cattle: allCattle, loading: isLoading, error, total, refreshCattle } = useCattle();
-  
+
   // Filtrer localement pour une meilleure UX (recherche instantanée)
   const filteredCattle = allCattle.filter(cattle => {
-    if (searchTerm && !cattle.nom.toLowerCase().includes(searchTerm.toLowerCase()) && 
-        !cattle.id.toLowerCase().includes(searchTerm.toLowerCase())) {
+    if (searchTerm && !cattle.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      !cattle.id.toString().includes(searchTerm)) {
       return false;
     }
-    if (genderFilter !== 'all' && cattle.genre !== genderFilter) {
+    if (genderFilter !== 'all' && cattle.gender !== genderFilter) {
       return false;
     }
-    if (characterFilter !== 'all' && cattle.caractere !== characterFilter) {
+    if (characterFilter !== 'all' && cattle.character !== characterFilter) {
       return false;
     }
     return true;
@@ -61,18 +66,54 @@ export default function CattlePage() {
     setCurrentPage(1);
   }, [searchTerm, genderFilter, characterFilter]);
 
+  const handleAddCattle = async (cattleData: Omit<Cattle, 'id' | 'events' | 'treatments'>) => {
+    try {
+      const fullCattleData: Omit<Cattle, 'id'> = {
+        ...cattleData,
+        events: [],
+        treatments: []
+      };
+      const response = await cattleService.createCattle(fullCattleData);
+      if (response.success) {
+        toast({
+          title: "Succès",
+          description: "L'animal a été ajouté avec succès",
+        });
+        refreshCattle();
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Erreur",
+          description: response.message || "Erreur lors de l'ajout de l'animal",
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Une erreur est survenue",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-earth">
       <div className="container mx-auto px-6 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center space-x-3 mb-4">
-            <Users className="h-8 w-8 text-primary" />
-            <h1 className="text-4xl font-bold text-foreground">Gestion du Troupeau</h1>
+        <div className="mb-8 flex justify-between items-start">
+          <div>
+            <div className="flex items-center space-x-3 mb-4">
+              <Users className="h-8 w-8 text-primary" />
+              <h1 className="text-4xl font-bold text-foreground">Gestion du Troupeau</h1>
+            </div>
+            <p className="text-lg text-muted-foreground">
+              Gérez et surveillez vos {total} animaux
+            </p>
           </div>
-          <p className="text-lg text-muted-foreground">
-            Gérez et surveillez vos {total} animaux
-          </p>
+          <Button onClick={() => setIsAddModalOpen(true)} className="flex items-center gap-2">
+            <Plus className="h-4 w-4" />
+            Nouvel achat
+          </Button>
         </div>
 
         {/* Filters */}
@@ -126,8 +167,8 @@ export default function CattlePage() {
               </Select>
 
               {/* Reset Button */}
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={resetFilters}
                 className="border-primary/20 text-primary hover:bg-primary/5"
               >
@@ -189,14 +230,14 @@ export default function CattlePage() {
                 <CattleCard key={cattle.id} cattle={cattle} />
               ))}
             </div>
-            
+
             {/* Pagination */}
             {totalPages > 1 && (
               <div className="flex justify-center">
                 <Pagination>
                   <PaginationContent>
                     <PaginationItem>
-                      <PaginationPrevious 
+                      <PaginationPrevious
                         href="#"
                         onClick={(e) => {
                           e.preventDefault();
@@ -205,7 +246,7 @@ export default function CattlePage() {
                         className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
                       />
                     </PaginationItem>
-                    
+
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
                       <PaginationItem key={pageNum}>
                         <PaginationLink
@@ -221,9 +262,9 @@ export default function CattlePage() {
                         </PaginationLink>
                       </PaginationItem>
                     ))}
-                    
+
                     <PaginationItem>
-                      <PaginationNext 
+                      <PaginationNext
                         href="#"
                         onClick={(e) => {
                           e.preventDefault();
@@ -252,6 +293,12 @@ export default function CattlePage() {
           </Card>
         )}
       </div>
+
+      <AddPurchaseModal
+        open={isAddModalOpen}
+        onOpenChange={setIsAddModalOpen}
+        onAdd={handleAddCattle}
+      />
     </div>
   );
 }

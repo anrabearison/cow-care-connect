@@ -67,6 +67,22 @@ class ReferenceService {
             return { data: [], success: false, message: 'Erreur chargement médicaments' };
         }
     }
+
+    async getCategories(): Promise<ApiResponse<{ id: number, name: string }[]>> {
+        try {
+            const url = buildApiUrl('/api/categories');
+            const response = await fetchWithAuth(url);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const result = await response.json();
+            return {
+                data: result.data || result,
+                success: true
+            };
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+            return { data: [], success: false, message: 'Erreur chargement catégories' };
+        }
+    }
 }
 
 export const referenceService = new ReferenceService();
