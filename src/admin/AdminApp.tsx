@@ -11,6 +11,8 @@ import { MedicamentList, MedicamentEdit, MedicamentCreate, MedicamentShow } from
 import { TraitementList, TraitementEdit, TraitementCreate, TraitementShow } from './resources/traitements';
 import { EvenementList, EvenementEdit, EvenementCreate, EvenementShow } from './resources/evenements';
 import { CategoryList, CategoryEdit, CategoryCreate, CategoryShow } from './resources/categories';
+import { StatusList, StatusEdit, StatusCreate, StatusShow } from './resources/status';
+import { CharactersList, CharactersEdit, CharactersCreate, CharactersShow } from './resources/characters';
 import { Dashboard } from './components/Dashboard';
 import { Layout } from './components/Layout';
 import {
@@ -103,6 +105,22 @@ export const AdminApp: React.FC = () => {
                 create={CategoryCreate}
                 show={CategoryShow}
                 options={{ label: 'Catégories' }}
+            />
+            <Resource
+                name="status"
+                list={StatusList}
+                edit={StatusEdit}
+                create={StatusCreate}
+                show={StatusShow}
+                options={{ label: 'Statuts' }}
+            />
+            <Resource
+                name="characters"
+                list={CharactersList}
+                edit={CharactersEdit}
+                create={CharactersCreate}
+                show={CharactersShow}
+                options={{ label: 'Caractères' }}
             />
         </Admin>
     );
