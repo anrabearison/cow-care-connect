@@ -234,12 +234,41 @@ class CattleService {
     }
   }
 
+  // Helper pour transformer les données avant l'envoi
+  private transformCattleData(data: any): any {
+    const transformed = { ...data };
+
+    // Transformer les objets {id, name} en ID simple
+    if (transformed.character && typeof transformed.character === 'object') {
+      transformed.character = transformed.character.id;
+    }
+
+    if (transformed.category && typeof transformed.category === 'object') {
+      transformed.category = transformed.category.id;
+    }
+
+    if (transformed.status && typeof transformed.status === 'object') {
+      transformed.status = transformed.status.id;
+    }
+
+    // Gérer les champs nested dans source
+    if (transformed.source) {
+      if (transformed.source.purchaseCategory && typeof transformed.source.purchaseCategory === 'object') {
+        transformed.source.purchaseCategory = transformed.source.purchaseCategory.id;
+      }
+    }
+
+    return transformed;
+  }
+
   private async createApiCattle(cattle: Omit<Cattle, 'id'>): Promise<ApiResponse<Cattle>> {
     try {
       const url = buildApiUrl(API_CONFIG.ENDPOINTS.CATTLE);
+      const payload = this.transformCattleData(cattle);
+
       const response = await fetchWithAuth(url, {
         method: 'POST',
-        body: JSON.stringify(cattle),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -265,9 +294,11 @@ class CattleService {
   private async updateApiCattle(id: number, cattle: Partial<Cattle>): Promise<ApiResponse<Cattle>> {
     try {
       const url = buildApiUrl(`${API_CONFIG.ENDPOINTS.CATTLE}/${id}`);
+      const payload = this.transformCattleData(cattle);
+
       const response = await fetchWithAuth(url, {
         method: 'PUT',
-        body: JSON.stringify(cattle),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -332,9 +363,11 @@ class CattleService {
 
     try {
       const url = buildApiUrl(`${API_CONFIG.ENDPOINTS.CATTLE}/${motherId}/birth`);
+      const payload = this.transformCattleData(birthData);
+
       const response = await fetchWithAuth(url, {
         method: 'POST',
-        body: JSON.stringify(birthData),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {

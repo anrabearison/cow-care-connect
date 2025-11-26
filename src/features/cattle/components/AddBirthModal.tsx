@@ -18,7 +18,6 @@ interface AddBirthModalProps {
 }
 
 export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange, onAdd, motherName, motherId }) => {
-    const [characters, setCharacters] = useState<{ id: number, name: string }[]>([]);
     const [formData, setFormData] = useState({
         name: '',
         nickname: '',
@@ -30,19 +29,6 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
         birthDescription: ''
     });
 
-    useEffect(() => {
-        const fetchCharacters = async () => {
-            const response = await cattleService.getCharacters();
-            if (response.success) {
-                setCharacters(response.data);
-            }
-        };
-
-        if (open) {
-            fetchCharacters();
-        }
-    }, [open]);
-
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (formData.name && formData.gender && formData.birthDate) {
@@ -53,7 +39,7 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                 birthDate: formData.birthDate,
                 character: {
                     id: formData.character,
-                    name: characters.find(c => c.id === formData.character)?.name || 'Docile'
+                    name: 'Docile'
                 },
                 category: {
                     id: 3,
@@ -150,25 +136,6 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                                     required
                                 />
                             </div>
-                        </div>
-
-                        <div className="grid gap-2">
-                            <Label htmlFor="character">Caractère</Label>
-                            <Select
-                                value={formData.character.toString()}
-                                onValueChange={(value) => setFormData({ ...formData, character: parseInt(value) })}
-                            >
-                                <SelectTrigger id="character">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {characters.map((char) => (
-                                        <SelectItem key={char.id} value={char.id.toString()}>
-                                            {char.name}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
