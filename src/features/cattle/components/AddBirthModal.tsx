@@ -38,18 +38,18 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                 gender: formData.gender as 'M' | 'F',
                 birthDate: formData.birthDate,
                 character: {
-                    id: formData.character,
-                    name: 'Docile'
+                    id: 'CHAR000',
+                    name: 'Aucun'
                 },
                 category: {
-                    id: 3,
+                    id: 'CAT003',
                     name: 'Veau'
                 },
                 brand: formData.brand || undefined,
                 distinctiveSign: formData.distinctiveSign || undefined,
                 photo: undefined,
                 status: {
-                    id: 1,
+                    id: 'STAT001',
                     name: 'Vivant'
                 },
                 source: {
@@ -184,7 +184,7 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                         <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                             Annuler
                         </Button>
-                        <Button type="submit">Enregistrer la naissance</Button>
+                        <Button type="submit">Enregistrer</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>
