@@ -1,7 +1,7 @@
 import React from 'react';
 import { Admin, Resource } from 'react-admin';
 import { API_CONFIG } from '@/config/api';
-import { dataProvider as mockDataProvider } from './providers/mockDataProvider';
+
 import { dataProvider as apiDataProvider } from './providers/dataProvider';
 import { authProvider } from './providers/authProvider';
 import { CattleList, CattleEdit, CattleCreate, CattleShow } from './resources/cattle';
@@ -29,8 +29,8 @@ const defaultOptions = {
 };
 
 export const AdminApp: React.FC = () => {
-    // Sélection du data provider selon la configuration
-    const dataProvider = API_CONFIG.USE_MOCK_DATA ? mockDataProvider : apiDataProvider;
+    // Sélection du data provider
+    const dataProvider = apiDataProvider;
 
     return (
         <Admin

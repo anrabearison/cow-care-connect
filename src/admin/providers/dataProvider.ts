@@ -1,68 +1,9 @@
 import { DataProvider, fetchUtils } from 'react-admin';
 import { stringify } from 'qs';
 import { API_CONFIG } from '@/config/api';
-import fakeRestProvider from 'ra-data-fakerest';
 
-// Données mockées pour l'interface d'administration
-const mockData = {
-  cattle: [
-    {
-      id: 'B001',
-      name: 'Belle',
-      breed: 'Holstein',
-      gender: 'Femelle',
-      age: 4,
-      weight: 650,
-      healthStatus: 'Excellent',
-      birthDate: '2020-03-15',
-      image: 'https://images.unsplash.com/photo-1516467508483-a932fdb92b13?w=400',
-      location: 'Pâturage Nord',
-      notes: 'Excellent producteur de lait'
-    },
-    {
-      id: 'B002',
-      name: 'Hercule',
-      breed: 'Charolais',
-      gender: 'Mâle',
-      age: 5,
-      weight: 980,
-      healthStatus: 'Bon',
-      birthDate: '2019-05-22',
-      image: 'https://images.unsplash.com/photo-1563421812-87b17d04daa9?w=400',
-      location: 'Étable A',
-      notes: 'Reproducteur principal'
-    },
-    {
-      id: 'B003',
-      name: 'Marguerite',
-      breed: 'Normande',
-      gender: 'Femelle',
-      age: 3,
-      weight: 550,
-      healthStatus: 'Excellent',
-      birthDate: '2021-01-10',
-      image: 'https://images.unsplash.com/photo-1605264167023-8f229b8b8b3a?w=400',
-      location: 'Pâturage Sud',
-      notes: 'Jeune vache prometteuse'
-    }
-  ],
-  users: [
-    {
-      id: 1,
-      username: 'admin',
-      email: 'admin@ferme-mg.com',
-      role: 'admin',
-      name: 'Administrateur'
-    },
-    {
-      id: 2,
-      username: 'fermier',
-      email: 'fermier@ferme-mg.com',
-      role: 'farmer',
-      name: 'Jean Dupont'
-    }
-  ]
-};
+
+
 
 // Provider pour les vraies APIs
 const apiUrl = API_CONFIG.ADMIN_API_URL;
@@ -206,10 +147,5 @@ const realDataProvider: DataProvider = {
   },
 };
 
-// Provider mockée pour le développement
-const mockDataProvider = fakeRestProvider(mockData, true);
-
-// Export du bon provider selon le mode
-export const dataProvider: DataProvider = API_CONFIG.USE_MOCK_DATA
-  ? mockDataProvider
-  : realDataProvider;
+// Export du provider
+export const dataProvider = realDataProvider;

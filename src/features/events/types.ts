@@ -1,5 +1,5 @@
 export interface TypeEvenement {
-  id: number;
+  id: string;
   nom: string;
   description?: string;
   icone?: string;

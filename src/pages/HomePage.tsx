@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, TrendingUp, Users, Activity } from 'lucide-react';
-import { getTypeEvenementIcon, getTypeEvenementName } from '@/data/mockData';
+import { getTypeEvenementIcon, getTypeEvenementName } from '@/features/events/utils';
 import { useAuth } from '@/features/auth/AuthContext';
 import heroImage from '@/assets/hero-cattle.jpg';
 import { Skeleton } from '@/components/ui/skeleton';

@@ -4,7 +4,7 @@ import { TypeEvenement } from '@/features/events/types';
 import { fetchWithAuth } from '@/utils/fetchUtils';
 
 export interface Veterinarian {
-    id: number;
+    id: string;
     nom: string;
     specialite?: string;
     telephone?: string;
@@ -12,7 +12,7 @@ export interface Veterinarian {
 }
 
 export interface Medicament {
-    id: number;
+    id: string;
     nom: string;
     type?: string;
     dosage_recommande?: string;
@@ -68,7 +68,7 @@ class ReferenceService {
         }
     }
 
-    async getCategories(): Promise<ApiResponse<{ id: number, name: string }[]>> {
+    async getCategories(): Promise<ApiResponse<{ id: string, name: string }[]>> {
         try {
             const url = buildApiUrl('/api/categories');
             const response = await fetchWithAuth(url);
@@ -84,7 +84,7 @@ class ReferenceService {
         }
     }
 
-    async getCharacters(): Promise<ApiResponse<{ id: number, name: string }[]>> {
+    async getCharacters(): Promise<ApiResponse<{ id: string, name: string }[]>> {
         try {
             const url = buildApiUrl('/api/characters');
             const response = await fetchWithAuth(url);
@@ -100,7 +100,7 @@ class ReferenceService {
         }
     }
 
-    async getStatuses(): Promise<ApiResponse<{ id: number, name: string }[]>> {
+    async getStatuses(): Promise<ApiResponse<{ id: string, name: string }[]>> {
         try {
             const url = buildApiUrl('/api/status');
             const response = await fetchWithAuth(url);

@@ -1,6 +1,6 @@
 import { Cattle } from './types';
 import { API_CONFIG, buildApiUrl } from '@/config/api';
-import { mockCattleData } from '@/data/mockData';
+
 import { fetchWithAuth } from '@/utils/fetchUtils';
 
 export interface CattleFilters {
@@ -20,162 +20,26 @@ export interface ApiResponse<T> {
 
 class CattleService {
   async getCattleList(filters?: CattleFilters): Promise<ApiResponse<Cattle[]>> {
-    if (API_CONFIG.USE_MOCK_DATA) {
-      return this.getMockCattleList(filters);
-    }
-
     return this.getApiCattleList(filters);
   }
 
   async getCattleById(id: number): Promise<ApiResponse<Cattle>> {
-    if (API_CONFIG.USE_MOCK_DATA) {
-      return this.getMockCattleById(id);
-    }
-
     return this.getApiCattleById(id);
   }
 
   async createCattle(cattle: Omit<Cattle, 'id'>): Promise<ApiResponse<Cattle>> {
-    if (API_CONFIG.USE_MOCK_DATA) {
-      return this.createMockCattle(cattle);
-    }
-
     return this.createApiCattle(cattle);
   }
 
   async updateCattle(id: number, cattle: Partial<Cattle>): Promise<ApiResponse<Cattle>> {
-    if (API_CONFIG.USE_MOCK_DATA) {
-      return this.updateMockCattle(id, cattle);
-    }
-
     return this.updateApiCattle(id, cattle);
   }
 
   async deleteCattle(id: number): Promise<ApiResponse<boolean>> {
-    if (API_CONFIG.USE_MOCK_DATA) {
-      return this.deleteMockCattle(id);
-    }
-
     return this.deleteApiCattle(id);
   }
 
-  // Méthodes pour les données mockées
-  private async getMockCattleList(filters?: CattleFilters): Promise<ApiResponse<Cattle[]>> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        let filteredData = [...mockCattleData];
 
-        if (filters?.search) {
-          filteredData = filteredData.filter(cattle =>
-            cattle.name.toLowerCase().includes(filters.search!.toLowerCase()) ||
-            cattle.id.toString().includes(filters.search!)
-          );
-        }
-
-        if (filters?.genre) {
-          filteredData = filteredData.filter(cattle => cattle.gender === filters.genre);
-        }
-
-        if (filters?.caractere) {
-          filteredData = filteredData.filter(cattle => cattle.character.name === filters.caractere);
-        }
-
-        if (filters?.limit) {
-          const offset = filters.offset || 0;
-          filteredData = filteredData.slice(offset, offset + filters.limit);
-        }
-
-        resolve({
-          data: filteredData,
-          total: mockCattleData.length,
-          success: true
-        });
-      }, 300); // Simule la latence réseau
-    });
-  }
-
-  private async getMockCattleById(id: number): Promise<ApiResponse<Cattle>> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const cattle = mockCattleData.find(c => c.id === id);
-        if (cattle) {
-          resolve({
-            data: cattle,
-            success: true
-          });
-        } else {
-          resolve({
-            data: {} as Cattle,
-            success: false,
-            message: 'Bovin non trouvé'
-          });
-        }
-      }, 200);
-    });
-  }
-
-  private async createMockCattle(cattle: Omit<Cattle, 'id'>): Promise<ApiResponse<Cattle>> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const newCattle: Cattle = {
-          ...cattle,
-          id: mockCattleData.length + 1
-        };
-
-        mockCattleData.push(newCattle);
-
-        resolve({
-          data: newCattle,
-          success: true,
-          message: 'Bovin créé avec succès'
-        });
-      }, 500);
-    });
-  }
-
-  private async updateMockCattle(id: number, cattle: Partial<Cattle>): Promise<ApiResponse<Cattle>> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const index = mockCattleData.findIndex(c => c.id === id);
-        if (index !== -1) {
-          mockCattleData[index] = { ...mockCattleData[index], ...cattle };
-          resolve({
-            data: mockCattleData[index],
-            success: true,
-            message: 'Bovin mis à jour avec succès'
-          });
-        } else {
-          resolve({
-            data: {} as Cattle,
-            success: false,
-            message: 'Bovin non trouvé'
-          });
-        }
-      }, 400);
-    });
-  }
-
-  private async deleteMockCattle(id: number): Promise<ApiResponse<boolean>> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const index = mockCattleData.findIndex(c => c.id === id);
-        if (index !== -1) {
-          mockCattleData.splice(index, 1);
-          resolve({
-            data: true,
-            success: true,
-            message: 'Bovin supprimé avec succès'
-          });
-        } else {
-          resolve({
-            data: false,
-            success: false,
-            message: 'Bovin non trouvé'
-          });
-        }
-      }, 300);
-    });
-  }
 
   // Méthodes pour les vraies APIs
   private async getApiCattleList(filters?: CattleFilters): Promise<ApiResponse<Cattle[]>> {
@@ -348,18 +212,7 @@ class CattleService {
   }
 
   async registerBirth(motherId: number, birthData: Omit<Cattle, 'id' | 'events' | 'treatments'>): Promise<ApiResponse<Cattle>> {
-    if (API_CONFIG.USE_MOCK_DATA) {
-      // Mock implementation
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve({
-            data: { ...birthData, id: Date.now() } as Cattle,
-            success: true,
-            message: 'Naissance enregistrée avec succès'
-          });
-        }, 500);
-      });
-    }
+
 
     try {
       const url = buildApiUrl(`${API_CONFIG.ENDPOINTS.CATTLE}/${motherId}/birth`);

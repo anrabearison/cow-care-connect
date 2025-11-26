@@ -17,15 +17,15 @@ interface AddPurchaseModalProps {
 
 export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpenChange, onAdd }) => {
     const { toast } = useToast();
-    const [categories, setCategories] = useState<{ id: number, name: string }[]>([]);
-    const [characters, setCharacters] = useState<{ id: number, name: string }[]>([]);
+    const [categories, setCategories] = useState<{ id: string, name: string }[]>([]);
+    const [characters, setCharacters] = useState<{ id: string, name: string }[]>([]);
 
     const [formData, setFormData] = useState({
         name: '',
         nickname: '',
         gender: '' as 'M' | 'F' | '',
         birthDate: '',
-        character: 0,
+        character: '',
         category: '',
         brand: '',
         distinctiveSign: '',
@@ -98,21 +98,21 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
                 name: characters.find(c => c.id === formData.character)?.name || ''
             },
             category: {
-                id: parseInt(formData.category),
-                name: categories.find(c => c.id === parseInt(formData.category))?.name || ''
+                id: formData.category,
+                name: categories.find(c => c.id === formData.category)?.name || ''
             },
             brand: formData.brand || undefined,
             distinctiveSign: formData.distinctiveSign || undefined,
             photo: undefined,
             status: {
-                id: 1,
+                id: 'STAT001',
                 name: 'Vivant'
             },
             source: {
                 type: 'Acheté',
                 supplier: formData.supplier || undefined,
                 purchaseDate: formData.purchaseDate || undefined,
-                purchaseCategory: parseInt(formData.category),
+                purchaseCategory: formData.category,
                 purchasePrice: formData.purchasePrice ? parseFloat(formData.purchasePrice) : undefined,
                 purchaseWeight: formData.purchaseWeight ? parseFloat(formData.purchaseWeight) : undefined,
                 purchaseHealthStatus: formData.purchaseHealthStatus || undefined,
@@ -131,7 +131,7 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
             nickname: '',
             gender: '',
             birthDate: '',
-            character: characters.length > 0 ? characters[0].id : 0,
+            character: characters.length > 0 ? characters[0].id : '',
             category: '',
             brand: '',
             distinctiveSign: '',
@@ -223,7 +223,7 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
                                     <Label htmlFor="character">Caractère</Label>
                                     <Select
                                         value={formData.character.toString()}
-                                        onValueChange={(value) => setFormData({ ...formData, character: parseInt(value) })}
+                                        onValueChange={(value) => setFormData({ ...formData, character: value })}
                                     >
                                         <SelectTrigger id="character">
                                             <SelectValue />

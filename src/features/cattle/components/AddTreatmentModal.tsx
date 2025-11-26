@@ -19,9 +19,9 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
     const [formData, setFormData] = useState({
         type: '' as Treatment['type'],
         date: new Date().toISOString().split('T')[0],
-        product: 0,
+        product: '',
         dosage: '',
-        veterinarian: 0,
+        veterinarian: '',
         notes: ''
     });
     const [medicaments, setMedicaments] = useState<Medicament[]>([]);
@@ -57,9 +57,9 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
             setFormData({
                 type: '' as Treatment['type'],
                 date: new Date().toISOString().split('T')[0],
-                product: 0,
+                product: '',
                 dosage: '',
-                veterinarian: 0,
+                veterinarian: '',
                 notes: ''
             });
             onOpenChange(false);
@@ -112,7 +112,7 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                             <Label htmlFor="product">Médicament *</Label>
                             <Select
                                 value={formData.product.toString()}
-                                onValueChange={(value) => setFormData({ ...formData, product: parseInt(value) })}
+                                onValueChange={(value) => setFormData({ ...formData, product: value })}
                                 disabled={loading}
                             >
                                 <SelectTrigger id="product">
@@ -143,7 +143,7 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                             <Label htmlFor="veterinarian">Intervenant *</Label>
                             <Select
                                 value={formData.veterinarian.toString()}
-                                onValueChange={(value) => setFormData({ ...formData, veterinarian: parseInt(value) })}
+                                onValueChange={(value) => setFormData({ ...formData, veterinarian: value })}
                                 disabled={loading}
                             >
                                 <SelectTrigger id="veterinarian">

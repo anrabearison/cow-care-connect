@@ -3,7 +3,7 @@ export const API_CONFIG = {
   // Mode de développement: utilise les données mockées
   // Mode production: utilise les vraies APIs
   // Par défaut à true si non défini
-  USE_MOCK_DATA: import.meta.env.VITE_USE_MOCK === 'true',
+
 
   // URLs des vraies APIs
   BASE_URL: import.meta.env.VITE_API_URL || 'http://localhost:8000',

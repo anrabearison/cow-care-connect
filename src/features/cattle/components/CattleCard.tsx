@@ -30,7 +30,7 @@ const calculateAge = (birthDate: string) => {
   }
 };
 
-// Helper to get category description from mock data
+// Helper to get category description
 const getCategoryDescription = (id: number) => {
   const cat = categories.find((c) => c.id === id);
   return cat ? cat.name : id.toString();

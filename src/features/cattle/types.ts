@@ -5,11 +5,11 @@ export interface Cattle {
   gender: 'M' | 'F';
   birthDate: string;
   character: {
-    id: number;
+    id: string;
     name: string;
   };
   category: {
-    id: number;
+    id: string;
     name: string;
   };
   brand?: string;
@@ -17,14 +17,14 @@ export interface Cattle {
   distinctiveSign?: string;
   photo?: string;
   status: {
-    id: number;
+    id: string;
     name: string;
   };
   source: {
     type: 'Acheté' | 'Né dans le troupeau';
     supplier?: string;
     purchaseDate?: string;
-    purchaseCategory?: number;
+    purchaseCategory?: string;
     purchasePrice?: number;
     purchaseWeight?: number;
     purchaseHealthStatus?: string;
@@ -37,7 +37,7 @@ export interface Cattle {
 
 export interface CattleEvent {
   id: number;
-  type: number; // ID du type d'événement
+  type: string; // ID du type d'événement
   date: string;
   description: string;
   details?: string;
@@ -47,9 +47,9 @@ export interface Treatment {
   id: number;
   type: 'Antibiotique' | 'Vaccin' | 'Vermifuge' | 'Anti-inflammatoire' | 'Vitamine' | 'Autre';
   date: string;
-  product: number; // ID du médicament
+  product: string; // ID du médicament
   dosage: string;
-  veterinarian: number; // ID de l'intervenant
+  veterinarian: string; // ID de l'intervenant
   notes?: string;
 }
 
@@ -61,11 +61,11 @@ export interface User {
 }
 
 export interface Character {
-  id: number;
+  id: string;
   name: string;
 }
 
 export interface Category {
-  id: number;
+  id: string;
   name: string;
 }

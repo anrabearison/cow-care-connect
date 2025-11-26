@@ -15,18 +15,11 @@ export interface AuthResponse {
 
 class AuthService {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    if (API_CONFIG.USE_MOCK_DATA) {
-      return this.mockLogin(credentials);
-    }
-
     return this.apiLogin(credentials);
   }
 
   async logout(): Promise<void> {
-    if (!API_CONFIG.USE_MOCK_DATA) {
-      // Pas d'appel API nécessaire pour JWT stateless
-      // Le token est simplement supprimé côté client
-    }
+
 
     // Nettoyage local
     localStorage.removeItem('auth_token');
@@ -34,9 +27,7 @@ class AuthService {
   }
 
   async refreshToken(): Promise<string | null> {
-    if (API_CONFIG.USE_MOCK_DATA) {
-      return this.getToken(); // Mock: retourne le token existant
-    }
+
 
     try {
       const response = await fetch(buildApiUrl(`${API_CONFIG.ENDPOINTS.AUTH}/refresh`), {
@@ -86,63 +77,7 @@ class AuthService {
     return this.getToken() !== null && this.getUser() !== null;
   }
 
-  // Méthodes pour l'authentification mockée
-  private async mockLogin(credentials: LoginCredentials): Promise<AuthResponse> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        // Utilisateurs de test
-        const mockUsers = [
-          {
-            id: '1',
-            name: 'Jean Rakoto',
-            email: 'admin@ferme.mg',
-            role: 'admin' as const,
-            password: 'admin123'
-          },
-          {
-            id: '2',
-            name: 'Livia Raso',
-            email: 'livia@ferme.mg',
-            role: 'eleveur' as const,
-            password: 'secret'
-          },
-          {
-            id: '3',
-            name: 'Tiana Andry',
-            email: 'tiana@ferme.mg',
-            role: 'veterinaire' as const,
-            password: 'secret'
-          }
-        ];
 
-        const user = mockUsers.find(u =>
-          u.email === credentials.email && u.password === credentials.password
-        );
-
-        if (user) {
-          const { password, ...userWithoutPassword } = user;
-          const token = `mock_token_${Date.now()}_${user.id}`;
-
-          localStorage.setItem('auth_token', token);
-          localStorage.setItem('user_data', JSON.stringify(userWithoutPassword));
-
-          resolve({
-            user: userWithoutPassword,
-            token,
-            success: true,
-            message: 'Connexion réussie'
-          });
-        } else {
-          resolve({
-            user: {} as User,
-            token: '',
-            success: false,
-            message: 'Email ou mot de passe incorrect'
-          });
-        }
-      }, 1000); // Simule la latence réseau
-    });
-  }
 
   // Méthodes pour la vraie authentification API
   private async apiLogin(credentials: LoginCredentials): Promise<AuthResponse> {

@@ -18,7 +18,7 @@ interface AddEventModalProps {
 
 export const AddEventModal: React.FC<AddEventModalProps> = ({ open, onOpenChange, onAdd, cattleName }) => {
     const [formData, setFormData] = useState({
-        type: 0,
+        type: '',
         date: new Date().toISOString().split('T')[0],
         description: '',
         details: ''
@@ -46,7 +46,7 @@ export const AddEventModal: React.FC<AddEventModalProps> = ({ open, onOpenChange
         if (formData.type && formData.date && formData.description) {
             onAdd(formData);
             setFormData({
-                type: 0,
+                type: '',
                 date: new Date().toISOString().split('T')[0],
                 description: '',
                 details: ''
@@ -70,7 +70,7 @@ export const AddEventModal: React.FC<AddEventModalProps> = ({ open, onOpenChange
                             <Label htmlFor="type">Type d'événement *</Label>
                             <Select
                                 value={formData.type.toString()}
-                                onValueChange={(value) => setFormData({ ...formData, type: parseInt(value) })}
+                                onValueChange={(value) => setFormData({ ...formData, type: value })}
                                 disabled={loading}
                             >
                                 <SelectTrigger id="type">

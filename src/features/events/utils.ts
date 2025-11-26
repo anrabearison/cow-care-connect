@@ -1,7 +1,7 @@
 import { TypeEvenement } from './types';
 
-// Mock data des types d'événements
-export const mockTypeEvenements: TypeEvenement[] = [
+// Types d'événements
+export const typeEvenements: TypeEvenement[] = [
   { id: 'TE001', nom: 'Naissance', description: 'Naissance d\'un veau', icone: '🐄' },
   { id: 'TE002', nom: 'Vaccination', description: 'Vaccination du bétail', icone: '💉' },
   { id: 'TE003', nom: 'Vente', description: 'Vente d\'un bovin', icone: '💰' },
@@ -13,11 +13,11 @@ export const mockTypeEvenements: TypeEvenement[] = [
 ];
 
 export const getTypeEvenementName = (typeId: string): string => {
-  const type = mockTypeEvenements.find(t => t.id === typeId);
+  const type = typeEvenements.find(t => t.id === typeId);
   return type?.nom || typeId;
 };
 
 export const getTypeEvenementIcon = (typeId: string): string => {
-  const type = mockTypeEvenements.find(t => t.id === typeId);
+  const type = typeEvenements.find(t => t.id === typeId);
   return type?.icone || '📋';
 };
