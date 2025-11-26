@@ -76,17 +76,20 @@ export const CattleList = () => (
       <TextField source="id" label="ID" />
       <TextField source="name" label="Nom" />
       <TextField source="nickname" label="Surnom" />
-      <TextField source="category" label="Catégorie" />
+      <ReferenceField source="category.id" reference="categories" label="Catégorie">
+        <TextField source="name" />
+      </ReferenceField>
       <TextField source="gender" label="Genre" />
       <NumberField source="herdBookNumber" label="N° Carnet" />
       <TextField source="brand" label="Marque" />
       <TextField source="distinctiveSign" label="Signe Particulier" />
-      <TextField source="character" label="Caractère" />
+      <ReferenceField source="character.id" reference="characters" label="Caractère">
+        <TextField source="name" />
+      </ReferenceField>
       <DateField source="birthDate" label="Date de naissance" />
-      <FunctionField
-        label="Statut"
-        render={(record: any) => record.status?.name || 'Non défini'}
-      />
+      <ReferenceField source="status.id" reference="status" label="Statut">
+        <TextField source="name" />
+      </ReferenceField>
       <FunctionField
         label="Source"
         render={(record: any) => record.source?.type || 'Non défini'}
@@ -128,28 +131,15 @@ export const CattleEdit = () => (
         ]}
         required
       />
-      <SelectInput
-        source="category"
-        label="Catégorie"
-        choices={[
-          { id: 'Taureau', name: 'Taureau' },
-          { id: 'Veau', name: 'Veau' },
-          { id: 'Zébu', name: 'Zébu' },
-          { id: 'Vache', name: 'Vache' },
-        ]}
-        required
-      />
-      <SelectInput
-        source="character"
-        label="Caractère"
-        choices={[
-          { id: 'Docile', name: 'Docile' },
-          { id: 'Agressif', name: 'Agressif' },
-          { id: 'Timide', name: 'Timide' },
-          { id: 'Energique', name: 'Énergique' },
-        ]}
-        required
-      />
+      <ReferenceInput source="category.id" reference="categories" label="Catégorie">
+        <AutocompleteInput optionText="name" validate={required()} />
+      </ReferenceInput>
+      <ReferenceInput source="character.id" reference="characters" label="Caractère">
+        <AutocompleteInput optionText="name" validate={required()} />
+      </ReferenceInput>
+      <ReferenceInput source="status.id" reference="status" label="Statut">
+        <AutocompleteInput optionText="name" validate={required()} />
+      </ReferenceInput>
       <DateInput source="birthDate" label="Date de naissance" required />
       <ImageInput source="photo" label="Photo" accept={{ 'image/*': ['.png', '.jpg', '.jpeg'] }}>
         <ImageField source="src" title="title" />
@@ -238,28 +228,15 @@ export const CattleCreate = () => (
         ]}
         required
       />
-      <SelectInput
-        source="category"
-        label="Catégorie"
-        choices={[
-          { id: 'Taureau', name: 'Taureau' },
-          { id: 'Veau', name: 'Veau' },
-          { id: 'Zébu', name: 'Zébu' },
-          { id: 'Vache', name: 'Vache' },
-        ]}
-        required
-      />
-      <SelectInput
-        source="character"
-        label="Caractère"
-        choices={[
-          { id: 'Docile', name: 'Docile' },
-          { id: 'Agressif', name: 'Agressif' },
-          { id: 'Timide', name: 'Timide' },
-          { id: 'Energique', name: 'Énergique' },
-        ]}
-        required
-      />
+      <ReferenceInput source="category.id" reference="categories" label="Catégorie">
+        <AutocompleteInput optionText="name" validate={required()} />
+      </ReferenceInput>
+      <ReferenceInput source="character.id" reference="characters" label="Caractère">
+        <AutocompleteInput optionText="name" validate={required()} />
+      </ReferenceInput>
+      <ReferenceInput source="status.id" reference="status" label="Statut">
+        <AutocompleteInput optionText="name" validate={required()} />
+      </ReferenceInput>
       <DateInput source="birthDate" label="Date de naissance" required />
       <ImageInput source="photo" label="Photo" accept={{ 'image/*': ['.png', '.jpg', '.jpeg'] }}>
         <ImageField source="src" title="title" />
