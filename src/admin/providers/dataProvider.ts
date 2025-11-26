@@ -88,6 +88,30 @@ const getResourcePath = (resource: string) => {
   return resourceMap[resource] || resource;
 };
 
+// Helper function to transform cattle data before sending to API
+const transformCattleData = (data: any) => {
+  const transformed = { ...data };
+
+  // Extract IDs from reference objects
+  if (transformed.category && typeof transformed.category === 'object') {
+    transformed.category = transformed.category.id;
+  }
+  if (transformed.character && typeof transformed.character === 'object') {
+    transformed.character = transformed.character.id;
+  }
+  if (transformed.status && typeof transformed.status === 'object') {
+    transformed.status = transformed.status.id;
+  }
+
+  // Transform source.purchaseCategory if it's a string (old data)
+  if (transformed.source?.purchaseCategory && typeof transformed.source.purchaseCategory === 'string') {
+    // This shouldn't happen with proper ReferenceInput, but handle legacy data
+    delete transformed.source.purchaseCategory;
+  }
+
+  return transformed;
+};
+
 const realDataProvider: DataProvider = {
   getList: (resource, params) => {
     const { page, perPage } = params.pagination;
@@ -137,11 +161,16 @@ const realDataProvider: DataProvider = {
     }));
   },
 
-  update: (resource, params) =>
-    httpClient(`${apiUrl}/${getResourcePath(resource)}/${params.id}`, {
+  update: (resource, params) => {
+    // Transform cattle data before sending
+    const data = resource === 'cattle' ? transformCattleData(params.data) : params.data;
+
+    return httpClient(`${apiUrl}/${getResourcePath(resource)}/${params.id}`, {
       method: 'PUT',
-      body: JSON.stringify(params.data),
-    }).then(({ json }) => ({ data: json })),
+      body: JSON.stringify(data),
+    }).then(({ json }) => ({ data: json }));
+  },
+
 
   updateMany: (resource, params) => {
     const query = stringify({ id: params.ids }, { arrayFormat: 'repeat' });
@@ -151,13 +180,18 @@ const realDataProvider: DataProvider = {
     }).then(({ json }) => ({ data: params.ids }));
   },
 
-  create: (resource, params) =>
-    httpClient(`${apiUrl}/${getResourcePath(resource)}`, {
+  create: (resource, params) => {
+    // Transform cattle data before sending
+    const data = resource === 'cattle' ? transformCattleData(params.data) : params.data;
+
+    return httpClient(`${apiUrl}/${getResourcePath(resource)}`, {
       method: 'POST',
-      body: JSON.stringify(params.data),
+      body: JSON.stringify(data),
     }).then(({ json }) => ({
       data: json,
-    })),
+    }));
+  },
+
 
   delete: (resource, params) =>
     httpClient(`${apiUrl}/${getResourcePath(resource)}/${params.id}`, {
