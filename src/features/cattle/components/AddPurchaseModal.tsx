@@ -18,13 +18,14 @@ interface AddPurchaseModalProps {
 export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpenChange, onAdd }) => {
     const { toast } = useToast();
     const [categories, setCategories] = useState<{ id: number, name: string }[]>([]);
+    const [characters, setCharacters] = useState<{ id: number, name: string }[]>([]);
 
     const [formData, setFormData] = useState({
         name: '',
         nickname: '',
         gender: '' as 'M' | 'F' | '',
         birthDate: '',
-        character: 'Docile' as 'Docile' | 'Timide' | 'Energique' | 'Agressif',
+        character: 0,
         category: '',
         brand: '',
         distinctiveSign: '',
@@ -38,10 +39,14 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
     });
 
     useEffect(() => {
-        const fetchCategories = async () => {
-            const response = await referenceService.getCategories();
-            if (response.success) {
-                setCategories(response.data);
+        const fetchReferenceData = async () => {
+            const [categoriesResponse, charactersResponse] = await Promise.all([
+                referenceService.getCategories(),
+                referenceService.getCharacters()
+            ]);
+
+            if (categoriesResponse.success) {
+                setCategories(categoriesResponse.data);
             } else {
                 toast({
                     variant: "destructive",
@@ -49,12 +54,27 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
                     description: "Impossible de charger les catégories"
                 });
             }
+
+            if (charactersResponse.success) {
+                setCharacters(charactersResponse.data);
+                // Set default character to first one if available
+                if (charactersResponse.data.length > 0 && formData.character === 0) {
+                    setFormData(prev => ({ ...prev, character: charactersResponse.data[0].id }));
+                }
+            } else {
+                toast({
+                    variant: "destructive",
+                    title: "Erreur",
+                    description: "Impossible de charger les caractères"
+                });
+            }
         };
 
         if (open) {
-            fetchCategories();
+            fetchReferenceData();
         }
     }, [open, toast]);
+
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -73,8 +93,14 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
             nickname: formData.nickname || undefined,
             gender: formData.gender as 'M' | 'F',
             birthDate: formData.birthDate,
-            character: formData.character,
-            category: parseInt(formData.category),
+            character: {
+                id: formData.character,
+                name: characters.find(c => c.id === formData.character)?.name || ''
+            },
+            category: {
+                id: parseInt(formData.category),
+                name: categories.find(c => c.id === parseInt(formData.category))?.name || ''
+            },
             brand: formData.brand || undefined,
             distinctiveSign: formData.distinctiveSign || undefined,
             photo: undefined,
@@ -105,7 +131,7 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
             nickname: '',
             gender: '',
             birthDate: '',
-            character: 'Docile',
+            character: characters.length > 0 ? characters[0].id : 0,
             category: '',
             brand: '',
             distinctiveSign: '',
@@ -196,17 +222,18 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
                                 <div className="grid gap-2">
                                     <Label htmlFor="character">Caractère</Label>
                                     <Select
-                                        value={formData.character}
-                                        onValueChange={(value) => setFormData({ ...formData, character: value as any })}
+                                        value={formData.character.toString()}
+                                        onValueChange={(value) => setFormData({ ...formData, character: parseInt(value) })}
                                     >
                                         <SelectTrigger id="character">
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="Docile">Docile</SelectItem>
-                                            <SelectItem value="Timide">Timide</SelectItem>
-                                            <SelectItem value="Energique">Énergique</SelectItem>
-                                            <SelectItem value="Agressif">Agressif</SelectItem>
+                                            {characters.map((char) => (
+                                                <SelectItem key={char.id} value={char.id.toString()}>
+                                                    {char.name}
+                                                </SelectItem>
+                                            ))}
                                         </SelectContent>
                                     </Select>
                                 </div>

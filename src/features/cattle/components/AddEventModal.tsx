@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { CattleEvent } from '@/features/cattle/types';
+import { referenceService } from '@/features/common/services/referenceService';
+import { TypeEvenement } from '@/features/events/types';
 
 interface AddEventModalProps {
     open: boolean;
@@ -16,18 +18,35 @@ interface AddEventModalProps {
 
 export const AddEventModal: React.FC<AddEventModalProps> = ({ open, onOpenChange, onAdd, cattleName }) => {
     const [formData, setFormData] = useState({
-        type: '',
+        type: 0,
         date: new Date().toISOString().split('T')[0],
         description: '',
         details: ''
     });
+    const [eventTypes, setEventTypes] = useState<TypeEvenement[]>([]);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const loadEventTypes = async () => {
+            setLoading(true);
+            const response = await referenceService.getEventTypes();
+            if (response.success && response.data) {
+                setEventTypes(response.data);
+            }
+            setLoading(false);
+        };
+
+        if (open) {
+            loadEventTypes();
+        }
+    }, [open]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (formData.type && formData.date && formData.description) {
             onAdd(formData);
             setFormData({
-                type: '',
+                type: 0,
                 date: new Date().toISOString().split('T')[0],
                 description: '',
                 details: ''
@@ -50,19 +69,19 @@ export const AddEventModal: React.FC<AddEventModalProps> = ({ open, onOpenChange
                         <div className="grid gap-2">
                             <Label htmlFor="type">Type d'événement *</Label>
                             <Select
-                                value={formData.type}
-                                onValueChange={(value) => setFormData({ ...formData, type: value })}
+                                value={formData.type.toString()}
+                                onValueChange={(value) => setFormData({ ...formData, type: parseInt(value) })}
+                                disabled={loading}
                             >
                                 <SelectTrigger id="type">
-                                    <SelectValue placeholder="Sélectionner un type" />
+                                    <SelectValue placeholder={loading ? "Chargement..." : "Sélectionner un type"} />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="TE001">Naissance</SelectItem>
-                                    <SelectItem value="TE002">Changement de pâturage</SelectItem>
-                                    <SelectItem value="TE003">Vaccination</SelectItem>
-                                    <SelectItem value="TE004">Visite vétérinaire</SelectItem>
-                                    <SelectItem value="TE005">Pesée</SelectItem>
-                                    <SelectItem value="TE006">Autre</SelectItem>
+                                    {eventTypes.map((eventType) => (
+                                        <SelectItem key={eventType.id} value={eventType.id.toString()}>
+                                            {eventType.nom}
+                                        </SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </div>

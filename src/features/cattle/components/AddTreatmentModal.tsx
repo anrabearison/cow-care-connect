@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Treatment } from '@/features/cattle/types';
+import { referenceService, Medicament, Veterinarian } from '@/features/common/services/referenceService';
 
 interface AddTreatmentModalProps {
     open: boolean;
@@ -18,11 +19,36 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
     const [formData, setFormData] = useState({
         type: '' as Treatment['type'],
         date: new Date().toISOString().split('T')[0],
-        product: '',
+        product: 0,
         dosage: '',
-        veterinarian: '',
+        veterinarian: 0,
         notes: ''
     });
+    const [medicaments, setMedicaments] = useState<Medicament[]>([]);
+    const [veterinarians, setVeterinarians] = useState<Veterinarian[]>([]);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const loadReferenceData = async () => {
+            setLoading(true);
+            const [medicamentsResponse, veterinariansResponse] = await Promise.all([
+                referenceService.getMedicaments(),
+                referenceService.getVeterinarians()
+            ]);
+
+            if (medicamentsResponse.success && medicamentsResponse.data) {
+                setMedicaments(medicamentsResponse.data);
+            }
+            if (veterinariansResponse.success && veterinariansResponse.data) {
+                setVeterinarians(veterinariansResponse.data);
+            }
+            setLoading(false);
+        };
+
+        if (open) {
+            loadReferenceData();
+        }
+    }, [open]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -31,9 +57,9 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
             setFormData({
                 type: '' as Treatment['type'],
                 date: new Date().toISOString().split('T')[0],
-                product: '',
+                product: 0,
                 dosage: '',
-                veterinarian: '',
+                veterinarian: 0,
                 notes: ''
             });
             onOpenChange(false);
@@ -85,20 +111,19 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                         <div className="grid gap-2">
                             <Label htmlFor="product">Médicament *</Label>
                             <Select
-                                value={formData.product}
-                                onValueChange={(value) => setFormData({ ...formData, product: value })}
+                                value={formData.product.toString()}
+                                onValueChange={(value) => setFormData({ ...formData, product: parseInt(value) })}
+                                disabled={loading}
                             >
                                 <SelectTrigger id="product">
-                                    <SelectValue placeholder="Sélectionner un médicament" />
+                                    <SelectValue placeholder={loading ? "Chargement..." : "Sélectionner un médicament"} />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="M001">Amoxicilline</SelectItem>
-                                    <SelectItem value="M002">Vaccin polyvalent</SelectItem>
-                                    <SelectItem value="M003">Ivermectine</SelectItem>
-                                    <SelectItem value="M004">Vaccin veau</SelectItem>
-                                    <SelectItem value="M005">Vaccin FMD</SelectItem>
-                                    <SelectItem value="M006">Vitamines prénatales</SelectItem>
-                                    <SelectItem value="M007">Calcium injectable</SelectItem>
+                                    {medicaments.map((medicament) => (
+                                        <SelectItem key={medicament.id} value={medicament.id.toString()}>
+                                            {medicament.nom}
+                                        </SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </div>
@@ -117,16 +142,19 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                         <div className="grid gap-2">
                             <Label htmlFor="veterinarian">Intervenant *</Label>
                             <Select
-                                value={formData.veterinarian}
-                                onValueChange={(value) => setFormData({ ...formData, veterinarian: value })}
+                                value={formData.veterinarian.toString()}
+                                onValueChange={(value) => setFormData({ ...formData, veterinarian: parseInt(value) })}
+                                disabled={loading}
                             >
                                 <SelectTrigger id="veterinarian">
-                                    <SelectValue placeholder="Sélectionner un intervenant" />
+                                    <SelectValue placeholder={loading ? "Chargement..." : "Sélectionner un intervenant"} />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="V001">Dr. Rakoto</SelectItem>
-                                    <SelectItem value="V002">Razafy</SelectItem>
-                                    <SelectItem value="V003">Dr. Nivo</SelectItem>
+                                    {veterinarians.map((vet) => (
+                                        <SelectItem key={vet.id} value={vet.id.toString()}>
+                                            {vet.nom}
+                                        </SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </div>

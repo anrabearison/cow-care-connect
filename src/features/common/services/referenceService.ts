@@ -84,6 +84,22 @@ class ReferenceService {
         }
     }
 
+    async getCharacters(): Promise<ApiResponse<{ id: number, name: string }[]>> {
+        try {
+            const url = buildApiUrl('/api/characters');
+            const response = await fetchWithAuth(url);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const result = await response.json();
+            return {
+                data: result.data || result,
+                success: true
+            };
+        } catch (error) {
+            console.error('Error fetching characters:', error);
+            return { data: [], success: false, message: 'Erreur chargement caractères' };
+        }
+    }
+
     async getStatuses(): Promise<ApiResponse<{ id: number, name: string }[]>> {
         try {
             const url = buildApiUrl('/api/status');
