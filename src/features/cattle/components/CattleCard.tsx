@@ -5,7 +5,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Calendar, MapPin, Heart } from 'lucide-react';
 import { Cattle } from '@/features/cattle/types';
-import { categories } from '@/data/categories';
 import cattlePortrait1 from '@/assets/cattle-portrait-1.jpg';
 import cattlePortrait2 from '@/assets/cattle-portrait-2.jpg';
 import cattlePortrait3 from '@/assets/cattle-portrait-3.jpg';
@@ -30,12 +29,6 @@ const calculateAge = (birthDate: string) => {
   }
 };
 
-// Helper to get category description
-const getCategoryDescription = (id: number) => {
-  const cat = categories.find((c) => c.id === id);
-  return cat ? cat.name : id.toString();
-};
-
 const getCharacterColor = (character: string) => {
   switch (character) {
     case 'Docile':
@@ -51,10 +44,7 @@ const getCharacterColor = (character: string) => {
   }
 };
 
-const getCategoryColor = (id: number) => {
-  const cat = categories.find((c) => c.id === id);
-  const name = cat ? cat.name : '';
-
+const getCategoryColor = (name: string) => {
   switch (name) {
     case 'Taureau':
       return 'bg-purple-100 text-purple-800 border-purple-200';
@@ -137,8 +127,8 @@ export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
           {cattle.category && (
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Catégorie</span>
-              <Badge className={getCategoryColor(cattle.category.id)}>
-                {getCategoryDescription(cattle.category.id)}
+              <Badge className={getCategoryColor(cattle.category.name)}>
+                {cattle.category.name}
               </Badge>
             </div>
           )}

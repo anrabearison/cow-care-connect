@@ -13,7 +13,7 @@ import { useState, useMemo } from 'react';
 import cattlePortrait1 from '@/assets/cattle-portrait-1.jpg';
 import cattlePortrait2 from '@/assets/cattle-portrait-2.jpg';
 import cattlePortrait3 from '@/assets/cattle-portrait-3.jpg';
-import { categories } from '@/data/categories';
+
 import { AddTreatmentModal } from '@/features/cattle/components/AddTreatmentModal';
 import { AddEventModal } from '@/features/cattle/components/AddEventModal';
 import { AddBirthModal } from '@/features/cattle/components/AddBirthModal';
@@ -61,10 +61,7 @@ const getCharacterColor = (character: string) => {
   }
 };
 
-const getCategoryColor = (id: number) => {
-  const cat = categories.find((c) => c.id === id);
-  const name = cat ? cat.name : '';
-
+const getCategoryColor = (name: string) => {
   switch (name) {
     case 'Taureau':
       return 'bg-purple-100 text-purple-800 border-purple-200';
@@ -114,22 +111,22 @@ export default function CattleDetailsPage() {
   const { toast } = useToast();
 
   // Helper functions using fetched data
-  const getVeterinarianName = (id: number) => {
+  const getVeterinarianName = (id: string) => {
     const vet = veterinariansData?.data?.find(v => v.id === id);
     return vet ? vet.nom : `Vétérinaire ${id}`;
   };
 
-  const getMedicamentName = (id: number) => {
+  const getMedicamentName = (id: string) => {
     const med = medicamentsData?.data?.find(m => m.id === id);
     return med ? med.nom : `Médicament ${id}`;
   };
 
-  const getTypeEvenementName = (id: number) => {
+  const getTypeEvenementName = (id: string) => {
     const type = eventTypesData?.data?.find(t => t.id === id);
     return type ? type.nom : `Type ${id}`;
   };
 
-  const getTypeEvenementIcon = (id: number) => {
+  const getTypeEvenementIcon = (id: string) => {
     const type = eventTypesData?.data?.find(t => t.id === id);
     return type?.icone || '📝';
   };
@@ -347,7 +344,7 @@ export default function CattleDetailsPage() {
 
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Catégorie</span>
-                  <Badge className={getCategoryColor(cattle.category.id)}>
+                  <Badge className={getCategoryColor(cattle.category.name)}>
                     {cattle.category.name}
                   </Badge>
                 </div>
@@ -506,7 +503,7 @@ export default function CattleDetailsPage() {
                                             <img src={motherImage} alt={mother.name} className="h-full w-full object-cover" />
                                           </div>
                                           <div className="space-y-1">
-                                            <Badge className={getCategoryColor(mother.category.id)}>{mother.category.name}</Badge>
+                                            <Badge className={getCategoryColor(mother.category.name)}>{mother.category.name}</Badge>
                                             <p className="text-xs text-muted-foreground">{calculateAge(mother.birthDate)}</p>
                                           </div>
                                         </div>
@@ -594,7 +591,7 @@ export default function CattleDetailsPage() {
                                           <img src={descendantImage} alt={descendant.name} className="h-full w-full object-cover" />
                                         </div>
                                         <div className="space-y-1">
-                                          <Badge className={getCategoryColor(descendant.category.id)}>{descendant.category.name}</Badge>
+                                          <Badge className={getCategoryColor(descendant.category.name)}>{descendant.category.name}</Badge>
                                           <p className="text-xs text-muted-foreground">{calculateAge(descendant.birthDate)}</p>
                                         </div>
                                       </div>
