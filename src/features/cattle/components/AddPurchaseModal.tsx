@@ -58,7 +58,7 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
             if (charactersResponse.success) {
                 setCharacters(charactersResponse.data);
                 // Set default character to first one if available
-                if (charactersResponse.data.length > 0 && formData.character === 0) {
+                if (charactersResponse.data.length > 0 && !formData.character) {
                     setFormData(prev => ({ ...prev, character: charactersResponse.data[0].id }));
                 }
             } else {
@@ -79,7 +79,7 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!formData.name || !formData.gender || !formData.birthDate || !formData.category || !formData.purchaseDate) {
+        if (!formData.name || !formData.gender || !formData.birthDate || !formData.category || !formData.purchaseDate || !formData.character) {
             toast({
                 variant: "destructive",
                 title: "Erreur",
@@ -220,7 +220,7 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
                                     />
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="character">Caractère</Label>
+                                    <Label htmlFor="character">Caractère *</Label>
                                     <Select
                                         value={formData.character.toString()}
                                         onValueChange={(value) => setFormData({ ...formData, character: value })}
