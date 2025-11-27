@@ -1,4 +1,19 @@
-import { List, Datagrid, TextField, EditButton, Edit, SimpleForm, TextInput, Create, Show, SimpleShowLayout, useRecordContext } from 'react-admin';
+import React from 'react';
+import {
+    List,
+    Datagrid,
+    TextField,
+    DateField,
+    EditButton,
+    Edit,
+    SimpleForm,
+    TextInput,
+    Create,
+    Show,
+    SimpleShowLayout,
+    useRecordContext,
+    required,
+} from 'react-admin';
 import { EditToolbar, CreateToolbar, ConfirmDeleteButton } from '../components/ConfirmToolbars';
 
 const DeleteButtonField = () => {
@@ -18,6 +33,8 @@ export const CategoryList = () => (
         <Datagrid rowClick="edit">
             <TextField source="id" label="ID" />
             <TextField source="name" label="Nom" />
+            <DateField source="created_at" label="Créé le" showTime />
+            <DateField source="updated_at" label="Modifié le" showTime />
             <EditButton />
             <DeleteButtonField />
         </Datagrid>
@@ -27,8 +44,8 @@ export const CategoryList = () => (
 export const CategoryEdit = () => (
     <Edit>
         <SimpleForm toolbar={<EditToolbar />}>
-            <TextInput source="id" label="ID" disabled />
-            <TextInput source="name" label="Nom" required />
+            <TextField source="id" label="ID" />
+            <TextInput source="name" label="Nom" validate={required()} />
         </SimpleForm>
     </Edit>
 );
@@ -36,7 +53,7 @@ export const CategoryEdit = () => (
 export const CategoryCreate = () => (
     <Create>
         <SimpleForm toolbar={<CreateToolbar />}>
-            <TextInput source="name" label="Nom" required />
+            <TextInput source="name" label="Nom" validate={required()} helperText="L'ID sera généré automatiquement à partir du nom" />
         </SimpleForm>
     </Create>
 );
@@ -46,6 +63,9 @@ export const CategoryShow = () => (
         <SimpleShowLayout>
             <TextField source="id" label="ID" />
             <TextField source="name" label="Nom" />
+            <DateField source="created_at" label="Créé le" showTime />
+            <DateField source="updated_at" label="Modifié le" showTime />
         </SimpleShowLayout>
     </Show>
 );
+

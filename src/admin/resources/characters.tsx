@@ -3,13 +3,11 @@ import {
     List,
     Datagrid,
     TextField,
-    NumberField,
+    DateField,
     EditButton,
-    DeleteButton,
     Edit,
     SimpleForm,
     TextInput,
-    NumberInput,
     Create,
     Show,
     SimpleShowLayout,
@@ -35,8 +33,10 @@ const DeleteButtonField = () => {
 export const CharactersList = () => (
     <List>
         <Datagrid rowClick="edit">
-            <NumberField source="id" label="ID" />
+            <TextField source="id" label="ID" />
             <TextField source="name" label="Nom" />
+            <DateField source="created_at" label="Créé le" showTime />
+            <DateField source="updated_at" label="Modifié le" showTime />
             <EditButton />
             <DeleteButtonField />
         </Datagrid>
@@ -47,7 +47,7 @@ export const CharactersList = () => (
 export const CharactersEdit = () => (
     <Edit>
         <SimpleForm toolbar={<EditToolbar />}>
-            <NumberInput source="id" label="ID" disabled />
+            <TextField source="id" label="ID" />
             <TextInput source="name" label="Nom" validate={required()} />
         </SimpleForm>
     </Edit>
@@ -57,8 +57,7 @@ export const CharactersEdit = () => (
 export const CharactersCreate = () => (
     <Create>
         <SimpleForm toolbar={<CreateToolbar />}>
-            <NumberInput source="id" label="ID" validate={required()} />
-            <TextInput source="name" label="Nom" validate={required()} />
+            <TextInput source="name" label="Nom" validate={required()} helperText="L'ID sera généré automatiquement à partir du nom" />
         </SimpleForm>
     </Create>
 );
@@ -67,8 +66,11 @@ export const CharactersCreate = () => (
 export const CharactersShow = () => (
     <Show>
         <SimpleShowLayout>
-            <NumberField source="id" label="ID" />
+            <TextField source="id" label="ID" />
             <TextField source="name" label="Nom" />
+            <DateField source="created_at" label="Créé le" showTime />
+            <DateField source="updated_at" label="Modifié le" showTime />
         </SimpleShowLayout>
     </Show>
 );
+
