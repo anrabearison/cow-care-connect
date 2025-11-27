@@ -12,23 +12,21 @@ import { useCattle } from '@/features/cattle/hooks';
 import { AddPurchaseModal } from '@/features/cattle/components/AddPurchaseModal';
 import { cattleService } from '@/features/cattle/services';
 import { useToast } from '@/hooks/use-toast';
-import { referenceService } from '@/features/common/services/referenceService';
 
 export default function CattlePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const { toast } = useToast();
   const [genderFilter, setGenderFilter] = useState<string>('all');
-  const [characterFilter, setCharacterFilter] = useState<string>('all');
+  const [sourceFilter, setSourceFilter] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const [characters, setCharacters] = useState<{ id: string, name: string }[]>([]);
   const itemsPerPage = 6;
 
   // Construire les filtres pour le service
   const filters = {
     q: searchTerm || undefined,
     gender: genderFilter !== 'all' ? (genderFilter as 'M' | 'F') : undefined,
-    character: characterFilter !== 'all' ? characterFilter : undefined,
+    source_type: sourceFilter !== 'all' ? sourceFilter : undefined,
     page: currentPage,
     per_page: itemsPerPage,
   };
@@ -38,28 +36,17 @@ export default function CattlePage() {
   const resetFilters = () => {
     setSearchTerm('');
     setGenderFilter('all');
-    setCharacterFilter('all');
+    setSourceFilter('all');
     setCurrentPage(1);
   };
 
   // Calculate pagination
   const totalPages = Math.ceil(total / itemsPerPage);
 
-  // Load characters on mount
-  useEffect(() => {
-    const loadCharacters = async () => {
-      const response = await referenceService.getCharacters();
-      if (response.success) {
-        setCharacters(response.data);
-      }
-    };
-    loadCharacters();
-  }, []);
-
   // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, genderFilter, characterFilter]);
+  }, [searchTerm, genderFilter, sourceFilter]);
 
   const handleAddCattle = async (cattleData: Omit<Cattle, 'id' | 'events' | 'treatments'>) => {
     try {
@@ -147,18 +134,15 @@ export default function CattlePage() {
                 </SelectContent>
               </Select>
 
-              {/* Character Filter */}
-              <Select value={characterFilter} onValueChange={setCharacterFilter}>
+              {/* Source Filter */}
+              <Select value={sourceFilter} onValueChange={setSourceFilter}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Caractère" />
+                  <SelectValue placeholder="Source" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tous les caractères</SelectItem>
-                  {characters.map((character) => (
-                    <SelectItem key={character.id} value={character.id}>
-                      {character.name}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="all">Toutes les sources</SelectItem>
+                  <SelectItem value="Acheté">Acheté</SelectItem>
+                  <SelectItem value="Né dans le troupeau">Né dans le troupeau</SelectItem>
                 </SelectContent>
               </Select>
 

@@ -7,6 +7,7 @@ export interface CattleFilters {
   q?: string;
   gender?: 'M' | 'F';
   character?: string;
+  source_type?: string;
   page?: number;
   per_page?: number;
 }
@@ -48,6 +49,7 @@ class CattleService {
       if (filters?.q) params.append('q', filters.q);
       if (filters?.gender) params.append('gender', filters.gender);
       if (filters?.character) params.append('character', filters.character);
+      if (filters?.source_type) params.append('source_type', filters.source_type);
       if (filters?.page) params.append('page', filters.page.toString());
       if (filters?.per_page) params.append('per_page', filters.per_page.toString());
 
