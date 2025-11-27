@@ -20,9 +20,9 @@ export interface Medicament {
 }
 
 class ReferenceService {
-    async getEventTypes(): Promise<ApiResponse<TypeEvenement[]>> {
+    private async fetchData<T>(endpoint: string, errorMessage: string): Promise<ApiResponse<T>> {
         try {
-            const url = buildApiUrl('/api/event-types');
+            const url = buildApiUrl(endpoint);
             const response = await fetchWithAuth(url);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const result = await response.json();
@@ -31,89 +31,33 @@ class ReferenceService {
                 success: true
             };
         } catch (error) {
-            console.error('Error fetching event types:', error);
-            return { data: [], success: false, message: 'Erreur chargement types événements' };
+            console.error(errorMessage, error);
+            return { data: [] as any, success: false, message: errorMessage };
         }
+    }
+
+    async getEventTypes(): Promise<ApiResponse<TypeEvenement[]>> {
+        return this.fetchData<TypeEvenement[]>('/api/event-types', 'Erreur chargement types événements');
     }
 
     async getVeterinarians(): Promise<ApiResponse<Veterinarian[]>> {
-        try {
-            const url = buildApiUrl('/api/veterinarians');
-            const response = await fetchWithAuth(url);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            const result = await response.json();
-            return {
-                data: result.data || result,
-                success: true
-            };
-        } catch (error) {
-            console.error('Error fetching veterinarians:', error);
-            return { data: [], success: false, message: 'Erreur chargement vétérinaires' };
-        }
+        return this.fetchData<Veterinarian[]>('/api/veterinarians', 'Erreur chargement vétérinaires');
     }
 
     async getMedicaments(): Promise<ApiResponse<Medicament[]>> {
-        try {
-            const url = buildApiUrl('/api/medicaments');
-            const response = await fetchWithAuth(url);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            const result = await response.json();
-            return {
-                data: result.data || result,
-                success: true
-            };
-        } catch (error) {
-            console.error('Error fetching medicaments:', error);
-            return { data: [], success: false, message: 'Erreur chargement médicaments' };
-        }
+        return this.fetchData<Medicament[]>('/api/medicaments', 'Erreur chargement médicaments');
     }
 
     async getCategories(): Promise<ApiResponse<{ id: string, name: string }[]>> {
-        try {
-            const url = buildApiUrl('/api/categories');
-            const response = await fetchWithAuth(url);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            const result = await response.json();
-            return {
-                data: result.data || result,
-                success: true
-            };
-        } catch (error) {
-            console.error('Error fetching categories:', error);
-            return { data: [], success: false, message: 'Erreur chargement catégories' };
-        }
+        return this.fetchData<{ id: string, name: string }[]>('/api/categories', 'Erreur chargement catégories');
     }
 
     async getCharacters(): Promise<ApiResponse<{ id: string, name: string }[]>> {
-        try {
-            const url = buildApiUrl('/api/characters');
-            const response = await fetchWithAuth(url);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            const result = await response.json();
-            return {
-                data: result.data || result,
-                success: true
-            };
-        } catch (error) {
-            console.error('Error fetching characters:', error);
-            return { data: [], success: false, message: 'Erreur chargement caractères' };
-        }
+        return this.fetchData<{ id: string, name: string }[]>('/api/characters', 'Erreur chargement caractères');
     }
 
     async getStatuses(): Promise<ApiResponse<{ id: string, name: string }[]>> {
-        try {
-            const url = buildApiUrl('/api/status');
-            const response = await fetchWithAuth(url);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            const result = await response.json();
-            return {
-                data: result.data || result,
-                success: true
-            };
-        } catch (error) {
-            console.error('Error fetching statuses:', error);
-            return { data: [], success: false, message: 'Erreur chargement statuts' };
-        }
+        return this.fetchData<{ id: string, name: string }[]>('/api/status', 'Erreur chargement statuts');
     }
 }
 
