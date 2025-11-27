@@ -4,11 +4,11 @@ import { API_CONFIG, buildApiUrl } from '@/config/api';
 import { fetchWithAuth } from '@/utils/fetchUtils';
 
 export interface CattleFilters {
-  search?: string;
-  genre?: 'M' | 'F';
-  caractere?: string;
-  limit?: number;
-  offset?: number;
+  q?: string;
+  gender?: 'M' | 'F';
+  character?: string;
+  page?: number;
+  per_page?: number;
 }
 
 export interface ApiResponse<T> {
@@ -45,11 +45,11 @@ class CattleService {
   private async getApiCattleList(filters?: CattleFilters): Promise<ApiResponse<Cattle[]>> {
     try {
       const params = new URLSearchParams();
-      if (filters?.search) params.append('search', filters.search);
-      if (filters?.genre) params.append('genre', filters.genre);
-      if (filters?.caractere) params.append('caractere', filters.caractere);
-      if (filters?.limit) params.append('limit', filters.limit.toString());
-      if (filters?.offset) params.append('offset', filters.offset.toString());
+      if (filters?.q) params.append('q', filters.q);
+      if (filters?.gender) params.append('gender', filters.gender);
+      if (filters?.character) params.append('character', filters.character);
+      if (filters?.page) params.append('page', filters.page.toString());
+      if (filters?.per_page) params.append('per_page', filters.per_page.toString());
 
       const url = `${buildApiUrl(API_CONFIG.ENDPOINTS.CATTLE)}?${params}`;
       const response = await fetchWithAuth(url);

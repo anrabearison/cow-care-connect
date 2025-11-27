@@ -12,6 +12,7 @@ import { useCattle } from '@/features/cattle/hooks';
 import { AddPurchaseModal } from '@/features/cattle/components/AddPurchaseModal';
 import { cattleService } from '@/features/cattle/services';
 import { useToast } from '@/hooks/use-toast';
+import { referenceService } from '@/features/common/services/referenceService';
 
 export default function CattlePage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -20,15 +21,16 @@ export default function CattlePage() {
   const [genderFilter, setGenderFilter] = useState<string>('all');
   const [characterFilter, setCharacterFilter] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
+  const [characters, setCharacters] = useState<{ id: string, name: string }[]>([]);
   const itemsPerPage = 6;
 
   // Construire les filtres pour le service
   const filters = {
-    search: searchTerm || undefined,
-    genre: genderFilter !== 'all' ? (genderFilter as 'M' | 'F') : undefined,
-    caractere: characterFilter !== 'all' ? characterFilter : undefined,
-    limit: itemsPerPage,
-    offset: (currentPage - 1) * itemsPerPage,
+    q: searchTerm || undefined,
+    gender: genderFilter !== 'all' ? (genderFilter as 'M' | 'F') : undefined,
+    character: characterFilter !== 'all' ? characterFilter : undefined,
+    page: currentPage,
+    per_page: itemsPerPage,
   };
 
   const { cattle, loading: isLoading, error, total, refreshCattle } = useCattle(filters);
@@ -42,6 +44,17 @@ export default function CattlePage() {
 
   // Calculate pagination
   const totalPages = Math.ceil(total / itemsPerPage);
+
+  // Load characters on mount
+  useEffect(() => {
+    const loadCharacters = async () => {
+      const response = await referenceService.getCharacters();
+      if (response.success) {
+        setCharacters(response.data);
+      }
+    };
+    loadCharacters();
+  }, []);
 
   // Reset to first page when filters change
   useEffect(() => {
@@ -141,10 +154,11 @@ export default function CattlePage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Tous les caractères</SelectItem>
-                  <SelectItem value="Docile">Docile</SelectItem>
-                  <SelectItem value="Agressif">Agressif</SelectItem>
-                  <SelectItem value="Timide">Timide</SelectItem>
-                  <SelectItem value="Energique">Energique</SelectItem>
+                  {characters.map((character) => (
+                    <SelectItem key={character.id} value={character.id}>
+                      {character.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
 
