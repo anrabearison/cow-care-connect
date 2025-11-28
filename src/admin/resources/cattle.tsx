@@ -76,20 +76,14 @@ export const CattleList = () => (
       <TextField source="id" label="ID" />
       <TextField source="name" label="Nom" />
       <TextField source="nickname" label="Surnom" />
-      <ReferenceField source="category.id" reference="categories" label="Catégorie">
-        <TextField source="name" />
-      </ReferenceField>
+      <TextField source="category.name" label="Catégorie" />
       <TextField source="gender" label="Genre" />
       <NumberField source="herdBookNumber" label="N° Carnet" />
       <TextField source="brand" label="Marque" />
       <TextField source="distinctiveSign" label="Signe Particulier" />
-      <ReferenceField source="character.id" reference="characters" label="Caractère">
-        <TextField source="name" />
-      </ReferenceField>
+      <TextField source="character.name" label="Caractère" />
       <DateField source="birthDate" label="Date de naissance" />
-      <ReferenceField source="status.id" reference="status" label="Statut">
-        <TextField source="name" />
-      </ReferenceField>
+      <TextField source="status.name" label="Statut" />
       <FunctionField
         label="Source"
         render={(record: any) => record.source?.type || 'Non défini'}
@@ -337,11 +331,12 @@ export const CattleShow = () => (
             <InlineField label="Nom"><TextField source="name" /></InlineField>
             <InlineField label="Surnom"><TextField source="nickname" /></InlineField>
             <InlineField label="N° Carnet"><NumberField source="herdBookNumber" /></InlineField>
-            <InlineField label="Catégorie"><TextField source="category" /></InlineField>
+            <InlineField label="Catégorie"><TextField source="category.name" /></InlineField>
             <InlineField label="Genre"><TextField source="gender" /></InlineField>
             <InlineField label="Marque"><TextField source="brand" /></InlineField>
             <InlineField label="Signe Particulier"><TextField source="distinctiveSign" /></InlineField>
-            <InlineField label="Caractère"><TextField source="character" /></InlineField>
+            <InlineField label="Caractère"><TextField source="character.name" /></InlineField>
+            <InlineField label="Statut"><TextField source="status.name" /></InlineField>
             <InlineField label="Date de naissance"><DateField source="birthDate" /></InlineField>
           </div>
         </div>
