@@ -12,6 +12,7 @@ import { useCattle } from '@/features/cattle/hooks';
 import { AddPurchaseModal } from '@/features/cattle/components/AddPurchaseModal';
 import { cattleService } from '@/features/cattle/services';
 import { useToast } from '@/hooks/use-toast';
+import { referenceService } from '@/features/common/services/referenceService';
 
 export default function CattlePage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -19,13 +20,16 @@ export default function CattlePage() {
   const { toast } = useToast();
   const [genderFilter, setGenderFilter] = useState<string>('all');
   const [sourceFilter, setSourceFilter] = useState<string>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
 
   // Construire les filtres pour le service
   const filters = {
     q: searchTerm || undefined,
     gender: genderFilter !== 'all' ? (genderFilter as 'M' | 'F') : undefined,
+    category: categoryFilter !== 'all' ? categoryFilter : undefined,
     source_type: sourceFilter !== 'all' ? sourceFilter : undefined,
     page: currentPage,
     per_page: itemsPerPage,
@@ -37,8 +41,22 @@ export default function CattlePage() {
     setSearchTerm('');
     setGenderFilter('all');
     setSourceFilter('all');
+    setCategoryFilter('all');
     setCurrentPage(1);
   };
+
+  // Load categories on mount
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const response = await referenceService.getCategories();
+        setCategories(response.data || []);
+      } catch (error) {
+        console.error('Error loading categories:', error);
+      }
+    };
+    loadCategories();
+  }, []);
 
   // Calculate pagination
   const totalPages = Math.ceil(total / itemsPerPage);
@@ -46,7 +64,7 @@ export default function CattlePage() {
   // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, genderFilter, sourceFilter]);
+  }, [searchTerm, genderFilter, sourceFilter, categoryFilter]);
 
   const handleAddCattle = async (cattleData: Omit<Cattle, 'id' | 'events' | 'treatments'>) => {
     try {
@@ -110,7 +128,7 @@ export default function CattlePage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
               {/* Search */}
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -131,6 +149,21 @@ export default function CattlePage() {
                   <SelectItem value="all">Tous les genres</SelectItem>
                   <SelectItem value="M">Mâle</SelectItem>
                   <SelectItem value="F">Femelle</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* Category Filter */}
+              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Catégorie" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Toutes les catégories</SelectItem>
+                  {categories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
 
