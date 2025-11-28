@@ -1,4 +1,5 @@
 import React from 'react';
+import { Grid, Card, CardContent, Typography, Box, Chip, Divider } from '@mui/material';
 import {
   List,
   Datagrid,
@@ -6,8 +7,6 @@ import {
   NumberField,
   DateField,
   EditButton,
-  DeleteButton,
-  ShowButton,
   Edit,
   SimpleForm,
   TextInput,
@@ -16,15 +15,12 @@ import {
   SelectInput,
   Create,
   Show,
-  SimpleShowLayout,
   ImageField,
   ImageInput,
   FunctionField,
   ArrayInput,
   SimpleFormIterator,
   ArrayField,
-  SingleFieldList,
-  ChipField,
   ReferenceInput,
   AutocompleteInput,
   ReferenceField,
@@ -32,8 +28,11 @@ import {
   Tab,
   useRecordContext,
   required,
+  RaRecord,
+  ShowButton,
 } from 'react-admin';
 import { EditToolbar, CreateToolbar, ConfirmDeleteButton } from '../components/ConfirmToolbars';
+import { Cattle } from '../../features/cattle/types';
 
 // Delete button component with confirmation
 const DeleteButtonField = () => {
@@ -86,19 +85,19 @@ export const CattleList = () => (
       <TextField source="status.name" label="Statut" />
       <FunctionField
         label="Source"
-        render={(record: any) => record.source?.type || 'Non défini'}
+        render={(record: Cattle) => record.source?.type || 'Non défini'}
       />
       <FunctionField
         label="Photo"
-        render={(record: any) => record.photo ? 'Oui' : 'Non'}
+        render={(record: Cattle) => record.photo ? 'Oui' : 'Non'}
       />
       <FunctionField
         label="Événements"
-        render={(record: any) => record.events?.length || 0}
+        render={(record: Cattle) => record.events?.length || 0}
       />
       <FunctionField
         label="Traitements"
-        render={(record: any) => record.treatments?.length || 0}
+        render={(record: Cattle) => record.treatments?.length || 0}
       />
       <ShowButton />
       <EditButton />
@@ -302,7 +301,12 @@ export const CattleCreate = () => (
 );
 
 // Composant helper pour l'affichage inline "Label: Valeur"
-const InlineField = ({ label, children }: { label: string, children: React.ReactNode }) => {
+interface InlineFieldProps {
+  label: string;
+  children: React.ReactNode;
+}
+
+const InlineField: React.FC<InlineFieldProps> = ({ label, children }) => {
   const record = useRecordContext();
   return (
     <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 py-1">
@@ -316,88 +320,197 @@ const InlineField = ({ label, children }: { label: string, children: React.React
   );
 };
 
+const GeneralInfoTab = () => (
+  <Grid container spacing={3}>
+    {/* En-tête avec Photo et Infos Principales */}
+    <Grid item xs={12} md={4}>
+      <Card sx={{ height: '100%' }}>
+        <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+          <Box sx={{
+            width: '100%',
+            height: 300,
+            overflow: 'hidden',
+            borderRadius: 2,
+            mb: 2,
+            bgcolor: 'background.default',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <ImageField
+              source="photo"
+              label={false}
+              sx={{
+                '& img': {
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover'
+                }
+              }}
+            />
+          </Box>
+          <Typography variant="h5" gutterBottom>
+            <TextField source="name" />
+          </Typography>
+          <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+            <TextField source="nickname" />
+          </Typography>
+          <Box mt={1}>
+            <FunctionField
+              render={(record: Cattle) => (
+                <Chip
+                  label={record.status?.name || 'Inconnu'}
+                  color={record.status?.name === 'En bonne santé' ? 'success' : 'warning'}
+                  variant="outlined"
+                />
+              )}
+            />
+          </Box>
+        </CardContent>
+      </Card>
+    </Grid>
+
+    {/* Détails */}
+    <Grid item xs={12} md={8}>
+      <Grid container spacing={3}>
+        {/* Carte Identité */}
+        <Grid item xs={12}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                📋 Identité
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <InlineField label="Identifiant"><TextField source="id" /></InlineField>
+                  <InlineField label="N° Carnet"><NumberField source="herdBookNumber" /></InlineField>
+                  <InlineField label="Date de naissance"><DateField source="birthDate" /></InlineField>
+                  <InlineField label="Genre">
+                    <FunctionField render={(record: Cattle) =>
+                      record.gender === 'M' ? '♂ Mâle' : '♀ Femelle'
+                    } />
+                  </InlineField>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <InlineField label="Catégorie"><TextField source="category.name" /></InlineField>
+                  <InlineField label="Caractère"><TextField source="character.name" /></InlineField>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Carte Signes Distinctifs */}
+        <Grid item xs={12}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                🔍 Signes Distinctifs
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <InlineField label="Marque"><TextField source="brand" /></InlineField>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <InlineField label="Signe Particulier"><TextField source="distinctiveSign" /></InlineField>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+    </Grid>
+  </Grid>
+);
+
+const OriginTab = () => (
+  <Card>
+    <CardContent>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={6}>
+          <Typography variant="h6" gutterBottom>Source</Typography>
+          <Divider sx={{ mb: 2 }} />
+          <InlineField label="Type de source"><TextField source="source.type" /></InlineField>
+          <InlineField label="Fournisseur"><TextField source="source.supplier" /></InlineField>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Typography variant="h6" gutterBottom>Détails de l'achat</Typography>
+          <Divider sx={{ mb: 2 }} />
+          <InlineField label="Date d'achat"><DateField source="source.purchaseDate" /></InlineField>
+          <InlineField label="Catégorie à l'achat"><TextField source="source.purchaseCategory" /></InlineField>
+          <InlineField label="Prix d'achat"><NumberField source="source.purchasePrice" options={{ style: 'currency', currency: 'MGA' }} /></InlineField>
+          <InlineField label="Poids à l'achat"><NumberField source="source.purchaseWeight" /> kg</InlineField>
+        </Grid>
+        <Grid item xs={12}>
+          <Typography variant="h6" gutterBottom>État initial</Typography>
+          <Divider sx={{ mb: 2 }} />
+          <InlineField label="État de santé"><TextField source="source.purchaseHealthStatus" /></InlineField>
+          <InlineField label="Remarques"><TextField source="source.purchaseNotes" /></InlineField>
+        </Grid>
+      </Grid>
+    </CardContent>
+  </Card>
+);
+
+const HealthTab = () => (
+  <Grid container spacing={3}>
+    <Grid item xs={12}>
+      <Card>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>Historique des Événements</Typography>
+          <ArrayField source="events" label={false}>
+            <Datagrid bulkActionButtons={false} hover={false} sx={{ '& .RaDatagrid-headerCell': { fontWeight: 'bold' } }}>
+              <ReferenceField source="type" reference="typeEvenements" label="Type">
+                <TextField source="nom" />
+              </ReferenceField>
+              <DateField source="date" label="Date" />
+              <TextField source="description" label="Description" />
+              <TextField source="details" label="Détails" />
+            </Datagrid>
+          </ArrayField>
+        </CardContent>
+      </Card>
+    </Grid>
+    <Grid item xs={12}>
+      <Card>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>Traitements Vétérinaires</Typography>
+          <ArrayField source="treatments" label={false}>
+            <Datagrid bulkActionButtons={false} hover={false} sx={{ '& .RaDatagrid-headerCell': { fontWeight: 'bold' } }}>
+              <TextField source="type" label="Type" />
+              <DateField source="date" label="Date" />
+              <ReferenceField source="product" reference="medicaments" label="Médicament">
+                <TextField source="nom" />
+              </ReferenceField>
+              <TextField source="dosage" label="Dose" />
+              <ReferenceField source="veterinarian" reference="veterinarians" label="Intervenant">
+                <TextField source="nom" />
+              </ReferenceField>
+              <TextField source="notes" label="Notes" />
+            </Datagrid>
+          </ArrayField>
+        </CardContent>
+      </Card>
+    </Grid>
+  </Grid>
+);
+
 // Affichage détaillé d'un bovin
 export const CattleShow = () => (
   <Show>
     <TabbedShowLayout syncWithLocation={false}>
-      <Tab label={<>Informations<br />Générales</>}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <ImageField source="photo" label={false} className="[&_img]:max-w-full [&_img]:max-h-80 [&_img]:rounded-lg [&_img]:shadow-md [&_img]:object-cover" />
-          </div>
-          <div className="space-y-2">
-            <h3 className="text-lg font-semibold mb-4 border-b pb-2">Identité</h3>
-            <InlineField label="Identifiant"><TextField source="id" /></InlineField>
-            <InlineField label="Nom"><TextField source="name" /></InlineField>
-            <InlineField label="Surnom"><TextField source="nickname" /></InlineField>
-            <InlineField label="N° Carnet"><NumberField source="herdBookNumber" /></InlineField>
-            <InlineField label="Catégorie"><TextField source="category.name" /></InlineField>
-            <InlineField label="Genre"><TextField source="gender" /></InlineField>
-            <InlineField label="Marque"><TextField source="brand" /></InlineField>
-            <InlineField label="Signe Particulier"><TextField source="distinctiveSign" /></InlineField>
-            <InlineField label="Caractère"><TextField source="character.name" /></InlineField>
-            <InlineField label="Statut"><TextField source="status.name" /></InlineField>
-            <InlineField label="Date de naissance"><DateField source="birthDate" /></InlineField>
-          </div>
-        </div>
+      <Tab label="Informations Générales">
+        <GeneralInfoTab />
       </Tab>
 
-      <Tab label={<>Origine &<br />Achat</>}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="space-y-2">
-            <h3 className="text-lg font-semibold mb-4 border-b pb-2">Source</h3>
-            <InlineField label="Type de source"><TextField source="source.type" /></InlineField>
-            <InlineField label="Fournisseur"><TextField source="source.supplier" /></InlineField>
-          </div>
-          <div className="space-y-2">
-            <h3 className="text-lg font-semibold mb-4 border-b pb-2">Détails de l'achat</h3>
-            <InlineField label="Date d'achat"><DateField source="source.purchaseDate" /></InlineField>
-            <InlineField label="Catégorie à l'achat"><TextField source="source.purchaseCategory" /></InlineField>
-            <InlineField label="Prix d'achat"><NumberField source="source.purchasePrice" options={{ style: 'currency', currency: 'MGA' }} /></InlineField>
-            <InlineField label="Poids à l'achat"><NumberField source="source.purchaseWeight" /> kg</InlineField>
-          </div>
-          <div className="col-span-full space-y-2">
-            <h3 className="text-lg font-semibold mb-4 border-b pb-2">État initial</h3>
-            <InlineField label="État de santé"><TextField source="source.purchaseHealthStatus" /></InlineField>
-            <InlineField label="Remarques"><TextField source="source.purchaseNotes" /></InlineField>
-          </div>
-        </div>
+      <Tab label="Origine & Achat">
+        <OriginTab />
       </Tab>
 
-      <Tab label={<>Santé &<br />Suivi</>}>
-        <div className="space-y-8">
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Historique des Événements</h3>
-            <ArrayField source="events" label={false}>
-              <Datagrid bulkActionButtons={false} hover={false}>
-                <ReferenceField source="type" reference="typeEvenements" label="Type">
-                  <TextField source="nom" />
-                </ReferenceField>
-                <DateField source="date" label="Date" />
-                <TextField source="description" label="Description" />
-                <TextField source="details" label="Détails" />
-              </Datagrid>
-            </ArrayField>
-          </div>
-
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Traitements Vétérinaires</h3>
-            <ArrayField source="treatments" label={false}>
-              <Datagrid bulkActionButtons={false} hover={false}>
-                <TextField source="type" label="Type" />
-                <DateField source="date" label="Date" />
-                <ReferenceField source="product" reference="medicaments" label="Médicament">
-                  <TextField source="nom" />
-                </ReferenceField>
-                <TextField source="dosage" label="Dose" />
-                <ReferenceField source="veterinarian" reference="veterinarians" label="Intervenant">
-                  <TextField source="nom" />
-                </ReferenceField>
-                <TextField source="notes" label="Notes" />
-              </Datagrid>
-            </ArrayField>
-          </div>
-        </div>
+      <Tab label="Santé & Suivi">
+        <HealthTab />
       </Tab>
     </TabbedShowLayout>
   </Show>
