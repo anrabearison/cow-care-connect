@@ -1,5 +1,7 @@
 import { User } from '@/features/cattle/types';
-import { API_CONFIG, buildApiUrl } from '@/config/api';
+import { API_CONFIG } from '@/config/api';
+import { apiClient } from '@/utils/apiClient';
+import { AuthenticationError, ErrorMessages } from '@/utils/errors';
 
 export interface LoginCredentials {
   email: string;
@@ -14,39 +16,47 @@ export interface AuthResponse {
 }
 
 class AuthService {
+  private readonly endpoint = API_CONFIG.ENDPOINTS.AUTH;
+
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    return this.apiLogin(credentials);
+    try {
+      const result = await apiClient.post<{ access_token: string; user: User }>(
+        `${this.endpoint}/login`,
+        credentials,
+        { skipAuth: true }
+      );
+
+      if (result.access_token && result.user) {
+        localStorage.setItem('auth_token', result.access_token);
+        localStorage.setItem('user_data', JSON.stringify(result.user));
+
+        return {
+          user: result.user,
+          token: result.access_token,
+          success: true,
+          message: 'Connexion réussie',
+        };
+      }
+
+      throw new AuthenticationError(ErrorMessages.LOGIN_ERROR);
+    } catch (error: any) {
+      console.error('Error during login:', error);
+      throw error;
+    }
   }
 
   async logout(): Promise<void> {
-
-
-    // Nettoyage local
     localStorage.removeItem('auth_token');
     localStorage.removeItem('user_data');
   }
 
   async refreshToken(): Promise<string | null> {
-
-
     try {
-      const response = await fetch(buildApiUrl(`${API_CONFIG.ENDPOINTS.AUTH}/refresh`), {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.getToken()}`,
-        },
-      });
+      const result = await apiClient.post<{ token: string }>(`${this.endpoint}/refresh`);
 
-      if (!response.ok) {
-        throw new Error('Failed to refresh token');
-      }
-
-      const result = await response.json();
-      const newToken = result.token;
-
-      if (newToken) {
-        localStorage.setItem('auth_token', newToken);
-        return newToken;
+      if (result.token) {
+        localStorage.setItem('auth_token', result.token);
+        return result.token;
       }
 
       return null;
@@ -75,54 +85,6 @@ class AuthService {
 
   isAuthenticated(): boolean {
     return this.getToken() !== null && this.getUser() !== null;
-  }
-
-
-
-  // Méthodes pour la vraie authentification API
-  private async apiLogin(credentials: LoginCredentials): Promise<AuthResponse> {
-    try {
-      const response = await fetch(buildApiUrl(`${API_CONFIG.ENDPOINTS.AUTH}/login`), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(credentials),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-
-      if (result.access_token && result.user) {
-        localStorage.setItem('auth_token', result.access_token);
-        localStorage.setItem('user_data', JSON.stringify(result.user));
-
-        return {
-          user: result.user,
-          token: result.access_token,
-          success: true,
-          message: 'Connexion réussie'
-        };
-      } else {
-        return {
-          user: {} as User,
-          token: '',
-          success: false,
-          message: 'Erreur de connexion'
-        };
-      }
-    } catch (error) {
-      console.error('Error during login:', error);
-      return {
-        user: {} as User,
-        token: '',
-        success: false,
-        message: 'Erreur de connexion au serveur'
-      };
-    }
   }
 }
 

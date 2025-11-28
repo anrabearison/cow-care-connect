@@ -1,7 +1,7 @@
 import { Cattle } from './types';
-import { API_CONFIG, buildApiUrl } from '@/config/api';
-
-import { fetchWithAuth } from '@/utils/fetchUtils';
+import { API_CONFIG } from '@/config/api';
+import { apiClient, ApiResponse } from '@/utils/apiClient';
+import { ErrorMessages } from '@/utils/errors';
 
 export interface CattleFilters {
   q?: string;
@@ -13,100 +13,16 @@ export interface CattleFilters {
   per_page?: number;
 }
 
-export interface ApiResponse<T> {
-  data: T;
-  total?: number;
-  success: boolean;
-  message?: string;
-}
-
 class CattleService {
-  async getCattleList(filters?: CattleFilters): Promise<ApiResponse<Cattle[]>> {
-    return this.getApiCattleList(filters);
-  }
+  private readonly endpoint = API_CONFIG.ENDPOINTS.CATTLE;
 
-  async getCattleById(id: number): Promise<ApiResponse<Cattle>> {
-    return this.getApiCattleById(id);
-  }
-
-  async createCattle(cattle: Omit<Cattle, 'id'>): Promise<ApiResponse<Cattle>> {
-    return this.createApiCattle(cattle);
-  }
-
-  async updateCattle(id: number, cattle: Partial<Cattle>): Promise<ApiResponse<Cattle>> {
-    return this.updateApiCattle(id, cattle);
-  }
-
-  async deleteCattle(id: number): Promise<ApiResponse<boolean>> {
-    return this.deleteApiCattle(id);
-  }
-
-
-
-  // Méthodes pour les vraies APIs
-  private async getApiCattleList(filters?: CattleFilters): Promise<ApiResponse<Cattle[]>> {
-    try {
-      const params = new URLSearchParams();
-      if (filters?.q) params.append('q', filters.q);
-      if (filters?.gender) params.append('gender', filters.gender);
-      if (filters?.character) params.append('character', filters.character);
-      if (filters?.category) params.append('category', filters.category);
-      if (filters?.source_type) params.append('source_type', filters.source_type);
-      if (filters?.page) params.append('page', filters.page.toString());
-      if (filters?.per_page) params.append('per_page', filters.per_page.toString());
-
-      const url = `${buildApiUrl(API_CONFIG.ENDPOINTS.CATTLE)}?${params}`;
-      const response = await fetchWithAuth(url);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      return {
-        data: result.data || result,
-        total: result.total,
-        success: true
-      };
-    } catch (error) {
-      console.error('Error fetching cattle list:', error);
-      return {
-        data: [],
-        success: false,
-        message: 'Erreur lors du chargement de la liste des bovins'
-      };
-    }
-  }
-
-  private async getApiCattleById(id: number): Promise<ApiResponse<Cattle>> {
-    try {
-      const url = buildApiUrl(`${API_CONFIG.ENDPOINTS.CATTLE}/${id}`);
-      const response = await fetchWithAuth(url);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      return {
-        data: result.data || result,
-        success: true
-      };
-    } catch (error) {
-      console.error('Error fetching cattle:', error);
-      return {
-        data: {} as Cattle,
-        success: false,
-        message: 'Erreur lors du chargement du bovin'
-      };
-    }
-  }
-
-  // Helper pour transformer les données avant l'envoi
+  /**
+   * Transform cattle data before sending to API
+   */
   private transformCattleData(data: any): any {
     const transformed = { ...data };
 
-    // Transformer les objets {id, name} en ID simple
+    // Transform objects {id, name} to simple ID
     if (transformed.character && typeof transformed.character === 'object') {
       transformed.character = transformed.character.id;
     }
@@ -119,155 +35,126 @@ class CattleService {
       transformed.status = transformed.status.id;
     }
 
-    // Gérer les champs nested dans source
-    if (transformed.source) {
-      if (transformed.source.purchaseCategory && typeof transformed.source.purchaseCategory === 'object') {
-        transformed.source.purchaseCategory = transformed.source.purchaseCategory.id;
-      }
+    // Handle nested source fields
+    if (transformed.source?.purchaseCategory && typeof transformed.source.purchaseCategory === 'object') {
+      transformed.source.purchaseCategory = transformed.source.purchaseCategory.id;
     }
 
     return transformed;
   }
 
-  private async createApiCattle(cattle: Omit<Cattle, 'id'>): Promise<ApiResponse<Cattle>> {
+  async getCattleList(filters?: CattleFilters): Promise<ApiResponse<Cattle[]>> {
     try {
-      const url = buildApiUrl(API_CONFIG.ENDPOINTS.CATTLE);
-      const payload = this.transformCattleData(cattle);
+      const queryString = apiClient.buildQueryString(filters || {});
+      const result = await apiClient.get<{ data: Cattle[]; total: number }>(
+        `${this.endpoint}${queryString}`
+      );
 
-      const response = await fetchWithAuth(url, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
       return {
-        data: result.data || result,
+        data: result.data || [],
+        total: result.total,
         success: true,
-        message: 'Bovin créé avec succès'
       };
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Error fetching cattle list:', error);
+      throw error;
+    }
+  }
+
+  async getCattleById(id: number): Promise<ApiResponse<Cattle>> {
+    try {
+      const result = await apiClient.get<Cattle>(`${this.endpoint}/${id}`);
+
+      return {
+        data: result,
+        success: true,
+      };
+    } catch (error: any) {
+      console.error('Error fetching cattle:', error);
+      throw error;
+    }
+  }
+
+  async createCattle(cattle: Omit<Cattle, 'id'>): Promise<ApiResponse<Cattle>> {
+    try {
+      const payload = this.transformCattleData(cattle);
+      const result = await apiClient.post<Cattle>(this.endpoint, payload);
+
+      return {
+        data: result,
+        success: true,
+        message: 'Bovin créé avec succès',
+      };
+    } catch (error: any) {
       console.error('Error creating cattle:', error);
-      return {
-        data: {} as Cattle,
-        success: false,
-        message: 'Erreur lors de la création du bovin'
-      };
+      throw error;
     }
   }
 
-  private async updateApiCattle(id: number, cattle: Partial<Cattle>): Promise<ApiResponse<Cattle>> {
+  async updateCattle(id: number, cattle: Partial<Cattle>): Promise<ApiResponse<Cattle>> {
     try {
-      const url = buildApiUrl(`${API_CONFIG.ENDPOINTS.CATTLE}/${id}`);
       const payload = this.transformCattleData(cattle);
+      const result = await apiClient.put<Cattle>(`${this.endpoint}/${id}`, payload);
 
-      const response = await fetchWithAuth(url, {
-        method: 'PUT',
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
       return {
-        data: result.data || result,
+        data: result,
         success: true,
-        message: 'Bovin mis à jour avec succès'
+        message: 'Bovin mis à jour avec succès',
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating cattle:', error);
-      return {
-        data: {} as Cattle,
-        success: false,
-        message: 'Erreur lors de la mise à jour du bovin'
-      };
+      throw error;
     }
   }
 
-  private async deleteApiCattle(id: number): Promise<ApiResponse<boolean>> {
+  async deleteCattle(id: number): Promise<ApiResponse<boolean>> {
     try {
-      const url = buildApiUrl(`${API_CONFIG.ENDPOINTS.CATTLE}/${id}`);
-      const response = await fetchWithAuth(url, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      await apiClient.delete(`${this.endpoint}/${id}`);
 
       return {
         data: true,
         success: true,
-        message: 'Bovin supprimé avec succès'
+        message: 'Bovin supprimé avec succès',
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting cattle:', error);
-      return {
-        data: false,
-        success: false,
-        message: 'Erreur lors de la suppression du bovin'
-      };
+      throw error;
     }
   }
 
-  async registerBirth(motherId: number, birthData: Omit<Cattle, 'id' | 'events' | 'treatments'>): Promise<ApiResponse<Cattle>> {
-
-
+  async registerBirth(
+    motherId: number,
+    birthData: Omit<Cattle, 'id' | 'events' | 'treatments'>
+  ): Promise<ApiResponse<Cattle>> {
     try {
-      const url = buildApiUrl(`${API_CONFIG.ENDPOINTS.CATTLE}/${motherId}/birth`);
       const payload = this.transformCattleData(birthData);
+      const result = await apiClient.post<Cattle>(
+        `${this.endpoint}/${motherId}/birth`,
+        payload
+      );
 
-      const response = await fetchWithAuth(url, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
       return {
-        data: result.data || result,
+        data: result,
         success: true,
-        message: 'Naissance enregistrée avec succès'
+        message: 'Naissance enregistrée avec succès',
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error registering birth:', error);
-      return {
-        data: {} as Cattle,
-        success: false,
-        message: "Erreur lors de l'enregistrement de la naissance"
-      };
+      throw error;
     }
   }
 
   async getCharacters(): Promise<ApiResponse<{ id: number; name: string }[]>> {
     try {
-      const url = buildApiUrl('/characters');
-      const response = await fetchWithAuth(url);
+      const result = await apiClient.get<{ id: number; name: string }[]>('/characters');
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
       return {
         data: result,
-        success: true
+        success: true,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching characters:', error);
-      return {
-        data: [],
-        success: false,
-        message: 'Erreur lors du chargement des caractères'
-      };
+      throw error;
     }
   }
 }
