@@ -4,7 +4,7 @@ export interface Cattle {
   nickname?: string;
   gender: 'M' | 'F';
   birthDate: string;
-  character: {
+  character?: {
     id: string;
     name: string;
   };
