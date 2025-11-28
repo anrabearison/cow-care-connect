@@ -124,14 +124,12 @@ export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
         </div>
 
         <div className="space-y-3 mb-4">
-          {cattle.category && (
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Catégorie</span>
-              <Badge className={getCategoryColor(cattle.category.name)}>
-                {cattle.category.name}
-              </Badge>
-            </div>
-          )}
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">Catégorie</span>
+            <Badge className={getCategoryColor(cattle.category.name)}>
+              {cattle.category.name}
+            </Badge>
+          </div>
           {cattle.character && (
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Caractère</span>
