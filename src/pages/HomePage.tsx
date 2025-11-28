@@ -51,11 +51,11 @@ export default function HomePage() {
       <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
         {/* Statistics Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
-          <Card className={CARD_HOVER_CLASSES}>
+          <Card className={`${CARD_HOVER_CLASSES} animate-fadeInUp opacity-0 hover:shadow-lg transition-all duration-300 hover:scale-105`}>
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center space-x-2 sm:space-x-4">
-                <div className="p-2 sm:p-3 bg-primary/10 rounded-full">
-                  <Users className="h-4 w-4 sm:h-6 sm:w-6 text-primary" />
+                <div className="p-2 sm:p-3 bg-primary/10 rounded-full group-hover:bg-primary/20 transition-colors">
+                  <Users className="h-4 w-4 sm:h-6 sm:w-6 text-primary animate-pulse" />
                 </div>
                 <div>
                   <p className="text-xl sm:text-2xl font-bold">3</p>
@@ -65,11 +65,11 @@ export default function HomePage() {
             </CardContent>
           </Card>
 
-          <Card className={CARD_HOVER_CLASSES}>
+          <Card className={`${CARD_HOVER_CLASSES} animate-fadeInUp opacity-0 animation-delay-100 hover:shadow-lg transition-all duration-300 hover:scale-105`}>
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center space-x-2 sm:space-x-4">
-                <div className="p-2 sm:p-3 bg-accent/20 rounded-full">
-                  <TrendingUp className="h-4 w-4 sm:h-6 sm:w-6 text-primary" />
+                <div className="p-2 sm:p-3 bg-accent/20 rounded-full group-hover:bg-accent/30 transition-colors">
+                  <TrendingUp className="h-4 w-4 sm:h-6 sm:w-6 text-primary animate-pulse animation-delay-100" />
                 </div>
                 <div>
                   <p className="text-xl sm:text-2xl font-bold">95%</p>
@@ -79,11 +79,11 @@ export default function HomePage() {
             </CardContent>
           </Card>
 
-          <Card className={CARD_HOVER_CLASSES}>
+          <Card className={`${CARD_HOVER_CLASSES} animate-fadeInUp opacity-0 animation-delay-200 hover:shadow-lg transition-all duration-300 hover:scale-105`}>
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center space-x-2 sm:space-x-4">
-                <div className="p-2 sm:p-3 bg-secondary/20 rounded-full">
-                  <Activity className="h-4 w-4 sm:h-6 sm:w-6 text-primary" />
+                <div className="p-2 sm:p-3 bg-secondary/20 rounded-full group-hover:bg-secondary/30 transition-colors">
+                  <Activity className="h-4 w-4 sm:h-6 sm:w-6 text-primary animate-pulse animation-delay-200" />
                 </div>
                 <div>
                   <p className="text-xl sm:text-2xl font-bold">8</p>
@@ -93,11 +93,11 @@ export default function HomePage() {
             </CardContent>
           </Card>
 
-          <Card className={CARD_HOVER_CLASSES}>
+          <Card className={`${CARD_HOVER_CLASSES} animate-fadeInUp opacity-0 animation-delay-300 hover:shadow-lg transition-all duration-300 hover:scale-105`}>
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center space-x-2 sm:space-x-4">
-                <div className="p-2 sm:p-3 bg-muted/20 rounded-full">
-                  <Calendar className="h-4 w-4 sm:h-6 sm:w-6 text-primary" />
+                <div className="p-2 sm:p-3 bg-muted/20 rounded-full group-hover:bg-muted/30 transition-colors">
+                  <Calendar className="h-4 w-4 sm:h-6 sm:w-6 text-primary animate-pulse animation-delay-300" />
                 </div>
                 <div>
                   <p className="text-xl sm:text-2xl font-bold">2</p>
@@ -109,7 +109,7 @@ export default function HomePage() {
         </div>
 
         {/* Recent Events */}
-        <Card className="shadow-farm">
+        <Card className="shadow-farm animate-fadeInUp opacity-0 animation-delay-400">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Activity className="h-5 w-5 text-primary" />
@@ -137,7 +137,7 @@ export default function HomePage() {
                 ))
               ) : (
                 recentEvents.map((event) => (
-                  <div key={event.id} className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 p-3 sm:p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
+                  <div key={event.id} className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 p-3 sm:p-4 bg-muted/30 rounded-lg hover:bg-muted/50 hover:scale-[1.02] transition-all duration-300 cursor-pointer">
                     <div className="flex items-center space-x-3 sm:space-x-4">
                       <div className="text-xl sm:text-2xl">{getTypeEvenementIcon(event.type)}</div>
                       <div className="flex-1">
@@ -163,7 +163,7 @@ export default function HomePage() {
 
             <div className="mt-6 text-center">
               <Link to="/cattle">
-                <Button variant="outline" className="border-primary/20 text-primary hover:bg-primary/5">
+                <Button variant="outline" className="border-primary/20 text-primary hover:bg-primary/5 hover:scale-105 transition-all duration-300">
                   Voir tous les animaux
                 </Button>
               </Link>

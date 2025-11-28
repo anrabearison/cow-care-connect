@@ -46,7 +46,7 @@ const App = () => (
                     <div className="flex flex-1">
                       <AppSidebar />
                       <main className="flex-1">
-                        <header className="h-12 flex items-center border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+                        <header className="sticky top-0 z-10 h-12 flex items-center border-b bg-background/80 backdrop-blur-lg supports-[backdrop-filter]:bg-background/60 shadow-sm">
                           <SidebarTrigger className="ml-4" />
                           <div className="flex-1 px-4">
                             <h2 className="text-sm font-medium text-muted-foreground">

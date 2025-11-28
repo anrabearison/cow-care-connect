@@ -60,9 +60,9 @@ export default function LoginPage() {
 
       {/* Right side - Login form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gradient-earth">
-        <Card className="w-full max-w-md shadow-farm border-0">
+        <Card className="w-full max-w-md shadow-farm border-0 animate-scaleIn opacity-0">
           <CardHeader className="text-center">
-            <div className="flex justify-center mb-4 lg:hidden">
+            <div className="flex justify-center mb-4 lg:hidden animate-pulse">
               <div className="h-12 w-12 rounded-full bg-gradient-primary flex items-center justify-center">
                 <Beef className="h-6 w-6 text-white" />
               </div>
@@ -92,6 +92,7 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@ombiko.mg"
                   required
+                  className="transition-all duration-300 focus:scale-[1.02]"
                 />
               </div>
 
@@ -104,12 +105,13 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
+                  className="transition-all duration-300 focus:scale-[1.02]"
                 />
               </div>
 
               <Button
                 type="submit"
-                className="w-full bg-gradient-primary hover:opacity-90 transition-opacity"
+                className="w-full bg-gradient-primary hover:opacity-90 hover:scale-105 transition-all duration-300"
                 disabled={isLoading}
               >
                 {isLoading ? (
