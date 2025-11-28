@@ -8,6 +8,7 @@ import { useAuth } from '@/features/auth/AuthContext';
 import heroImage from '@/assets/hero-cattle.jpg';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRecentEvents } from '@/hooks/useRecentEvents';
+import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { CARD_HOVER_CLASSES } from '@/constants/ui';
 
 const formatDate = (dateString: string) => {
@@ -21,6 +22,7 @@ const formatDate = (dateString: string) => {
 export default function HomePage() {
   const { user } = useAuth();
   const { events: recentEvents, isLoading } = useRecentEvents();
+  const { stats, isLoading: statsLoading } = useDashboardStats();
 
   return (
     <div className="min-h-screen bg-gradient-earth">
@@ -58,7 +60,11 @@ export default function HomePage() {
                   <Users className="h-4 w-4 sm:h-6 sm:w-6 text-primary animate-pulse" />
                 </div>
                 <div>
-                  <p className="text-xl sm:text-2xl font-bold">3</p>
+                  {statsLoading ? (
+                    <Skeleton className="h-8 w-12" />
+                  ) : (
+                    <p className="text-xl sm:text-2xl font-bold">{stats?.totalCattle ?? 0}</p>
+                  )}
                   <p className="text-xs sm:text-sm text-muted-foreground">Animaux</p>
                 </div>
               </div>
@@ -72,7 +78,11 @@ export default function HomePage() {
                   <TrendingUp className="h-4 w-4 sm:h-6 sm:w-6 text-primary animate-pulse animation-delay-100" />
                 </div>
                 <div>
-                  <p className="text-xl sm:text-2xl font-bold">95%</p>
+                  {statsLoading ? (
+                    <Skeleton className="h-8 w-16" />
+                  ) : (
+                    <p className="text-xl sm:text-2xl font-bold">{stats?.healthPercentage ?? 0}%</p>
+                  )}
                   <p className="text-xs sm:text-sm text-muted-foreground">Santé</p>
                 </div>
               </div>
@@ -86,7 +96,11 @@ export default function HomePage() {
                   <Activity className="h-4 w-4 sm:h-6 sm:w-6 text-primary animate-pulse animation-delay-200" />
                 </div>
                 <div>
-                  <p className="text-xl sm:text-2xl font-bold">8</p>
+                  {statsLoading ? (
+                    <Skeleton className="h-8 w-12" />
+                  ) : (
+                    <p className="text-xl sm:text-2xl font-bold">{stats?.totalEvents ?? 0}</p>
+                  )}
                   <p className="text-xs sm:text-sm text-muted-foreground">Événements</p>
                 </div>
               </div>
@@ -100,7 +114,11 @@ export default function HomePage() {
                   <Calendar className="h-4 w-4 sm:h-6 sm:w-6 text-primary animate-pulse animation-delay-300" />
                 </div>
                 <div>
-                  <p className="text-xl sm:text-2xl font-bold">2</p>
+                  {statsLoading ? (
+                    <Skeleton className="h-8 w-12" />
+                  ) : (
+                    <p className="text-xl sm:text-2xl font-bold">{stats?.totalTreatments ?? 0}</p>
+                  )}
                   <p className="text-xs sm:text-sm text-muted-foreground">Traitements</p>
                 </div>
               </div>
