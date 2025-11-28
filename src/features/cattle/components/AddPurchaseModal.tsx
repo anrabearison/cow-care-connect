@@ -26,7 +26,7 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
         gender: '' as 'M' | 'F' | '',
         birthDate: '',
         character: 'none',
-        category: 'none',
+        category: '',
         brand: '',
         distinctiveSign: '',
         // Purchase fields
@@ -79,7 +79,7 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!formData.name || !formData.gender || !formData.birthDate || !formData.purchaseDate) {
+        if (!formData.name || !formData.gender || !formData.birthDate || !formData.category || !formData.purchaseDate) {
             toast({
                 variant: "destructive",
                 title: "Erreur",
@@ -97,10 +97,10 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
                 id: formData.character,
                 name: characters.find(c => c.id === formData.character)?.name || ''
             } : undefined,
-            category: formData.category && formData.category !== 'none' ? {
+            category: {
                 id: formData.category,
                 name: categories.find(c => c.id === formData.category)?.name || ''
-            } : undefined,
+            },
             brand: formData.brand || undefined,
             distinctiveSign: formData.distinctiveSign || undefined,
             photo: undefined,
@@ -132,7 +132,7 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
             gender: '',
             birthDate: '',
             character: 'none',
-            category: 'none',
+            category: '',
             brand: '',
             distinctiveSign: '',
             supplier: '',
@@ -192,7 +192,7 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
                                     </Select>
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="category">Catégorie</Label>
+                                    <Label htmlFor="category">Catégorie *</Label>
                                     <Select
                                         value={formData.category}
                                         onValueChange={(value) => setFormData({ ...formData, category: value })}
