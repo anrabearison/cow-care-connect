@@ -201,7 +201,6 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
                                             <SelectValue placeholder="Sélectionner" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="none">Aucun</SelectItem>
                                             {categories.map((cat) => (
                                                 <SelectItem key={cat.id} value={cat.id.toString()}>
                                                     {cat.name}
