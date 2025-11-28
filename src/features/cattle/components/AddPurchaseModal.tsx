@@ -79,7 +79,7 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!formData.name || !formData.gender || !formData.birthDate || !formData.category || !formData.purchaseDate || !formData.character) {
+        if (!formData.name || !formData.gender || !formData.birthDate || !formData.category || !formData.purchaseDate) {
             toast({
                 variant: "destructive",
                 title: "Erreur",
@@ -93,10 +93,10 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
             nickname: formData.nickname || undefined,
             gender: formData.gender as 'M' | 'F',
             birthDate: formData.birthDate,
-            character: {
+            character: formData.character ? {
                 id: formData.character,
                 name: characters.find(c => c.id === formData.character)?.name || ''
-            },
+            } : undefined,
             category: {
                 id: formData.category,
                 name: categories.find(c => c.id === formData.category)?.name || ''
@@ -220,13 +220,13 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
                                     />
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="character">Caractère *</Label>
+                                    <Label htmlFor="character">Caractère</Label>
                                     <Select
                                         value={formData.character.toString()}
                                         onValueChange={(value) => setFormData({ ...formData, character: value })}
                                     >
                                         <SelectTrigger id="character">
-                                            <SelectValue />
+                                            <SelectValue placeholder="Sélectionner (optionnel)" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {characters.map((char) => (
