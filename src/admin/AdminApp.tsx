@@ -22,6 +22,8 @@ import {
     TypeEvenementShow
 } from "@/admin/resources/typeEvenements.tsx";
 
+import { adminTheme } from './theme';
+
 // Configuration globale pour les confirmations
 const defaultOptions = {
     // Activer les confirmations pour toutes les suppressions
@@ -37,6 +39,7 @@ export const AdminApp: React.FC = () => {
             basename="/admin"
             dataProvider={dataProvider}
             authProvider={authProvider}
+            theme={adminTheme}
             dashboard={Dashboard}
             layout={Layout}
             title="Administration - Gestion du Bétail"
