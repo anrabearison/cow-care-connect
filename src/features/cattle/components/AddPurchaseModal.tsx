@@ -93,7 +93,7 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
             nickname: formData.nickname || undefined,
             gender: formData.gender as 'M' | 'F',
             birthDate: formData.birthDate,
-            character: formData.character ? {
+            character: formData.character && formData.character !== 'none' ? {
                 id: formData.character,
                 name: characters.find(c => c.id === formData.character)?.name || ''
             } : undefined,
@@ -229,7 +229,7 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
                                             <SelectValue placeholder="Sélectionner (optionnel)" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="">Aucun</SelectItem>
+                                            <SelectItem value="none">Aucun</SelectItem>
                                             {characters.map((char) => (
                                                 <SelectItem key={char.id} value={char.id.toString()}>
                                                     {char.name}
