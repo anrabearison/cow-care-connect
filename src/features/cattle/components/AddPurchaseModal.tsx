@@ -229,6 +229,7 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
                                             <SelectValue placeholder="Sélectionner (optionnel)" />
                                         </SelectTrigger>
                                         <SelectContent>
+                                            <SelectItem value="">Aucun</SelectItem>
                                             {characters.map((char) => (
                                                 <SelectItem key={char.id} value={char.id.toString()}>
                                                     {char.name}
