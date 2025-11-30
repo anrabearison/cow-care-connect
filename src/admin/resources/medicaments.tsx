@@ -4,7 +4,6 @@ import {
   Datagrid,
   TextField,
   EditButton,
-  DeleteButton,
   ShowButton,
   Edit,
   SimpleForm,
@@ -14,7 +13,11 @@ import {
   Show,
   SimpleShowLayout,
   useRecordContext,
+  NumberInput,
+  FunctionField,
+  required,
 } from 'react-admin';
+import { Box, Typography } from '@mui/material';
 import { EditToolbar, CreateToolbar, ConfirmDeleteButton } from '../components/ConfirmToolbars';
 
 const medicamentFilters = [
@@ -42,13 +45,31 @@ const DeleteButtonField = () => {
   );
 };
 
+const DosageField = (props: { source?: string, label?: string }) => {
+  return (
+    <FunctionField
+      {...props}
+      render={(record: any) => {
+        if (record.dosage && record.dosage.quantite && record.dosage.unite) {
+          let text = `${record.dosage.quantite}${record.dosage.unite}`;
+          if (record.dosage.poids) {
+            text += ` / ${record.dosage.poids}${record.dosage.unite_poids || 'kg'}`;
+          }
+          return text;
+        }
+        return record.dosageRecommande || '-';
+      }}
+    />
+  );
+};
+
 export const MedicamentList = () => (
   <List filters={medicamentFilters}>
     <Datagrid rowClick="edit">
       <TextField source="id" label="ID" />
       <TextField source="nom" label="Nom" />
       <TextField source="type" label="Type" />
-      <TextField source="dosageRecommande" label="Dosage recommandé" />
+      <DosageField label="Dosage recommandé" />
       <TextField source="fabricant" label="Fabricant" />
       <ShowButton />
       <EditButton />
@@ -57,10 +78,54 @@ export const MedicamentList = () => (
   </List>
 );
 
+const DosageInput = () => (
+  <Box sx={{ p: 2, border: '1px solid #e0e0e0', borderRadius: 1, mb: 2 }}>
+    <Typography variant="subtitle2" gutterBottom>Dosage Recommandé</Typography>
+    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+      <NumberInput
+        source="dosage.quantite"
+        label="Quantité"
+        helperText="Ex: 1"
+      />
+      <SelectInput
+        source="dosage.unite"
+        label="Unité"
+        choices={[
+          { id: 'ml', name: 'ml (millilitres)' },
+          { id: 'mg', name: 'mg (milligrammes)' },
+          { id: 'g', name: 'g (grammes)' },
+          { id: 'UI', name: 'UI (unités internationales)' },
+        ]}
+      />
+      <NumberInput
+        source="dosage.poids"
+        label="Par poids"
+        helperText="Ex: 50 (laissez vide pour dose fixe)"
+      />
+      <SelectInput
+        source="dosage.unite_poids"
+        label="Unité de poids"
+        choices={[
+          { id: 'kg', name: 'kg' },
+          { id: 'lb', name: 'lb' },
+        ]}
+        defaultValue="kg"
+      />
+    </Box>
+    <TextInput
+      source="dosage.notes"
+      label="Notes sur le dosage"
+      multiline
+      fullWidth
+      helperText="Ex: Administrer en 2 fois à 12h d'intervalle"
+    />
+  </Box>
+);
+
 export const MedicamentEdit = () => (
   <Edit>
     <SimpleForm toolbar={<EditToolbar />}>
-      <TextInput source="nom" label="Nom" required />
+      <TextInput source="nom" label="Nom" validate={required()} />
       <SelectInput
         source="type"
         label="Type"
@@ -72,9 +137,9 @@ export const MedicamentEdit = () => (
           { id: 'Vitamine', name: 'Vitamine' },
           { id: 'Autre', name: 'Autre' },
         ]}
-        required
+        validate={required()}
       />
-      <TextInput source="dosageRecommande" label="Dosage recommandé" />
+      <DosageInput />
       <TextInput source="fabricant" label="Fabricant" />
       <TextInput source="notes" label="Notes" multiline rows={3} />
     </SimpleForm>
@@ -84,7 +149,7 @@ export const MedicamentEdit = () => (
 export const MedicamentCreate = () => (
   <Create>
     <SimpleForm toolbar={<CreateToolbar />}>
-      <TextInput source="nom" label="Nom" required />
+      <TextInput source="nom" label="Nom" validate={required()} />
       <SelectInput
         source="type"
         label="Type"
@@ -96,9 +161,9 @@ export const MedicamentCreate = () => (
           { id: 'Vitamine', name: 'Vitamine' },
           { id: 'Autre', name: 'Autre' },
         ]}
-        required
+        validate={required()}
       />
-      <TextInput source="dosageRecommande" label="Dosage recommandé" />
+      <DosageInput />
       <TextInput source="fabricant" label="Fabricant" />
       <TextInput source="notes" label="Notes" multiline rows={3} />
     </SimpleForm>
@@ -111,7 +176,8 @@ export const MedicamentShow = () => (
       <TextField source="id" label="ID" />
       <TextField source="nom" label="Nom" />
       <TextField source="type" label="Type" />
-      <TextField source="dosageRecommande" label="Dosage recommandé" />
+      <DosageField label="Dosage recommandé" />
+      <TextField source="dosage.notes" label="Notes dosage" />
       <TextField source="fabricant" label="Fabricant" />
       <TextField source="notes" label="Notes" />
     </SimpleShowLayout>

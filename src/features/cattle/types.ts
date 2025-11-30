@@ -48,7 +48,12 @@ export interface Treatment {
   type: 'Antibiotique' | 'Vaccin' | 'Vermifuge' | 'Anti-inflammatoire' | 'Vitamine' | 'Autre';
   date: string;
   product: string; // ID du médicament
-  dosage: string;
+  dosage: string | {
+    quantite: number;
+    unite: string;
+    animal_poids?: number;
+    notes?: string;
+  };
   veterinarian: string; // ID de l'intervenant
   notes?: string;
 }

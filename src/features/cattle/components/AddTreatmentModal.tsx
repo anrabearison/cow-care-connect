@@ -20,13 +20,20 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
         type: '' as Treatment['type'],
         date: new Date().toISOString().split('T')[0],
         product: '',
-        dosage: '',
+        dosage: {
+            quantite: 0,
+            unite: 'ml',
+            animal_poids: 0,
+            notes: ''
+        },
         veterinarian: '',
         notes: ''
     });
+    const [animalWeight, setAnimalWeight] = useState<number>(0);
     const [medicaments, setMedicaments] = useState<Medicament[]>([]);
     const [veterinarians, setVeterinarians] = useState<Veterinarian[]>([]);
     const [loading, setLoading] = useState(false);
+    const [selectedMedicament, setSelectedMedicament] = useState<Medicament | null>(null);
 
     useEffect(() => {
         const loadReferenceData = async () => {
@@ -50,18 +57,58 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
         }
     }, [open]);
 
+    // Update selected medicament when product changes
+    useEffect(() => {
+        if (formData.product) {
+            const med = medicaments.find(m => m.id.toString() === formData.product);
+            setSelectedMedicament(med || null);
+
+            // Set default unit if available
+            if (med?.dosage?.unite) {
+                setFormData(prev => ({
+                    ...prev,
+                    dosage: { ...prev.dosage, unite: med.dosage!.unite }
+                }));
+            }
+        } else {
+            setSelectedMedicament(null);
+        }
+    }, [formData.product, medicaments]);
+
+    // Calculate dose when weight or medicament changes
+    useEffect(() => {
+        if (selectedMedicament?.dosage?.poids && selectedMedicament.dosage.quantite && animalWeight > 0) {
+            const dose = (animalWeight / selectedMedicament.dosage.poids) * selectedMedicament.dosage.quantite;
+            setFormData(prev => ({
+                ...prev,
+                dosage: {
+                    ...prev.dosage,
+                    quantite: parseFloat(dose.toFixed(2)),
+                    animal_poids: animalWeight
+                }
+            }));
+        }
+    }, [selectedMedicament, animalWeight]);
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (formData.type && formData.date && formData.product && formData.dosage && formData.veterinarian) {
+        if (formData.type && formData.date && formData.product && formData.dosage.quantite && formData.veterinarian) {
+            // @ts-ignore - dosage structure matches the updated type but TS might complain due to union type
             onAdd(formData);
             setFormData({
                 type: '' as Treatment['type'],
                 date: new Date().toISOString().split('T')[0],
                 product: '',
-                dosage: '',
+                dosage: {
+                    quantite: 0,
+                    unite: 'ml',
+                    animal_poids: 0,
+                    notes: ''
+                },
                 veterinarian: '',
                 notes: ''
             });
+            setAnimalWeight(0);
             onOpenChange(false);
         }
     };
@@ -129,14 +176,67 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="dosage">Dose *</Label>
+                            <Label htmlFor="weight">Poids de l'animal (kg)</Label>
                             <Input
-                                id="dosage"
-                                placeholder="Ex: 10ml"
-                                value={formData.dosage}
-                                onChange={(e) => setFormData({ ...formData, dosage: e.target.value })}
-                                required
+                                id="weight"
+                                type="number"
+                                step="0.1"
+                                value={animalWeight || ''}
+                                onChange={(e) => setAnimalWeight(parseFloat(e.target.value))}
+                                placeholder="Ex: 300"
                             />
+                        </div>
+
+                        {selectedMedicament?.dosage && (
+                            <div className="p-3 bg-blue-50 rounded-md text-sm">
+                                <p className="font-medium text-blue-900">
+                                    Dosage recommandé: {selectedMedicament.dosage.quantite}
+                                    {selectedMedicament.dosage.unite}
+                                    {selectedMedicament.dosage.poids &&
+                                        ` / ${selectedMedicament.dosage.poids}${selectedMedicament.dosage.unite_poids || 'kg'}`
+                                    }
+                                </p>
+                                {selectedMedicament.dosage.notes && (
+                                    <p className="text-blue-700 mt-1 italic">{selectedMedicament.dosage.notes}</p>
+                                )}
+                            </div>
+                        )}
+
+                        <div className="grid grid-cols-2 gap-2">
+                            <div className="grid gap-2">
+                                <Label htmlFor="dosage-quantite">Dose administrée *</Label>
+                                <Input
+                                    id="dosage-quantite"
+                                    type="number"
+                                    step="0.01"
+                                    value={formData.dosage.quantite || ''}
+                                    onChange={(e) => setFormData({
+                                        ...formData,
+                                        dosage: { ...formData.dosage, quantite: parseFloat(e.target.value) }
+                                    })}
+                                    required
+                                />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="dosage-unite">Unité *</Label>
+                                <Select
+                                    value={formData.dosage.unite}
+                                    onValueChange={(value) => setFormData({
+                                        ...formData,
+                                        dosage: { ...formData.dosage, unite: value }
+                                    })}
+                                >
+                                    <SelectTrigger id="dosage-unite">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="ml">ml</SelectItem>
+                                        <SelectItem value="mg">mg</SelectItem>
+                                        <SelectItem value="g">g</SelectItem>
+                                        <SelectItem value="UI">UI</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
                         </div>
 
                         <div className="grid gap-2">

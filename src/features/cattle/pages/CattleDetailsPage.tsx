@@ -279,6 +279,16 @@ export default function CattleDetailsPage() {
   const imageIndex = cattle.id % cattleImages.length;
   const cattleImage = cattle.photo || cattleImages[imageIndex];
 
+  const formatDosage = (dosage: Treatment['dosage']) => {
+    if (typeof dosage === 'string') return dosage;
+    if (!dosage) return '-';
+    let text = `${dosage.quantite}${dosage.unite}`;
+    if (dosage.animal_poids) {
+      text += ` (pour ${dosage.animal_poids}kg)`;
+    }
+    return text;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-earth">
       <div className="container mx-auto px-6 py-8">
@@ -738,7 +748,7 @@ export default function CattleDetailsPage() {
                             <div>
                               <h4 className="font-medium">{getMedicamentName(treatment.product)}</h4>
                               <p className="text-sm text-muted-foreground">
-                                Dose: {treatment.dosage} • Intervenant: {getVeterinarianName(treatment.veterinarian)}
+                                Dose: {formatDosage(treatment.dosage)} • Intervenant: {getVeterinarianName(treatment.veterinarian)}
                               </p>
                               {treatment.notes && (
                                 <p className="text-sm text-muted-foreground mt-1">

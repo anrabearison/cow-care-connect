@@ -15,6 +15,13 @@ export interface Medicament {
     id: string;
     nom: string;
     type?: string;
+    dosage?: {
+        quantite: number;
+        unite: string;
+        poids?: number;
+        unite_poids?: string;
+        notes?: string;
+    };
     dosage_recommande?: string;
     fabricant?: string;
 }
