@@ -54,12 +54,9 @@ const cattleFilters = [
     { id: 'M', name: 'Mâle' },
     { id: 'F', name: 'Femelle' },
   ]} />,
-  <SelectInput source="category" label="Catégorie" choices={[
-    { id: 'Taureau', name: 'Taureau' },
-    { id: 'Veau', name: 'Veau' },
-    { id: 'Zébu', name: 'Zébu' },
-    { id: 'Vache', name: 'Vache' },
-  ]} />,
+  <ReferenceInput source="category" reference="categories" label="Catégorie">
+    <SelectInput optionText="name" />
+  </ReferenceInput>,
   <SelectInput source="character" label="Caractère" choices={[
     { id: 'Docile', name: 'Docile' },
     { id: 'Agressif', name: 'Agressif' },
