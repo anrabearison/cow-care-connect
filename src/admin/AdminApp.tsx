@@ -1,20 +1,31 @@
 import React from 'react';
-import { Admin, Resource } from 'react-admin';
-import { API_CONFIG } from '@/config/api';
+import {Admin, Resource} from 'react-admin';
+import {
+    Category,
+    Event,
+    EventNote,
+    Flag,
+    Healing,
+    MedicalServices,
+    Medication,
+    People,
+    Pets,
+    Psychology
+} from '@mui/icons-material';
 
-import { dataProvider as apiDataProvider } from './providers/dataProvider';
-import { authProvider } from './providers/authProvider';
-import { CattleList, CattleEdit, CattleCreate, CattleShow } from './resources/cattle';
-import { UserList, UserEdit, UserCreate, UserShow } from './resources/users';
-import { VeterinarianList, VeterinarianEdit, VeterinarianCreate, VeterinarianShow } from './resources/veterinarians';
-import { MedicamentList, MedicamentEdit, MedicamentCreate, MedicamentShow } from './resources/medicaments';
-import { TraitementList, TraitementEdit, TraitementCreate, TraitementShow } from './resources/traitements';
-import { EvenementList, EvenementEdit, EvenementCreate, EvenementShow } from './resources/evenements';
-import { CategoryList, CategoryEdit, CategoryCreate, CategoryShow } from './resources/categories';
-import { StatusList, StatusEdit, StatusCreate, StatusShow } from './resources/status';
-import { CharactersList, CharactersEdit, CharactersCreate, CharactersShow } from './resources/characters';
-import { Dashboard } from './components/Dashboard';
-import { Layout } from './components/Layout';
+import {dataProvider as apiDataProvider} from './providers/dataProvider';
+import {authProvider} from './providers/authProvider';
+import {CattleCreate, CattleEdit, CattleList, CattleShow} from './resources/cattle';
+import {UserCreate, UserEdit, UserList, UserShow} from './resources/users';
+import {VeterinarianCreate, VeterinarianEdit, VeterinarianList, VeterinarianShow} from './resources/veterinarians';
+import {MedicamentCreate, MedicamentEdit, MedicamentList, MedicamentShow} from './resources/medicaments';
+import {TraitementCreate, TraitementEdit, TraitementList, TraitementShow} from './resources/traitements';
+import {EvenementCreate, EvenementEdit, EvenementList, EvenementShow} from './resources/evenements';
+import {CategoryCreate, CategoryEdit, CategoryList, CategoryShow} from './resources/categories';
+import {StatusCreate, StatusEdit, StatusList, StatusShow} from './resources/status';
+import {CharactersCreate, CharactersEdit, CharactersList, CharactersShow} from './resources/characters';
+import {Dashboard} from './components/Dashboard';
+import {Layout} from './components/Layout';
 import {
     TypeEvenementCreate,
     TypeEvenementEdit,
@@ -22,7 +33,7 @@ import {
     TypeEvenementShow
 } from "@/admin/resources/typeEvenements.tsx";
 
-import { adminTheme } from './theme';
+import {adminTheme} from './theme';
 
 // Configuration globale pour les confirmations
 const defaultOptions = {
@@ -51,6 +62,7 @@ export const AdminApp: React.FC = () => {
                 edit={CattleEdit}
                 create={CattleCreate}
                 show={CattleShow}
+                icon={Pets}
                 options={{ label: 'Bovins' }}
             />
             <Resource
@@ -59,6 +71,7 @@ export const AdminApp: React.FC = () => {
                 edit={UserEdit}
                 create={UserCreate}
                 show={UserShow}
+                icon={People}
                 options={{ label: 'Utilisateurs' }}
             />
             <Resource
@@ -67,6 +80,7 @@ export const AdminApp: React.FC = () => {
                 edit={VeterinarianEdit}
                 create={VeterinarianCreate}
                 show={VeterinarianShow}
+                icon={MedicalServices}
                 options={{ label: 'Intervenants' }}
             />
             <Resource
@@ -75,6 +89,7 @@ export const AdminApp: React.FC = () => {
                 edit={MedicamentEdit}
                 create={MedicamentCreate}
                 show={MedicamentShow}
+                icon={Medication}
                 options={{ label: 'Médicaments' }}
             />
             <Resource
@@ -83,6 +98,7 @@ export const AdminApp: React.FC = () => {
                 edit={TypeEvenementEdit}
                 create={TypeEvenementCreate}
                 show={TypeEvenementShow}
+                icon={EventNote}
                 options={{ label: 'Types d\'événements' }}
             />
             <Resource
@@ -91,6 +107,7 @@ export const AdminApp: React.FC = () => {
                 edit={EvenementEdit}
                 create={EvenementCreate}
                 show={EvenementShow}
+                icon={Event}
                 options={{ label: 'Historique des événements' }}
             />
             <Resource
@@ -99,6 +116,7 @@ export const AdminApp: React.FC = () => {
                 edit={TraitementEdit}
                 create={TraitementCreate}
                 show={TraitementShow}
+                icon={Healing}
                 options={{ label: 'Historique des traitements' }}
             />
             <Resource
@@ -107,6 +125,7 @@ export const AdminApp: React.FC = () => {
                 edit={CategoryEdit}
                 create={CategoryCreate}
                 show={CategoryShow}
+                icon={Category}
                 options={{ label: 'Catégories' }}
             />
             <Resource
@@ -115,6 +134,7 @@ export const AdminApp: React.FC = () => {
                 edit={StatusEdit}
                 create={StatusCreate}
                 show={StatusShow}
+                icon={Flag}
                 options={{ label: 'Statuts' }}
             />
             <Resource
@@ -123,6 +143,7 @@ export const AdminApp: React.FC = () => {
                 edit={CharactersEdit}
                 create={CharactersCreate}
                 show={CharactersShow}
+                icon={Psychology}
                 options={{ label: 'Caractères' }}
             />
         </Admin>
