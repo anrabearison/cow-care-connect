@@ -1,6 +1,7 @@
 import React from 'react';
-import {Admin, Resource} from 'react-admin';
+import { Admin, Resource } from 'react-admin';
 import {
+    Agriculture,
     Category,
     Event,
     EventNote,
@@ -9,23 +10,22 @@ import {
     MedicalServices,
     Medication,
     People,
-    Pets,
     Psychology
 } from '@mui/icons-material';
 
-import {dataProvider as apiDataProvider} from './providers/dataProvider';
-import {authProvider} from './providers/authProvider';
-import {CattleCreate, CattleEdit, CattleList, CattleShow} from './resources/cattle';
-import {UserCreate, UserEdit, UserList, UserShow} from './resources/users';
-import {VeterinarianCreate, VeterinarianEdit, VeterinarianList, VeterinarianShow} from './resources/veterinarians';
-import {MedicamentCreate, MedicamentEdit, MedicamentList, MedicamentShow} from './resources/medicaments';
-import {TraitementCreate, TraitementEdit, TraitementList, TraitementShow} from './resources/traitements';
-import {EvenementCreate, EvenementEdit, EvenementList, EvenementShow} from './resources/evenements';
-import {CategoryCreate, CategoryEdit, CategoryList, CategoryShow} from './resources/categories';
-import {StatusCreate, StatusEdit, StatusList, StatusShow} from './resources/status';
-import {CharactersCreate, CharactersEdit, CharactersList, CharactersShow} from './resources/characters';
-import {Dashboard} from './components/Dashboard';
-import {Layout} from './components/Layout';
+import { dataProvider as apiDataProvider } from './providers/dataProvider';
+import { authProvider } from './providers/authProvider';
+import { CattleCreate, CattleEdit, CattleList, CattleShow } from './resources/cattle';
+import { UserCreate, UserEdit, UserList, UserShow } from './resources/users';
+import { VeterinarianCreate, VeterinarianEdit, VeterinarianList, VeterinarianShow } from './resources/veterinarians';
+import { MedicamentCreate, MedicamentEdit, MedicamentList, MedicamentShow } from './resources/medicaments';
+import { TraitementCreate, TraitementEdit, TraitementList, TraitementShow } from './resources/traitements';
+import { EvenementCreate, EvenementEdit, EvenementList, EvenementShow } from './resources/evenements';
+import { CategoryCreate, CategoryEdit, CategoryList, CategoryShow } from './resources/categories';
+import { StatusCreate, StatusEdit, StatusList, StatusShow } from './resources/status';
+import { CharactersCreate, CharactersEdit, CharactersList, CharactersShow } from './resources/characters';
+import { Dashboard } from './components/Dashboard';
+import { Layout } from './components/Layout';
 import {
     TypeEvenementCreate,
     TypeEvenementEdit,
@@ -33,7 +33,7 @@ import {
     TypeEvenementShow
 } from "@/admin/resources/typeEvenements.tsx";
 
-import {adminTheme} from './theme';
+import { adminTheme } from './theme';
 
 // Configuration globale pour les confirmations
 const defaultOptions = {
@@ -62,7 +62,7 @@ export const AdminApp: React.FC = () => {
                 edit={CattleEdit}
                 create={CattleCreate}
                 show={CattleShow}
-                icon={Pets}
+                icon={Agriculture}
                 options={{ label: 'Bovins' }}
             />
             <Resource
