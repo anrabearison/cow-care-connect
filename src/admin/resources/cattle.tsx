@@ -16,7 +16,6 @@ import {
   Create,
   Show,
   ImageField,
-  ImageInput,
   FunctionField,
   ArrayInput,
   SimpleFormIterator,
@@ -31,6 +30,7 @@ import {
   RaRecord,
   ShowButton,
 } from 'react-admin';
+import { CloudinaryImageInput } from '../components/CloudinaryImageInput';
 import { EditToolbar, CreateToolbar, ConfirmDeleteButton } from '../components/ConfirmToolbars';
 import { Cattle } from '../../features/cattle/types';
 
@@ -86,7 +86,17 @@ export const CattleList = () => (
       />
       <FunctionField
         label="Photo"
-        render={(record: Cattle) => record.photo ? 'Oui' : 'Non'}
+        render={(record: Cattle) =>
+          record.photo ? (
+            <img
+              src={record.photo}
+              alt={record.name}
+              style={{ width: 50, height: 50, objectFit: 'cover', borderRadius: 4 }}
+            />
+          ) : (
+            <span style={{ color: '#999' }}>Aucune</span>
+          )
+        }
       />
       <FunctionField
         label="Événements"
@@ -131,9 +141,7 @@ export const CattleEdit = () => (
         <AutocompleteInput optionText="name" validate={required()} />
       </ReferenceInput>
       <DateInput source="birthDate" label="Date de naissance" required />
-      <ImageInput source="photo" label="Photo" accept={{ 'image/*': ['.png', '.jpg', '.jpeg'] }}>
-        <ImageField source="src" title="title" />
-      </ImageInput>
+      <CloudinaryImageInput source="photo" label="Photo" />
       <SelectInput
         source="source.type"
         label="Type de source"
@@ -228,9 +236,7 @@ export const CattleCreate = () => (
         <AutocompleteInput optionText="name" validate={required()} />
       </ReferenceInput>
       <DateInput source="birthDate" label="Date de naissance" required />
-      <ImageInput source="photo" label="Photo" accept={{ 'image/*': ['.png', '.jpg', '.jpeg'] }}>
-        <ImageField source="src" title="title" />
-      </ImageInput>
+      <CloudinaryImageInput source="photo" label="Photo" />
       <SelectInput
         source="source.type"
         label="Type de source"

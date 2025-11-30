@@ -275,9 +275,9 @@ export default function CattleDetailsPage() {
     return <Navigate to="/cattle" replace />;
   }
 
-  // Use a consistent image based on the cattle ID
+  // Use actual cattle photo if available, otherwise use a consistent fallback image based on the cattle ID
   const imageIndex = cattle.id % cattleImages.length;
-  const cattleImage = cattleImages[imageIndex];
+  const cattleImage = cattle.photo || cattleImages[imageIndex];
 
   return (
     <div className="min-h-screen bg-gradient-earth">

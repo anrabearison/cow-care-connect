@@ -83,7 +83,7 @@ export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
 
   return (
     <Card className="overflow-hidden hover:shadow-farm transition-all duration-300 group">
-      <div className="relative h-48 overflow-hidden">
+      <Link to={`/cattle/${cattle.id}`} className="block relative h-48 overflow-hidden">
         {cattle.photo || imageIndex < 3 ? (
           <img
             src={cattleImage}
@@ -107,7 +107,7 @@ export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
             {getGenderIcon(cattle.gender)}
           </div>
         </div>
-      </div>
+      </Link>
 
       <CardContent className="p-6">
         <div className="flex items-start justify-between mb-3">
