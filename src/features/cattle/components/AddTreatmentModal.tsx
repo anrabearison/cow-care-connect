@@ -6,7 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Treatment } from '@/features/cattle/types';
-import { referenceService, Medicament, Veterinarian } from '@/features/common/services/referenceService';
+import { useMedicaments, useVeterinarians } from '@/features/common/hooks/useReferences';
+import { Medicament } from '@/features/common/types';
 
 interface AddTreatmentModalProps {
     open: boolean;
@@ -30,32 +31,16 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
         notes: ''
     });
     const [animalWeight, setAnimalWeight] = useState<number>(0);
-    const [medicaments, setMedicaments] = useState<Medicament[]>([]);
-    const [veterinarians, setVeterinarians] = useState<Veterinarian[]>([]);
-    const [loading, setLoading] = useState(false);
     const [selectedMedicament, setSelectedMedicament] = useState<Medicament | null>(null);
 
-    useEffect(() => {
-        const loadReferenceData = async () => {
-            setLoading(true);
-            const [medicamentsResponse, veterinariansResponse] = await Promise.all([
-                referenceService.getMedicaments(),
-                referenceService.getVeterinarians()
-            ]);
+    // Use React Query hooks for reference data
+    const { data: medicamentsData, isLoading: medicamentsLoading } = useMedicaments();
+    const { data: veterinariansData, isLoading: veterinariansLoading } = useVeterinarians();
 
-            if (medicamentsResponse.success && medicamentsResponse.data) {
-                setMedicaments(medicamentsResponse.data);
-            }
-            if (veterinariansResponse.success && veterinariansResponse.data) {
-                setVeterinarians(veterinariansResponse.data);
-            }
-            setLoading(false);
-        };
+    const medicaments = medicamentsData?.data || [];
+    const veterinarians = veterinariansData?.data || [];
+    const loading = medicamentsLoading || veterinariansLoading;
 
-        if (open) {
-            loadReferenceData();
-        }
-    }, [open]);
 
     // Update selected medicament when product changes
     useEffect(() => {

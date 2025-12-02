@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -8,93 +8,63 @@ import { Search, Filter, Users, Plus } from 'lucide-react';
 import { CattleCard } from '@/features/cattle/components/CattleCard';
 import { Cattle } from '@/features/cattle/types';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useCattle } from '@/features/cattle/hooks';
+import { useCattle, useCreateCattle } from '@/features/cattle/hooks';
 import { AddPurchaseModal } from '@/features/cattle/components/AddPurchaseModal';
-import { cattleService } from '@/features/cattle/services';
-import { useToast } from '@/hooks/use-toast';
-import { referenceService } from '@/features/common/services/referenceService';
+import { useCategories } from '@/features/common/hooks/useReferences';
 
 export default function CattlePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const { toast } = useToast();
   const [genderFilter, setGenderFilter] = useState<string>('all');
   const [sourceFilter, setSourceFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
-  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
 
-  // Construire les filtres pour le service
-  const filters = {
+  // Load categories with React Query
+  const { data: categoriesData } = useCategories();
+  const categories = categoriesData?.data || [];
+
+  // Memoize filters object to prevent unnecessary re-renders
+  const filters = useMemo(() => ({
     q: searchTerm || undefined,
     gender: genderFilter !== 'all' ? (genderFilter as 'M' | 'F') : undefined,
     category: categoryFilter !== 'all' ? categoryFilter : undefined,
     source_type: sourceFilter !== 'all' ? sourceFilter : undefined,
     page: currentPage,
     per_page: itemsPerPage,
-  };
+  }), [searchTerm, genderFilter, categoryFilter, sourceFilter, currentPage]);
 
-  const { cattle, loading: isLoading, error, total, refreshCattle } = useCattle(filters);
+  const { cattle, loading: isLoading, total } = useCattle(filters);
+  const createCattleMutation = useCreateCattle();
 
-  const resetFilters = () => {
+  // Memoize reset filters function
+  const resetFilters = useCallback(() => {
     setSearchTerm('');
     setGenderFilter('all');
     setSourceFilter('all');
     setCategoryFilter('all');
     setCurrentPage(1);
-  };
-
-  // Load categories on mount
-  useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        const response = await referenceService.getCategories();
-        setCategories(response.data || []);
-      } catch (error) {
-        console.error('Error loading categories:', error);
-      }
-    };
-    loadCategories();
   }, []);
 
-  // Calculate pagination
-  const totalPages = Math.ceil(total / itemsPerPage);
+  // Memoize total pages calculation
+  const totalPages = useMemo(() => Math.ceil(total / itemsPerPage), [total, itemsPerPage]);
 
   // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, genderFilter, sourceFilter, categoryFilter]);
 
-  const handleAddCattle = async (cattleData: Omit<Cattle, 'id' | 'events' | 'treatments'>) => {
-    try {
-      const fullCattleData: Omit<Cattle, 'id'> = {
-        ...cattleData,
-        events: [],
-        treatments: []
-      };
-      const response = await cattleService.createCattle(fullCattleData);
-      if (response.success) {
-        toast({
-          title: "Succès",
-          description: "L'animal a été ajouté avec succès",
-        });
-        refreshCattle();
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Erreur",
-          description: response.message || "Erreur lors de l'ajout de l'animal",
-        });
-      }
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: "Une erreur est survenue",
-      });
-    }
-  };
+  // Memoize add cattle handler
+  const handleAddCattle = useCallback(async (cattleData: Omit<Cattle, 'id' | 'events' | 'treatments'>) => {
+    const fullCattleData: Omit<Cattle, 'id'> = {
+      ...cattleData,
+      events: [],
+      treatments: []
+    };
+    createCattleMutation.mutate(fullCattleData);
+  }, [createCattleMutation]);
+
 
   return (
     <div className="min-h-screen bg-gradient-earth">
