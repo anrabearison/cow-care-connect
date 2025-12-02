@@ -125,12 +125,30 @@ export default function LoginPage() {
               </Button>
             </form>
 
-            <div className="mt-6 p-4 bg-muted/50 rounded-lg">
-              <p className="text-sm text-muted-foreground text-center">
-                <strong>Compte de démonstration :</strong><br />
-                Email: admin@ombiko.mg<br />
-                Mot de passe: admin123
+            <div className="mt-6 p-4 bg-muted/50 rounded-lg space-y-3">
+              <p className="text-sm font-semibold text-center text-muted-foreground">
+                Comptes de démonstration :
               </p>
+
+              <div className="space-y-2 text-xs text-muted-foreground">
+                <div className="p-2 bg-background/50 rounded">
+                  <p className="font-semibold">Super Admin</p>
+                  <p>Email: admin@ombiko.mg</p>
+                  <p>Mot de passe: admin123</p>
+                </div>
+
+                <div className="p-2 bg-background/50 rounded">
+                  <p className="font-semibold">Administrateur Propriétaire</p>
+                  <p>Email: jean@ombiko.mg</p>
+                  <p>Mot de passe: admin123</p>
+                </div>
+
+                <div className="p-2 bg-background/50 rounded">
+                  <p className="font-semibold">Utilisateur Propriétaire</p>
+                  <p>Email: employee@ombiko.mg</p>
+                  <p>Mot de passe: admin123</p>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
