@@ -61,7 +61,7 @@ class CattleService {
     }
   }
 
-  async getCattleById(id: number): Promise<ApiResponse<Cattle>> {
+  async getCattleById(id: string | number): Promise<ApiResponse<Cattle>> {
     try {
       const result = await apiClient.get<Cattle>(`${this.endpoint}/${id}`);
 

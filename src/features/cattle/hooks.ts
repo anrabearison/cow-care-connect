@@ -49,21 +49,20 @@ export const useCattleById = (id: string) => {
   const query = useQuery({
     queryKey: ['cattle', id],
     queryFn: async () => {
-      const response = await cattleService.getCattleById(parseInt(id));
+      if (!id) {
+        throw new Error('ID invalide');
+      }
+
+      const response = await cattleService.getCattleById(id);
 
       if (!response.success || !response.data) {
-        toast({
-          variant: "destructive",
-          title: "Erreur",
-          description: response.message || 'Bovin non trouvé'
-        });
         throw new Error(response.message || 'Bovin non trouvé');
       }
 
       return response.data;
     },
     enabled: !!id,
-    retry: 1,
+    retry: false, // Don't retry on 404
   });
 
   return {
