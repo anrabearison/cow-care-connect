@@ -129,6 +129,19 @@ const DosageInput = () => (
         helperText="Ex: 300 (kg)"
       />
     </Box>
+    <SelectInput
+      source="administration_route"
+      label="Voie d'administration"
+      choices={[
+        { id: 'Orale', name: 'Orale' },
+        { id: 'Intraveineuse', name: 'Intraveineuse' },
+        { id: 'Intramusculaire', name: 'Intramusculaire' },
+        { id: 'Sous-cutanée', name: 'Sous-cutanée' },
+        { id: 'Topique', name: 'Topique' },
+        { id: 'Intra-mammaire', name: 'Intra-mammaire' },
+      ]}
+      validate={required()}
+    />
     <TextInput
       source="dosage.notes"
       label="Notes sur le dosage"
@@ -218,6 +231,8 @@ export const TraitementShow = () => (
         <TextField source="nom" />
       </ReferenceField>
       <DosageField label="Dose" />
+      <TextField source="administration_route" label="Voie" />
+      <DateField source="withdrawal_end_date" label="Fin attente" />
       <TextField source="dosage.notes" label="Notes dosage" />
       <ReferenceField source="veterinarian" reference="veterinarians" label="Intervenant">
         <TextField source="nom" />

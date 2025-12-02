@@ -16,15 +16,18 @@ import {
   SimpleShowLayout,
   PasswordInput,
   useRecordContext,
+  ReferenceInput,
+  ReferenceField,
 } from 'react-admin';
 import { EditToolbar, CreateToolbar, ConfirmDeleteButton } from '../components/ConfirmToolbars';
 
 const userFilters = [
   <TextInput source="q" label="Rechercher" alwaysOn />,
+  <TextInput source="q" label="Rechercher" alwaysOn />,
   <SelectInput source="role" label="Rôle" choices={[
-    { id: 'admin', name: 'Administrateur' },
-    { id: 'manager', name: 'Gestionnaire' },
-    { id: 'viewer', name: 'Visiteur' },
+    { id: 'super_admin', name: 'Super Admin' },
+    { id: 'owner_admin', name: 'Admin Propriétaire' },
+    { id: 'owner_user', name: 'Utilisateur' },
   ]} />,
 ];
 
@@ -48,6 +51,9 @@ export const UserList = () => (
       <TextField source="name" label="Nom" />
       <EmailField source="email" label="Email" />
       <TextField source="role" label="Rôle" />
+      <ReferenceField source="owner_id" reference="owners" label="Propriétaire" link="show">
+        <TextField source="name" />
+      </ReferenceField>
       <ShowButton />
       <EditButton />
       <DeleteButtonField />

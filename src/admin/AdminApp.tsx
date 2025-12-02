@@ -10,7 +10,8 @@ import {
     MedicalServices,
     Medication,
     People,
-    Psychology
+    Psychology,
+    Business
 } from '@mui/icons-material';
 
 import { dataProvider as apiDataProvider } from './providers/dataProvider';
@@ -24,6 +25,7 @@ import { EvenementCreate, EvenementEdit, EvenementList, EvenementShow } from './
 import { CategoryCreate, CategoryEdit, CategoryList, CategoryShow } from './resources/categories';
 import { StatusCreate, StatusEdit, StatusList, StatusShow } from './resources/status';
 import { CharactersCreate, CharactersEdit, CharactersList, CharactersShow } from './resources/characters';
+import { OwnerCreate, OwnerEdit, OwnerList, OwnerShow } from './resources/owners';
 import { Dashboard } from './components/Dashboard';
 import { Layout } from './components/Layout';
 import {
@@ -32,6 +34,7 @@ import {
     TypeEvenementList,
     TypeEvenementShow
 } from "@/admin/resources/typeEvenements.tsx";
+import { AdminLogin } from './pages/AdminLogin';
 
 import { adminTheme } from './theme';
 
@@ -50,6 +53,7 @@ export const AdminApp: React.FC = () => {
             basename="/admin"
             dataProvider={dataProvider}
             authProvider={authProvider}
+            loginPage={AdminLogin}
             theme={adminTheme}
             dashboard={Dashboard}
             layout={Layout}
@@ -73,6 +77,15 @@ export const AdminApp: React.FC = () => {
                 show={UserShow}
                 icon={People}
                 options={{ label: 'Utilisateurs' }}
+            />
+            <Resource
+                name="owners"
+                list={OwnerList}
+                edit={OwnerEdit}
+                create={OwnerCreate}
+                show={OwnerShow}
+                icon={Business}
+                options={{ label: 'Propriétaires' }}
             />
             <Resource
                 name="veterinarians"
