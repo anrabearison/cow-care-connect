@@ -1,25 +1,38 @@
-import { useParams, Navigate, Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, Calendar, MapPin, Activity, Stethoscope, User, ChevronDown, Users, FileText, Plus, ExternalLink } from 'lucide-react';
-import { useCattleById, useCattle } from '@/features/cattle/hooks';
-import { useEventTypes, useVeterinarians, useMedicaments } from '@/features/common/hooks/useReferences';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
-import { useState, useMemo } from 'react';
+import {Link, Navigate, useParams} from 'react-router-dom';
+import {Button} from '@/components/ui/button';
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
+import {Badge} from '@/components/ui/badge';
+import {Separator} from '@/components/ui/separator';
+import {Skeleton} from '@/components/ui/skeleton';
+import {
+  Activity,
+  ArrowLeft,
+  Calendar,
+  ChevronDown,
+  ExternalLink,
+  FileText,
+  MapPin,
+  Plus,
+  Stethoscope,
+  User,
+  Users,
+  X
+} from 'lucide-react';
+import {useCattle, useCattleById} from '@/features/cattle/hooks';
+import {useEventTypes, useMedicaments, useVeterinarians} from '@/features/common/hooks/useReferences';
+import {Collapsible, CollapsibleContent, CollapsibleTrigger} from '@/components/ui/collapsible';
+import {HoverCard, HoverCardContent, HoverCardTrigger} from '@/components/ui/hover-card';
+import {useEffect, useState} from 'react';
 import cattlePortrait1 from '@/assets/cattle-portrait-1.jpg';
 import cattlePortrait2 from '@/assets/cattle-portrait-2.jpg';
 import cattlePortrait3 from '@/assets/cattle-portrait-3.jpg';
 
-import { AddTreatmentModal } from '@/features/cattle/components/AddTreatmentModal';
-import { AddEventModal } from '@/features/cattle/components/AddEventModal';
-import { AddBirthModal } from '@/features/cattle/components/AddBirthModal';
-import { Treatment, CattleEvent, Cattle } from '@/features/cattle/types';
-import { cattleService } from "@/features/cattle";
-import { useToast } from '@/hooks/use-toast';
+import {AddTreatmentModal} from '@/features/cattle/components/AddTreatmentModal';
+import {AddEventModal} from '@/features/cattle/components/AddEventModal';
+import {AddBirthModal} from '@/features/cattle/components/AddBirthModal';
+import {Cattle, CattleEvent, Treatment} from '@/features/cattle/types';
+import {cattleService} from "@/features/cattle";
+import {useToast} from '@/hooks/use-toast';
 
 const cattleImages = [cattlePortrait1, cattlePortrait2, cattlePortrait3];
 
@@ -106,6 +119,7 @@ export default function CattleDetailsPage() {
   const [showAddTreatment, setShowAddTreatment] = useState(false);
   const [showAddEvent, setShowAddEvent] = useState(false);
   const [showAddBirth, setShowAddBirth] = useState(false);
+  const [isImageOpen, setIsImageOpen] = useState(false);
   const [localTreatments, setLocalTreatments] = useState<Treatment[]>([]);
   const [localEvents, setLocalEvents] = useState<CattleEvent[]>([]);
   const { toast } = useToast();
@@ -156,6 +170,18 @@ export default function CattleDetailsPage() {
   };
 
   const descendants = findDescendants();
+
+  // Handle Escape key to close lightbox
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isImageOpen) {
+        setIsImageOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [isImageOpen]);
 
   // Initialize local state when cattle data loads
   if (cattle && localTreatments.length === 0 && cattle.treatments.length > 0) {
@@ -311,13 +337,22 @@ export default function CattleDetailsPage() {
           {/* Left Column - Profile */}
           <div className="lg:col-span-1 space-y-6">
             {/* Photo */}
+            {/* Photo */}
             <Card className="overflow-hidden shadow-farm">
-              <div className="relative h-64">
+              <div
+                className="relative h-64 cursor-pointer group"
+                onClick={() => setIsImageOpen(true)}
+              >
                 <img
                   src={cattleImage}
                   alt={`Photo de ${cattle.name}`}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                  <span className="text-white bg-black/50 px-3 py-1 rounded-full text-sm backdrop-blur-sm">
+                    Agrandir
+                  </span>
+                </div>
                 <div className="absolute top-4 right-4">
                   <Badge className="bg-white/90 text-primary">
                     {cattle.gender === 'M' ? 'Mâle' : 'Femelle'}
@@ -325,6 +360,27 @@ export default function CattleDetailsPage() {
                 </div>
               </div>
             </Card>
+
+            {/* Lightbox Overlay */}
+            {isImageOpen && (
+              <div
+                className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4 animate-in fade-in duration-200"
+                onClick={() => setIsImageOpen(false)}
+              >
+                <button
+                  className="absolute top-4 right-4 text-white hover:text-gray-300 p-2 rounded-full bg-black/50 hover:bg-black/70 transition-colors"
+                  onClick={() => setIsImageOpen(false)}
+                >
+                  <X className="h-8 w-8" />
+                </button>
+                <img
+                  src={cattleImage}
+                  alt={`Photo de ${cattle.name}`}
+                  className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-200"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </div>
+            )}
 
             {/* Basic Info */}
             <Card className="shadow-card-soft">
