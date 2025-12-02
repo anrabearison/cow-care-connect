@@ -140,13 +140,13 @@ export default function LoginPage() {
                 <div className="p-2 bg-background/50 rounded">
                   <p className="font-semibold">Administrateur Propriétaire</p>
                   <p>Email: jean@ombiko.mg</p>
-                  <p>Mot de passe: admin123</p>
+                  <p>Mot de passe: eleveur123</p>
                 </div>
 
                 <div className="p-2 bg-background/50 rounded">
                   <p className="font-semibold">Utilisateur Propriétaire</p>
                   <p>Email: employee@ombiko.mg</p>
-                  <p>Mot de passe: admin123</p>
+                  <p>Mot de passe: user123</p>
                 </div>
               </div>
             </div>

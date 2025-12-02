@@ -108,11 +108,11 @@ export const useUpdateCattle = () => {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: Partial<Cattle> }) =>
+    mutationFn: ({ id, data }: { id: string; data: Partial<Cattle> }) =>
       cattleService.updateCattle(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['cattle'] });
-      queryClient.invalidateQueries({ queryKey: ['cattle', variables.id.toString()] });
+      queryClient.invalidateQueries({ queryKey: ['cattle', variables.id] });
       toast({
         title: "Succès",
         description: "L'animal a été mis à jour avec succès",
@@ -136,7 +136,7 @@ export const useDeleteCattle = () => {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: (id: number) => cattleService.deleteCattle(id),
+    mutationFn: (id: string) => cattleService.deleteCattle(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cattle'] });
       toast({

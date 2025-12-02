@@ -1,5 +1,5 @@
 export interface Cattle {
-  id: number;
+  id: string; // Changed from number to string (UUID)
   name: string;
   nickname?: string;
   gender: 'M' | 'F';
@@ -29,14 +29,14 @@ export interface Cattle {
     purchaseWeight?: number;
     purchaseHealthStatus?: string;
     purchaseNotes?: string;
-    motherId?: number;
+    motherId?: string; // Changed from number to string
   };
   events: CattleEvent[];
   treatments: Treatment[];
 }
 
 export interface CattleEvent {
-  id: number;
+  id: string; // Changed from number to string
   type: string; // ID du type d'événement
   date: string;
   description: string;
@@ -44,7 +44,7 @@ export interface CattleEvent {
 }
 
 export interface Treatment {
-  id: number;
+  id: string; // Changed from number to string
   type: 'Antibiotique' | 'Vaccin' | 'Vermifuge' | 'Anti-inflammatoire' | 'Vitamine' | 'Autre';
   date: string;
   product: string; // ID du médicament
@@ -59,10 +59,21 @@ export interface Treatment {
 }
 
 export interface User {
-  id: number;
+  id: string; // Changed from number to string
   name: string;
   email: string;
-  role: 'admin' | 'eleveur' | 'veterinaire';
+  role: 'super_admin' | 'owner_admin' | 'owner_user'; // Updated roles
+  owner_id?: string; // New field
+  is_active?: boolean; // New field
+}
+
+export interface Owner {
+  id: string;
+  name: string;
+  contact_info?: string;
+  address?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Character {

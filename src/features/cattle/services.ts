@@ -91,7 +91,7 @@ class CattleService {
     }
   }
 
-  async updateCattle(id: number, cattle: Partial<Cattle>): Promise<ApiResponse<Cattle>> {
+  async updateCattle(id: string, cattle: Partial<Cattle>): Promise<ApiResponse<Cattle>> {
     try {
       const payload = this.transformCattleData(cattle);
       const result = await apiClient.put<Cattle>(`${this.endpoint}/${id}`, payload);
@@ -107,7 +107,7 @@ class CattleService {
     }
   }
 
-  async deleteCattle(id: number): Promise<ApiResponse<boolean>> {
+  async deleteCattle(id: string): Promise<ApiResponse<boolean>> {
     try {
       await apiClient.delete(`${this.endpoint}/${id}`);
 
@@ -123,7 +123,7 @@ class CattleService {
   }
 
   async registerBirth(
-    motherId: number,
+    motherId: string,
     birthData: Omit<Cattle, 'id' | 'events' | 'treatments'>
   ): Promise<ApiResponse<Cattle>> {
     try {
@@ -144,9 +144,9 @@ class CattleService {
     }
   }
 
-  async getCharacters(): Promise<ApiResponse<{ id: number; name: string }[]>> {
+  async getCharacters(): Promise<ApiResponse<{ id: string; name: string }[]>> {
     try {
-      const result = await apiClient.get<{ id: number; name: string }[]>('/characters');
+      const result = await apiClient.get<{ id: string; name: string }[]>('/characters');
 
       return {
         data: result,

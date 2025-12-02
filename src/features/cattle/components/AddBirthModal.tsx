@@ -14,7 +14,7 @@ interface AddBirthModalProps {
     onOpenChange: (open: boolean) => void;
     onAdd: (calfData: Omit<Cattle, 'id' | 'events' | 'treatments'>) => void;
     motherName: string;
-    motherId: number;
+    motherId: string;
 }
 
 export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange, onAdd, motherName, motherId }) => {

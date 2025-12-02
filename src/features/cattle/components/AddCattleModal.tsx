@@ -18,8 +18,8 @@ interface AddCattleModalProps {
 
 export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChange, onAdd }) => {
     const { toast } = useToast();
-    const [categories, setCategories] = useState<{ id: number, name: string }[]>([]);
-    const [characters, setCharacters] = useState<{ id: number, name: string }[]>([]);
+    const [categories, setCategories] = useState<{ id: string, name: string }[]>([]);
+    const [characters, setCharacters] = useState<{ id: string, name: string }[]>([]);
 
     const [formData, setFormData] = useState({
         name: '',
