@@ -1,9 +1,9 @@
-import {Link, Navigate, useParams} from 'react-router-dom';
-import {Button} from '@/components/ui/button';
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
-import {Badge} from '@/components/ui/badge';
-import {Separator} from '@/components/ui/separator';
-import {Skeleton} from '@/components/ui/skeleton';
+import { Link, Navigate, useParams } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Activity,
   ArrowLeft,
@@ -18,21 +18,22 @@ import {
   Users,
   X
 } from 'lucide-react';
-import {useCattle, useCattleById} from '@/features/cattle/hooks';
-import {useEventTypes, useMedicaments, useVeterinarians} from '@/features/common/hooks/useReferences';
-import {Collapsible, CollapsibleContent, CollapsibleTrigger} from '@/components/ui/collapsible';
-import {HoverCard, HoverCardContent, HoverCardTrigger} from '@/components/ui/hover-card';
-import {useEffect, useState} from 'react';
+import { useCattle, useCattleById } from '@/features/cattle/hooks';
+import { useEventTypes, useMedicaments, useVeterinarians } from '@/features/common/hooks/useReferences';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { useEffect, useState } from 'react';
 import cattlePortrait1 from '@/assets/cattle-portrait-1.jpg';
 import cattlePortrait2 from '@/assets/cattle-portrait-2.jpg';
 import cattlePortrait3 from '@/assets/cattle-portrait-3.jpg';
 
-import {AddTreatmentModal} from '@/features/cattle/components/AddTreatmentModal';
-import {AddEventModal} from '@/features/cattle/components/AddEventModal';
-import {AddBirthModal} from '@/features/cattle/components/AddBirthModal';
-import {Cattle, CattleEvent, Treatment} from '@/features/cattle/types';
-import {cattleService} from "@/features/cattle";
-import {useToast} from '@/hooks/use-toast';
+import { AddTreatmentModal } from '@/features/cattle/components/AddTreatmentModal';
+import { AddEventModal } from '@/features/cattle/components/AddEventModal';
+import { AddBirthModal } from '@/features/cattle/components/AddBirthModal';
+import { Cattle, CattleEvent, Treatment } from '@/features/cattle/types';
+import { cattleService } from "@/features/cattle";
+import { useToast } from '@/hooks/use-toast';
+import { formatDosage } from '@/features/cattle/utils/dosageUtils';
 
 const cattleImages = [cattlePortrait1, cattlePortrait2, cattlePortrait3];
 
@@ -305,15 +306,7 @@ export default function CattleDetailsPage() {
   const imageIndex = cattle.id % cattleImages.length;
   const cattleImage = cattle.photo || cattleImages[imageIndex];
 
-  const formatDosage = (dosage: Treatment['dosage']) => {
-    if (typeof dosage === 'string') return dosage;
-    if (!dosage) return '-';
-    let text = `${dosage.quantite}${dosage.unite}`;
-    if (dosage.animal_poids) {
-      text += ` (pour ${dosage.animal_poids}kg)`;
-    }
-    return text;
-  };
+
 
   return (
     <div className="min-h-screen bg-gradient-earth">

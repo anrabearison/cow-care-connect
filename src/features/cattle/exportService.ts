@@ -5,6 +5,7 @@ import { getTypeEvenementName } from '@/features/events/utils';
 import { getMedicamentName, getVeterinarianName } from '@/features/treatments/utils';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { formatDosage } from './utils/dosageUtils';
 
 export class CattleExportService {
   exportToPdf(cattle: Cattle): void {
@@ -105,7 +106,7 @@ export class CattleExportService {
         format(new Date(treatment.date), 'dd/MM/yyyy', { locale: fr }),
         treatment.type,
         getMedicamentName(treatment.product.toString()),
-        treatment.dosage,
+        formatDosage(treatment.dosage),
         getVeterinarianName(treatment.veterinarian.toString()),
         treatment.notes || '-'
       ]);
