@@ -58,11 +58,13 @@ export interface Treatment {
   notes?: string;
 }
 
+import type { UserRole } from '@/constants/roles';
+
 export interface User {
   id: string; // Changed from number to string
   name: string;
   email: string;
-  role: 'super_admin' | 'owner_admin' | 'owner_user'; // Updated roles
+  role: UserRole; // Using imported type
   owner_id?: string; // New field
   is_active?: boolean; // New field
 }

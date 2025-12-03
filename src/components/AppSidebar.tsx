@@ -1,6 +1,7 @@
 import { Home, Beef, User, LogOut, Settings, LucideIcon } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
+import { isAdmin } from '@/constants/roles';
 import {
   Sidebar,
   SidebarContent,
@@ -123,7 +124,7 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {user?.role === 'admin' && (
+        {isAdmin(user?.role) && (
           <SidebarGroup>
             <SidebarGroupLabel className={collapsed ? "sr-only" : ""}>
               Administration

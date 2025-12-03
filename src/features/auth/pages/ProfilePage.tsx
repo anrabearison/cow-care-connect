@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { User, Mail, Shield, Edit3, Save, X } from 'lucide-react';
+import { getRoleLabel, getRoleColor } from '@/constants/roles';
 
 const ProfilePage = () => {
   const { user } = useAuth();
@@ -50,31 +51,7 @@ const ProfilePage = () => {
     setIsEditing(false);
   };
 
-  const getRoleColor = (role: string) => {
-    switch (role) {
-      case 'admin':
-        return 'bg-red-500/10 text-red-700 border-red-200';
-      case 'eleveur':
-        return 'bg-blue-500/10 text-blue-700 border-blue-200';
-      case 'veterinaire':
-        return 'bg-green-500/10 text-green-700 border-green-200';
-      default:
-        return 'bg-gray-500/10 text-gray-700 border-gray-200';
-    }
-  };
-
-  const getRoleLabel = (role: string) => {
-    switch (role) {
-      case 'admin':
-        return 'Administrateur';
-      case 'eleveur':
-        return 'Éleveur';
-      case 'veterinaire':
-        return 'Vétérinaire';
-      default:
-        return role;
-    }
-  };
+  // Role utility functions are now imported from constants/roles
 
   return (
     <div className="container mx-auto p-4 sm:p-6 max-w-4xl">
@@ -103,8 +80,8 @@ const ProfilePage = () => {
                   </CardDescription>
                 </div>
                 {!isEditing ? (
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     size="sm"
                     onClick={() => setIsEditing(true)}
                     className="w-full sm:w-auto"
@@ -114,8 +91,8 @@ const ProfilePage = () => {
                   </Button>
                 ) : (
                   <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
                       onClick={handleCancel}
                       className="w-full sm:w-auto order-2 sm:order-1"
@@ -123,7 +100,7 @@ const ProfilePage = () => {
                       <X className="h-4 w-4 mr-2" />
                       Annuler
                     </Button>
-                    <Button 
+                    <Button
                       size="sm"
                       onClick={handleSave}
                       className="w-full sm:w-auto order-1 sm:order-2"

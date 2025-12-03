@@ -20,15 +20,18 @@ import {
   ReferenceField,
 } from 'react-admin';
 import { EditToolbar, CreateToolbar, ConfirmDeleteButton } from '../components/ConfirmToolbars';
+import { USER_ROLES, ROLE_LABELS } from '@/constants/roles';
+
+// Role choices for select inputs
+const roleChoices = [
+  { id: USER_ROLES.SUPER_ADMIN, name: ROLE_LABELS[USER_ROLES.SUPER_ADMIN] },
+  { id: USER_ROLES.OWNER_ADMIN, name: ROLE_LABELS[USER_ROLES.OWNER_ADMIN] },
+  { id: USER_ROLES.OWNER_USER, name: ROLE_LABELS[USER_ROLES.OWNER_USER] },
+];
 
 const userFilters = [
   <TextInput source="q" label="Rechercher" alwaysOn />,
-  <TextInput source="q" label="Rechercher" alwaysOn />,
-  <SelectInput source="role" label="Rôle" choices={[
-    { id: 'super_admin', name: 'Super Admin' },
-    { id: 'owner_admin', name: 'Admin Propriétaire' },
-    { id: 'owner_user', name: 'Utilisateur' },
-  ]} />,
+  <SelectInput source="role" label="Rôle" choices={roleChoices} />,
 ];
 
 const DeleteButtonField = () => {
@@ -70,13 +73,12 @@ export const UserEdit = () => (
       <SelectInput
         source="role"
         label="Rôle"
-        choices={[
-          { id: 'admin', name: 'Administrateur' },
-          { id: 'manager', name: 'Gestionnaire' },
-          { id: 'viewer', name: 'Visiteur' },
-        ]}
+        choices={roleChoices}
         required
       />
+      <ReferenceInput source="owner_id" reference="owners" label="Propriétaire">
+        <SelectInput optionText="name" />
+      </ReferenceInput>
       <PasswordInput source="password" label="Nouveau mot de passe (optionnel)" />
     </SimpleForm>
   </Edit>
@@ -91,13 +93,12 @@ export const UserCreate = () => (
       <SelectInput
         source="role"
         label="Rôle"
-        choices={[
-          { id: 'admin', name: 'Administrateur' },
-          { id: 'manager', name: 'Gestionnaire' },
-          { id: 'viewer', name: 'Visiteur' },
-        ]}
+        choices={roleChoices}
         required
       />
+      <ReferenceInput source="owner_id" reference="owners" label="Propriétaire">
+        <SelectInput optionText="name" />
+      </ReferenceInput>
       <PasswordInput source="password" label="Mot de passe" required />
     </SimpleForm>
   </Create>
