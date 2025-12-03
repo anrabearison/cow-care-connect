@@ -71,6 +71,7 @@ export const authProvider: AuthProvider = {
         id: userData.id,
         fullName: userData.name,
         avatar: undefined,
+        owner: userData.owner?.name,
       });
     }
     return Promise.reject();
