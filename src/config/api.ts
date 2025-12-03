@@ -6,7 +6,7 @@ export const API_CONFIG = {
 
 
   // URLs des vraies APIs
-  BASE_URL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
+  BASE_URL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
 
   ENDPOINTS: {
     CATTLE: '/api/cattle',
@@ -17,7 +17,7 @@ export const API_CONFIG = {
   },
 
   // Configuration pour React Admin
-  ADMIN_API_URL: import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8000/api'
+  ADMIN_API_URL: import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:3000/api'
 };
 
 // Helper pour construire les URLs complètes

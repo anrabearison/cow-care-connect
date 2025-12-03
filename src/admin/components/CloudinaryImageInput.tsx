@@ -47,7 +47,7 @@ export const CloudinaryImageInput: React.FC<CloudinaryImageInputProps> = ({
 
             // Upload to backend
             const response = await axios.post(
-                'http://localhost:8000/api/upload/image',
+                'http://localhost:3000/api/upload/image',
                 formData,
                 {
                     headers: {
