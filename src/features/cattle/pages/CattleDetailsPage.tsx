@@ -358,23 +358,24 @@ export default function CattleDetailsPage() {
           <div className="lg:col-span-1 space-y-6">
             {/* Photo */}
             {/* Photo */}
-            <Card className="overflow-hidden shadow-farm">
+            <Card className="overflow-hidden shadow-farm border-none">
               <div
-                className="relative h-64 cursor-pointer group"
+                className="relative h-64 sm:h-80 cursor-pointer group"
                 onClick={() => setIsImageOpen(true)}
               >
                 <img
                   src={cattleImage}
                   alt={`Photo de ${cattle.name}`}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                  <span className="text-white bg-black/50 px-3 py-1 rounded-full text-sm backdrop-blur-sm">
+                  <span className="text-white bg-black/50 px-4 py-2 rounded-full text-sm backdrop-blur-sm font-medium flex items-center gap-2">
+                    <ExternalLink className="w-4 h-4" />
                     Agrandir
                   </span>
                 </div>
                 <div className="absolute top-4 right-4">
-                  <Badge className="bg-white/90 text-primary">
+                  <Badge className="bg-white/90 text-primary shadow-sm backdrop-blur-sm">
                     {cattle.gender === 'M' ? 'Mâle' : 'Femelle'}
                   </Badge>
                 </div>
@@ -384,19 +385,23 @@ export default function CattleDetailsPage() {
             {/* Lightbox Overlay */}
             {isImageOpen && (
               <div
-                className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4 animate-in fade-in duration-200"
+                className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4 animate-in fade-in duration-200 backdrop-blur-sm"
                 onClick={() => setIsImageOpen(false)}
               >
                 <button
-                  className="absolute top-4 right-4 text-white hover:text-gray-300 p-2 rounded-full bg-black/50 hover:bg-black/70 transition-colors"
-                  onClick={() => setIsImageOpen(false)}
+                  className="absolute top-4 right-4 text-white hover:text-gray-300 p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors z-50"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsImageOpen(false);
+                  }}
+                  aria-label="Fermer"
                 >
-                  <X className="h-8 w-8" />
+                  <X className="h-6 w-6 sm:h-8 sm:w-8" />
                 </button>
                 <img
                   src={cattleImage}
                   alt={`Photo de ${cattle.name}`}
-                  className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-200"
+                  className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-200"
                   onClick={(e) => e.stopPropagation()}
                 />
               </div>

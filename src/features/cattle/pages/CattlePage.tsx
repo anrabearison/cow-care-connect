@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
-import { Search, Filter, Users, Plus } from 'lucide-react';
+import { Search, Filter, Users, Plus, ChevronUp, ChevronDown } from 'lucide-react';
 import { CattleCard } from '@/features/cattle/components/CattleCard';
 import { Cattle } from '@/features/cattle/types';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -15,6 +15,7 @@ import { useCategories } from '@/features/common/hooks/useReferences';
 export default function CattlePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [genderFilter, setGenderFilter] = useState<string>('all');
   const [sourceFilter, setSourceFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
@@ -70,49 +71,56 @@ export default function CattlePage() {
     <div className="min-h-screen bg-gradient-earth">
       <div className="container mx-auto px-6 py-8">
         {/* Header */}
-        <div className="mb-8 flex justify-between items-start">
+        <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <div className="flex items-center space-x-3 mb-4">
-              <Users className="h-8 w-8 text-primary" />
-              <h1 className="text-4xl font-bold text-foreground">Gestion du Troupeau</h1>
+            <div className="flex items-center space-x-3 mb-2">
+              <Users className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+              <h1 className="text-2xl sm:text-4xl font-bold text-foreground">Gestion du Troupeau</h1>
             </div>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-sm sm:text-lg text-muted-foreground">
               Gérez et surveillez vos {total} animaux
             </p>
           </div>
-          <Button onClick={() => setIsAddModalOpen(true)} className="flex items-center gap-2">
+          <Button onClick={() => setIsAddModalOpen(true)} className="w-full sm:w-auto flex items-center justify-center gap-2">
             <Plus className="h-4 w-4" />
             Nouvel achat
           </Button>
         </div>
 
         {/* Filters */}
-        <Card className="mb-8 shadow-card-soft">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Filter className="h-5 w-5" />
-              <span>Filtres et recherche</span>
-            </CardTitle>
-            <CardDescription>
-              Recherchez et filtrez vos animaux selon vos critères
-            </CardDescription>
+        <Card className="mb-8 shadow-card-soft border-none bg-white/50 backdrop-blur-sm">
+          <CardHeader className="pb-4">
+            <div className="flex items-center justify-between cursor-pointer sm:cursor-default" onClick={() => setIsFiltersOpen(!isFiltersOpen)}>
+              <div className="space-y-1">
+                <CardTitle className="flex items-center space-x-2 text-xl">
+                  <Filter className="h-5 w-5 text-primary" />
+                  <span>Filtres et recherche</span>
+                </CardTitle>
+                <CardDescription className="hidden sm:block">
+                  Recherchez et filtrez vos animaux selon vos critères
+                </CardDescription>
+              </div>
+              <Button variant="ghost" size="sm" className="sm:hidden">
+                {isFiltersOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              </Button>
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <CardContent className={`${isFiltersOpen ? 'block' : 'hidden'} sm:block animate-in slide-in-from-top-2 duration-200`}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
               {/* Search */}
-              <div className="relative">
+              <div className="relative col-span-1 sm:col-span-2 lg:col-span-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Rechercher par nom ou ID..."
+                  placeholder="Rechercher..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 bg-white/80 border-primary/10 focus:border-primary/30 transition-all duration-300"
                 />
               </div>
 
               {/* Gender Filter */}
               <Select value={genderFilter} onValueChange={setGenderFilter}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-white/80 border-primary/10">
                   <SelectValue placeholder="Genre" />
                 </SelectTrigger>
                 <SelectContent>
@@ -124,7 +132,7 @@ export default function CattlePage() {
 
               {/* Category Filter */}
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-white/80 border-primary/10">
                   <SelectValue placeholder="Catégorie" />
                 </SelectTrigger>
                 <SelectContent>
@@ -139,7 +147,7 @@ export default function CattlePage() {
 
               {/* Source Filter */}
               <Select value={sourceFilter} onValueChange={setSourceFilter}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-white/80 border-primary/10">
                   <SelectValue placeholder="Source" />
                 </SelectTrigger>
                 <SelectContent>
@@ -153,7 +161,7 @@ export default function CattlePage() {
               <Button
                 variant="outline"
                 onClick={resetFilters}
-                className="border-primary/20 text-primary hover:bg-primary/5"
+                className="border-primary/20 text-primary hover:bg-primary/5 hover:text-primary transition-colors"
               >
                 Réinitialiser
               </Button>

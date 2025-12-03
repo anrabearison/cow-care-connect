@@ -27,22 +27,22 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-earth">
       {/* Hero Section */}
-      <div className="relative h-80 sm:h-96 lg:h-[48rem] xl:h-[56rem] 2xl:h-[64rem] overflow-hidden">
+      <div className="relative h-[50vh] sm:h-[60vh] lg:h-[70vh] min-h-[400px] overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center scale-105"
           style={{ backgroundImage: `url(${heroImage})` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/70 to-primary/30" />
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/80 to-primary/40" />
         <div className="relative z-10 flex items-center justify-center h-full text-white">
-          <div className="text-center max-w-4xl px-4 sm:px-6">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-4">
+          <div className="text-center max-w-4xl px-4 sm:px-6 animate-fadeInUp">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 tracking-tight drop-shadow-md">
               Bienvenue, {user?.name}
             </h1>
-            <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-6 sm:mb-8 opacity-90 px-2">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-8 sm:mb-10 opacity-95 px-2 font-light drop-shadow-sm max-w-2xl mx-auto">
               Gérez votre troupeau avec efficacité et suivez la santé de vos animaux
             </p>
             <Link to="/cattle">
-              <Button size="lg" className="bg-white/20 text-white border border-white/30 hover:bg-white/30 transition-all duration-300 text-sm sm:text-base">
+              <Button size="lg" className="bg-white text-primary hover:bg-white/90 transition-all duration-300 text-base sm:text-lg px-8 py-6 shadow-lg hover:shadow-xl hover:-translate-y-1 font-semibold rounded-full">
                 Voir le troupeau
               </Button>
             </Link>
@@ -50,76 +50,76 @@ export default function HomePage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 -mt-16 relative z-20">
         {/* Statistics Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
-          <Card className={`${CARD_HOVER_CLASSES} animate-fadeInUp opacity-0 hover:shadow-lg transition-all duration-300 hover:scale-105`}>
-            <CardContent className="p-4 sm:p-6">
-              <div className="flex items-center space-x-2 sm:space-x-4">
-                <div className="p-2 sm:p-3 bg-primary/10 rounded-full group-hover:bg-primary/20 transition-colors">
-                  <Users className="h-4 w-4 sm:h-6 sm:w-6 text-primary animate-pulse" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
+          <Card className={`${CARD_HOVER_CLASSES} animate-fadeInUp opacity-0 hover:shadow-xl transition-all duration-300 hover:scale-105 border-none shadow-lg bg-white/95 backdrop-blur-sm`}>
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-primary/10 rounded-full group-hover:bg-primary/20 transition-colors">
+                  <Users className="h-6 w-6 text-primary animate-pulse" />
                 </div>
                 <div>
                   {statsLoading ? (
                     <Skeleton className="h-8 w-12" />
                   ) : (
-                    <p className="text-xl sm:text-2xl font-bold">{stats?.totalCattle ?? 0}</p>
+                    <p className="text-2xl font-bold text-foreground">{stats?.totalCattle ?? 0}</p>
                   )}
-                  <p className="text-xs sm:text-sm text-muted-foreground">Animaux</p>
+                  <p className="text-sm text-muted-foreground font-medium">Animaux</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className={`${CARD_HOVER_CLASSES} animate-fadeInUp opacity-0 animation-delay-100 hover:shadow-lg transition-all duration-300 hover:scale-105`}>
-            <CardContent className="p-4 sm:p-6">
-              <div className="flex items-center space-x-2 sm:space-x-4">
-                <div className="p-2 sm:p-3 bg-accent/20 rounded-full group-hover:bg-accent/30 transition-colors">
-                  <TrendingUp className="h-4 w-4 sm:h-6 sm:w-6 text-primary animate-pulse animation-delay-100" />
+          <Card className={`${CARD_HOVER_CLASSES} animate-fadeInUp opacity-0 animation-delay-100 hover:shadow-xl transition-all duration-300 hover:scale-105 border-none shadow-lg bg-white/95 backdrop-blur-sm`}>
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-accent/20 rounded-full group-hover:bg-accent/30 transition-colors">
+                  <TrendingUp className="h-6 w-6 text-primary animate-pulse animation-delay-100" />
                 </div>
                 <div>
                   {statsLoading ? (
                     <Skeleton className="h-8 w-16" />
                   ) : (
-                    <p className="text-xl sm:text-2xl font-bold">{stats?.healthPercentage ?? 0}%</p>
+                    <p className="text-2xl font-bold text-foreground">{stats?.healthPercentage ?? 0}%</p>
                   )}
-                  <p className="text-xs sm:text-sm text-muted-foreground">Santé</p>
+                  <p className="text-sm text-muted-foreground font-medium">Santé</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className={`${CARD_HOVER_CLASSES} animate-fadeInUp opacity-0 animation-delay-200 hover:shadow-lg transition-all duration-300 hover:scale-105`}>
-            <CardContent className="p-4 sm:p-6">
-              <div className="flex items-center space-x-2 sm:space-x-4">
-                <div className="p-2 sm:p-3 bg-secondary/20 rounded-full group-hover:bg-secondary/30 transition-colors">
-                  <Activity className="h-4 w-4 sm:h-6 sm:w-6 text-primary animate-pulse animation-delay-200" />
+          <Card className={`${CARD_HOVER_CLASSES} animate-fadeInUp opacity-0 animation-delay-200 hover:shadow-xl transition-all duration-300 hover:scale-105 border-none shadow-lg bg-white/95 backdrop-blur-sm`}>
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-secondary/20 rounded-full group-hover:bg-secondary/30 transition-colors">
+                  <Activity className="h-6 w-6 text-primary animate-pulse animation-delay-200" />
                 </div>
                 <div>
                   {statsLoading ? (
                     <Skeleton className="h-8 w-12" />
                   ) : (
-                    <p className="text-xl sm:text-2xl font-bold">{stats?.totalEvents ?? 0}</p>
+                    <p className="text-2xl font-bold text-foreground">{stats?.totalEvents ?? 0}</p>
                   )}
-                  <p className="text-xs sm:text-sm text-muted-foreground">Événements</p>
+                  <p className="text-sm text-muted-foreground font-medium">Événements</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className={`${CARD_HOVER_CLASSES} animate-fadeInUp opacity-0 animation-delay-300 hover:shadow-lg transition-all duration-300 hover:scale-105`}>
-            <CardContent className="p-4 sm:p-6">
-              <div className="flex items-center space-x-2 sm:space-x-4">
-                <div className="p-2 sm:p-3 bg-muted/20 rounded-full group-hover:bg-muted/30 transition-colors">
-                  <Calendar className="h-4 w-4 sm:h-6 sm:w-6 text-primary animate-pulse animation-delay-300" />
+          <Card className={`${CARD_HOVER_CLASSES} animate-fadeInUp opacity-0 animation-delay-300 hover:shadow-xl transition-all duration-300 hover:scale-105 border-none shadow-lg bg-white/95 backdrop-blur-sm`}>
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-muted/20 rounded-full group-hover:bg-muted/30 transition-colors">
+                  <Calendar className="h-6 w-6 text-primary animate-pulse animation-delay-300" />
                 </div>
                 <div>
                   {statsLoading ? (
                     <Skeleton className="h-8 w-12" />
                   ) : (
-                    <p className="text-xl sm:text-2xl font-bold">{stats?.totalTreatments ?? 0}</p>
+                    <p className="text-2xl font-bold text-foreground">{stats?.totalTreatments ?? 0}</p>
                   )}
-                  <p className="text-xs sm:text-sm text-muted-foreground">Traitements</p>
+                  <p className="text-sm text-muted-foreground font-medium">Traitements</p>
                 </div>
               </div>
             </CardContent>
