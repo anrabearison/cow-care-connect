@@ -66,6 +66,7 @@ export interface User {
   email: string;
   role: UserRole; // Using imported type
   owner_id?: string; // New field
+  owner?: Owner; // New field for full owner details
   is_active?: boolean; // New field
 }
 

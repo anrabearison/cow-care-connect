@@ -91,7 +91,7 @@ export function AppSidebar() {
               <Beef className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h2 className="text-sm font-semibold">Gestion Élevage</h2>
+              <h2 className="text-sm font-semibold">{user?.owner?.name || "Gestion Élevage"}</h2>
               <p className="text-xs text-muted-foreground">{user?.name}</p>
             </div>
           </div>
