@@ -193,20 +193,47 @@ export default function CattleDetailsPage() {
   }
 
   // Handlers for adding treatments and events
-  const handleAddTreatment = (treatment: Omit<Treatment, 'id'>) => {
-    const newTreatment: Treatment = {
-      ...treatment,
-      id: Date.now()
-    };
-    setLocalTreatments([...localTreatments, newTreatment]);
+  // Handlers for adding treatments and events
+  const handleAddTreatment = async (treatment: Omit<Treatment, 'id'>) => {
+    if (!cattle) return;
+    try {
+      const response = await cattleService.createTreatment(cattle.id, treatment);
+      if (response.success && response.data) {
+        setLocalTreatments([...localTreatments, response.data]);
+        toast({
+          title: "Succès",
+          description: "Traitement ajouté avec succès",
+        });
+      }
+    } catch (error) {
+      console.error("Error adding treatment:", error);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Erreur lors de l'ajout du traitement",
+      });
+    }
   };
 
-  const handleAddEvent = (event: Omit<CattleEvent, 'id'>) => {
-    const newEvent: CattleEvent = {
-      ...event,
-      id: Date.now()
-    };
-    setLocalEvents([...localEvents, newEvent]);
+  const handleAddEvent = async (event: Omit<CattleEvent, 'id'>) => {
+    if (!cattle) return;
+    try {
+      const response = await cattleService.createEvent(cattle.id, event);
+      if (response.success && response.data) {
+        setLocalEvents([...localEvents, response.data]);
+        toast({
+          title: "Succès",
+          description: "Événement ajouté avec succès",
+        });
+      }
+    } catch (error) {
+      console.error("Error adding event:", error);
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Erreur lors de l'ajout de l'événement",
+      });
+    }
   };
 
   const handleAddBirth = async (calfData: Omit<Cattle, 'id' | 'events' | 'treatments'>) => {

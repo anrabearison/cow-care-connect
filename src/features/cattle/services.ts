@@ -1,4 +1,4 @@
-import { Cattle } from './types';
+import { Cattle, CattleEvent, Treatment } from './types';
 import { API_CONFIG } from '@/config/api';
 import { apiClient, ApiResponse } from '@/utils/apiClient';
 import { ErrorMessages } from '@/utils/errors';
@@ -140,6 +140,42 @@ class CattleService {
       };
     } catch (error: any) {
       console.error('Error registering birth:', error);
+      throw error;
+    }
+  }
+
+  async createEvent(cattleId: string, event: Omit<CattleEvent, 'id'>): Promise<ApiResponse<CattleEvent>> {
+    try {
+      const payload = {
+        ...event,
+        cattleId
+      };
+      const result = await apiClient.post<CattleEvent>(API_CONFIG.ENDPOINTS.EVENTS, payload);
+      return {
+        data: result,
+        success: true,
+        message: 'Événement créé avec succès'
+      };
+    } catch (error: any) {
+      console.error('Error creating event:', error);
+      throw error;
+    }
+  }
+
+  async createTreatment(cattleId: string, treatment: Omit<Treatment, 'id'>): Promise<ApiResponse<Treatment>> {
+    try {
+      const payload = {
+        ...treatment,
+        cattleId
+      };
+      const result = await apiClient.post<Treatment>(API_CONFIG.ENDPOINTS.TREATMENTS, payload);
+      return {
+        data: result,
+        success: true,
+        message: 'Traitement créé avec succès'
+      };
+    } catch (error: any) {
+      console.error('Error creating treatment:', error);
       throw error;
     }
   }
