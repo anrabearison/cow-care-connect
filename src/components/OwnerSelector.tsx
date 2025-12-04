@@ -54,12 +54,22 @@ export const OwnerSelector = () => {
 
         // Invalidate all queries to refetch with new owner filter
         queryClient.invalidateQueries();
+
+        // Refresh the page to ensure all data is updated
+        setTimeout(() => {
+            window.location.reload();
+        }, 100);
     };
 
     const handleClearSelection = () => {
         setSelectedOwnerId(null);
         setSelectedOwnerName(null);
         queryClient.invalidateQueries();
+
+        // Refresh the page to ensure all data is updated
+        setTimeout(() => {
+            window.location.reload();
+        }, 100);
     };
 
     if (user?.role !== 'super_admin') {
