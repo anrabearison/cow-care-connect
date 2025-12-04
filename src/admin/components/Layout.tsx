@@ -2,6 +2,7 @@ import React from 'react';
 import { Layout as RALayout, AppBar, UserMenu, MenuItemLink, Logout, useGetIdentity } from 'react-admin';
 import { Settings, HelpCircle, ArrowLeft } from 'lucide-react';
 import { AdminBreadcrumb } from './AdminBreadcrumb';
+import { OwnerSelector } from './OwnerSelector';
 
 const CustomUserMenu = () => (
   <UserMenu>
@@ -33,6 +34,7 @@ const CustomAppBar = () => {
         <span className="hidden sm:inline">Front Office</span>
       </a>
       <span className="flex-1" />
+      <OwnerSelector />
       {/* @ts-ignore - owner property added in authProvider */}
       {identity?.owner && (
         <span className="mr-4 text-sm font-medium text-white/90 hidden sm:inline-block">

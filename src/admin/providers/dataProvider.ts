@@ -2,6 +2,13 @@ import { DataProvider, fetchUtils } from 'react-admin';
 import { stringify } from 'qs';
 import { API_CONFIG } from '@/config/api';
 
+// Global getter for selected owner ID (will be set by AdminApp)
+let getSelectedOwnerIdFn: (() => string | null) | null = null;
+
+export const setOwnerIdGetter = (fn: () => string | null) => {
+  getSelectedOwnerIdFn = fn;
+};
+
 
 
 
@@ -57,12 +64,16 @@ const realDataProvider: DataProvider = {
   getList: (resource, params) => {
     const { page, perPage } = params.pagination;
     const { field, order } = params.sort;
+
+    // Add owner_id if available (for super admin)
+    const selectedOwnerId = getSelectedOwnerIdFn?.();
     const query = {
       page,
       per_page: perPage,
       sort: field,
       order: order,
       ...params.filter,
+      ...(selectedOwnerId && { owner_id: selectedOwnerId }),
     };
     const url = `${apiUrl}/${getResourcePath(resource)}?${stringify(query)}`;
 
@@ -72,13 +83,24 @@ const realDataProvider: DataProvider = {
     }));
   },
 
-  getOne: (resource, params) =>
-    httpClient(`${apiUrl}/${getResourcePath(resource)}/${params.id}`).then(({ json }) => ({
+  getOne: (resource, params) => {
+    const selectedOwnerId = getSelectedOwnerIdFn?.();
+    const query = selectedOwnerId ? stringify({ owner_id: selectedOwnerId }) : '';
+    const url = `${apiUrl}/${getResourcePath(resource)}/${params.id}${query ? `?${query}` : ''}`;
+    return httpClient(url).then(({ json }) => ({
       data: json,
-    })),
+    }));
+  },
 
   getMany: (resource, params) => {
-    const query = stringify({ id: params.ids }, { arrayFormat: 'repeat' });
+    const selectedOwnerId = getSelectedOwnerIdFn?.();
+    const query = stringify(
+      {
+        id: params.ids,
+        ...(selectedOwnerId && { owner_id: selectedOwnerId }),
+      },
+      { arrayFormat: 'repeat' }
+    );
     const url = `${apiUrl}/${getResourcePath(resource)}?${query}`;
     return httpClient(url).then(({ json }) => ({ data: json.data || json }));
   },
@@ -86,6 +108,9 @@ const realDataProvider: DataProvider = {
   getManyReference: (resource, params) => {
     const { page, perPage } = params.pagination;
     const { field, order } = params.sort;
+
+    // Add owner_id if available (for super admin)
+    const selectedOwnerId = getSelectedOwnerIdFn?.();
     const query = {
       page,
       per_page: perPage,
@@ -93,6 +118,7 @@ const realDataProvider: DataProvider = {
       order: order,
       ...params.filter,
       [params.target]: params.id,
+      ...(selectedOwnerId && { owner_id: selectedOwnerId }),
     };
     const url = `${apiUrl}/${getResourcePath(resource)}?${stringify(query)}`;
 
@@ -106,7 +132,11 @@ const realDataProvider: DataProvider = {
     // Transform cattle data before sending
     const data = resource === 'cattle' ? transformCattleData(params.data) : params.data;
 
-    return httpClient(`${apiUrl}/${getResourcePath(resource)}/${params.id}`, {
+    const selectedOwnerId = getSelectedOwnerIdFn?.();
+    const query = selectedOwnerId ? stringify({ owner_id: selectedOwnerId }) : '';
+    const url = `${apiUrl}/${getResourcePath(resource)}/${params.id}${query ? `?${query}` : ''}`;
+
+    return httpClient(url, {
       method: 'PUT',
       body: JSON.stringify(data),
     }).then(({ json }) => ({ data: json }));
@@ -134,10 +164,15 @@ const realDataProvider: DataProvider = {
   },
 
 
-  delete: (resource, params) =>
-    httpClient(`${apiUrl}/${getResourcePath(resource)}/${params.id}`, {
+  delete: (resource, params) => {
+    const selectedOwnerId = getSelectedOwnerIdFn?.();
+    const query = selectedOwnerId ? stringify({ owner_id: selectedOwnerId }) : '';
+    const url = `${apiUrl}/${getResourcePath(resource)}/${params.id}${query ? `?${query}` : ''}`;
+
+    return httpClient(url, {
       method: 'DELETE',
-    }).then(({ json }) => ({ data: json })),
+    }).then(({ json }) => ({ data: json }));
+  },
 
   deleteMany: (resource, params) => {
     const query = stringify({ id: params.ids }, { arrayFormat: 'repeat' });

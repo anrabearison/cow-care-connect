@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Admin, Resource } from 'react-admin';
 import {
     Agriculture,
@@ -16,7 +16,9 @@ import {
 import { isSuperAdmin } from '@/constants/roles';
 
 import { dataProvider as apiDataProvider } from './providers/dataProvider';
+import { setOwnerIdGetter } from './providers/dataProvider';
 import { authProvider } from './providers/authProvider';
+import { OwnerSelectionProvider, useOwnerSelection } from './contexts/OwnerSelectionContext';
 import { CattleCreate, CattleEdit, CattleList, CattleShow } from './resources/cattle';
 import { UserCreate, UserEdit, UserList, UserShow } from './resources/users';
 import { VeterinarianCreate, VeterinarianEdit, VeterinarianList, VeterinarianShow } from './resources/veterinarians';
@@ -45,9 +47,15 @@ const defaultOptions = {
     mutationMode: 'pessimistic' as const,
 };
 
-export const AdminApp: React.FC = () => {
-    // Sélection du data provider
+// Internal component that has access to the context
+const AdminAppContent: React.FC = () => {
+    const { selectedOwnerId } = useOwnerSelection();
     const dataProvider = apiDataProvider;
+
+    // Connect the context to the dataProvider
+    useEffect(() => {
+        setOwnerIdGetter(() => selectedOwnerId);
+    }, [selectedOwnerId]);
 
     return (
         <Admin
@@ -167,5 +175,13 @@ export const AdminApp: React.FC = () => {
                 </>
             )}
         </Admin>
+    );
+};
+
+export const AdminApp: React.FC = () => {
+    return (
+        <OwnerSelectionProvider>
+            <AdminAppContent />
+        </OwnerSelectionProvider>
     );
 };
