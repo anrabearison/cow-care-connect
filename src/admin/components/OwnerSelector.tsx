@@ -69,7 +69,13 @@ export const OwnerSelector: React.FC = () => {
             >
                 <Select
                     value={selectedOwnerId || ''}
-                    onChange={(e) => setSelectedOwnerId(e.target.value || null)}
+                    onChange={(e) => {
+                        setSelectedOwnerId(e.target.value || null);
+                        // Refresh the page to ensure all data is updated
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 100);
+                    }}
                     disabled={loading}
                     displayEmpty
                     sx={{
@@ -94,7 +100,13 @@ export const OwnerSelector: React.FC = () => {
                 <Chip
                     label={selectedOwner.name}
                     size="small"
-                    onDelete={() => setSelectedOwnerId(null)}
+                    onDelete={() => {
+                        setSelectedOwnerId(null);
+                        // Refresh the page to ensure all data is updated
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 100);
+                    }}
                     deleteIcon={<Close sx={{ fontSize: 16 }} />}
                     sx={{
                         bgcolor: 'rgba(255, 255, 255, 0.2)',

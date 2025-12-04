@@ -29,10 +29,23 @@ import {
   required,
   RaRecord,
   ShowButton,
+  CreateButton,
+  ExportButton,
+  FilterButton,
+  TopToolbar,
 } from 'react-admin';
 import { CloudinaryImageInput } from '../components/CloudinaryImageInput';
 import { EditToolbar, CreateToolbar, ConfirmDeleteButton } from '../components/ConfirmToolbars';
 import { Cattle } from '../../features/cattle/types';
+
+// Custom ListActions without RefreshButton
+const ListActions = () => (
+  <TopToolbar>
+    <FilterButton />
+    <CreateButton />
+    <ExportButton />
+  </TopToolbar>
+);
 
 // Delete button component with confirmation
 const DeleteButtonField = () => {
@@ -67,7 +80,7 @@ const cattleFilters = [
 
 // Liste des bovins
 export const CattleList = () => (
-  <List filters={cattleFilters}>
+  <List filters={cattleFilters} actions={<ListActions />}>
     <Datagrid rowClick="edit">
       <TextField source="id" label="ID" />
       <TextField source="name" label="Nom" />
