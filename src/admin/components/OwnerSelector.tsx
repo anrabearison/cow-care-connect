@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDataProvider, usePermissions } from 'react-admin';
-import { Select, MenuItem, FormControl, InputLabel, Box, Chip } from '@mui/material';
-import { Business } from '@mui/icons-material';
+import { Select, MenuItem, FormControl, Box, Chip, IconButton } from '@mui/material';
+import { Business, Close } from '@mui/icons-material';
 import { isSuperAdmin } from '@/constants/roles';
 import { useOwnerSelection } from '../contexts/OwnerSelectionContext';
 
@@ -44,16 +44,41 @@ export const OwnerSelector: React.FC = () => {
     const selectedOwner = owners.find(o => o.id === selectedOwnerId);
 
     return (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mr: 2 }}>
-            <FormControl size="small" sx={{ minWidth: 250 }}>
-                <InputLabel id="owner-selector-label">Propriétaire</InputLabel>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mr: 2 }}>
+            <Business sx={{ color: 'white', fontSize: 20 }} />
+            <FormControl
+                size="small"
+                sx={{
+                    minWidth: 220,
+                    '& .MuiOutlinedInput-root': {
+                        color: 'white',
+                        '& fieldset': {
+                            borderColor: 'rgba(255, 255, 255, 0.3)',
+                        },
+                        '&:hover fieldset': {
+                            borderColor: 'rgba(255, 255, 255, 0.5)',
+                        },
+                        '&.Mui-focused fieldset': {
+                            borderColor: 'rgba(255, 255, 255, 0.7)',
+                        },
+                    },
+                    '& .MuiSvgIcon-root': {
+                        color: 'white',
+                    },
+                }}
+            >
                 <Select
-                    labelId="owner-selector-label"
                     value={selectedOwnerId || ''}
                     onChange={(e) => setSelectedOwnerId(e.target.value || null)}
-                    label="Propriétaire"
                     disabled={loading}
-                    startAdornment={<Business sx={{ mr: 1, color: 'action.active' }} />}
+                    displayEmpty
+                    sx={{
+                        color: 'white',
+                        fontSize: '0.875rem',
+                        '& .MuiSelect-select': {
+                            py: 1,
+                        },
+                    }}
                 >
                     <MenuItem value="">
                         <em>Tous les propriétaires</em>
@@ -67,10 +92,20 @@ export const OwnerSelector: React.FC = () => {
             </FormControl>
             {selectedOwner && (
                 <Chip
-                    label={`Vue: ${selectedOwner.name}`}
-                    color="primary"
+                    label={selectedOwner.name}
                     size="small"
                     onDelete={() => setSelectedOwnerId(null)}
+                    deleteIcon={<Close sx={{ fontSize: 16 }} />}
+                    sx={{
+                        bgcolor: 'rgba(255, 255, 255, 0.2)',
+                        color: 'white',
+                        '& .MuiChip-deleteIcon': {
+                            color: 'rgba(255, 255, 255, 0.7)',
+                            '&:hover': {
+                                color: 'white',
+                            },
+                        },
+                    }}
                 />
             )}
         </Box>
