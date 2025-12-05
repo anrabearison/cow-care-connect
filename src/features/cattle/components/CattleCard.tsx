@@ -71,12 +71,14 @@ export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
         </div>
 
         <div className="space-y-3 mb-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Catégorie</span>
-            <Badge className={getCategoryColor(cattle.category.name)}>
-              {cattle.category.name}
-            </Badge>
-          </div>
+          {cattle.category && (
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Catégorie</span>
+              <Badge className={getCategoryColor(cattle.category.name)}>
+                {cattle.category.name}
+              </Badge>
+            </div>
+          )}
           {cattle.character && (
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Caractère</span>
@@ -98,12 +100,14 @@ export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
             </div>
           )}
 
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Statut</span>
-            <Badge className={`text-xs ${getStatusColor(cattle.status.name)}`}>
-              {cattle.status.name}
-            </Badge>
-          </div>
+          {cattle.status && (
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Statut</span>
+              <Badge className={`text-xs ${getStatusColor(cattle.status.name)}`}>
+                {cattle.status.name}
+              </Badge>
+            </div>
+          )}
 
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Source</span>
