@@ -13,7 +13,10 @@ import { AddPurchaseModal } from '@/features/cattle/components/AddPurchaseModal'
 import { useCategories } from '@/features/common/hooks/useReferences';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useOwnerSelection } from '@/contexts/OwnerSelectionContext';
+import { useHerdBookSelection } from '@/contexts/HerdBookSelectionContext';
+import { HerdBookSelector } from '@/components/HerdBookSelector';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { BookOpen } from 'lucide-react';
 
 export default function CattlePage() {
   const { user } = useAuth();
@@ -45,7 +48,13 @@ export default function CattlePage() {
     per_page: itemsPerPage,
   }), [searchTerm, genderFilter, categoryFilter, sourceFilter, currentPage]);
 
-  const { cattle, loading: isLoading, total } = useCattle(filters);
+  // Get selected HerdBook from context
+  const { selectedHerdBookId, selectedHerdBook, isLoading: herdBookLoading } = useHerdBookSelection();
+
+  const { cattle, loading: isLoading, total } = useCattle(
+    selectedHerdBookId || '',
+    filters
+  );
   const createCattleMutation = useCreateCattle();
 
   // Memoize reset filters function
@@ -112,6 +121,13 @@ export default function CattlePage() {
             </Tooltip>
           </TooltipProvider>
         </div>
+
+        {/* HerdBook Selector - NOUVEAU */}
+        <Card className="mb-6 shadow-card-soft border-none bg-white/50 backdrop-blur-sm">
+          <CardContent className="p-6">
+            <HerdBookSelector />
+          </CardContent>
+        </Card>
 
         {/* Filters */}
         <Card className="mb-8 shadow-card-soft border-none bg-white/50 backdrop-blur-sm">
@@ -207,8 +223,24 @@ export default function CattlePage() {
           </p>
         </div>
 
-        {/* Cattle Grid */}
-        {isLoading ? (
+        {/* Cattle Grid - Conditional on HerdBook selection */}
+        {!selectedHerdBookId ? (
+          <Card className="text-center py-12 bg-white/50 backdrop-blur-sm">
+            <CardContent>
+              <div className="flex flex-col items-center gap-4">
+                <BookOpen className="h-16 w-16 text-muted-foreground" />
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">
+                    Sélectionnez un livre de troupeau
+                  </h3>
+                  <p className="text-muted-foreground">
+                    Veuillez sélectionner un livre de troupeau ci-dessus pour voir les bœufs
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ) : isLoading || herdBookLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {Array.from({ length: itemsPerPage }).map((_, index) => (
               <Card key={index} className="overflow-hidden">

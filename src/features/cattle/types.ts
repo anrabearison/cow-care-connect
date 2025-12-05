@@ -8,18 +8,9 @@ export interface Cattle {
     id: string;
     name: string;
   };
-  category: {
-    id: string;
-    name: string;
-  };
   brand?: string;
-  herdBookNumber?: number;
   distinctiveSign?: string;
   photo?: string;
-  status: {
-    id: string;
-    name: string;
-  };
   source: {
     type: 'Acheté' | 'Né dans le troupeau';
     supplier?: string;
@@ -33,6 +24,22 @@ export interface Cattle {
   };
   events: CattleEvent[];
   treatments: Treatment[];
+}
+
+// Type enrichi pour l'affichage avec informations du HerdBook
+export interface CattleWithHerdBookInfo extends Cattle {
+  // Informations du HerdBook courant (enrichies par le backend ou le frontend)
+  n_carnet?: string;
+  category: {
+    id: string;
+    name: string;
+  };
+  status: {
+    id: string;
+    name: string;
+  };
+  herd_book_year?: number;
+  herdBookNumber?: number; // Deprecated, use n_carnet
 }
 
 export interface CattleEvent {

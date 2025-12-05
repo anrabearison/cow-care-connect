@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AuthProvider } from "@/features/auth/AuthContext";
 import { OwnerSelectionProvider, useOwnerSelection } from "@/contexts/OwnerSelectionContext";
+import { HerdBookSelectionProvider } from "@/contexts/HerdBookSelectionContext";
 import { setOwnerIdGetter } from "@/utils/apiClient";
 import { PrivateRoute } from "@/components/PrivateRoute";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -113,7 +114,9 @@ const App = () => (
       <Sonner />
       <AuthProvider>
         <OwnerSelectionProvider>
-          <AppContent />
+          <HerdBookSelectionProvider>
+            <AppContent />
+          </HerdBookSelectionProvider>
         </OwnerSelectionProvider>
       </AuthProvider>
     </TooltipProvider>
