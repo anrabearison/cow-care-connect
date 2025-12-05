@@ -13,22 +13,22 @@ export const herdBookService = {
      * Get list of herd books with optional filters
      */
     getHerdBookList: async (filters?: HerdBookFilters) => {
-        return apiClient.get<{ data: HerdBook[]; total: number }>('/herd-books', { params: filters });
+        return apiClient.get<{ data: HerdBook[]; total: number }>('/api/v1/herd-books', filters);
     },
 
     /**
      * Get herd books by owner ID
      */
     getHerdBooksByOwner: async (ownerId?: string) => {
-        const params = ownerId ? { owner_id: ownerId } : {};
-        return apiClient.get<{ data: HerdBook[]; total: number }>('/herd-books', { params });
+        const params = ownerId ? { owner_id: ownerId } : undefined;
+        return apiClient.get<{ data: HerdBook[]; total: number }>('/api/v1/herd-books', params);
     },
 
     /**
      * Get a single herd book by ID
      */
     getHerdBookById: async (id: string) => {
-        return apiClient.get<HerdBook>(`/herd-books/${id}`);
+        return apiClient.get<HerdBook>(`/api/v1/herd-books/${id}`);
     },
 
     /**
@@ -40,7 +40,7 @@ export const herdBookService = {
         owner_id?: string;
         description?: string;
     }) => {
-        return apiClient.post<HerdBook>('/herd-books', data);
+        return apiClient.post<HerdBook>('/api/v1/herd-books', data);
     },
 
     /**
@@ -51,14 +51,14 @@ export const herdBookService = {
         reference?: string;
         description?: string;
     }) => {
-        return apiClient.put<HerdBook>(`/herd-books/${id}`, data);
+        return apiClient.put<HerdBook>(`/api/v1/herd-books/${id}`, data);
     },
 
     /**
      * Delete a herd book
      */
     deleteHerdBook: async (id: string) => {
-        return apiClient.delete(`/herd-books/${id}`);
+        return apiClient.delete(`/api/v1/herd-books/${id}`);
     },
 
     /**
@@ -66,7 +66,7 @@ export const herdBookService = {
      */
     getCattleInHerdBook: async (herdBookId: string, page = 1, perPage = 10) => {
         return apiClient.get<{ data: HerdBookCattleWithDetails[]; total: number }>(
-            `/herd-books/${herdBookId}/cattle`,
+            `/api/v1/herd-books/${herdBookId}/cattle`,
             { params: { page, per_page: perPage } }
         );
     },
@@ -76,7 +76,7 @@ export const herdBookService = {
      */
     getCattleHistory: async (cattleId: string) => {
         return apiClient.get<{ data: HerdBookCattleWithDetails[] }>(
-            `/herd-book-cattle/cattle/${cattleId}/history`
+            `/api/v1/herd-book-cattle/cattle/${cattleId}/history`
         );
     },
 
@@ -89,7 +89,7 @@ export const herdBookService = {
         category_id: string;
         status_id: string;
     }) => {
-        return apiClient.post<HerdBookCattle>(`/herd-books/${herdBookId}/cattle`, data);
+        return apiClient.post<HerdBookCattle>(`/api/v1/herd-books/${herdBookId}/cattle`, data);
     },
 
     /**
@@ -100,13 +100,13 @@ export const herdBookService = {
         category_id?: string;
         status_id?: string;
     }) => {
-        return apiClient.put<HerdBookCattle>(`/herd-book-cattle/cattle/${registrationId}`, data);
+        return apiClient.put<HerdBookCattle>(`/api/v1/herd-book-cattle/cattle/${registrationId}`, data);
     },
 
     /**
      * Unregister a cattle from a herd book
      */
     unregisterCattle: async (registrationId: string) => {
-        return apiClient.delete(`/herd-book-cattle/cattle/${registrationId}`);
+        return apiClient.delete(`/api/v1/herd-book-cattle/cattle/${registrationId}`);
     },
 };

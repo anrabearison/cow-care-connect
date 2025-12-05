@@ -12,6 +12,7 @@ export const useHerdBooks = (ownerId?: string) => {
             const response = await herdBookService.getHerdBooksByOwner(ownerId);
             return response;
         },
+        enabled: !!ownerId, // Ne charger que si on a un ownerId
         staleTime: 5 * 60 * 1000, // 5 minutes
     });
 };

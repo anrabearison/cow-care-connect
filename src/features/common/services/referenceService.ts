@@ -34,7 +34,7 @@ class ReferenceService {
     }
 
     async getCategories(): Promise<ApiResponse<ReferenceItem[]>> {
-        return this.fetchData<ReferenceItem[]>('/api/categories', 'Erreur chargement catégories');
+        return this.fetchData<ReferenceItem[]>('/api/v1/categories', 'Erreur chargement catégories');
     }
 
     async getCharacters(): Promise<ApiResponse<ReferenceItem[]>> {

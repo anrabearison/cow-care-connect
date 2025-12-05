@@ -29,7 +29,7 @@ export const OwnerSelector = () => {
         if (user?.role === 'super_admin') {
             setLoading(true);
             apiClient
-                .get<{ data: Owner[] }>('/api/owners')
+                .get<{ data: Owner[] }>('/api/v1/owners')
                 .then((response) => {
                     setOwners(response.data);
                 })

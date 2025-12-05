@@ -5,14 +5,26 @@ import { useToast } from '@/hooks/use-toast';
 
 /**
  * Hook to fetch list of cattle with filters
+ * @param herdBookId - Required HerdBook ID to filter cattle
+ * @param filters - Additional filters
  */
-export const useCattle = (filters?: CattleFilters) => {
+export const useCattle = (herdBookId: string, filters?: Omit<CattleFilters, 'herd_book_id'>) => {
   const { toast } = useToast();
 
+  // Merge herdBookId with other filters
+  const allFilters: CattleFilters & { herd_book_id?: string } = {
+    ...filters,
+    herd_book_id: herdBookId,
+  };
+
   const query = useQuery({
-    queryKey: ['cattle', filters],
+    queryKey: ['cattle', herdBookId, filters],
     queryFn: async () => {
-      const response = await cattleService.getCattleList(filters);
+      if (!herdBookId) {
+        throw new Error('HerdBook ID requis');
+      }
+
+      const response = await cattleService.getCattleList(allFilters);
 
       if (!response.success) {
         toast({
@@ -28,6 +40,7 @@ export const useCattle = (filters?: CattleFilters) => {
         total: response.total || response.data.length
       };
     },
+    enabled: !!herdBookId,
     retry: 1,
   });
 

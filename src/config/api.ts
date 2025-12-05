@@ -9,15 +9,15 @@ export const API_CONFIG = {
   BASE_URL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
 
   ENDPOINTS: {
-    CATTLE: '/api/cattle',
-    USERS: '/api/users',
-    AUTH: '/api/auth',
-    EVENTS: '/api/events',
-    TREATMENTS: '/api/treatments'
+    CATTLE: '/api/v1/cattle',
+    USERS: '/api/v1/users',
+    AUTH: '/api/v1/auth',
+    EVENTS: '/api/v1/events',
+    TREATMENTS: '/api/v1/treatments'
   },
 
   // Configuration pour React Admin
-  ADMIN_API_URL: import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:3000/api'
+  ADMIN_API_URL: import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:3000/api/v1'
 };
 
 // Helper pour construire les URLs complètes
