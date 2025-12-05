@@ -45,7 +45,7 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
     // Update selected medicament when product changes
     useEffect(() => {
         if (formData.product) {
-            const med = medicaments.find(m => m.id.toString() === formData.product);
+            const med = medicaments.find(m => m.id === formData.product);
             setSelectedMedicament(med || null);
 
             // Set default unit if available
@@ -143,16 +143,22 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                         <div className="grid gap-2">
                             <Label htmlFor="product">Médicament *</Label>
                             <Select
-                                value={formData.product.toString()}
-                                onValueChange={(value) => setFormData({ ...formData, product: value })}
+                                value={formData.product}
+                                onValueChange={(value) => {
+                                    console.log('Selected medicament ID:', value);
+                                    setFormData({ ...formData, product: value });
+                                }}
                                 disabled={loading}
                             >
                                 <SelectTrigger id="product">
                                     <SelectValue placeholder={loading ? "Chargement..." : "Sélectionner un médicament"} />
                                 </SelectTrigger>
                                 <SelectContent>
+                                    {medicaments.length === 0 && !loading && (
+                                        <div className="p-2 text-sm text-muted-foreground">Aucun médicament disponible</div>
+                                    )}
                                     {medicaments.map((medicament) => (
-                                        <SelectItem key={medicament.id} value={medicament.id.toString()}>
+                                        <SelectItem key={medicament.id} value={medicament.id}>
                                             {medicament.nom}
                                         </SelectItem>
                                     ))}
@@ -227,16 +233,22 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                         <div className="grid gap-2">
                             <Label htmlFor="veterinarian">Intervenant *</Label>
                             <Select
-                                value={formData.veterinarian.toString()}
-                                onValueChange={(value) => setFormData({ ...formData, veterinarian: value })}
+                                value={formData.veterinarian}
+                                onValueChange={(value) => {
+                                    console.log('Selected veterinarian ID:', value);
+                                    setFormData({ ...formData, veterinarian: value });
+                                }}
                                 disabled={loading}
                             >
                                 <SelectTrigger id="veterinarian">
                                     <SelectValue placeholder={loading ? "Chargement..." : "Sélectionner un intervenant"} />
                                 </SelectTrigger>
                                 <SelectContent>
+                                    {veterinarians.length === 0 && !loading && (
+                                        <div className="p-2 text-sm text-muted-foreground">Aucun intervenant disponible</div>
+                                    )}
                                     {veterinarians.map((vet) => (
-                                        <SelectItem key={vet.id} value={vet.id.toString()}>
+                                        <SelectItem key={vet.id} value={vet.id}>
                                             {vet.nom}
                                         </SelectItem>
                                     ))}
