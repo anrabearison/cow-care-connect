@@ -20,6 +20,7 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
     const { toast } = useToast();
     const [categories, setCategories] = useState<{ id: string, name: string }[]>([]);
     const [characters, setCharacters] = useState<{ id: string, name: string }[]>([]);
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
     const [formData, setFormData] = useState({
         name: '',
@@ -74,15 +75,22 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
         }
     }, [open, toast]);
 
+    const validateForm = () => {
+        const newErrors: Record<string, string> = {};
+
+        if (!formData.name) newErrors.name = "Le nom est obligatoire";
+        if (!formData.gender) newErrors.gender = "Le sexe est obligatoire";
+        if (!formData.birthDate) newErrors.birthDate = "La date de naissance est obligatoire";
+        if (!formData.category) newErrors.category = "La catégorie est obligatoire";
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!formData.name || !formData.gender || !formData.birthDate || !formData.category) {
-            toast({
-                variant: "destructive",
-                title: "Erreur",
-                description: "Veuillez remplir tous les champs obligatoires"
-            });
+        if (!validateForm()) {
             return;
         }
 
@@ -143,6 +151,7 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
             purchaseHealthStatus: '',
             purchaseNotes: ''
         });
+        setErrors({});
     };
 
     return (
@@ -165,9 +174,13 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                     <Input
                                         id="name"
                                         value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        required
+                                        onChange={(e) => {
+                                            setFormData({ ...formData, name: e.target.value });
+                                            if (errors.name) setErrors({ ...errors, name: '' });
+                                        }}
+                                        className={errors.name ? 'border-red-500' : ''}
                                     />
+                                    {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="nickname">Surnom</Label>
@@ -181,9 +194,12 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                     <Label htmlFor="gender">Sexe *</Label>
                                     <Select
                                         value={formData.gender}
-                                        onValueChange={(value) => setFormData({ ...formData, gender: value as 'M' | 'F' })}
+                                        onValueChange={(value) => {
+                                            setFormData({ ...formData, gender: value as 'M' | 'F' });
+                                            if (errors.gender) setErrors({ ...errors, gender: '' });
+                                        }}
                                     >
-                                        <SelectTrigger id="gender">
+                                        <SelectTrigger id="gender" className={errors.gender ? 'border-red-500' : ''}>
                                             <SelectValue placeholder="Sélectionner" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -191,14 +207,18 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                             <SelectItem value="F">Femelle</SelectItem>
                                         </SelectContent>
                                     </Select>
+                                    {errors.gender && <p className="text-sm text-red-500">{errors.gender}</p>}
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="category">Catégorie *</Label>
                                     <Select
                                         value={formData.category}
-                                        onValueChange={(value) => setFormData({ ...formData, category: value })}
+                                        onValueChange={(value) => {
+                                            setFormData({ ...formData, category: value });
+                                            if (errors.category) setErrors({ ...errors, category: '' });
+                                        }}
                                     >
-                                        <SelectTrigger id="category">
+                                        <SelectTrigger id="category" className={errors.category ? 'border-red-500' : ''}>
                                             <SelectValue placeholder="Sélectionner" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -209,6 +229,7 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                             ))}
                                         </SelectContent>
                                     </Select>
+                                    {errors.category && <p className="text-sm text-red-500">{errors.category}</p>}
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="birthDate">Date de naissance *</Label>
@@ -216,9 +237,13 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                         id="birthDate"
                                         type="date"
                                         value={formData.birthDate}
-                                        onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
-                                        required
+                                        onChange={(e) => {
+                                            setFormData({ ...formData, birthDate: e.target.value });
+                                            if (errors.birthDate) setErrors({ ...errors, birthDate: '' });
+                                        }}
+                                        className={errors.birthDate ? 'border-red-500' : ''}
                                     />
+                                    {errors.birthDate && <p className="text-sm text-red-500">{errors.birthDate}</p>}
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="character">Caractère</Label>

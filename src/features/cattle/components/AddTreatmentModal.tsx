@@ -17,6 +17,7 @@ interface AddTreatmentModalProps {
 }
 
 export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOpenChange, onAdd, cattleName }) => {
+    const [errors, setErrors] = useState<Record<string, string>>({});
     const [formData, setFormData] = useState({
         type: '' as Treatment['type'],
         date: new Date().toISOString().split('T')[0],
@@ -75,9 +76,22 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
         }
     }, [selectedMedicament, animalWeight]);
 
+    const validateForm = () => {
+        const newErrors: Record<string, string> = {};
+
+        if (!formData.type) newErrors.type = "Le type de traitement est obligatoire";
+        if (!formData.date) newErrors.date = "La date est obligatoire";
+        if (!formData.product) newErrors.product = "Le médicament est obligatoire";
+        if (!formData.dosage.quantite) newErrors.dosage = "La dose est obligatoire";
+        if (!formData.veterinarian) newErrors.veterinarian = "L'intervenant est obligatoire";
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (formData.type && formData.date && formData.product && formData.dosage.quantite && formData.veterinarian) {
+        if (validateForm()) {
             // @ts-ignore - dosage structure matches the updated type but TS might complain due to union type
             onAdd(formData);
             setFormData({
@@ -94,6 +108,7 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                 notes: ''
             });
             setAnimalWeight(0);
+            setErrors({});
             onOpenChange(false);
         }
     };
@@ -112,10 +127,13 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                         <div className="grid gap-2">
                             <Label htmlFor="type">Type de traitement *</Label>
                             <Select
-                                value={formData.type}
-                                onValueChange={(value) => setFormData({ ...formData, type: value as Treatment['type'] })}
+                                value={formData.type || undefined}
+                                onValueChange={(value) => {
+                                    setFormData({ ...formData, type: value as Treatment['type'] });
+                                    if (errors.type) setErrors({ ...errors, type: '' });
+                                }}
                             >
-                                <SelectTrigger id="type">
+                                <SelectTrigger id="type" className={errors.type ? 'border-red-500' : ''}>
                                     <SelectValue placeholder="Sélectionner un type" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -127,6 +145,7 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                                     <SelectItem value="Autre">Autre</SelectItem>
                                 </SelectContent>
                             </Select>
+                            {errors.type && <p className="text-sm text-red-500">{errors.type}</p>}
                         </div>
 
                         <div className="grid gap-2">
@@ -135,22 +154,27 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                                 id="date"
                                 type="date"
                                 value={formData.date}
-                                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                                required
+                                onChange={(e) => {
+                                    setFormData({ ...formData, date: e.target.value });
+                                    if (errors.date) setErrors({ ...errors, date: '' });
+                                }}
+                                className={errors.date ? 'border-red-500' : ''}
                             />
+                            {errors.date && <p className="text-sm text-red-500">{errors.date}</p>}
                         </div>
 
                         <div className="grid gap-2">
                             <Label htmlFor="product">Médicament *</Label>
                             <Select
-                                value={formData.product}
+                                value={formData.product || undefined}
                                 onValueChange={(value) => {
                                     console.log('Selected medicament ID:', value);
                                     setFormData({ ...formData, product: value });
+                                    if (errors.product) setErrors({ ...errors, product: '' });
                                 }}
                                 disabled={loading}
                             >
-                                <SelectTrigger id="product">
+                                <SelectTrigger id="product" className={errors.product ? 'border-red-500' : ''}>
                                     <SelectValue placeholder={loading ? "Chargement..." : "Sélectionner un médicament"} />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -164,6 +188,7 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                                     ))}
                                 </SelectContent>
                             </Select>
+                            {errors.product && <p className="text-sm text-red-500">{errors.product}</p>}
                         </div>
 
                         <div className="grid gap-2">
@@ -201,12 +226,16 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                                     type="number"
                                     step="0.01"
                                     value={formData.dosage.quantite || ''}
-                                    onChange={(e) => setFormData({
-                                        ...formData,
-                                        dosage: { ...formData.dosage, quantite: parseFloat(e.target.value) }
-                                    })}
-                                    required
+                                    onChange={(e) => {
+                                        setFormData({
+                                            ...formData,
+                                            dosage: { ...formData.dosage, quantite: parseFloat(e.target.value) }
+                                        });
+                                        if (errors.dosage) setErrors({ ...errors, dosage: '' });
+                                    }}
+                                    className={errors.dosage ? 'border-red-500' : ''}
                                 />
+                                {errors.dosage && <p className="text-sm text-red-500">{errors.dosage}</p>}
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="dosage-unite">Unité *</Label>
@@ -233,14 +262,15 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                         <div className="grid gap-2">
                             <Label htmlFor="veterinarian">Intervenant *</Label>
                             <Select
-                                value={formData.veterinarian}
+                                value={formData.veterinarian || undefined}
                                 onValueChange={(value) => {
                                     console.log('Selected veterinarian ID:', value);
                                     setFormData({ ...formData, veterinarian: value });
+                                    if (errors.veterinarian) setErrors({ ...errors, veterinarian: '' });
                                 }}
                                 disabled={loading}
                             >
-                                <SelectTrigger id="veterinarian">
+                                <SelectTrigger id="veterinarian" className={errors.veterinarian ? 'border-red-500' : ''}>
                                     <SelectValue placeholder={loading ? "Chargement..." : "Sélectionner un intervenant"} />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -254,6 +284,7 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                                     ))}
                                 </SelectContent>
                             </Select>
+                            {errors.veterinarian && <p className="text-sm text-red-500">{errors.veterinarian}</p>}
                         </div>
 
                         <div className="grid gap-2">
