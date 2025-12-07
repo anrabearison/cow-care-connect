@@ -300,7 +300,23 @@ export const CattleCreate = () => (
     <SimpleForm toolbar={<CreateToolbar />}>
       <TextInput source="name" label="Nom" required />
       <TextInput source="nickname" label="Surnom" />
-      <NumberInput source="herdBookNumber" label="N° Carnet" />
+      <ReferenceInput
+        source="herd_book_id"
+        reference="herd-books"
+        label="Livre de troupeau *"
+        sort={{ field: 'year', order: 'DESC' }}
+      >
+        <SelectInput
+          optionText={(record) => `${record.year} - ${record.reference}`}
+          validate={required()}
+        />
+      </ReferenceInput>
+      <TextInput
+        source="n_carnet"
+        label="N° Carnet"
+        helperText="Numéro de carnet pour ce livre de troupeau (optionnel)"
+      />
+      <NumberInput source="herdBookNumber" label="N° Carnet (ancien)" />
       <TextInput source="brand" label="Marque" />
       <TextInput source="distinctiveSign" label="Signe Particulier" />
       <SelectInput

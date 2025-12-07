@@ -94,13 +94,21 @@ export const useCreateCattle = () => {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: (cattleData: Omit<Cattle, 'id'>) =>
-      cattleService.createCattle(cattleData),
+    mutationFn: ({
+      cattle,
+      herdBookId,
+      nCarnet
+    }: {
+      cattle: Omit<Cattle, 'id'>;
+      herdBookId?: string;
+      nCarnet?: string;
+    }) =>
+      cattleService.createCattle(cattle, herdBookId, nCarnet),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cattle'] });
       toast({
         title: "Succès",
-        description: "L'animal a été ajouté avec succès",
+        description: "L'animal a été ajouté avec succès et inscrit dans le livre de troupeau",
       });
     },
     onError: (error: any) => {

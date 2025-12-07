@@ -9,15 +9,17 @@ import { Cattle } from '@/features/cattle/types';
 import { referenceService } from '@/features/common/services/referenceService';
 import { cattleService } from '@/features/cattle/services';
 import { useToast } from '@/hooks/use-toast';
+import { useHerdBookSelection } from '@/contexts/HerdBookSelectionContext';
 
 interface AddCattleModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onAdd: (cattleData: Omit<Cattle, 'id' | 'events' | 'treatments'>) => void;
+    onAdd: (cattleData: Omit<Cattle, 'id' | 'events' | 'treatments'>, nCarnet?: string) => void;
 }
 
 export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChange, onAdd }) => {
     const { toast } = useToast();
+    const { selectedHerdBook } = useHerdBookSelection();
     const [categories, setCategories] = useState<{ id: string, name: string }[]>([]);
     const [characters, setCharacters] = useState<{ id: string, name: string }[]>([]);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -32,6 +34,7 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
         brand: '',
         herdBookNumber: '',
         distinctiveSign: '',
+        n_carnet: '',  // NOUVEAU
         sourceType: 'Acheté' as 'Acheté' | 'Né dans le troupeau',
         // Purchase fields
         supplier: '',
@@ -127,7 +130,7 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
             }
         };
 
-        onAdd(cattleData);
+        onAdd(cattleData, formData.n_carnet || undefined);
         resetForm();
         onOpenChange(false);
     };
@@ -143,6 +146,7 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
             brand: '',
             herdBookNumber: '',
             distinctiveSign: '',
+            n_carnet: '',  // NOUVEAU
             sourceType: 'Acheté',
             supplier: '',
             purchaseDate: '',
@@ -278,6 +282,15 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                         type="number"
                                         value={formData.herdBookNumber}
                                         onChange={(e) => setFormData({ ...formData, herdBookNumber: e.target.value })}
+                                    />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="n_carnet">N° Carnet</Label>
+                                    <Input
+                                        id="n_carnet"
+                                        value={formData.n_carnet}
+                                        onChange={(e) => setFormData({ ...formData, n_carnet: e.target.value })}
+                                        placeholder="Numéro de carnet pour le livre de troupeau"
                                     />
                                 </div>
                             </div>

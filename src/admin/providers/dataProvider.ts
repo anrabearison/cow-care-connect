@@ -154,9 +154,32 @@ const realDataProvider: DataProvider = {
   },
 
   create: (resource, params) => {
-    // Transform cattle data before sending
-    const data = resource === 'cattle' ? transformCattleData(params.data) : params.data;
+    if (resource === 'cattle') {
+      // Extract herd_book_id and n_carnet from data
+      const { herd_book_id, n_carnet, ...cattleData } = params.data;
 
+      // Transform cattle data
+      const transformedData = transformCattleData(cattleData);
+
+      // Build query params for herd book registration
+      const queryParams: Record<string, string> = {};
+      if (herd_book_id) queryParams.herd_book_id = herd_book_id;
+      if (n_carnet) queryParams.n_carnet = n_carnet;
+
+      const queryString = Object.keys(queryParams).length > 0
+        ? '?' + stringify(queryParams)
+        : '';
+
+      return httpClient(`${apiUrl}/${getResourcePath(resource)}${queryString}`, {
+        method: 'POST',
+        body: JSON.stringify(transformedData),
+      }).then(({ json }) => ({
+        data: json,
+      }));
+    }
+
+    // Default behavior for other resources
+    const data = params.data;
     return httpClient(`${apiUrl}/${getResourcePath(resource)}`, {
       method: 'POST',
       body: JSON.stringify(data),

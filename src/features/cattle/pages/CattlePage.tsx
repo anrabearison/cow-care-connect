@@ -75,15 +75,22 @@ export default function CattlePage() {
   }, [searchTerm, genderFilter, sourceFilter, categoryFilter]);
 
   // Memoize add cattle handler
-  const handleAddCattle = useCallback(async (cattleData: Omit<Cattle, 'id' | 'events' | 'treatments'>) => {
+  const handleAddCattle = useCallback(async (
+    cattleData: Omit<Cattle, 'id' | 'events' | 'treatments'>,
+    nCarnet?: string
+  ) => {
     const fullCattleData: Omit<Cattle, 'id'> = {
       ...cattleData,
       owner_id: selectedOwnerId || undefined,
       events: [],
       treatments: []
     };
-    createCattleMutation.mutate(fullCattleData);
-  }, [createCattleMutation, selectedOwnerId]);
+    createCattleMutation.mutate({
+      cattle: fullCattleData,
+      herdBookId: selectedHerdBookId || undefined,
+      nCarnet
+    });
+  }, [createCattleMutation, selectedOwnerId, selectedHerdBookId]);
 
 
   return (
