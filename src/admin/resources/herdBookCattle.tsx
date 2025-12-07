@@ -98,37 +98,54 @@ export const HerdBookCattleList = () => (
                 <FunctionField render={(record: any) => `${record.year} - ${record.reference}`} />
             </ReferenceField>
             <FunctionField
-                label="Bovin"
+                label="Photo"
                 render={(record: any) => (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        {record.cattle?.photo ? (
-                            <img
-                                src={record.cattle.photo}
-                                alt={record.cattle.name}
-                                style={{
-                                    width: 40,
-                                    height: 40,
-                                    objectFit: 'cover',
-                                    borderRadius: 6
-                                }}
-                            />
-                        ) : (
-                            <div style={{
+                    record.cattle?.photo ? (
+                        <img
+                            src={record.cattle.photo}
+                            alt={record.cattle.name}
+                            style={{
                                 width: 40,
                                 height: 40,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                backgroundColor: '#f5f5f5',
-                                borderRadius: 6,
-                                fontSize: '16px'
-                            }}>
-                                🐄
-                            </div>
-                        )}
-                        <span>{record.cattle?.name || '-'}</span>
-                    </div>
+                                objectFit: 'cover',
+                                borderRadius: 6
+                            }}
+                        />
+                    ) : (
+                        <div style={{
+                            width: 40,
+                            height: 40,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            backgroundColor: '#f5f5f5',
+                            borderRadius: 6,
+                            fontSize: '16px'
+                        }}>
+                            🐄
+                        </div>
+                    )
                 )}
+            />
+            <FunctionField
+                label="Nom"
+                render={(record: any) => record.cattle?.name || '-'}
+            />
+            <FunctionField
+                label="Surnom"
+                render={(record: any) => record.cattle?.nickname || '-'}
+            />
+            <FunctionField
+                label="Date de naissance"
+                render={(record: any) => record.cattle?.birthDate ? new Date(record.cattle.birthDate).toLocaleDateString() : '-'}
+            />
+            <FunctionField
+                label="Signe particulier"
+                render={(record: any) => record.cattle?.distinctiveSign || '-'}
+            />
+            <FunctionField
+                label="Source"
+                render={(record: any) => record.cattle?.source?.type || '-'}
             />
             <TextField source="n_carnet" label="N° Carnet" />
             <ReferenceField source="category_id" reference="categories" label="Catégorie">
