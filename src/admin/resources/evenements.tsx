@@ -45,10 +45,45 @@ const DeleteButtonField = () => {
   );
 };
 
+import { Link } from 'react-router-dom';
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Button } from 'react-admin';
+
+const CustomEditButton = () => {
+  const record = useRecordContext();
+  if (!record) return null;
+  return (
+    <Button
+      component={Link}
+      to={`/admin/events/${record.id}`}
+      label="ra.action.edit"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <EditIcon />
+    </Button>
+  );
+};
+
+const CustomShowButton = () => {
+  const record = useRecordContext();
+  if (!record) return null;
+  return (
+    <Button
+      component={Link}
+      to={`/admin/events/${record.id}/show`}
+      label="ra.action.show"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <VisibilityIcon />
+    </Button>
+  );
+};
+
 // Liste des événements
 export const EvenementList = () => (
   <List filters={evenementFilters}>
-    <Datagrid rowClick="edit">
+    <Datagrid rowClick={(id, resource, record) => `/admin/events/${id}`}>
       <TextField source="id" label="ID" />
       <ReferenceField source="cattleId" reference="cattle" label="Bovin">
         <TextField source="name" />
@@ -58,8 +93,8 @@ export const EvenementList = () => (
       </ReferenceField>
       <DateField source="date" label="Date" />
       <TextField source="description" label="Description" />
-      <ShowButton />
-      <EditButton />
+      <CustomShowButton />
+      <CustomEditButton />
       <DeleteButtonField />
     </Datagrid>
   </List>

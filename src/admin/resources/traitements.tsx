@@ -78,10 +78,45 @@ const DosageField = (props: { source?: string, label?: string }) => {
   );
 };
 
+import { Link } from 'react-router-dom';
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Button } from 'react-admin';
+
+const CustomEditButton = () => {
+  const record = useRecordContext();
+  if (!record) return null;
+  return (
+    <Button
+      component={Link}
+      to={`/admin/treatments/${record.id}`}
+      label="ra.action.edit"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <EditIcon />
+    </Button>
+  );
+};
+
+const CustomShowButton = () => {
+  const record = useRecordContext();
+  if (!record) return null;
+  return (
+    <Button
+      component={Link}
+      to={`/admin/treatments/${record.id}/show`}
+      label="ra.action.show"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <VisibilityIcon />
+    </Button>
+  );
+};
+
 // Liste des traitements
 export const TraitementList = () => (
   <List filters={traitementFilters}>
-    <Datagrid rowClick="edit">
+    <Datagrid rowClick={(id, resource, record) => `/admin/treatments/${id}`}>
       <TextField source="id" label="ID" />
       <ReferenceField source="cattleId" reference="cattle" label="Bovin">
         <TextField source="name" />
@@ -95,8 +130,8 @@ export const TraitementList = () => (
       <ReferenceField source="veterinarian" reference="veterinarians" label="Intervenant">
         <TextField source="nom" />
       </ReferenceField>
-      <ShowButton />
-      <EditButton />
+      <CustomShowButton />
+      <CustomEditButton />
       <DeleteButtonField />
     </Datagrid>
   </List>

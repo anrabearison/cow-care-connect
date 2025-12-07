@@ -37,6 +37,7 @@ import {
 import { CloudinaryImageInput } from '../components/CloudinaryImageInput';
 import { EditToolbar, CreateToolbar, ConfirmDeleteButton } from '../components/ConfirmToolbars';
 import { Cattle } from '../../features/cattle/types';
+import { OwnerReferenceInput } from '../components/OwnerReferenceInput';
 
 // Custom ListActions without RefreshButton
 const ListActions = () => (
@@ -203,6 +204,7 @@ export const CattleList = () => (
 export const CattleEdit = () => (
   <Edit>
     <SimpleForm toolbar={<EditToolbar />}>
+      <OwnerReferenceInput />
       <TextInput source="name" label="Nom" required />
       <TextInput source="nickname" label="Surnom" />
       <NumberInput source="herdBookNumber" label="N° Carnet" />
@@ -298,6 +300,7 @@ export const CattleEdit = () => (
 export const CattleCreate = () => (
   <Create>
     <SimpleForm toolbar={<CreateToolbar />}>
+      <OwnerReferenceInput />
       <TextInput source="name" label="Nom" required />
       <TextInput source="nickname" label="Surnom" />
       <ReferenceInput
