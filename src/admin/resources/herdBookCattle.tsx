@@ -133,6 +133,9 @@ export const HerdBookCattleList = () => (
             <ReferenceField source="herd_book_id" reference="herd-books" label="Livre">
                 <FunctionField render={(record: any) => `${record.year} - ${record.reference}`} />
             </ReferenceField>
+            <ReferenceField source="herd_book.owner_id" reference="owners" label="Propriétaire" link="show">
+                <TextField source="name" />
+            </ReferenceField>
             <FunctionField
                 label="Photo"
                 render={(record: any) => (
@@ -337,6 +340,10 @@ export const HerdBookCattleShow = () => (
 
             <ReferenceField source="herd_book_id" reference="herd-books" label="Livre de troupeau" link="show">
                 <FunctionField render={(record: any) => `${record.year} - ${record.reference}`} />
+            </ReferenceField>
+
+            <ReferenceField source="herd_book.owner_id" reference="owners" label="Propriétaire" link="show">
+                <TextField source="name" />
             </ReferenceField>
 
             <ReferenceField source="cattle_id" reference="cattle" label="Bovin" link="show">
