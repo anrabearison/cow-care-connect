@@ -61,14 +61,22 @@ export const getGenderIcon = (gender: string): string => {
 /**
  * Get color class for status badge
  */
-export const getStatusColor = (statusName: string): string => {
-    switch (statusName) {
+export const getStatusColor = (statusIdentifier: string): string => {
+    // Handle both IDs and names for backward compatibility if needed, but prefer IDs
+    switch (statusIdentifier) {
+        case 'STAT001': // Vivant
         case 'Vivant':
             return 'bg-green-100 text-green-800 border-green-200';
+        case 'STAT002': // Mort
+        case 'Mort':
         case 'Décédé':
             return 'bg-gray-100 text-gray-800 border-gray-200';
+        case 'STAT003': // Vendu
         case 'Vendu':
             return 'bg-blue-100 text-blue-800 border-blue-200';
+        case 'STAT004': // En bonne santé
+        case 'En bonne santé':
+            return 'bg-emerald-100 text-emerald-800 border-emerald-200';
         default:
             return 'bg-gray-100 text-gray-800 border-gray-200';
     }

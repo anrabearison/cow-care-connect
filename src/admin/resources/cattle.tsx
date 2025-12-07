@@ -376,7 +376,7 @@ const GeneralInfoTab = () => (
               render={(record: Cattle) => (
                 <Chip
                   label={record.status?.name || 'Inconnu'}
-                  color={record.status?.name === 'En bonne santé' ? 'success' : 'warning'}
+                  color={record.status?.id === 'STAT004' ? 'success' : 'warning'}
                   variant="outlined"
                 />
               )}

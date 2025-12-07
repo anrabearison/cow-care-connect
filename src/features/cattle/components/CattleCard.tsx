@@ -103,7 +103,7 @@ export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
           {cattle.status && (
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Statut</span>
-              <Badge className={`text-xs ${getStatusColor(cattle.status.name)}`}>
+              <Badge className={`text-xs ${getStatusColor(cattle.status.id)}`}>
                 {cattle.status.name}
               </Badge>
             </div>
