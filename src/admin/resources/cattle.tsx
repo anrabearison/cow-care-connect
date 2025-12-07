@@ -62,41 +62,55 @@ const DeleteButtonField = () => {
 
 // Filtres pour la liste des bovins
 const cattleFilters = [
-  <TextInput source="q" label="Rechercher" alwaysOn />,
-  <SelectInput source="gender" label="Genre" choices={[
-    { id: 'M', name: 'Mâle' },
-    { id: 'F', name: 'Femelle' },
-  ]} />,
-  <ReferenceInput source="category" reference="categories" label="Catégorie">
+  <TextInput
+    source="q"
+    label="Rechercher"
+    placeholder="Nom, surnom, marque, signe..."
+    alwaysOn
+  />,
+  <SelectInput
+    source="gender"
+    label="Genre"
+    choices={[
+      { id: 'M', name: '♂ Mâle' },
+      { id: 'F', name: '♀ Femelle' },
+    ]}
+  />,
+  <ReferenceInput
+    source="category"
+    reference="categories"
+    label="Catégorie"
+  >
     <SelectInput optionText="name" />
   </ReferenceInput>,
-  <SelectInput source="character" label="Caractère" choices={[
-    { id: 'Docile', name: 'Docile' },
-    { id: 'Agressif', name: 'Agressif' },
-    { id: 'Timide', name: 'Timide' },
-    { id: 'Energique', name: 'Énergique' },
-  ]} />,
+  <ReferenceInput
+    source="character"
+    reference="characters"
+    label="Caractère"
+  >
+    <SelectInput optionText="name" />
+  </ReferenceInput>,
+  <ReferenceInput
+    source="status"
+    reference="status"
+    label="Statut"
+  >
+    <SelectInput optionText="name" />
+  </ReferenceInput>,
+  <SelectInput
+    source="source_type"
+    label="Type de source"
+    choices={[
+      { id: 'Acheté', name: '🛒 Acheté' },
+      { id: 'Né dans le troupeau', name: '🐄 Né dans le troupeau' },
+    ]}
+  />,
 ];
 
 // Liste des bovins
 export const CattleList = () => (
   <List filters={cattleFilters} actions={<ListActions />}>
-    <Datagrid rowClick="edit">
-      <TextField source="id" label="ID" />
-      <TextField source="name" label="Nom" />
-      <TextField source="nickname" label="Surnom" />
-      <TextField source="category.name" label="Catégorie" />
-      <TextField source="gender" label="Genre" />
-      <NumberField source="herdBookNumber" label="N° Carnet" />
-      <TextField source="brand" label="Marque" />
-      <TextField source="distinctiveSign" label="Signe Particulier" />
-      <TextField source="character.name" label="Caractère" />
-      <DateField source="birthDate" label="Date de naissance" />
-      <TextField source="status.name" label="Statut" />
-      <FunctionField
-        label="Source"
-        render={(record: Cattle) => record.source?.type || 'Non défini'}
-      />
+    <Datagrid rowClick="show">
       <FunctionField
         label="Photo"
         render={(record: Cattle) =>
@@ -104,20 +118,79 @@ export const CattleList = () => (
             <img
               src={record.photo}
               alt={record.name}
-              style={{ width: 50, height: 50, objectFit: 'cover', borderRadius: 4 }}
+              style={{
+                width: 60,
+                height: 60,
+                objectFit: 'cover',
+                borderRadius: 8,
+                border: '2px solid #e0e0e0'
+              }}
             />
           ) : (
-            <span style={{ color: '#999' }}>Aucune</span>
+            <div style={{
+              width: 60,
+              height: 60,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: '#f5f5f5',
+              borderRadius: 8,
+              color: '#999',
+              fontSize: '24px'
+            }}>
+              🐄
+            </div>
           )
         }
       />
       <FunctionField
-        label="Événements"
-        render={(record: Cattle) => record.events?.length || 0}
+        label="Identité"
+        render={(record: Cattle) => (
+          <div>
+            <div style={{ fontWeight: 'bold', fontSize: '0.95em' }}>{record.name}</div>
+            {record.nickname && (
+              <div style={{ fontSize: '0.85em', color: '#666', fontStyle: 'italic' }}>
+                "{record.nickname}"
+              </div>
+            )}
+          </div>
+        )}
       />
       <FunctionField
-        label="Traitements"
-        render={(record: Cattle) => record.treatments?.length || 0}
+        label="Genre"
+        render={(record: Cattle) => (
+          <span style={{ fontSize: '1.3em' }}>
+            {record.gender === 'M' ? '♂️' : '♀️'}
+          </span>
+        )}
+      />
+      <TextField source="category.name" label="Catégorie" />
+      <NumberField source="herdBookNumber" label="N° Carnet" />
+      <FunctionField
+        label="Statut"
+        render={(record: Cattle) => {
+          const statusColors: Record<string, string> = {
+            'STAT001': '#4caf50', // Actif - vert
+            'STAT002': '#ff9800', // Malade - orange
+            'STAT003': '#f44336', // Mort - rouge
+            'STAT004': '#2196f3', // Vendu - bleu
+          };
+          const color = statusColors[record.status?.id || ''] || '#9e9e9e';
+
+          return (
+            <span style={{
+              padding: '4px 12px',
+              borderRadius: 12,
+              backgroundColor: `${color}20`,
+              color: color,
+              fontWeight: 500,
+              fontSize: '0.85em',
+              display: 'inline-block'
+            }}>
+              {record.status?.name || 'Inconnu'}
+            </span>
+          );
+        }}
       />
       <ShowButton />
       <EditButton />
@@ -411,31 +484,14 @@ const GeneralInfoTab = () => (
                 <Grid item xs={12} sm={6}>
                   <InlineField label="Catégorie"><TextField source="category.name" /></InlineField>
                   <InlineField label="Caractère"><TextField source="character.name" /></InlineField>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* Carte Signes Distinctifs */}
-        <Grid item xs={12}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                🔍 Signes Distinctifs
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
                   <InlineField label="Marque"><TextField source="brand" /></InlineField>
-                </Grid>
-                <Grid item xs={12} sm={6}>
                   <InlineField label="Signe Particulier"><TextField source="distinctiveSign" /></InlineField>
                 </Grid>
               </Grid>
             </CardContent>
           </Card>
         </Grid>
+
       </Grid>
     </Grid>
   </Grid>
