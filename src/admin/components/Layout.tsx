@@ -3,6 +3,7 @@ import { Layout as RALayout, AppBar, UserMenu, MenuItemLink, Logout, useGetIdent
 import { Settings, HelpCircle, ArrowLeft } from 'lucide-react';
 import { AdminBreadcrumb } from './AdminBreadcrumb';
 import { OwnerSelector } from './OwnerSelector';
+import { Menu } from './Menu';
 
 const CustomUserMenu = () => (
   <UserMenu>
@@ -55,7 +56,7 @@ const CustomFooter = () => {
 };
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <RALayout appBar={CustomAppBar}>
+  <RALayout appBar={CustomAppBar} menu={Menu}>
     <AdminBreadcrumb />
     {children}
     <CustomFooter />
