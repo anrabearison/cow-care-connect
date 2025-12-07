@@ -27,9 +27,16 @@ export const OwnerSelector: React.FC = () => {
             })
                 .then(({ data }) => {
                     setOwners(data);
+                    // Validate that the selected owner still exists
+                    if (selectedOwnerId && !data.find((o: Owner) => o.id === selectedOwnerId)) {
+                        console.warn(`Selected owner ${selectedOwnerId} not found in loaded owners, resetting selection`);
+                        setSelectedOwnerId(null);
+                    }
                 })
                 .catch((error) => {
                     console.error('Failed to load owners:', error);
+                    // Reset selection on error
+                    setSelectedOwnerId(null);
                 })
                 .finally(() => {
                     setLoading(false);
@@ -68,7 +75,7 @@ export const OwnerSelector: React.FC = () => {
                 }}
             >
                 <Select
-                    value={selectedOwnerId || ''}
+                    value={loading || owners.length === 0 ? '' : (selectedOwnerId || '')}
                     onChange={(e) => {
                         setSelectedOwnerId(e.target.value || null);
                         // Refresh the page to ensure all data is updated
@@ -87,7 +94,7 @@ export const OwnerSelector: React.FC = () => {
                     }}
                 >
                     <MenuItem value="">
-                        <em>Tous les propriétaires</em>
+                        <em>{loading ? 'Chargement...' : 'Tous les propriétaires'}</em>
                     </MenuItem>
                     {owners.map((owner) => (
                         <MenuItem key={owner.id} value={owner.id}>
