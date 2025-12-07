@@ -6,7 +6,7 @@ const API_URL = API_CONFIG.BASE_URL;
 export const authProvider: AuthProvider = {
   login: async ({ username, password }) => {
     try {
-      const response = await fetch(`${API_URL}/api/auth/login`, {
+      const response = await fetch(`${API_CONFIG.ADMIN_API_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
