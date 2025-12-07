@@ -32,7 +32,6 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
         character: 1,
         category: '',
         brand: '',
-        herdBookNumber: '',
         distinctiveSign: '',
         n_carnet: '',  // NOUVEAU
         sourceType: 'Acheté' as 'Acheté' | 'Né dans le troupeau',
@@ -111,7 +110,6 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                 name: categories.find(c => c.id === formData.category)?.name || ''
             },
             brand: formData.brand || undefined,
-            herdBookNumber: formData.herdBookNumber ? parseInt(formData.herdBookNumber) : undefined,
             distinctiveSign: formData.distinctiveSign || undefined,
             photo: undefined,
             // status removed as not supported by backend on create
@@ -141,7 +139,6 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
             character: 1,
             category: '',
             brand: '',
-            herdBookNumber: '',
             distinctiveSign: '',
             n_carnet: '',  // NOUVEAU
             sourceType: 'Acheté',
@@ -270,15 +267,6 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                         id="brand"
                                         value={formData.brand}
                                         onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
-                                    />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="herdBookNumber">Numéro Herd Book</Label>
-                                    <Input
-                                        id="herdBookNumber"
-                                        type="number"
-                                        value={formData.herdBookNumber}
-                                        onChange={(e) => setFormData({ ...formData, herdBookNumber: e.target.value })}
                                     />
                                 </div>
                                 <div className="grid gap-2">

@@ -243,8 +243,8 @@ export const CattleEdit = () => (
       <OwnerReferenceInput />
       <TextInput source="name" label="Nom" required />
       <TextInput source="nickname" label="Surnom" />
-      <NumberInput source="herdBookNumber" label="N° Carnet" />
       <TextInput source="brand" label="Marque" />
+      <TextInput source="n_carnet" label="N° Carnet" />
       <TextInput source="distinctiveSign" label="Signe Particulier" />
       <SelectInput
         source="gender"
@@ -349,6 +349,7 @@ export const CattleCreate = () => (
       />
       <NumberInput source="herdBookNumber" label="N° Carnet (ancien)" />
       <TextInput source="brand" label="Marque" />
+      <TextInput source="n_carnet" label="N° Carnet" />
       <TextInput source="distinctiveSign" label="Signe Particulier" />
       <SelectInput
         source="gender"

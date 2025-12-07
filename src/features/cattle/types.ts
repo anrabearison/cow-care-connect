@@ -19,7 +19,7 @@ export interface Cattle {
     id: string;
     name: string;
   };
-  herdBookNumber?: number;
+  n_carnet?: string;
   source: {
     type: 'Acheté' | 'Né dans le troupeau';
     supplier?: string;
@@ -48,7 +48,6 @@ export interface CattleWithHerdBookInfo extends Cattle {
     name: string;
   };
   herd_book_year?: number;
-  herdBookNumber?: number; // Deprecated, use n_carnet
 }
 
 export interface CattleEvent {
