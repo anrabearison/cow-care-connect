@@ -63,16 +63,52 @@ const DosageField = (props: { source?: string, label?: string }) => {
   );
 };
 
+// Custom Buttons
+import { Link } from 'react-router-dom';
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Button } from 'react-admin';
+
+const CustomEditButton = () => {
+  const record = useRecordContext();
+  if (!record) return null;
+  return (
+    <Button
+      component={Link}
+      to={`/admin/medicaments/${record.id}`}
+      label="ra.action.edit"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <EditIcon />
+    </Button>
+  );
+};
+
+const CustomShowButton = () => {
+  const record = useRecordContext();
+  if (!record) return null;
+  return (
+    <Button
+      component={Link}
+      to={`/admin/medicaments/${record.id}/show`}
+      label="ra.action.show"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <VisibilityIcon />
+    </Button>
+  );
+};
+
 export const MedicamentList = () => (
   <List filters={medicamentFilters}>
-    <Datagrid rowClick="edit">
+    <Datagrid rowClick={(id, resource, record) => `/admin/medicaments/${id}`}>
       <TextField source="id" label="ID" />
       <TextField source="nom" label="Nom" />
       <TextField source="type" label="Type" />
       <DosageField label="Dosage recommandé" />
       <TextField source="fabricant" label="Fabricant" />
-      <ShowButton />
-      <EditButton />
+      <CustomShowButton />
+      <CustomEditButton />
       <DeleteButtonField />
     </Datagrid>
   </List>
@@ -162,6 +198,7 @@ export const MedicamentEdit = () => (
         validate={required()}
       />
       <DosageInput />
+      <WithdrawalInput />
       <TextInput source="fabricant" label="Fabricant" />
       <TextInput source="notes" label="Notes" multiline rows={3} />
     </SimpleForm>
@@ -186,6 +223,7 @@ export const MedicamentCreate = () => (
         validate={required()}
       />
       <DosageInput />
+      <WithdrawalInput />
       <TextInput source="fabricant" label="Fabricant" />
       <TextInput source="notes" label="Notes" multiline rows={3} />
     </SimpleForm>

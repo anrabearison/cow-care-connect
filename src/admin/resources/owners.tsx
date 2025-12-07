@@ -31,15 +31,51 @@ const DeleteButtonField = () => {
     );
 };
 
+// Custom Buttons
+import { Link } from 'react-router-dom';
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Button } from 'react-admin';
+
+const CustomEditButton = () => {
+    const record = useRecordContext();
+    if (!record) return null;
+    return (
+        <Button
+            component={Link}
+            to={`/admin/owners/${record.id}`}
+            label="ra.action.edit"
+            onClick={(e) => e.stopPropagation()}
+        >
+            <EditIcon />
+        </Button>
+    );
+};
+
+const CustomShowButton = () => {
+    const record = useRecordContext();
+    if (!record) return null;
+    return (
+        <Button
+            component={Link}
+            to={`/admin/owners/${record.id}/show`}
+            label="ra.action.show"
+            onClick={(e) => e.stopPropagation()}
+        >
+            <VisibilityIcon />
+        </Button>
+    );
+};
+
 // Liste des propriétaires
 export const OwnerList = () => (
     <List filters={ownerFilters}>
-        <Datagrid rowClick="edit">
+        <Datagrid rowClick={(id, resource, record) => `/admin/owners/${id}`}>
             <TextField source="name" label="Nom" />
             <TextField source="contact_info" label="Contact" />
             <TextField source="address" label="Adresse" />
-            <ShowButton />
-            <EditButton />
+            <CustomShowButton />
+            <CustomEditButton />
             <DeleteButtonField />
         </Datagrid>
     </List>

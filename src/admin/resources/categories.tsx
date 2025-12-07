@@ -28,14 +28,34 @@ const DeleteButtonField = () => {
     );
 };
 
+// Custom Buttons
+import { Link } from 'react-router-dom';
+import EditIcon from '@mui/icons-material/Edit';
+import { Button } from 'react-admin';
+
+const CustomEditButton = () => {
+    const record = useRecordContext();
+    if (!record) return null;
+    return (
+        <Button
+            component={Link}
+            to={`/admin/categories/${record.id}`}
+            label="ra.action.edit"
+            onClick={(e) => e.stopPropagation()}
+        >
+            <EditIcon />
+        </Button>
+    );
+};
+
 export const CategoryList = () => (
     <List>
-        <Datagrid rowClick="edit">
+        <Datagrid rowClick={(id, resource, record) => `/admin/categories/${id}`}>
             <TextField source="id" label="ID" />
             <TextField source="name" label="Nom" />
             <DateField source="created_at" label="Créé le" showTime />
             <DateField source="updated_at" label="Modifié le" showTime />
-            <EditButton />
+            <CustomEditButton />
             <DeleteButtonField />
         </Datagrid>
     </List>

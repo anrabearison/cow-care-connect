@@ -86,6 +86,42 @@ const herdBookCattleFilters = [
     </ReferenceInput>,
 ];
 
+// Custom Buttons
+import { Link } from 'react-router-dom';
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Button } from 'react-admin';
+
+const CustomEditButton = () => {
+    const record = useRecordContext();
+    if (!record) return null;
+    return (
+        <Button
+            component={Link}
+            to={`/admin/herd-book-cattle/${record.id}`}
+            label="ra.action.edit"
+            onClick={(e) => e.stopPropagation()}
+        >
+            <EditIcon />
+        </Button>
+    );
+};
+
+const CustomShowButton = () => {
+    const record = useRecordContext();
+    if (!record) return null;
+    return (
+        <Button
+            component={Link}
+            to={`/admin/herd-book-cattle/${record.id}/show`}
+            label="ra.action.show"
+            onClick={(e) => e.stopPropagation()}
+        >
+            <VisibilityIcon />
+        </Button>
+    );
+};
+
 // Liste des inscriptions
 export const HerdBookCattleList = () => (
     <List
@@ -93,7 +129,7 @@ export const HerdBookCattleList = () => (
         actions={<ListActions />}
         sort={{ field: 'created_at', order: 'DESC' }}
     >
-        <Datagrid rowClick="show">
+        <Datagrid rowClick={(id, resource, record) => `/admin/herd-book-cattle/${id}/show`}>
             <ReferenceField source="herd_book_id" reference="herd-books" label="Livre">
                 <FunctionField render={(record: any) => `${record.year} - ${record.reference}`} />
             </ReferenceField>
@@ -178,8 +214,8 @@ export const HerdBookCattleList = () => (
                 }}
             />
             <DateField source="created_at" label="Date d'inscription" showTime />
-            <ShowButton />
-            <EditButton />
+            <CustomShowButton />
+            <CustomEditButton />
             <DeleteButtonField />
         </Datagrid>
     </List>

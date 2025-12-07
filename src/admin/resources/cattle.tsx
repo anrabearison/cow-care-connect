@@ -108,10 +108,46 @@ const cattleFilters = [
   />,
 ];
 
+// Custom Buttons
+import { Link } from 'react-router-dom';
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Button } from 'react-admin';
+
+const CustomEditButton = () => {
+  const record = useRecordContext();
+  if (!record) return null;
+  return (
+    <Button
+      component={Link}
+      to={`/admin/cattle/${record.id}`}
+      label="ra.action.edit"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <EditIcon />
+    </Button>
+  );
+};
+
+const CustomShowButton = () => {
+  const record = useRecordContext();
+  if (!record) return null;
+  return (
+    <Button
+      component={Link}
+      to={`/admin/cattle/${record.id}/show`}
+      label="ra.action.show"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <VisibilityIcon />
+    </Button>
+  );
+};
+
 // Liste des bovins
 export const CattleList = () => (
   <List filters={cattleFilters} actions={<ListActions />}>
-    <Datagrid rowClick="show">
+    <Datagrid rowClick={(id, resource, record) => `/admin/cattle/${id}/show`}>
       <FunctionField
         label="Photo"
         render={(record: Cattle) =>
@@ -193,8 +229,8 @@ export const CattleList = () => (
           );
         }}
       />
-      <ShowButton />
-      <EditButton />
+      <CustomShowButton />
+      <CustomEditButton />
       <DeleteButtonField />
     </Datagrid>
   </List>

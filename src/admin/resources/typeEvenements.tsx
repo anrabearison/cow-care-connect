@@ -28,16 +28,36 @@ const DeleteButtonField = () => {
   );
 };
 
+// Custom Buttons
+import { Link } from 'react-router-dom';
+import EditIcon from '@mui/icons-material/Edit';
+import { Button } from 'react-admin';
+
+const CustomEditButton = () => {
+  const record = useRecordContext();
+  if (!record) return null;
+  return (
+    <Button
+      component={Link}
+      to={`/admin/typeEvenements/${record.id}`}
+      label="ra.action.edit"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <EditIcon />
+    </Button>
+  );
+};
+
 // Liste des types d'événements
 export const TypeEvenementList = () => (
   <List>
-    <Datagrid rowClick="edit">
+    <Datagrid rowClick={(id, resource, record) => `/admin/typeEvenements/${id}`}>
       <TextField source="id" label="ID" />
       <TextField source="nom" label="Nom" />
       <TextField source="description" label="Description" />
       <TextField source="icone" label="Icône" />
       <ShowButton />
-      <EditButton />
+      <CustomEditButton />
       <DeleteButtonField />
     </Datagrid>
   </List>
