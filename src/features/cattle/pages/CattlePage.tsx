@@ -78,11 +78,12 @@ export default function CattlePage() {
   const handleAddCattle = useCallback(async (cattleData: Omit<Cattle, 'id' | 'events' | 'treatments'>) => {
     const fullCattleData: Omit<Cattle, 'id'> = {
       ...cattleData,
+      owner_id: selectedOwnerId || undefined,
       events: [],
       treatments: []
     };
     createCattleMutation.mutate(fullCattleData);
-  }, [createCattleMutation]);
+  }, [createCattleMutation, selectedOwnerId]);
 
 
   return (

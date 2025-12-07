@@ -33,6 +33,7 @@ export interface Cattle {
   };
   events: CattleEvent[];
   treatments: Treatment[];
+  owner_id?: string;
 }
 
 // Type enrichi pour l'affichage avec informations du HerdBook
