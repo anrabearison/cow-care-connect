@@ -31,6 +31,8 @@ const httpClient = (url: string, options: any = {}) => {
 const getResourcePath = (resource: string) => {
   const resourceMap: Record<string, string> = {
     'typeEvenements': 'event-types',
+    'herd-books': 'herd-books',
+    'herd-book-cattle': 'herd-book-cattle',
     // Add other mappings if needed
   };
   return resourceMap[resource] || resource;
