@@ -584,6 +584,55 @@ export const CattleShow = () => (
       <Tab label="Santé & Suivi">
         <HealthTab />
       </Tab>
+
+      <Tab label="Livres de troupeau">
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              Inscriptions dans les livres de troupeau
+            </Typography>
+            <ArrayField source="herd_book_entries" label={false}>
+              <Datagrid bulkActionButtons={false} hover={false}>
+                <ReferenceField source="herd_book_id" reference="herd-books" label="Livre" link="show">
+                  <FunctionField render={(record: any) => `${record.year} - ${record.reference}`} />
+                </ReferenceField>
+                <TextField source="n_carnet" label="N° Carnet" />
+                <ReferenceField source="category_id" reference="categories" label="Catégorie">
+                  <TextField source="name" />
+                </ReferenceField>
+                <FunctionField
+                  label="Statut"
+                  render={(record: any) => {
+                    const statusColors: Record<string, string> = {
+                      'STAT001': '#4caf50',
+                      'STAT002': '#ff9800',
+                      'STAT003': '#f44336',
+                      'STAT004': '#2196f3',
+                    };
+                    const color = statusColors[record.status_id || ''] || '#9e9e9e';
+
+                    return (
+                      <span style={{
+                        padding: '4px 12px',
+                        borderRadius: 12,
+                        backgroundColor: `${color}20`,
+                        color: color,
+                        fontWeight: 500,
+                        fontSize: '0.85em',
+                        display: 'inline-block'
+                      }}>
+                        {record.status?.name || 'Inconnu'}
+                      </span>
+                    );
+                  }}
+                />
+                <DateField source="created_at" label="Date d'inscription" />
+                <ShowButton resource="herd-book-cattle" />
+              </Datagrid>
+            </ArrayField>
+          </CardContent>
+        </Card>
+      </Tab>
     </TabbedShowLayout>
   </Show>
 );

@@ -1,0 +1,285 @@
+import React from 'react';
+import {
+    List,
+    Datagrid,
+    TextField,
+    NumberField,
+    DateField,
+    EditButton,
+    Edit,
+    SimpleForm,
+    TextInput,
+    NumberInput,
+    Create,
+    Show,
+    TabbedShowLayout,
+    Tab,
+    ReferenceField,
+    ReferenceInput,
+    SelectInput,
+    FunctionField,
+    required,
+    ShowButton,
+    CreateButton,
+    ExportButton,
+    FilterButton,
+    TopToolbar,
+    ArrayField,
+    useRecordContext,
+} from 'react-admin';
+import { Card, CardContent, Typography, Box, Divider } from '@mui/material';
+import { EditToolbar, CreateToolbar, ConfirmDeleteButton } from '../components/ConfirmToolbars';
+
+// Custom ListActions
+const ListActions = () => (
+    <TopToolbar>
+        <FilterButton />
+        <CreateButton />
+        <ExportButton />
+    </TopToolbar>
+);
+
+// Delete button component with confirmation
+const DeleteButtonField = () => {
+    const record = useRecordContext();
+    return (
+        <ConfirmDeleteButton
+            record={record}
+            resource="herd-books"
+            title="Supprimer ce livre de troupeau"
+            message="Êtes-vous sûr de vouloir supprimer ce livre de troupeau ? Cette action supprimera également toutes les inscriptions de bovins associées."
+        />
+    );
+};
+
+// Filtres pour la liste des livres de troupeau
+const herdBookFilters = [
+    <TextInput
+        source="q"
+        label="Rechercher"
+        placeholder="Référence, description..."
+        alwaysOn
+    />,
+    <NumberInput
+        source="year"
+        label="Année"
+    />,
+    <ReferenceInput
+        source="owner_id"
+        reference="owners"
+        label="Propriétaire"
+    >
+        <SelectInput optionText="name" />
+    </ReferenceInput>,
+];
+
+// Liste des livres de troupeau
+export const HerdBookList = () => (
+    <List filters={herdBookFilters} actions={<ListActions />} sort={{ field: 'year', order: 'DESC' }}>
+        <Datagrid rowClick="show">
+            <NumberField source="year" label="Année" />
+            <TextField source="reference" label="Référence" />
+            <ReferenceField source="owner_id" reference="owners" label="Propriétaire">
+                <TextField source="name" />
+            </ReferenceField>
+            <FunctionField
+                label="Description"
+                render={(record: any) =>
+                    record.description
+                        ? (record.description.length > 50
+                            ? `${record.description.substring(0, 50)}...`
+                            : record.description)
+                        : '-'
+                }
+            />
+            <FunctionField
+                label="Bovins"
+                render={(record: any) => record.cattle_count || 0}
+            />
+            <DateField source="created_at" label="Créé le" showTime />
+            <ShowButton />
+            <EditButton />
+            <DeleteButtonField />
+        </Datagrid>
+    </List>
+);
+
+// Édition d'un livre de troupeau
+export const HerdBookEdit = () => (
+    <Edit>
+        <SimpleForm toolbar={<EditToolbar />}>
+            <NumberInput
+                source="year"
+                label="Année"
+                validate={[required(), (value) => {
+                    if (value < 2000) return 'L\'année doit être >= 2000';
+                    if (value > new Date().getFullYear() + 1) return 'L\'année ne peut pas être trop loin dans le futur';
+                    return undefined;
+                }]}
+            />
+            <TextInput
+                source="reference"
+                label="Référence"
+                validate={[required()]}
+                helperText="Ex: LT-2024-001"
+            />
+            <ReferenceInput
+                source="owner_id"
+                reference="owners"
+                label="Propriétaire"
+            >
+                <SelectInput optionText="name" validate={required()} />
+            </ReferenceInput>
+            <TextInput
+                source="description"
+                label="Description"
+                multiline
+                rows={3}
+            />
+        </SimpleForm>
+    </Edit>
+);
+
+// Création d'un livre de troupeau
+export const HerdBookCreate = () => (
+    <Create>
+        <SimpleForm toolbar={<CreateToolbar />}>
+            <NumberInput
+                source="year"
+                label="Année"
+                defaultValue={new Date().getFullYear()}
+                validate={[required(), (value) => {
+                    if (value < 2000) return 'L\'année doit être >= 2000';
+                    if (value > new Date().getFullYear() + 1) return 'L\'année ne peut pas être trop loin dans le futur';
+                    return undefined;
+                }]}
+            />
+            <TextInput
+                source="reference"
+                label="Référence"
+                validate={[required()]}
+                helperText="Ex: LT-2024-001"
+            />
+            <ReferenceInput
+                source="owner_id"
+                reference="owners"
+                label="Propriétaire"
+            >
+                <SelectInput optionText="name" validate={required()} />
+            </ReferenceInput>
+            <TextInput
+                source="description"
+                label="Description"
+                multiline
+                rows={3}
+            />
+        </SimpleForm>
+    </Create>
+);
+
+// Helper component for inline field display
+interface InlineFieldProps {
+    label: string;
+    children: React.ReactNode;
+}
+
+const InlineField: React.FC<InlineFieldProps> = ({ label, children }) => {
+    const record = useRecordContext();
+    return (
+        <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 py-1">
+            <span className="text-sm font-medium text-gray-500 min-w-[140px] shrink-0">{label}:</span>
+            <div className="text-gray-900 font-medium">
+                {React.Children.map(children, child =>
+                    React.isValidElement(child) ? React.cloneElement(child, { record } as any) : child
+                )}
+            </div>
+        </div>
+    );
+};
+
+// Affichage détaillé d'un livre de troupeau
+export const HerdBookShow = () => (
+    <Show>
+        <TabbedShowLayout syncWithLocation={false}>
+            <Tab label="Informations">
+                <Card>
+                    <CardContent>
+                        <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            📋 Informations du livre
+                        </Typography>
+                        <Divider sx={{ mb: 2 }} />
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                            <InlineField label="Année"><NumberField source="year" /></InlineField>
+                            <InlineField label="Référence"><TextField source="reference" /></InlineField>
+                            <InlineField label="Propriétaire">
+                                <ReferenceField source="owner_id" reference="owners">
+                                    <TextField source="name" />
+                                </ReferenceField>
+                            </InlineField>
+                            <InlineField label="Description"><TextField source="description" /></InlineField>
+                            <InlineField label="Créé le"><DateField source="created_at" showTime /></InlineField>
+                            <InlineField label="Modifié le"><DateField source="updated_at" showTime /></InlineField>
+                        </Box>
+                    </CardContent>
+                </Card>
+            </Tab>
+
+            <Tab label="Bovins inscrits">
+                <Card>
+                    <CardContent>
+                        <Typography variant="h6" gutterBottom>
+                            Bovins inscrits dans ce livre
+                        </Typography>
+                        <ArrayField source="cattle_entries" label={false}>
+                            <Datagrid bulkActionButtons={false} hover={false}>
+                                <FunctionField
+                                    label="Photo"
+                                    render={(record: any) =>
+                                        record.cattle?.photo ? (
+                                            <img
+                                                src={record.cattle.photo}
+                                                alt={record.cattle.name}
+                                                style={{
+                                                    width: 50,
+                                                    height: 50,
+                                                    objectFit: 'cover',
+                                                    borderRadius: 8
+                                                }}
+                                            />
+                                        ) : (
+                                            <div style={{
+                                                width: 50,
+                                                height: 50,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                backgroundColor: '#f5f5f5',
+                                                borderRadius: 8,
+                                                fontSize: '20px'
+                                            }}>
+                                                🐄
+                                            </div>
+                                        )
+                                    }
+                                />
+                                <FunctionField
+                                    label="Bovin"
+                                    render={(record: any) => record.cattle?.name || '-'}
+                                />
+                                <TextField source="n_carnet" label="N° Carnet" />
+                                <ReferenceField source="category_id" reference="categories" label="Catégorie">
+                                    <TextField source="name" />
+                                </ReferenceField>
+                                <ReferenceField source="status_id" reference="status" label="Statut">
+                                    <TextField source="name" />
+                                </ReferenceField>
+                                <DateField source="created_at" label="Date d'inscription" />
+                                <ShowButton resource="herd-book-cattle" />
+                            </Datagrid>
+                        </ArrayField>
+                    </CardContent>
+                </Card>
+            </Tab>
+        </TabbedShowLayout>
+    </Show>
+);
