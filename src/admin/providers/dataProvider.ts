@@ -53,9 +53,13 @@ const transformCattleData = (data: any) => {
     transformed.status = transformed.status.id;
   }
 
-  // Transform source.purchaseCategory if it's a string (old data)
-  if (transformed.source?.purchaseCategory && typeof transformed.source.purchaseCategory === 'string') {
-    // This shouldn't happen with proper ReferenceInput, but handle legacy data
+  // Remove status from payload as it is not accepted by backend on create/update
+  if ('status' in transformed) {
+    delete transformed.status;
+  }
+
+  // Remove purchaseCategory from source if present (not supported by backend)
+  if (transformed.source && 'purchaseCategory' in transformed.source) {
     delete transformed.source.purchaseCategory;
   }
 

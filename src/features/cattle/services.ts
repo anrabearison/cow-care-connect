@@ -31,13 +31,14 @@ class CattleService {
       transformed.category = transformed.category.id;
     }
 
-    if (transformed.status && typeof transformed.status === 'object') {
-      transformed.status = transformed.status.id;
+    // Remove status from payload as it is not accepted by backend on create/update
+    if ('status' in transformed) {
+      delete transformed.status;
     }
 
-    // Handle nested source fields
-    if (transformed.source?.purchaseCategory && typeof transformed.source.purchaseCategory === 'object') {
-      transformed.source.purchaseCategory = transformed.source.purchaseCategory.id;
+    // Remove purchaseCategory from source if present (not supported by backend)
+    if (transformed.source && 'purchaseCategory' in transformed.source) {
+      delete transformed.source.purchaseCategory;
     }
 
     return transformed;

@@ -24,7 +24,6 @@ export interface Cattle {
     type: 'Acheté' | 'Né dans le troupeau';
     supplier?: string;
     purchaseDate?: string;
-    purchaseCategory?: string;
     purchasePrice?: number;
     purchaseWeight?: number;
     purchaseHealthStatus?: string;

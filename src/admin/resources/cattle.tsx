@@ -277,16 +277,8 @@ export const CattleEdit = () => (
       />
       <TextInput source="source.supplier" label="Fournisseur" />
       <DateInput source="source.purchaseDate" label="Date d'achat" />
-      <SelectInput
-        source="source.purchaseCategory"
-        label="Catégorie à l'achat"
-        choices={[
-          { id: 'Taureau', name: 'Taureau' },
-          { id: 'Veau', name: 'Veau' },
-          { id: 'Zébu', name: 'Zébu' },
-          { id: 'Vache', name: 'Vache' },
-        ]}
-      />
+      <DateInput source="source.purchaseDate" label="Date d'achat" />
+      {/* purchaseCategory removed as not supported by backend */}
       <NumberInput source="source.purchasePrice" label="Prix d'achat (Ar)" />
       <NumberInput source="source.purchaseWeight" label="Poids à l'achat (kg)" />
       <TextInput source="source.purchaseHealthStatus" label="État de santé à l'achat" />
@@ -389,16 +381,8 @@ export const CattleCreate = () => (
       />
       <TextInput source="source.supplier" label="Fournisseur" />
       <DateInput source="source.purchaseDate" label="Date d'achat" />
-      <SelectInput
-        source="source.purchaseCategory"
-        label="Catégorie à l'achat"
-        choices={[
-          { id: 'Taureau', name: 'Taureau' },
-          { id: 'Veau', name: 'Veau' },
-          { id: 'Zébu', name: 'Zébu' },
-          { id: 'Vache', name: 'Vache' },
-        ]}
-      />
+      <DateInput source="source.purchaseDate" label="Date d'achat" />
+      {/* purchaseCategory removed as not supported by backend */}
       <NumberInput source="source.purchasePrice" label="Prix d'achat (Ar)" />
       <NumberInput source="source.purchaseWeight" label="Poids à l'achat (kg)" />
       <TextInput source="source.purchaseHealthStatus" label="État de santé à l'achat" />

@@ -103,26 +103,23 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
             gender: formData.gender as 'M' | 'F',
             birthDate: formData.birthDate,
             character: {
-                id: formData.character,
-                name: characters.find(c => c.id === formData.character)?.name || 'Docile'
+                id: formData.character.toString(),
+                name: characters.find(c => c.id === formData.character.toString())?.name || 'Docile'
             },
             category: {
-                id: parseInt(formData.category),
-                name: categories.find(c => c.id === parseInt(formData.category))?.name || ''
+                id: formData.category,
+                name: categories.find(c => c.id === formData.category)?.name || ''
             },
             brand: formData.brand || undefined,
             herdBookNumber: formData.herdBookNumber ? parseInt(formData.herdBookNumber) : undefined,
             distinctiveSign: formData.distinctiveSign || undefined,
             photo: undefined,
-            status: {
-                id: 1,
-                name: 'Vivant'
-            },
+            // status removed as not supported by backend on create
             source: {
                 type: formData.sourceType,
                 supplier: formData.sourceType === 'Acheté' ? formData.supplier : undefined,
                 purchaseDate: formData.sourceType === 'Acheté' ? formData.purchaseDate : undefined,
-                purchaseCategory: formData.sourceType === 'Acheté' ? parseInt(formData.category) : undefined, // Assuming purchase category is same as current category for now
+                // purchaseCategory removed as not supported by backend
                 purchasePrice: formData.sourceType === 'Acheté' && formData.purchasePrice ? parseFloat(formData.purchasePrice) : undefined,
                 purchaseWeight: formData.sourceType === 'Acheté' && formData.purchaseWeight ? parseFloat(formData.purchaseWeight) : undefined,
                 purchaseHealthStatus: formData.sourceType === 'Acheté' ? formData.purchaseHealthStatus : undefined,

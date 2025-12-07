@@ -113,15 +113,13 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
             brand: formData.brand || undefined,
             distinctiveSign: formData.distinctiveSign || undefined,
             photo: undefined,
-            status: {
-                id: 'STAT001',
-                name: 'Vivant'
-            },
+            photo: undefined,
+            // status removed as not supported by backend on create
             source: {
                 type: 'Acheté',
                 supplier: formData.supplier || undefined,
                 purchaseDate: formData.purchaseDate || undefined,
-                purchaseCategory: formData.category,
+                // purchaseCategory removed as not supported by backend
                 purchasePrice: formData.purchasePrice ? parseFloat(formData.purchasePrice) : undefined,
                 purchaseWeight: formData.purchaseWeight ? parseFloat(formData.purchaseWeight) : undefined,
                 purchaseHealthStatus: formData.purchaseHealthStatus || undefined,

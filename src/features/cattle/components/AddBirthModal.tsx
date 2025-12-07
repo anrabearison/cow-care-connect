@@ -57,17 +57,9 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                     id: 'CAT003',
                     name: 'Veau'
                 },
-                brand: formData.brand || undefined,
+                // brand removed as not supported by backend on birth create
                 distinctiveSign: formData.distinctiveSign || undefined,
-                photo: undefined,
-                status: {
-                    id: 'STAT001',
-                    name: 'Vivant'
-                },
-                source: {
-                    type: 'Né dans le troupeau',
-                    motherId: motherId
-                }
+                // photo, status, source removed as not supported by backend on birth create
             };
 
             onAdd(calfData);
