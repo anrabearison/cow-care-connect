@@ -8,11 +8,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Cattle } from '@/features/cattle/types';
 import { referenceService } from '@/features/common/services/referenceService';
 import { useToast } from '@/hooks/use-toast';
+import { useHerdBookSelection } from '@/contexts/HerdBookSelectionContext';
+import { Calendar } from 'lucide-react';
 
 interface AddPurchaseModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onAdd: (cattleData: Omit<Cattle, 'id' | 'events' | 'treatments'>) => void;
+    onAdd: (cattleData: Omit<Cattle, 'id' | 'events' | 'treatments'>, herdBookId?: string) => void;
 }
 
 export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpenChange, onAdd }) => {
@@ -20,6 +22,22 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
     const [categories, setCategories] = useState<{ id: string, name: string }[]>([]);
     const [characters, setCharacters] = useState<{ id: string, name: string }[]>([]);
     const [errors, setErrors] = useState<Record<string, string>>({});
+
+    // HerdBook selection
+    const { availableHerdBooks, selectedHerdBookId: contextHerdBookId } = useHerdBookSelection();
+    const [selectedHerdBookId, setSelectedHerdBookId] = useState<string>('');
+
+    useEffect(() => {
+        if (open) {
+            if (contextHerdBookId) {
+                setSelectedHerdBookId(contextHerdBookId);
+            } else if (availableHerdBooks.length > 0) {
+                // Default to most recent
+                const sorted = [...availableHerdBooks].sort((a, b) => b.year - a.year);
+                setSelectedHerdBookId(sorted[0].id);
+            }
+        }
+    }, [open, contextHerdBookId, availableHerdBooks]);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -85,6 +103,7 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
         if (!formData.birthDate) newErrors.birthDate = "La date de naissance est obligatoire";
         if (!formData.category) newErrors.category = "La catégorie est obligatoire";
         if (!formData.purchaseDate) newErrors.purchaseDate = "La date d'achat est obligatoire";
+        if (!selectedHerdBookId) newErrors.herdBook = "Le livre de troupeau est obligatoire";
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -113,7 +132,6 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
             brand: formData.brand || undefined,
             distinctiveSign: formData.distinctiveSign || undefined,
             photo: undefined,
-            photo: undefined,
             // status removed as not supported by backend on create
             source: {
                 type: 'Acheté',
@@ -127,7 +145,7 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
             }
         };
 
-        onAdd(cattleData);
+        onAdd(cattleData, selectedHerdBookId);
         resetForm();
         onOpenChange(false);
     };
@@ -166,6 +184,36 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
                         {/* Informations Générales */}
                         <div>
                             <h3 className="text-lg font-medium mb-4">Informations Générales</h3>
+
+                            {/* HerdBook Selection */}
+                            <div className="mb-4">
+                                <Label htmlFor="herdBook">Livre de troupeau *</Label>
+                                <Select
+                                    value={selectedHerdBookId}
+                                    onValueChange={(value) => {
+                                        setSelectedHerdBookId(value);
+                                        if (errors.herdBook) setErrors({ ...errors, herdBook: '' });
+                                    }}
+                                >
+                                    <SelectTrigger id="herdBook" className={errors.herdBook ? 'border-red-500' : ''}>
+                                        <SelectValue placeholder="Sélectionner un livre de troupeau" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {availableHerdBooks
+                                            .sort((a, b) => b.year - a.year)
+                                            .map((hb) => (
+                                                <SelectItem key={hb.id} value={hb.id}>
+                                                    <div className="flex items-center gap-2">
+                                                        <Calendar className="h-4 w-4 text-muted-foreground" />
+                                                        <span>{hb.year} - {hb.reference}</span>
+                                                    </div>
+                                                </SelectItem>
+                                            ))}
+                                    </SelectContent>
+                                </Select>
+                                {errors.herdBook && <p className="text-sm text-red-500">{errors.herdBook}</p>}
+                            </div>
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="grid gap-2">
                                     <Label htmlFor="name">Nom *</Label>

@@ -77,6 +77,7 @@ export default function CattlePage() {
   // Memoize add cattle handler
   const handleAddCattle = useCallback(async (
     cattleData: Omit<Cattle, 'id' | 'events' | 'treatments'>,
+    herdBookId?: string,
     nCarnet?: string
   ) => {
     const fullCattleData: Omit<Cattle, 'id'> = {
@@ -87,7 +88,7 @@ export default function CattlePage() {
     };
     createCattleMutation.mutate({
       cattle: fullCattleData,
-      herdBookId: selectedHerdBookId || undefined,
+      herdBookId: herdBookId || selectedHerdBookId || undefined,
       nCarnet
     });
   }, [createCattleMutation, selectedOwnerId, selectedHerdBookId]);
