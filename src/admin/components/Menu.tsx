@@ -33,7 +33,13 @@ export const Menu = (props: any) => {
     });
 
     const handleToggle = (menu: string) => {
-        setState(state => ({ ...state, [menu]: !state[menu] }));
+        setState(state => ({
+            menuMain: false,
+            menuHealth: false,
+            menuAdmin: false,
+            menuConfig: false,
+            [menu]: !state[menu as keyof typeof state],
+        }));
     };
 
     return (
