@@ -347,9 +347,9 @@ export const CattleCreate = () => (
         label="N° Carnet"
         helperText="Numéro de carnet pour ce livre de troupeau (optionnel)"
       />
-      <NumberInput source="herdBookNumber" label="N° Carnet (ancien)" />
+
       <TextInput source="brand" label="Marque" />
-      <TextInput source="n_carnet" label="N° Carnet" />
+
       <TextInput source="distinctiveSign" label="Signe Particulier" />
       <SelectInput
         source="gender"
