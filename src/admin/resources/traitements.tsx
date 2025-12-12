@@ -168,12 +168,14 @@ const DosageInput = () => (
       source="administration_route"
       label="Voie d'administration"
       choices={[
-        { id: 'Orale', name: 'Orale' },
-        { id: 'Intraveineuse', name: 'Intraveineuse' },
         { id: 'Intramusculaire', name: 'Intramusculaire' },
         { id: 'Sous-cutanée', name: 'Sous-cutanée' },
-        { id: 'Topique', name: 'Topique' },
-        { id: 'Intra-mammaire', name: 'Intra-mammaire' },
+        { id: 'Intraveineuse', name: 'Intraveineuse' },
+        { id: 'Orale', name: 'Orale' },
+        { id: 'Locale / Externe', name: 'Locale / Externe' },
+        { id: 'Intramammaire', name: 'Intramammaire' },
+        { id: 'Inhalation', name: 'Inhalation' },
+        { id: 'Autre', name: 'Autre' },
       ]}
       validate={required()}
     />
