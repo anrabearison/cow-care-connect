@@ -26,9 +26,12 @@ import {
     TopToolbar,
     ArrayField,
     useRecordContext,
+    usePermissions,
+    useGetIdentity,
 } from 'react-admin';
 import { Card, CardContent, Typography, Box, Divider } from '@mui/material';
 import { EditToolbar, CreateToolbar, ConfirmDeleteButton } from '../components/ConfirmToolbars';
+import { isOwnerAdmin } from '../../constants/roles';
 
 // Custom ListActions
 const ListActions = () => (
@@ -141,77 +144,89 @@ export const HerdBookList = () => (
 );
 
 // Édition d'un livre de troupeau
-export const HerdBookEdit = () => (
-    <Edit>
-        <SimpleForm toolbar={<EditToolbar />}>
-            <NumberInput
-                source="year"
-                label="Année"
-                validate={[required(), (value) => {
-                    if (value < 2000) return 'L\'année doit être >= 2000';
-                    if (value > new Date().getFullYear() + 1) return 'L\'année ne peut pas être trop loin dans le futur';
-                    return undefined;
-                }]}
-            />
-            <TextInput
-                source="reference"
-                label="Référence"
-                validate={[required()]}
-                helperText="Ex: LT-2024-001"
-            />
-            <ReferenceInput
-                source="owner_id"
-                reference="owners"
-                label="Propriétaire"
-            >
-                <SelectInput optionText="name" validate={required()} />
-            </ReferenceInput>
-            <TextInput
-                source="description"
-                label="Description"
-                multiline
-                rows={3}
-            />
-        </SimpleForm>
-    </Edit>
-);
+export const HerdBookEdit = () => {
+    const { permissions } = usePermissions();
+    return (
+        <Edit>
+            <SimpleForm toolbar={<EditToolbar />}>
+                <NumberInput
+                    source="year"
+                    label="Année"
+                    validate={[required(), (value) => {
+                        if (value < 2000) return 'L\'année doit être >= 2000';
+                        if (value > new Date().getFullYear() + 1) return 'L\'année ne peut pas être trop loin dans le futur';
+                        return undefined;
+                    }]}
+                />
+                <TextInput
+                    source="reference"
+                    label="Référence"
+                    validate={[required()]}
+                    helperText="Ex: LT-2024-001"
+                />
+                <ReferenceInput
+                    source="owner_id"
+                    reference="owners"
+                    label="Propriétaire"
+                >
+                    <SelectInput optionText="name" validate={required()} disabled={isOwnerAdmin(permissions)} />
+                </ReferenceInput>
+                <TextInput
+                    source="description"
+                    label="Description"
+                    multiline
+                    rows={3}
+                />
+            </SimpleForm>
+        </Edit>
+    );
+};
 
 // Création d'un livre de troupeau
-export const HerdBookCreate = () => (
-    <Create>
-        <SimpleForm toolbar={<CreateToolbar />}>
-            <NumberInput
-                source="year"
-                label="Année"
-                defaultValue={new Date().getFullYear()}
-                validate={[required(), (value) => {
-                    if (value < 2000) return 'L\'année doit être >= 2000';
-                    if (value > new Date().getFullYear() + 1) return 'L\'année ne peut pas être trop loin dans le futur';
-                    return undefined;
-                }]}
-            />
-            <TextInput
-                source="reference"
-                label="Référence"
-                validate={[required()]}
-                helperText="Ex: LT-2024-001"
-            />
-            <ReferenceInput
-                source="owner_id"
-                reference="owners"
-                label="Propriétaire"
-            >
-                <SelectInput optionText="name" validate={required()} />
-            </ReferenceInput>
-            <TextInput
-                source="description"
-                label="Description"
-                multiline
-                rows={3}
-            />
-        </SimpleForm>
-    </Create>
-);
+export const HerdBookCreate = () => {
+    const { permissions } = usePermissions();
+    const { data: identity } = useGetIdentity();
+
+    const defaultValues = {
+        year: new Date().getFullYear(),
+        ...(isOwnerAdmin(permissions) && identity?.owner_id ? { owner_id: identity.owner_id } : {})
+    };
+
+    return (
+        <Create>
+            <SimpleForm toolbar={<CreateToolbar />} defaultValues={defaultValues}>
+                <NumberInput
+                    source="year"
+                    label="Année"
+                    validate={[required(), (value) => {
+                        if (value < 2000) return 'L\'année doit être >= 2000';
+                        if (value > new Date().getFullYear() + 1) return 'L\'année ne peut pas être trop loin dans le futur';
+                        return undefined;
+                    }]}
+                />
+                <TextInput
+                    source="reference"
+                    label="Référence"
+                    validate={[required()]}
+                    helperText="Ex: LT-2024-001"
+                />
+                <ReferenceInput
+                    source="owner_id"
+                    reference="owners"
+                    label="Propriétaire"
+                >
+                    <SelectInput optionText="name" validate={required()} disabled={isOwnerAdmin(permissions)} />
+                </ReferenceInput>
+                <TextInput
+                    source="description"
+                    label="Description"
+                    multiline
+                    rows={3}
+                />
+            </SimpleForm>
+        </Create>
+    );
+};
 
 // Helper component for inline field display
 interface InlineFieldProps {
