@@ -64,6 +64,10 @@ export const Menu = (props: any) => {
                     color: 'inherit',
                     minWidth: 40,
                 },
+                '& .MuiListItemText-primary': {
+                    fontWeight: 500,
+                    fontSize: '0.875rem',
+                },
             }}
             {...props}
         >

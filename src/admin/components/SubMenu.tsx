@@ -32,7 +32,7 @@ const SubMenu = (props: SubMenuProps) => {
             }}
         >
             <ListItemIcon sx={{ minWidth: 40, color: 'inherit' }}>
-                {isOpen ? <ExpandLess /> : icon}
+                {icon}
             </ListItemIcon>
             <ListItemText
                 primary={translate(name)}
@@ -41,6 +41,7 @@ const SubMenu = (props: SubMenuProps) => {
                     fontWeight: 500,
                 }}
             />
+            {isOpen ? <ExpandLess /> : <ExpandMore />}
         </ListItemButton>
     );
 
@@ -58,8 +59,12 @@ const SubMenu = (props: SubMenuProps) => {
                     component="div"
                     disablePadding
                     sx={{
-                        '& .MuiListItemButton-root': {
+                        backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                        '& .MuiMenuItem-root': {
                             paddingLeft: 4,
+                        },
+                        '& .MuiListItemIcon-root': {
+                            minWidth: 40,
                         },
                     }}
                 >
