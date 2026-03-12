@@ -89,7 +89,7 @@ export const UserList = () => (
       <TextField source="name" label="Nom" />
       <EmailField source="email" label="Email" />
       <TextField source="role" label="Rôle" />
-      <ReferenceField source="owner_id" reference="owners" label="Propriétaire" link="show">
+      <ReferenceField source="ownerId" reference="owners" label="Propriétaire" link="show">
         <TextField source="name" />
       </ReferenceField>
       <CustomShowButton />
@@ -111,7 +111,7 @@ export const UserEdit = () => (
         choices={roleChoices}
         required
       />
-      <ReferenceInput source="owner_id" reference="owners" label="Propriétaire">
+      <ReferenceInput source="ownerId" reference="owners" label="Propriétaire">
         <SelectInput optionText="name" />
       </ReferenceInput>
       <PasswordInput source="password" label="Nouveau mot de passe (optionnel)" />
@@ -131,7 +131,7 @@ export const UserCreate = () => (
         choices={roleChoices}
         required
       />
-      <ReferenceInput source="owner_id" reference="owners" label="Propriétaire">
+      <ReferenceInput source="ownerId" reference="owners" label="Propriétaire">
         <SelectInput optionText="name" />
       </ReferenceInput>
       <PasswordInput source="password" label="Mot de passe" required />
