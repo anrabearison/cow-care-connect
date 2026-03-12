@@ -8,6 +8,7 @@ import {
     Edit,
     SimpleForm,
     TextInput,
+    DateInput,
     Create,
     Show,
     SimpleShowLayout,
@@ -291,17 +292,37 @@ export const HerdBookCattleCreate = () => (
                 />
             </ReferenceInput>
 
-            <ReferenceInput
-                source="cattle_id"
-                reference="cattle"
-                label="Bovin"
-            >
-                <AutocompleteInput
-                    optionText="name"
-                    validate={required()}
-                    filterToQuery={(searchText) => ({ q: searchText })}
-                />
+            <TextInput source="cattle.name" label="Nom du bovin" required />
+            
+            <SelectInput
+                source="cattle.gender"
+                label="Genre"
+                choices={[
+                    { id: 'M', name: 'Mâle' },
+                    { id: 'F', name: 'Femelle' },
+                ]}
+                validate={required()}
+            />
+            
+            <DateInput 
+                source="cattle.birthDate" 
+                label="Date de naissance" 
+                validate={required()} 
+            />
+            
+            <ReferenceInput source="cattle.character" reference="characters" label="Caractère">
+                <AutocompleteInput optionText="name" validate={required()} />
             </ReferenceInput>
+            
+            <SelectInput
+                source="cattle.source.type"
+                label="Type de source"
+                choices={[
+                    { id: 'ACHETE', name: 'Acheté' },
+                    { id: 'NE_DANS_TROUPEAU', name: 'Né dans le troupeau' },
+                ]}
+                validate={required()}
+            />
 
             <TextInput
                 source="n_carnet"
