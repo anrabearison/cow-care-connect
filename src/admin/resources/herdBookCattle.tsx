@@ -24,6 +24,8 @@ import {
     FilterButton,
     TopToolbar,
     useRecordContext,
+    FormDataConsumer,
+    NumberInput,
 } from 'react-admin';
 import { EditToolbar, CreateToolbar, ConfirmDeleteButton } from '../components/ConfirmToolbars';
 
@@ -323,6 +325,29 @@ export const HerdBookCattleCreate = () => (
                 ]}
                 validate={required()}
             />
+
+            <FormDataConsumer>
+                {({ formData, ...rest }) => formData?.cattle?.source?.type === 'ACHETE' && (
+                    <div style={{ paddingLeft: '2em', borderLeft: '3px solid #e0e0e0', marginLeft: '1em', marginBottom: '1em' }}>
+                        <TextInput source="cattle.source.supplier" label="Fournisseur" {...rest} fullWidth />
+                        <DateInput source="cattle.source.purchaseDate" label="Date d'achat" {...rest} fullWidth />
+                        <NumberInput source="cattle.source.purchasePrice" label="Prix d'achat (Ar)" {...rest} fullWidth />
+                        <NumberInput source="cattle.source.purchaseWeight" label="Poids à l'achat (kg)" {...rest} fullWidth />
+                        <TextInput source="cattle.source.purchaseHealthStatus" label="État de santé à l'achat" {...rest} fullWidth />
+                        <TextInput source="cattle.source.purchaseNotes" label="Remarques achat" multiline rows={3} {...rest} fullWidth />
+                    </div>
+                )}
+            </FormDataConsumer>
+
+            <FormDataConsumer>
+                {({ formData, ...rest }) => formData?.cattle?.source?.type === 'NE_DANS_TROUPEAU' && (
+                    <div style={{ paddingLeft: '2em', borderLeft: '3px solid #e0e0e0', marginLeft: '1em', marginBottom: '1em' }}>
+                        <ReferenceInput source="cattle.source.motherId" reference="cattle" filter={{ gender: 'F' }} label="Mère (optionnel)" {...rest}>
+                            <AutocompleteInput optionText="name" fullWidth />
+                        </ReferenceInput>
+                    </div>
+                )}
+            </FormDataConsumer>
 
             <TextInput
                 source="n_carnet"
