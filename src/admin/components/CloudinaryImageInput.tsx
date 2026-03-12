@@ -3,6 +3,7 @@ import { useDropzone } from 'react-dropzone';
 import { useInput, useNotify } from 'react-admin';
 import axios from 'axios';
 import { Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { API_CONFIG } from '@/config/api';
 
 interface CloudinaryImageInputProps {
     source: string;
@@ -47,7 +48,7 @@ export const CloudinaryImageInput: React.FC<CloudinaryImageInputProps> = ({
 
             // Upload to backend
             const response = await axios.post(
-                'http://localhost:3000/api/upload/image',
+                `${API_CONFIG.BASE_URL}/api/v1/upload/image`,
                 formData,
                 {
                     headers: {
