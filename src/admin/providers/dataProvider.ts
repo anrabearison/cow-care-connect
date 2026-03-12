@@ -66,6 +66,40 @@ const transformCattleData = (data: any) => {
   return transformed;
 };
 
+// Helper function to transform herd-book-cattle data before sending to API
+const transformHerdBookCattleData = (data: any) => {
+  const transformed = { ...data };
+
+  // Map snake_case to camelCase and resolve references to IDs
+  if (transformed.herd_book_id) {
+    transformed.herdBookId = typeof transformed.herd_book_id === 'object' ? transformed.herd_book_id.id : transformed.herd_book_id;
+    delete transformed.herd_book_id;
+  }
+  if (transformed.cattle_id) {
+    transformed.cattleId = typeof transformed.cattle_id === 'object' ? transformed.cattle_id.id : transformed.cattle_id;
+    delete transformed.cattle_id;
+  }
+  if (transformed.category_id) {
+    transformed.categoryId = typeof transformed.category_id === 'object' ? transformed.category_id.id : transformed.category_id;
+    delete transformed.category_id;
+  }
+  if (transformed.status_id) {
+    transformed.statusId = typeof transformed.status_id === 'object' ? transformed.status_id.id : transformed.status_id;
+    delete transformed.status_id;
+  }
+  if (transformed.n_carnet !== undefined) {
+    transformed.nCarnet = transformed.n_carnet;
+    delete transformed.n_carnet;
+  }
+
+  // Also extract references from nested cattle if present
+  if (transformed.cattle) {
+    transformed.cattle = transformCattleData(transformed.cattle);
+  }
+
+  return transformed;
+};
+
 const realDataProvider: DataProvider = {
   getList: (resource, params) => {
     const { page, perPage } = params.pagination;
@@ -135,8 +169,13 @@ const realDataProvider: DataProvider = {
   },
 
   update: (resource, params) => {
-    // Transform cattle data before sending
-    const data = resource === 'cattle' ? transformCattleData(params.data) : params.data;
+    // Transform data before sending depending on resource
+    let data = params.data;
+    if (resource === 'cattle') {
+      data = transformCattleData(params.data);
+    } else if (resource === 'herd-book-cattle') {
+      data = transformHerdBookCattleData(params.data);
+    }
 
     const selectedOwnerId = getSelectedOwnerIdFn?.();
     const query = selectedOwnerId ? stringify({ owner_id: selectedOwnerId }) : '';
@@ -175,6 +214,14 @@ const realDataProvider: DataProvider = {
         : '';
 
       return httpClient(`${apiUrl}/${getResourcePath(resource)}${queryString}`, {
+        method: 'POST',
+        body: JSON.stringify(transformedData),
+      }).then(({ json }) => ({
+        data: json,
+      }));
+    } else if (resource === 'herd-book-cattle') {
+      const transformedData = transformHerdBookCattleData(params.data);
+      return httpClient(`${apiUrl}/${getResourcePath(resource)}`, {
         method: 'POST',
         body: JSON.stringify(transformedData),
       }).then(({ json }) => ({

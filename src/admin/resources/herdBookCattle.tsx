@@ -195,10 +195,10 @@ export const HerdBookCattleList = () => (
                 label="Statut"
                 render={(record: any) => {
                     const statusColors: Record<string, string> = {
-                        'STAT001': '#4caf50', // Actif - vert
-                        'STAT002': '#ff9800', // Malade - orange
-                        'STAT003': '#f44336', // Mort - rouge
-                        'STAT004': '#2196f3', // Vendu - bleu
+                        'STA001': '#4caf50', // Actif - vert
+                        'STA002': '#ff9800', // Malade - orange
+                        'STA003': '#f44336', // Mort - rouge
+                        'STA004': '#2196f3', // Vendu - bleu
                     };
                     const color = statusColors[record.status_id || ''] || '#9e9e9e';
 
@@ -346,7 +346,7 @@ export const HerdBookCattleCreate = () => (
                 <SelectInput
                     optionText="name"
                     validate={required()}
-                    defaultValue="STAT001"
+                    defaultValue="STA001"
                 />
             </ReferenceInput>
         </SimpleForm>
