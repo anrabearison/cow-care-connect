@@ -2,10 +2,15 @@
  * Calculate age from birth date
  */
 export const calculateAge = (birthDate: string): string => {
+    if (!birthDate) return 'Âge inconnu';
     const birth = new Date(birthDate);
+    if (isNaN(birth.getTime())) return 'Date invalide';
+
     const today = new Date();
     const ageInMonths = (today.getFullYear() - birth.getFullYear()) * 12 +
         (today.getMonth() - birth.getMonth());
+
+    if (ageInMonths < 0) return 'Nouveau-né';
 
     if (ageInMonths < 12) {
         return `${ageInMonths} mois`;

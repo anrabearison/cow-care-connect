@@ -23,12 +23,12 @@ import { EditToolbar, CreateToolbar, ConfirmDeleteButton } from '../components/C
 const medicamentFilters = [
   <TextInput source="q" label="Rechercher" alwaysOn />,
   <SelectInput source="type" label="Type" choices={[
-    { id: 'Antibiotique', name: 'Antibiotique' },
-    { id: 'Vaccin', name: 'Vaccin' },
-    { id: 'Vermifuge', name: 'Vermifuge' },
-    { id: 'Anti-inflammatoire', name: 'Anti-inflammatoire' },
-    { id: 'Vitamine', name: 'Vitamine' },
-    { id: 'Autre', name: 'Autre' },
+    { id: 'ANTIBIOTIQUE', name: 'Antibiotique' },
+    { id: 'VACCIN', name: 'Vaccin' },
+    { id: 'VERMIFUGE', name: 'Vermifuge' },
+    { id: 'ANTI_INFLAMMATOIRE', name: 'Anti-inflammatoire' },
+    { id: 'VITAMINE', name: 'Vitamine' },
+    { id: 'AUTRE', name: 'Autre' },
   ]} />,
   <TextInput source="fabricant" label="Fabricant" />,
 ];
@@ -188,12 +188,12 @@ export const MedicamentEdit = () => (
         source="type"
         label="Type"
         choices={[
-          { id: 'Antibiotique', name: 'Antibiotique' },
-          { id: 'Vaccin', name: 'Vaccin' },
-          { id: 'Vermifuge', name: 'Vermifuge' },
-          { id: 'Anti-inflammatoire', name: 'Anti-inflammatoire' },
-          { id: 'Vitamine', name: 'Vitamine' },
-          { id: 'Autre', name: 'Autre' },
+          { id: 'ANTIBIOTIQUE', name: 'Antibiotique' },
+          { id: 'VACCIN', name: 'Vaccin' },
+          { id: 'VERMIFUGE', name: 'Vermifuge' },
+          { id: 'ANTI_INFLAMMATOIRE', name: 'Anti-inflammatoire' },
+          { id: 'VITAMINE', name: 'Vitamine' },
+          { id: 'AUTRE', name: 'Autre' },
         ]}
         validate={required()}
       />
@@ -213,12 +213,12 @@ export const MedicamentCreate = () => (
         source="type"
         label="Type"
         choices={[
-          { id: 'Antibiotique', name: 'Antibiotique' },
-          { id: 'Vaccin', name: 'Vaccin' },
-          { id: 'Vermifuge', name: 'Vermifuge' },
-          { id: 'Anti-inflammatoire', name: 'Anti-inflammatoire' },
-          { id: 'Vitamine', name: 'Vitamine' },
-          { id: 'Autre', name: 'Autre' },
+          { id: 'ANTIBIOTIQUE', name: 'Antibiotique' },
+          { id: 'VACCIN', name: 'Vaccin' },
+          { id: 'VERMIFUGE', name: 'Vermifuge' },
+          { id: 'ANTI_INFLAMMATOIRE', name: 'Anti-inflammatoire' },
+          { id: 'VITAMINE', name: 'Vitamine' },
+          { id: 'AUTRE', name: 'Autre' },
         ]}
         validate={required()}
       />

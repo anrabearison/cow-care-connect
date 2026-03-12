@@ -21,14 +21,14 @@ export interface Cattle {
   };
   n_carnet?: string;
   source: {
-    type: 'Acheté' | 'Né dans le troupeau';
+    type: 'ACHETE' | 'NE_DANS_TROUPEAU';
     supplier?: string;
     purchaseDate?: string;
     purchasePrice?: number;
     purchaseWeight?: number;
     purchaseHealthStatus?: string;
     purchaseNotes?: string;
-    motherId?: string; // Changed from number to string
+    motherId?: string;
   };
   events: CattleEvent[];
   treatments: Treatment[];
@@ -60,7 +60,7 @@ export interface CattleEvent {
 
 export interface Treatment {
   id: string; // Changed from number to string
-  type: 'Antibiotique' | 'Vaccin' | 'Vermifuge' | 'Anti-inflammatoire' | 'Vitamine' | 'Autre';
+  type: 'ANTIBIOTIQUE' | 'VACCIN' | 'VERMIFUGE' | 'ANTI_INFLAMMATOIRE' | 'VITAMINE' | 'AUTRE';
   date: string;
   product: string; // ID du médicament
   dosage: string | {

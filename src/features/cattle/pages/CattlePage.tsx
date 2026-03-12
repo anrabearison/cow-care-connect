@@ -31,7 +31,7 @@ export default function CattlePage() {
   const itemsPerPage = 6;
 
   // Check if Super Admin has selected an owner
-  const isSuperAdmin = user?.role === 'super_admin';
+  const isSuperAdmin = user?.role === 'SUPER_ADMIN';
   const canAddCattle = !isSuperAdmin || selectedOwnerId !== null;
 
   // Load categories with React Query
@@ -203,8 +203,8 @@ export default function CattlePage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Toutes les sources</SelectItem>
-                  <SelectItem value="Acheté">Acheté</SelectItem>
-                  <SelectItem value="Né dans le troupeau">Né dans le troupeau</SelectItem>
+                  <SelectItem value="ACHETE">Acheté</SelectItem>
+                  <SelectItem value="NE_DANS_TROUPEAU">Né dans le troupeau</SelectItem>
                 </SelectContent>
               </Select>
 

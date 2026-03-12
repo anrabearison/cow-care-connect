@@ -24,8 +24,9 @@ interface CattleCardProps {
 
 export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
 
-  // Use a consistent image based on the cattle ID if photo exists
-  const imageIndex = cattle.id % cattleImages.length;
+  // Pick a consistent image based on the cattle ID string
+  const idHash = cattle.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const imageIndex = idHash % cattleImages.length;
   const cattleImage = cattle.photo || cattleImages[imageIndex];
 
   return (
@@ -93,10 +94,10 @@ export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
             <span className="text-sm font-medium text-foreground">{cattle.gender === 'M' ? 'Mâle' : 'Femelle'}</span>
           </div>
 
-          {cattle.herdBookNumber && (
+          {cattle.n_carnet && (
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">N° Carnet</span>
-              <span className="text-sm font-medium text-foreground">{cattle.herdBookNumber}</span>
+              <span className="text-sm font-medium text-foreground">{cattle.n_carnet}</span>
             </div>
           )}
 
@@ -109,13 +110,17 @@ export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
             </div>
           )}
 
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Source</span>
-            <div className="flex items-center space-x-1 text-sm">
-              <MapPin className="h-3 w-3 text-primary" />
-              <span className="text-foreground">{cattle.source.type}</span>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Source</span>
+              <div className="flex items-center space-x-1 text-sm">
+                <MapPin className="h-3 w-3 text-primary" />
+                <span className="text-foreground">
+                  {cattle.source.type === 'ACHETE' ? 'Acheté' :
+                    cattle.source.type === 'NE_DANS_TROUPEAU' ? 'Né dans le troupeau' :
+                      cattle.source.type}
+                </span>
+              </div>
             </div>
-          </div>
 
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Événements</span>

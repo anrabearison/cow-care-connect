@@ -22,7 +22,7 @@ export const HerdBookSelectionProvider: React.FC<{ children: ReactNode }> = ({ c
 
     // Déterminer l'owner_id à utiliser
     // Si super admin, utiliser l'owner sélectionné, sinon utiliser l'owner de l'utilisateur
-    const effectiveOwnerId = user?.role === 'super_admin'
+    const effectiveOwnerId = user?.role === 'SUPER_ADMIN'
         ? selectedOwnerId
         : (user?.owner_id || user?.owner?.id);
 

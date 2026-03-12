@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useHerdBookSelection } from '@/contexts/HerdBookSelectionContext';
 import {
   Activity,
   ArrowLeft,
@@ -23,6 +24,7 @@ import { useEventTypes, useMedicaments, useVeterinarians } from '@/features/comm
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { useEffect, useState } from 'react';
+import { calculateAge as commonCalculateAge } from '../utils/helpers';
 import cattlePortrait1 from '@/assets/cattle-portrait-1.jpg';
 import cattlePortrait2 from '@/assets/cattle-portrait-2.jpg';
 import cattlePortrait3 from '@/assets/cattle-portrait-3.jpg';
@@ -37,20 +39,7 @@ import { formatDosage } from '@/features/cattle/utils/dosageUtils';
 
 const cattleImages = [cattlePortrait1, cattlePortrait2, cattlePortrait3];
 
-const calculateAge = (birthDate: string) => {
-  const birth = new Date(birthDate);
-  const today = new Date();
-  const ageInMonths = (today.getFullYear() - birth.getFullYear()) * 12 +
-    (today.getMonth() - birth.getMonth());
-
-  if (ageInMonths < 12) {
-    return `${ageInMonths} mois`;
-  } else {
-    const years = Math.floor(ageInMonths / 12);
-    const months = ageInMonths % 12;
-    return `${years} an${years > 1 ? 's' : ''}${months > 0 ? ` et ${months} mois` : ''}`;
-  }
-};
+const calculateAge = (birthDate: string) => commonCalculateAge(birthDate);
 
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString('fr-FR', {
@@ -92,14 +81,16 @@ const getCategoryColor = (name: string) => {
 
 const getTreatmentIcon = (treatmentType: string) => {
   switch (treatmentType) {
-    case 'Antibiotique':
+    case 'ANTIBIOTIQUE':
       return '💊';
-    case 'Vaccin':
+    case 'VACCIN':
       return '💉';
-    case 'Vermifuge':
+    case 'VERMIFUGE':
       return '🧬';
-    case 'Anti-inflammatoire':
+    case 'ANTI_INFLAMMATOIRE':
       return '🩹';
+    case 'VITAMINE':
+      return '💊';
     default:
       return '💊';
   }
@@ -107,8 +98,9 @@ const getTreatmentIcon = (treatmentType: string) => {
 
 export default function CattleDetailsPage() {
   const { id } = useParams<{ id: string }>();
+  const { selectedHerdBookId } = useHerdBookSelection();
   const { cattle, loading, error } = useCattleById(id || '');
-  const { cattle: allCattle } = useCattle(); // Pour trouver les descendants
+  const { cattle: allCattle } = useCattle(selectedHerdBookId || ''); // Pour trouver les descendants
 
   // Fetch reference data
   const { data: eventTypesData } = useEventTypes();
@@ -127,22 +119,22 @@ export default function CattleDetailsPage() {
 
   // Helper functions using fetched data
   const getVeterinarianName = (id: string) => {
-    const vet = veterinariansData?.data?.find(v => v.id === id);
+    const vet = (veterinariansData?.data as any[])?.find(v => v.id === id);
     return vet ? vet.nom : `Vétérinaire ${id}`;
   };
 
   const getMedicamentName = (id: string) => {
-    const med = medicamentsData?.data?.find(m => m.id === id);
+    const med = (medicamentsData?.data as any[])?.find(m => m.id === id);
     return med ? med.nom : `Médicament ${id}`;
   };
 
   const getTypeEvenementName = (id: string) => {
-    const type = eventTypesData?.data?.find(t => t.id === id);
+    const type = eventTypesData?.data?.find((t: any) => t.id === id);
     return type ? type.nom : `Type ${id}`;
   };
 
   const getTypeEvenementIcon = (id: string) => {
-    const type = eventTypesData?.data?.find(t => t.id === id);
+    const type = eventTypesData?.data?.find((t: any) => t.id === id);
     return type?.icone || '📝';
   };
 
@@ -161,7 +153,7 @@ export default function CattleDetailsPage() {
 
     return allCattle.filter(descendant => {
       if (descendant.id === cattle.id) return false;
-      if (descendant.source.type !== 'Né dans le troupeau') return false;
+      if (descendant.source.type !== 'NE_DANS_TROUPEAU') return false;
       // Si le descendant a une mère définie mais ce n'est pas ce bovin, on l'exclut
       if (descendant.source.motherId && descendant.source.motherId !== cattle.id) return false;
 
@@ -330,7 +322,8 @@ export default function CattleDetailsPage() {
   }
 
   // Use actual cattle photo if available, otherwise use a consistent fallback image based on the cattle ID
-  const imageIndex = cattle.id % cattleImages.length;
+  const idHash = cattle.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const imageIndex = idHash % cattleImages.length;
   const cattleImage = cattle.photo || cattleImages[imageIndex];
 
 
@@ -456,10 +449,10 @@ export default function CattleDetailsPage() {
                   </div>
                 )}
 
-                {cattle.herdBookNumber && (
+                {cattle.n_carnet && (
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">N° Carnet</span>
-                    <span className="font-medium">{cattle.herdBookNumber}</span>
+                    <span className="font-medium">{cattle.n_carnet}</span>
                   </div>
                 )}
 
@@ -473,7 +466,7 @@ export default function CattleDetailsPage() {
                 <Separator />
 
                 {/* Section pour les bovins achetés */}
-                {cattle.source.type === 'Acheté' && (
+                {cattle.source.type === 'ACHETE' && (
                   <Collapsible open={showPurchaseDetails} onOpenChange={setShowPurchaseDetails}>
                     <CollapsibleTrigger asChild>
                       <Button variant="ghost" className="w-full justify-between p-3 h-auto">
@@ -500,14 +493,6 @@ export default function CattleDetailsPage() {
                             <p className="text-sm font-medium">{formatDate(cattle.source.purchaseDate)}</p>
                           </div>
                         )}
-                        {cattle.source.purchaseCategory && (
-                          <div>
-                            <p className="text-sm font-medium text-muted-foreground">Catégorie à l'achat</p>
-                            <Badge variant="outline" className={getCategoryColor(cattle.source.purchaseCategory)}>
-                              {cattle.source.purchaseCategory}
-                            </Badge>
-                          </div>
-                        )}
                         {cattle.source.purchasePrice && (
                           <div>
                             <p className="text-sm font-medium text-muted-foreground">Prix d'achat</p>
@@ -527,13 +512,13 @@ export default function CattleDetailsPage() {
                 )}
 
                 {/* Section pour les bovins nés dans le troupeau */}
-                {cattle.source.type === 'Né dans le troupeau' && (
+                {cattle.source.type === 'NE_DANS_TROUPEAU' && (
                   <>
                     <div className="space-y-2">
                       <span className="text-muted-foreground">Source</span>
                       <div className="flex items-center space-x-2">
                         <MapPin className="h-4 w-4 text-primary" />
-                        <span className="font-medium">{cattle.source.type}</span>
+                        <span className="font-medium">Né dans le troupeau</span>
                       </div>
                     </div>
                   </>
@@ -558,7 +543,7 @@ export default function CattleDetailsPage() {
                       </div>
                       <div className="pl-6 space-y-1">
                         <p className="text-sm text-muted-foreground">
-                          {cattle.source.type === 'Né dans le troupeau'
+                          {cattle.source.type === 'NE_DANS_TROUPEAU'
                             ? `Né(e) dans notre troupeau le ${formatDate(cattle.birthDate)}`
                             : `Né(e) le ${formatDate(cattle.birthDate)}`
                           }
@@ -581,7 +566,8 @@ export default function CattleDetailsPage() {
                                   {(() => {
                                     const mother = allCattle.find(c => c.id === cattle.source.motherId);
                                     if (!mother) return null;
-                                    const motherImageIndex = mother.id % cattleImages.length;
+                                    const motherIdHash = mother.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                                    const motherImageIndex = motherIdHash % cattleImages.length;
                                     const motherImage = mother.photo || cattleImages[motherImageIndex];
 
                                     return (
@@ -598,7 +584,7 @@ export default function CattleDetailsPage() {
                                             <img src={motherImage} alt={mother.name} className="h-full w-full object-cover" />
                                           </div>
                                           <div className="space-y-1">
-                                            <Badge className={getCategoryColor(mother.category.name)}>{mother.category.name}</Badge>
+                                            {mother.category && <Badge className={getCategoryColor(mother.category.name)}>{mother.category.name}</Badge>}
                                             <p className="text-xs text-muted-foreground">{calculateAge(mother.birthDate)}</p>
                                           </div>
                                         </div>
@@ -669,8 +655,9 @@ export default function CattleDetailsPage() {
                               </HoverCardTrigger>
                               <HoverCardContent className="w-80">
                                 {(() => {
-                                  const descendantImageIndex = descendant.id % cattleImages.length;
-                                  const descendantImage = descendant.photo || cattleImages[descendantImageIndex];
+                                        const descendantIdHash = descendant.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                                        const descendantImageIndex = descendantIdHash % cattleImages.length;
+                                        const descendantImage = descendant.photo || cattleImages[descendantImageIndex];
 
                                   return (
                                     <div className="grid gap-4">
@@ -686,7 +673,7 @@ export default function CattleDetailsPage() {
                                           <img src={descendantImage} alt={descendant.name} className="h-full w-full object-cover" />
                                         </div>
                                         <div className="space-y-1">
-                                          <Badge className={getCategoryColor(descendant.category.name)}>{descendant.category.name}</Badge>
+                                          {descendant.category && <Badge className={getCategoryColor(descendant.category.name)}>{descendant.category.name}</Badge>}
                                           <p className="text-xs text-muted-foreground">{calculateAge(descendant.birthDate)}</p>
                                         </div>
                                       </div>

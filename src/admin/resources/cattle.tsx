@@ -102,8 +102,8 @@ const cattleFilters = [
     source="source_type"
     label="Type de source"
     choices={[
-      { id: 'Acheté', name: '🛒 Acheté' },
-      { id: 'Né dans le troupeau', name: '🐄 Né dans le troupeau' },
+      { id: 'ACHETE', name: '🛒 Acheté' },
+      { id: 'NE_DANS_TROUPEAU', name: '🐄 Né dans le troupeau' },
     ]}
   />,
 ];
@@ -270,8 +270,8 @@ export const CattleEdit = () => (
         source="source.type"
         label="Type de source"
         choices={[
-          { id: 'Acheté', name: 'Acheté' },
-          { id: 'Né dans le troupeau', name: 'Né dans le troupeau' },
+          { id: 'ACHETE', name: 'Acheté' },
+          { id: 'NE_DANS_TROUPEAU', name: 'Né dans le troupeau' },
         ]}
         required
       />
@@ -301,12 +301,12 @@ export const CattleEdit = () => (
             source="type"
             label="Type"
             choices={[
-              { id: 'Antibiotique', name: 'Antibiotique' },
-              { id: 'Vaccin', name: 'Vaccin' },
-              { id: 'Vermifuge', name: 'Vermifuge' },
-              { id: 'Anti-inflammatoire', name: 'Anti-inflammatoire' },
-              { id: 'Vitamine', name: 'Vitamine' },
-              { id: 'Autre', name: 'Autre' },
+              { id: 'ANTIBIOTIQUE', name: 'Antibiotique' },
+              { id: 'VACCIN', name: 'Vaccin' },
+              { id: 'VERMIFUGE', name: 'Vermifuge' },
+              { id: 'ANTI_INFLAMMATOIRE', name: 'Anti-inflammatoire' },
+              { id: 'VITAMINE', name: 'Vitamine' },
+              { id: 'AUTRE', name: 'Autre' },
             ]}
           />
           <DateInput source="date" label="Date" />
@@ -375,8 +375,8 @@ export const CattleCreate = () => (
         source="source.type"
         label="Type de source"
         choices={[
-          { id: 'Acheté', name: 'Acheté' },
-          { id: 'Né dans le troupeau', name: 'Né dans le troupeau' },
+          { id: 'ACHETE', name: 'Acheté' },
+          { id: 'NE_DANS_TROUPEAU', name: 'Né dans le troupeau' },
         ]}
         required
       />
@@ -406,12 +406,12 @@ export const CattleCreate = () => (
             source="type"
             label="Type"
             choices={[
-              { id: 'Antibiotique', name: 'Antibiotique' },
-              { id: 'Vaccin', name: 'Vaccin' },
-              { id: 'Vermifuge', name: 'Vermifuge' },
-              { id: 'Anti-inflammatoire', name: 'Anti-inflammatoire' },
-              { id: 'Vitamine', name: 'Vitamine' },
-              { id: 'Autre', name: 'Autre' },
+              { id: 'ANTIBIOTIQUE', name: 'Antibiotique' },
+              { id: 'VACCIN', name: 'Vaccin' },
+              { id: 'VERMIFUGE', name: 'Vermifuge' },
+              { id: 'ANTI_INFLAMMATOIRE', name: 'Anti-inflammatoire' },
+              { id: 'VITAMINE', name: 'Vitamine' },
+              { id: 'AUTRE', name: 'Autre' },
             ]}
           />
           <DateInput source="date" label="Date" />
@@ -452,7 +452,7 @@ const InlineField: React.FC<InlineFieldProps> = ({ label, children }) => {
 const GeneralInfoTab = () => (
   <Grid container spacing={3}>
     {/* En-tête avec Photo et Infos Principales */}
-    <Grid item xs={12} md={4}>
+    <Grid size={{ xs: 12, md: 4 }}>
       <Card sx={{ height: '100%' }}>
         <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
           <Box sx={{
@@ -500,10 +500,10 @@ const GeneralInfoTab = () => (
     </Grid>
 
     {/* Détails */}
-    <Grid item xs={12} md={8}>
+    <Grid size={{ xs: 12, md: 8 }}>
       <Grid container spacing={3}>
         {/* Carte Identité */}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -511,7 +511,7 @@ const GeneralInfoTab = () => (
               </Typography>
               <Divider sx={{ mb: 2 }} />
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <InlineField label="Identifiant"><TextField source="id" /></InlineField>
                   <InlineField label="N° Carnet"><NumberField source="herdBookNumber" /></InlineField>
                   <InlineField label="Date de naissance"><DateField source="birthDate" /></InlineField>
@@ -521,7 +521,7 @@ const GeneralInfoTab = () => (
                     } />
                   </InlineField>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <InlineField label="Catégorie"><TextField source="category.name" /></InlineField>
                   <InlineField label="Caractère"><TextField source="character.name" /></InlineField>
                   <InlineField label="Marque"><TextField source="brand" /></InlineField>
@@ -541,13 +541,13 @@ const OriginTab = () => (
   <Card>
     <CardContent>
       <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Typography variant="h6" gutterBottom>Source</Typography>
           <Divider sx={{ mb: 2 }} />
           <InlineField label="Type de source"><TextField source="source.type" /></InlineField>
           <InlineField label="Fournisseur"><TextField source="source.supplier" /></InlineField>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Typography variant="h6" gutterBottom>Détails de l'achat</Typography>
           <Divider sx={{ mb: 2 }} />
           <InlineField label="Date d'achat"><DateField source="source.purchaseDate" /></InlineField>
@@ -555,7 +555,7 @@ const OriginTab = () => (
           <InlineField label="Prix d'achat"><NumberField source="source.purchasePrice" options={{ style: 'currency', currency: 'MGA' }} /></InlineField>
           <InlineField label="Poids à l'achat"><NumberField source="source.purchaseWeight" /> kg</InlineField>
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Typography variant="h6" gutterBottom>État initial</Typography>
           <Divider sx={{ mb: 2 }} />
           <InlineField label="État de santé"><TextField source="source.purchaseHealthStatus" /></InlineField>
@@ -568,7 +568,7 @@ const OriginTab = () => (
 
 const HealthTab = () => (
   <Grid container spacing={3}>
-    <Grid item xs={12}>
+    <Grid size={{ xs: 12 }}>
       <Card>
         <CardContent>
           <Typography variant="h6" gutterBottom>Historique des Événements</Typography>
@@ -585,7 +585,7 @@ const HealthTab = () => (
         </CardContent>
       </Card>
     </Grid>
-    <Grid item xs={12}>
+    <Grid size={{ xs: 12 }}>
       <Card>
         <CardContent>
           <Typography variant="h6" gutterBottom>Traitements Vétérinaires</Typography>
