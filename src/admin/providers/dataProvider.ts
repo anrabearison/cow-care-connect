@@ -1,6 +1,7 @@
 import { DataProvider, fetchUtils } from 'react-admin';
 import { stringify } from 'qs';
 import { API_CONFIG } from '@/config/api';
+import { transformCattleData, transformHerdBookCattleData } from '@/admin/utils/mappers';
 
 // Global getter for selected owner ID (will be set by AdminApp)
 let getSelectedOwnerIdFn: (() => string | null) | null = null;
@@ -36,68 +37,6 @@ const getResourcePath = (resource: string) => {
     // Add other mappings if needed
   };
   return resourceMap[resource] || resource;
-};
-
-// Helper function to transform cattle data before sending to API
-const transformCattleData = (data: any) => {
-  const transformed = { ...data };
-
-  // Extract IDs from reference objects
-  if (transformed.category && typeof transformed.category === 'object') {
-    transformed.category = transformed.category.id;
-  }
-  if (transformed.character && typeof transformed.character === 'object') {
-    transformed.character = transformed.character.id;
-  }
-  if (transformed.status && typeof transformed.status === 'object') {
-    transformed.status = transformed.status.id;
-  }
-
-  // Remove status from payload as it is not accepted by backend on create/update
-  if ('status' in transformed) {
-    delete transformed.status;
-  }
-
-  // Remove purchaseCategory from source if present (not supported by backend)
-  if (transformed.source && 'purchaseCategory' in transformed.source) {
-    delete transformed.source.purchaseCategory;
-  }
-
-  return transformed;
-};
-
-// Helper function to transform herd-book-cattle data before sending to API
-const transformHerdBookCattleData = (data: any) => {
-  const transformed = { ...data };
-
-  // Map snake_case to camelCase and resolve references to IDs
-  if (transformed.herd_book_id) {
-    transformed.herdBookId = typeof transformed.herd_book_id === 'object' ? transformed.herd_book_id.id : transformed.herd_book_id;
-    delete transformed.herd_book_id;
-  }
-  if (transformed.cattle_id) {
-    transformed.cattleId = typeof transformed.cattle_id === 'object' ? transformed.cattle_id.id : transformed.cattle_id;
-    delete transformed.cattle_id;
-  }
-  if (transformed.category_id) {
-    transformed.categoryId = typeof transformed.category_id === 'object' ? transformed.category_id.id : transformed.category_id;
-    delete transformed.category_id;
-  }
-  if (transformed.status_id) {
-    transformed.statusId = typeof transformed.status_id === 'object' ? transformed.status_id.id : transformed.status_id;
-    delete transformed.status_id;
-  }
-  if (transformed.n_carnet !== undefined) {
-    transformed.nCarnet = transformed.n_carnet;
-    delete transformed.n_carnet;
-  }
-
-  // Also extract references from nested cattle if present
-  if (transformed.cattle) {
-    transformed.cattle = transformCattleData(transformed.cattle);
-  }
-
-  return transformed;
 };
 
 const realDataProvider: DataProvider = {
