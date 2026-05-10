@@ -103,7 +103,7 @@ export const MedicamentList = () => (
   <List filters={medicamentFilters}>
     <Datagrid rowClick={(id, resource, record) => `/admin/medicaments/${id}`}>
       <TextField source="id" label="ID" />
-      <TextField source="nom" label="Nom" />
+      <TextField source="name" label="Nom" />
       <TextField source="type" label="Type" />
       <DosageField label="Dosage recommandé" />
       <TextField source="fabricant" label="Fabricant" />
@@ -174,8 +174,8 @@ const WithdrawalInput = () => (
   <Box sx={{ p: 2, border: '1px solid #e0e0e0', borderRadius: 1, mb: 2 }}>
     <Typography variant="subtitle2" gutterBottom>Temps d'attente (Jours)</Typography>
     <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-      <NumberInput source="withdrawal_period_meat" label="Viande" min={0} />
-      <NumberInput source="withdrawal_period_milk" label="Lait" min={0} />
+      <NumberInput source="withdrawalPeriodMeat" label="Viande" min={0} />
+      <NumberInput source="withdrawalPeriodMilk" label="Lait" min={0} />
     </Box>
   </Box>
 );
@@ -183,7 +183,7 @@ const WithdrawalInput = () => (
 export const MedicamentEdit = () => (
   <Edit>
     <SimpleForm toolbar={<EditToolbar />}>
-      <TextInput source="nom" label="Nom" validate={required()} />
+      <TextInput source="name" label="Nom" validate={required()} />
       <SelectInput
         source="type"
         label="Type"
@@ -208,7 +208,7 @@ export const MedicamentEdit = () => (
 export const MedicamentCreate = () => (
   <Create>
     <SimpleForm toolbar={<CreateToolbar />}>
-      <TextInput source="nom" label="Nom" validate={required()} />
+      <TextInput source="name" label="Nom" validate={required()} />
       <SelectInput
         source="type"
         label="Type"
@@ -234,12 +234,12 @@ export const MedicamentShow = () => (
   <Show>
     <SimpleShowLayout>
       <TextField source="id" label="ID" />
-      <TextField source="nom" label="Nom" />
+      <TextField source="name" label="Nom" />
       <TextField source="type" label="Type" />
       <DosageField label="Dosage recommandé" />
       <TextField source="default_route" label="Voie par défaut" />
-      <TextField source="withdrawal_period_meat" label="Attente Viande (jours)" />
-      <TextField source="withdrawal_period_milk" label="Attente Lait (jours)" />
+      <TextField source="withdrawalPeriodMeat" label="Attente Viande (jours)" />
+      <TextField source="withdrawalPeriodMilk" label="Attente Lait (jours)" />
       <TextField source="dosage.notes" label="Notes dosage" />
       <TextField source="fabricant" label="Fabricant" />
       <TextField source="notes" label="Notes" />

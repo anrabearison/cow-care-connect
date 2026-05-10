@@ -99,7 +99,7 @@ const cattleFilters = [
     <SelectInput optionText="name" />
   </ReferenceInput>,
   <SelectInput
-    source="source_type"
+    source="sourceType"
     label="Type de source"
     choices={[
       { id: 'ACHETE', name: '🛒 Acheté' },
@@ -244,7 +244,7 @@ export const CattleEdit = () => (
       <TextInput source="name" label="Nom" required />
       <TextInput source="nickname" label="Surnom" />
       <TextInput source="brand" label="Marque" />
-      <TextInput source="n_carnet" label="N° Carnet" />
+      <TextInput source="nCarnet" label="N° Carnet" />
       <TextInput source="distinctiveSign" label="Signe Particulier" />
       <SelectInput
         source="gender"
@@ -287,7 +287,7 @@ export const CattleEdit = () => (
       <ArrayInput source="events" label="Événements">
         <SimpleFormIterator inline>
           <ReferenceInput source="type" reference="typeEvenements" label="Type">
-            <AutocompleteInput optionText="nom" />
+            <AutocompleteInput optionText="name" />
           </ReferenceInput>
           <DateInput source="date" label="Date" />
           <TextInput source="description" label="Description" />
@@ -311,11 +311,11 @@ export const CattleEdit = () => (
           />
           <DateInput source="date" label="Date" />
           <ReferenceInput source="product" reference="medicaments" label="Médicament">
-            <AutocompleteInput optionText="nom" />
+            <AutocompleteInput optionText="name" />
           </ReferenceInput>
           <TextInput source="dosage" label="Dose" />
           <ReferenceInput source="veterinarian" reference="veterinarians" label="Intervenant">
-            <AutocompleteInput optionText="nom" />
+            <AutocompleteInput optionText="name" />
           </ReferenceInput>
           <TextInput source="notes" label="Notes" multiline />
         </SimpleFormIterator>
@@ -332,7 +332,7 @@ export const CattleCreate = () => (
       <TextInput source="name" label="Nom" required />
       <TextInput source="nickname" label="Surnom" />
       <ReferenceInput
-        source="herd_book_id"
+        source="herdBookId"
         reference="herd-books"
         label="Livre de troupeau *"
         sort={{ field: 'year', order: 'DESC' }}
@@ -343,7 +343,7 @@ export const CattleCreate = () => (
         />
       </ReferenceInput>
       <TextInput
-        source="n_carnet"
+        source="nCarnet"
         label="N° Carnet"
         helperText="Numéro de carnet pour ce livre de troupeau (optionnel)"
       />
@@ -392,7 +392,7 @@ export const CattleCreate = () => (
       <ArrayInput source="events" label="Événements">
         <SimpleFormIterator inline>
           <ReferenceInput source="type" reference="typeEvenements" label="Type">
-            <AutocompleteInput optionText="nom" />
+            <AutocompleteInput optionText="name" />
           </ReferenceInput>
           <DateInput source="date" label="Date" />
           <TextInput source="description" label="Description" />
@@ -416,11 +416,11 @@ export const CattleCreate = () => (
           />
           <DateInput source="date" label="Date" />
           <ReferenceInput source="product" reference="medicaments" label="Médicament">
-            <AutocompleteInput optionText="nom" />
+            <AutocompleteInput optionText="name" />
           </ReferenceInput>
           <TextInput source="dosage" label="Dose" />
           <ReferenceInput source="veterinarian" reference="veterinarians" label="Intervenant">
-            <AutocompleteInput optionText="nom" />
+            <AutocompleteInput optionText="name" />
           </ReferenceInput>
           <TextInput source="notes" label="Notes" multiline />
         </SimpleFormIterator>
@@ -575,7 +575,7 @@ const HealthTab = () => (
           <ArrayField source="events" label={false}>
             <Datagrid bulkActionButtons={false} hover={false} sx={{ '& .RaDatagrid-headerCell': { fontWeight: 'bold' } }}>
               <ReferenceField source="type" reference="typeEvenements" label="Type">
-                <TextField source="nom" />
+                <TextField source="name" />
               </ReferenceField>
               <DateField source="date" label="Date" />
               <TextField source="description" label="Description" />
@@ -594,11 +594,11 @@ const HealthTab = () => (
               <TextField source="type" label="Type" />
               <DateField source="date" label="Date" />
               <ReferenceField source="product" reference="medicaments" label="Médicament">
-                <TextField source="nom" />
+                <TextField source="name" />
               </ReferenceField>
               <TextField source="dosage" label="Dose" />
               <ReferenceField source="veterinarian" reference="veterinarians" label="Intervenant">
-                <TextField source="nom" />
+                <TextField source="name" />
               </ReferenceField>
               <TextField source="notes" label="Notes" />
             </Datagrid>
@@ -631,13 +631,13 @@ export const CattleShow = () => (
             <Typography variant="h6" gutterBottom>
               Inscriptions dans les livres de troupeau
             </Typography>
-            <ArrayField source="herd_book_entries" label={false}>
+            <ArrayField source="herdBookEntries" label={false}>
               <Datagrid bulkActionButtons={false} hover={false}>
-                <ReferenceField source="herd_book_id" reference="herd-books" label="Livre" link="show">
+                <ReferenceField source="herdBookId" reference="herd-books" label="Livre" link="show">
                   <FunctionField render={(record: any) => `${record.year} - ${record.reference}`} />
                 </ReferenceField>
-                <TextField source="n_carnet" label="N° Carnet" />
-                <ReferenceField source="category_id" reference="categories" label="Catégorie">
+                <TextField source="nCarnet" label="N° Carnet" />
+                <ReferenceField source="categoryId" reference="categories" label="Catégorie">
                   <TextField source="name" />
                 </ReferenceField>
                 <FunctionField
@@ -649,7 +649,7 @@ export const CattleShow = () => (
                       'STAT003': '#f44336',
                       'STAT004': '#2196f3',
                     };
-                    const color = statusColors[record.status_id || ''] || '#9e9e9e';
+                    const color = statusColors[record.statusId || ''] || '#9e9e9e';
 
                     return (
                       <span style={{
@@ -666,7 +666,7 @@ export const CattleShow = () => (
                     );
                   }}
                 />
-                <DateField source="created_at" label="Date d'inscription" />
+                <DateField source="createdAt" label="Date d'inscription" />
                 <ShowButton resource="herd-book-cattle" />
               </Datagrid>
             </ArrayField>

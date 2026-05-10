@@ -53,7 +53,7 @@ export const TypeEvenementList = () => (
   <List>
     <Datagrid rowClick={(id, resource, record) => `/admin/typeEvenements/${id}`}>
       <TextField source="id" label="ID" />
-      <TextField source="nom" label="Nom" />
+      <TextField source="name" label="Nom" />
       <TextField source="description" label="Description" />
       <TextField source="icone" label="Icône" />
       <ShowButton />
@@ -67,7 +67,7 @@ export const TypeEvenementList = () => (
 export const TypeEvenementEdit = () => (
   <Edit>
     <SimpleForm toolbar={<EditToolbar />}>
-      <TextInput source="nom" label="Nom" required />
+      <TextInput source="name" label="Nom" required />
       <TextInput source="description" label="Description" multiline rows={3} />
       <TextInput source="icone" label="Icône (emoji)" />
     </SimpleForm>
@@ -78,7 +78,7 @@ export const TypeEvenementEdit = () => (
 export const TypeEvenementCreate = () => (
   <Create>
     <SimpleForm toolbar={<CreateToolbar />}>
-      <TextInput source="nom" label="Nom" required />
+      <TextInput source="name" label="Nom" required />
       <TextInput source="description" label="Description" multiline rows={3} />
       <TextInput source="icone" label="Icône (emoji)" />
     </SimpleForm>
@@ -90,7 +90,7 @@ export const TypeEvenementShow = () => (
   <Show>
     <SimpleShowLayout>
       <TextField source="id" label="ID" />
-      <TextField source="nom" label="Nom" />
+      <TextField source="name" label="Nom" />
       <TextField source="description" label="Description" />
       <TextField source="icone" label="Icône" />
     </SimpleShowLayout>

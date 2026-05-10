@@ -74,9 +74,9 @@ export const VeterinarianList = () => (
   <List filters={veterinarianFilters}>
     <Datagrid rowClick={(id, resource, record) => `/admin/veterinarians/${id}`}>
       <TextField source="id" label="ID" />
-      <TextField source="nom" label="Nom" />
+      <TextField source="name" label="Nom" />
       <TextField source="specialite" label="Spécialité" />
-      <TextField source="telephone" label="Téléphone" />
+      <TextField source="phone" label="Téléphone" />
       <EmailField source="email" label="Email" />
       <CustomShowButton />
       <CustomEditButton />
@@ -89,11 +89,11 @@ export const VeterinarianList = () => (
 export const VeterinarianEdit = () => (
   <Edit>
     <SimpleForm toolbar={<EditToolbar />}>
-      <TextInput source="nom" label="Nom" required />
+      <TextInput source="name" label="Nom" required />
       <TextInput source="specialite" label="Spécialité" />
-      <TextInput source="telephone" label="Téléphone" />
+      <TextInput source="phone" label="Téléphone" />
       <TextInput source="email" label="Email" type="email" />
-      <TextInput source="adresse" label="Adresse" multiline rows={2} />
+      <TextInput source="address" label="Adresse" multiline rows={2} />
       <TextInput source="notes" label="Notes" multiline rows={3} />
     </SimpleForm>
   </Edit>
@@ -103,11 +103,11 @@ export const VeterinarianEdit = () => (
 export const VeterinarianCreate = () => (
   <Create>
     <SimpleForm toolbar={<CreateToolbar />}>
-      <TextInput source="nom" label="Nom" required />
+      <TextInput source="name" label="Nom" required />
       <TextInput source="specialite" label="Spécialité" />
-      <TextInput source="telephone" label="Téléphone" />
+      <TextInput source="phone" label="Téléphone" />
       <TextInput source="email" label="Email" type="email" />
-      <TextInput source="adresse" label="Adresse" multiline rows={2} />
+      <TextInput source="address" label="Adresse" multiline rows={2} />
       <TextInput source="notes" label="Notes" multiline rows={3} />
     </SimpleForm>
   </Create>
@@ -118,11 +118,11 @@ export const VeterinarianShow = () => (
   <Show>
     <SimpleShowLayout>
       <TextField source="id" label="ID" />
-      <TextField source="nom" label="Nom" />
+      <TextField source="name" label="Nom" />
       <TextField source="specialite" label="Spécialité" />
-      <TextField source="telephone" label="Téléphone" />
+      <TextField source="phone" label="Téléphone" />
       <EmailField source="email" label="Email" />
-      <TextField source="adresse" label="Adresse" />
+      <TextField source="address" label="Adresse" />
       <TextField source="notes" label="Notes" />
     </SimpleShowLayout>
   </Show>

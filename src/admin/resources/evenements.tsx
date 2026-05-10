@@ -25,10 +25,10 @@ import { EditToolbar, CreateToolbar, ConfirmDeleteButton } from '../components/C
 const evenementFilters = [
   <TextInput source="q" label="Rechercher" alwaysOn />,
   <ReferenceInput source="type" reference="typeEvenements" label="Type">
-    <AutocompleteInput optionText="nom" />
+    <AutocompleteInput optionText="name" />
   </ReferenceInput>,
   <ReferenceInput source="cattleId" reference="cattle" label="Bovin">
-    <AutocompleteInput optionText="nom" />
+    <AutocompleteInput optionText="name" />
   </ReferenceInput>,
   <DateInput source="date" label="Date" />,
 ];
@@ -89,7 +89,7 @@ export const EvenementList = () => (
         <TextField source="name" />
       </ReferenceField>
       <ReferenceField source="type" reference="typeEvenements" label="Type">
-        <TextField source="nom" />
+        <TextField source="name" />
       </ReferenceField>
       <DateField source="date" label="Date" />
       <TextField source="description" label="Description" />
@@ -108,7 +108,7 @@ export const EvenementEdit = () => (
         <AutocompleteInput optionText="name" />
       </ReferenceInput>
       <ReferenceInput source="type" reference="typeEvenements" label="Type">
-        <AutocompleteInput optionText="nom" />
+        <AutocompleteInput optionText="name" />
       </ReferenceInput>
       <DateInput source="date" label="Date" required />
       <TextInput source="description" label="Description" required />
@@ -125,7 +125,7 @@ export const EvenementCreate = () => (
         <AutocompleteInput optionText="name" />
       </ReferenceInput>
       <ReferenceInput source="type" reference="typeEvenements" label="Type">
-        <AutocompleteInput optionText="nom" />
+        <AutocompleteInput optionText="name" />
       </ReferenceInput>
       <DateInput source="date" label="Date" required />
       <TextInput source="description" label="Description" required />
@@ -143,7 +143,7 @@ export const EvenementShow = () => (
         <TextField source="name" />
       </ReferenceField>
       <ReferenceField source="type" reference="typeEvenements" label="Type">
-        <TextField source="nom" />
+        <TextField source="name" />
       </ReferenceField>
       <DateField source="date" label="Date" />
       <TextField source="description" label="Description" />

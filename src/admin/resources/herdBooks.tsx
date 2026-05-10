@@ -68,7 +68,7 @@ const herdBookFilters = [
         label="Année"
     />,
     <ReferenceInput
-        source="owner_id"
+        source="ownerId"
         reference="owners"
         label="Propriétaire"
     >
@@ -118,7 +118,7 @@ export const HerdBookList = () => (
         <Datagrid rowClick={(id, resource, record) => `/admin/herd-books/${id}/show`}>
             <NumberField source="year" label="Année" />
             <TextField source="reference" label="Référence" />
-            <ReferenceField source="owner_id" reference="owners" label="Propriétaire">
+            <ReferenceField source="ownerId" reference="owners" label="Propriétaire">
                 <TextField source="name" />
             </ReferenceField>
             <FunctionField
@@ -133,9 +133,9 @@ export const HerdBookList = () => (
             />
             <FunctionField
                 label="Bovins"
-                render={(record: any) => record.cattle_count || 0}
+                render={(record: any) => record.cattleCount || 0}
             />
-            <DateField source="created_at" label="Créé le" showTime />
+            <DateField source="createdAt" label="Créé le" showTime />
             <CustomShowButton />
             <CustomEditButton />
             <DeleteButtonField />
@@ -165,7 +165,7 @@ export const HerdBookEdit = () => {
                     helperText="Ex: LT-2024-001"
                 />
                 <ReferenceInput
-                    source="owner_id"
+                    source="ownerId"
                     reference="owners"
                     label="Propriétaire"
                 >
@@ -189,7 +189,7 @@ export const HerdBookCreate = () => {
 
     const defaultValues = {
         year: new Date().getFullYear(),
-        ...(isOwnerAdmin(permissions) && identity?.owner_id ? { owner_id: identity.owner_id } : {})
+        ...(isOwnerAdmin(permissions) && identity?.ownerId ? { ownerId: identity.ownerId } : {})
     };
 
     return (
@@ -211,7 +211,7 @@ export const HerdBookCreate = () => {
                     helperText="Ex: LT-2024-001"
                 />
                 <ReferenceInput
-                    source="owner_id"
+                    source="ownerId"
                     reference="owners"
                     label="Propriétaire"
                 >
@@ -263,13 +263,13 @@ export const HerdBookShow = () => (
                             <InlineField label="Année"><NumberField source="year" /></InlineField>
                             <InlineField label="Référence"><TextField source="reference" /></InlineField>
                             <InlineField label="Propriétaire">
-                                <ReferenceField source="owner_id" reference="owners">
+                                <ReferenceField source="ownerId" reference="owners">
                                     <TextField source="name" />
                                 </ReferenceField>
                             </InlineField>
                             <InlineField label="Description"><TextField source="description" /></InlineField>
-                            <InlineField label="Créé le"><DateField source="created_at" showTime /></InlineField>
-                            <InlineField label="Modifié le"><DateField source="updated_at" showTime /></InlineField>
+                            <InlineField label="Créé le"><DateField source="createdAt" showTime /></InlineField>
+                            <InlineField label="Modifié le"><DateField source="updatedAt" showTime /></InlineField>
                         </Box>
                     </CardContent>
                 </Card>
@@ -281,7 +281,7 @@ export const HerdBookShow = () => (
                         <Typography variant="h6" gutterBottom>
                             Bovins inscrits dans ce livre
                         </Typography>
-                        <ArrayField source="cattle_entries" label={false}>
+                        <ArrayField source="cattleEntries" label={false}>
                             <Datagrid bulkActionButtons={false} hover={false}>
                                 <FunctionField
                                     label="Photo"
@@ -317,14 +317,14 @@ export const HerdBookShow = () => (
                                     label="Bovin"
                                     render={(record: any) => record.cattle?.name || '-'}
                                 />
-                                <TextField source="n_carnet" label="N° Carnet" />
-                                <ReferenceField source="category_id" reference="categories" label="Catégorie">
+                                <TextField source="nCarnet" label="N° Carnet" />
+                                <ReferenceField source="categoryId" reference="categories" label="Catégorie">
                                     <TextField source="name" />
                                 </ReferenceField>
-                                <ReferenceField source="status_id" reference="status" label="Statut">
+                                <ReferenceField source="statusId" reference="status" label="Statut">
                                     <TextField source="name" />
                                 </ReferenceField>
-                                <DateField source="created_at" label="Date d'inscription" />
+                                <DateField source="createdAt" label="Date d'inscription" />
                                 <ShowButton resource="herd-book-cattle" />
                             </Datagrid>
                         </ArrayField>

@@ -55,8 +55,8 @@ export const CharactersList = () => (
         <Datagrid rowClick={(id, resource, record) => `/admin/characters/${id}`}>
             <TextField source="id" label="ID" />
             <TextField source="name" label="Nom" />
-            <DateField source="created_at" label="Créé le" showTime />
-            <DateField source="updated_at" label="Modifié le" showTime />
+            <DateField source="createdAt" label="Créé le" showTime />
+            <DateField source="updatedAt" label="Modifié le" showTime />
             <CustomEditButton />
             <DeleteButtonField />
         </Datagrid>
@@ -88,8 +88,8 @@ export const CharactersShow = () => (
         <SimpleShowLayout>
             <TextField source="id" label="ID" />
             <TextField source="name" label="Nom" />
-            <DateField source="created_at" label="Créé le" showTime />
-            <DateField source="updated_at" label="Modifié le" showTime />
+            <DateField source="createdAt" label="Créé le" showTime />
+            <DateField source="updatedAt" label="Modifié le" showTime />
         </SimpleShowLayout>
     </Show>
 );

@@ -40,10 +40,10 @@ const traitementFilters = [
     <AutocompleteInput optionText="name" />
   </ReferenceInput>,
   <ReferenceInput source="product" reference="medicaments" label="Médicament">
-    <AutocompleteInput optionText="nom" />
+    <AutocompleteInput optionText="name" />
   </ReferenceInput>,
   <ReferenceInput source="veterinarian" reference="veterinarians" label="Intervenant">
-    <AutocompleteInput optionText="nom" />
+    <AutocompleteInput optionText="name" />
   </ReferenceInput>,
   <DateInput source="date" label="Date" />,
 ];
@@ -67,8 +67,8 @@ const DosageField = (props: { source?: string, label?: string }) => {
       render={(record: any) => {
         if (record.dosage && typeof record.dosage === 'object') {
           let text = `${record.dosage.quantite}${record.dosage.unite}`;
-          if (record.dosage.animal_poids) {
-            text += ` (pour ${record.dosage.animal_poids}kg)`;
+          if (record.dosage.animalPoids) {
+            text += ` (pour ${record.dosage.animalPoids}kg)`;
           }
           return text;
         }
@@ -124,11 +124,11 @@ export const TraitementList = () => (
       <TextField source="type" label="Type" />
       <DateField source="date" label="Date" />
       <ReferenceField source="product" reference="medicaments" label="Médicament">
-        <TextField source="nom" />
+        <TextField source="name" />
       </ReferenceField>
       <DosageField label="Dose" />
       <ReferenceField source="veterinarian" reference="veterinarians" label="Intervenant">
-        <TextField source="nom" />
+        <TextField source="name" />
       </ReferenceField>
       <CustomShowButton />
       <CustomEditButton />
@@ -159,13 +159,13 @@ const DosageInput = () => (
         validate={required()}
       />
       <NumberInput
-        source="dosage.animal_poids"
+        source="dosage.animalPoids"
         label="Poids de l'animal"
         helperText="Ex: 300 (kg)"
       />
     </Box>
     <SelectInput
-      source="administration_route"
+      source="administrationRoute"
       label="Voie d'administration"
       choices={[
         { id: 'Intramusculaire', name: 'Intramusculaire' },
@@ -210,11 +210,11 @@ export const TraitementEdit = () => (
       />
       <DateInput source="date" label="Date" validate={required()} />
       <ReferenceInput source="product" reference="medicaments" label="Médicament">
-        <AutocompleteInput optionText="nom" validate={required()} />
+        <AutocompleteInput optionText="name" validate={required()} />
       </ReferenceInput>
       <DosageInput />
       <ReferenceInput source="veterinarian" reference="veterinarians" label="Intervenant">
-        <AutocompleteInput optionText="nom" validate={required()} />
+        <AutocompleteInput optionText="name" validate={required()} />
       </ReferenceInput>
       <TextInput source="notes" label="Notes" multiline rows={3} />
     </SimpleForm>
@@ -243,11 +243,11 @@ export const TraitementCreate = () => (
       />
       <DateInput source="date" label="Date" validate={required()} />
       <ReferenceInput source="product" reference="medicaments" label="Médicament">
-        <AutocompleteInput optionText="nom" validate={required()} />
+        <AutocompleteInput optionText="name" validate={required()} />
       </ReferenceInput>
       <DosageInput />
       <ReferenceInput source="veterinarian" reference="veterinarians" label="Intervenant">
-        <AutocompleteInput optionText="nom" validate={required()} />
+        <AutocompleteInput optionText="name" validate={required()} />
       </ReferenceInput>
       <TextInput source="notes" label="Notes" multiline rows={3} />
     </SimpleForm>
@@ -265,14 +265,14 @@ export const TraitementShow = () => (
       <TextField source="type" label="Type" />
       <DateField source="date" label="Date" />
       <ReferenceField source="product" reference="medicaments" label="Médicament">
-        <TextField source="nom" />
+        <TextField source="name" />
       </ReferenceField>
       <DosageField label="Dose" />
-      <TextField source="administration_route" label="Voie" />
-      <DateField source="withdrawal_end_date" label="Fin attente" />
+      <TextField source="administrationRoute" label="Voie" />
+      <DateField source="withdrawalEndDate" label="Fin attente" />
       <TextField source="dosage.notes" label="Notes dosage" />
       <ReferenceField source="veterinarian" reference="veterinarians" label="Intervenant">
-        <TextField source="nom" />
+        <TextField source="name" />
       </ReferenceField>
       <TextField source="notes" label="Notes" />
     </SimpleShowLayout>

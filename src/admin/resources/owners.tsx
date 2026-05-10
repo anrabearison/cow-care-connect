@@ -72,7 +72,7 @@ export const OwnerList = () => (
     <List filters={ownerFilters}>
         <Datagrid rowClick={(id, resource, record) => `/admin/owners/${id}`}>
             <TextField source="name" label="Nom" />
-            <TextField source="contact_info" label="Contact" />
+            <TextField source="contactInfo" label="Contact" />
             <TextField source="address" label="Adresse" />
             <CustomShowButton />
             <CustomEditButton />
@@ -86,7 +86,7 @@ export const OwnerEdit = () => (
     <Edit>
         <SimpleForm toolbar={<EditToolbar />}>
             <TextInput source="name" label="Nom" required />
-            <TextInput source="contact_info" label="Contact" />
+            <TextInput source="contactInfo" label="Contact" />
             <TextInput source="address" label="Adresse" />
         </SimpleForm>
     </Edit>
@@ -97,7 +97,7 @@ export const OwnerCreate = () => (
     <Create>
         <SimpleForm toolbar={<CreateToolbar />}>
             <TextInput source="name" label="Nom" required />
-            <TextInput source="contact_info" label="Contact" />
+            <TextInput source="contactInfo" label="Contact" />
             <TextInput source="address" label="Adresse" />
         </SimpleForm>
     </Create>
@@ -109,7 +109,7 @@ export const OwnerShow = () => (
         <SimpleShowLayout>
             <TextField source="id" label="ID" />
             <TextField source="name" label="Nom" />
-            <TextField source="contact_info" label="Contact" />
+            <TextField source="contactInfo" label="Contact" />
             <TextField source="address" label="Adresse" />
         </SimpleShowLayout>
     </Show>

@@ -29,41 +29,32 @@ export const transformCattleData = (data: any) => {
 export const transformHerdBookCattleData = (data: any) => {
   const transformed = { ...data };
 
-  if (transformed.herd_book_id) {
+  if (transformed.herdBookId) {
     transformed.herdBookId =
-      typeof transformed.herd_book_id === "object"
-        ? transformed.herd_book_id.id
-        : transformed.herd_book_id;
-    delete transformed.herd_book_id;
+      typeof transformed.herdBookId === "object"
+        ? transformed.herdBookId.id
+        : transformed.herdBookId;
   }
 
-  if (transformed.cattle_id) {
+  if (transformed.cattleId) {
     transformed.cattleId =
-      typeof transformed.cattle_id === "object"
-        ? transformed.cattle_id.id
-        : transformed.cattle_id;
-    delete transformed.cattle_id;
+      typeof transformed.cattleId === "object"
+        ? transformed.cattleId.id
+        : transformed.cattleId;
   }
 
-  if (transformed.category_id) {
+  if (transformed.categoryId) {
     transformed.categoryId =
-      typeof transformed.category_id === "object"
-        ? transformed.category_id.id
-        : transformed.category_id;
-    delete transformed.category_id;
+      typeof transformed.categoryId === "object"
+        ? transformed.categoryId.id
+        : transformed.categoryId;
   }
 
-  if (transformed.status_id) {
+  if (transformed.statusId) {
     transformed.statusId =
-      typeof transformed.status_id === "object"
-        ? transformed.status_id.id
-        : transformed.status_id;
-    delete transformed.status_id;
-  }
-
-  if (transformed.n_carnet !== undefined) {
-    transformed.nCarnet = transformed.n_carnet;
-    delete transformed.n_carnet;
+      typeof transformed.statusId === "object"
+        ? transformed.statusId.id
+        : transformed.statusId;
   }
 
   if (transformed.cattle) {

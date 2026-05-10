@@ -8,7 +8,7 @@ export interface Dosage {
 
 export interface Medicament {
     id: string;
-    nom: string;
+    name: string;
     type?: string;
     dosage?: Dosage;
     dosage_recommande?: string;
@@ -17,7 +17,7 @@ export interface Medicament {
 
 export interface Veterinarian {
     id: string;
-    nom: string;
+    name: string;
     specialite?: string;
     telephone?: string;
     email?: string;

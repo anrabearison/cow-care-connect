@@ -52,7 +52,7 @@ const realDataProvider: DataProvider = {
       sort: field,
       order: order,
       ...params.filter,
-      ...(selectedOwnerId && { owner_id: selectedOwnerId }),
+      ...(selectedOwnerId && { ownerId: selectedOwnerId }),
     };
     const url = `${apiUrl}/${getResourcePath(resource)}?${stringify(query)}`;
 
@@ -64,7 +64,7 @@ const realDataProvider: DataProvider = {
 
   getOne: (resource, params) => {
     const selectedOwnerId = getSelectedOwnerIdFn?.();
-    const query = selectedOwnerId ? stringify({ owner_id: selectedOwnerId }) : '';
+    const query = selectedOwnerId ? stringify({ ownerId: selectedOwnerId }) : '';
     const url = `${apiUrl}/${getResourcePath(resource)}/${params.id}${query ? `?${query}` : ''}`;
     return httpClient(url).then(({ json }) => ({
       data: json,
@@ -76,7 +76,7 @@ const realDataProvider: DataProvider = {
     const query = stringify(
       {
         id: params.ids,
-        ...(selectedOwnerId && { owner_id: selectedOwnerId }),
+        ...(selectedOwnerId && { ownerId: selectedOwnerId }),
       },
       { arrayFormat: 'repeat' }
     );
@@ -97,7 +97,7 @@ const realDataProvider: DataProvider = {
       order: order,
       ...params.filter,
       [params.target]: params.id,
-      ...(selectedOwnerId && { owner_id: selectedOwnerId }),
+      ...(selectedOwnerId && { ownerId: selectedOwnerId }),
     };
     const url = `${apiUrl}/${getResourcePath(resource)}?${stringify(query)}`;
 
@@ -117,7 +117,7 @@ const realDataProvider: DataProvider = {
     }
 
     const selectedOwnerId = getSelectedOwnerIdFn?.();
-    const query = selectedOwnerId ? stringify({ owner_id: selectedOwnerId }) : '';
+    const query = selectedOwnerId ? stringify({ ownerId: selectedOwnerId }) : '';
     const url = `${apiUrl}/${getResourcePath(resource)}/${params.id}${query ? `?${query}` : ''}`;
 
     return httpClient(url, {
@@ -137,16 +137,16 @@ const realDataProvider: DataProvider = {
 
   create: (resource, params) => {
     if (resource === 'cattle') {
-      // Extract herd_book_id and n_carnet from data
-      const { herd_book_id, n_carnet, ...cattleData } = params.data;
+      // Extract herdBookId and nCarnet from data
+      const { herdBookId, nCarnet, ...cattleData } = params.data;
 
       // Transform cattle data
       const transformedData = transformCattleData(cattleData);
 
       // Build query params for herd book registration
       const queryParams: Record<string, string> = {};
-      if (herd_book_id) queryParams.herd_book_id = herd_book_id;
-      if (n_carnet) queryParams.n_carnet = n_carnet;
+      if (herdBookId) queryParams.herdBookId = herdBookId;
+      if (nCarnet) queryParams.nCarnet = nCarnet;
 
       const queryString = Object.keys(queryParams).length > 0
         ? '?' + stringify(queryParams)
@@ -181,7 +181,7 @@ const realDataProvider: DataProvider = {
 
   delete: (resource, params) => {
     const selectedOwnerId = getSelectedOwnerIdFn?.();
-    const query = selectedOwnerId ? stringify({ owner_id: selectedOwnerId }) : '';
+    const query = selectedOwnerId ? stringify({ ownerId: selectedOwnerId }) : '';
     const url = `${apiUrl}/${getResourcePath(resource)}/${params.id}${query ? `?${query}` : ''}`;
 
     return httpClient(url, {

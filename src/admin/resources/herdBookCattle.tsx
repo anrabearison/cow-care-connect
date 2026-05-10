@@ -60,28 +60,28 @@ const herdBookCattleFilters = [
         alwaysOn
     />,
     <ReferenceInput
-        source="herd_book_id"
+        source="herdBookId"
         reference="herd-books"
         label="Livre de troupeau"
     >
         <SelectInput optionText={(record) => `${record.year} - ${record.reference}`} />
     </ReferenceInput>,
     <ReferenceInput
-        source="cattle_id"
+        source="cattleId"
         reference="cattle"
         label="Bovin"
     >
         <AutocompleteInput optionText="name" />
     </ReferenceInput>,
     <ReferenceInput
-        source="category_id"
+        source="categoryId"
         reference="categories"
         label="Catégorie"
     >
         <SelectInput optionText="name" />
     </ReferenceInput>,
     <ReferenceInput
-        source="status_id"
+        source="statusId"
         reference="status"
         label="Statut"
     >
@@ -130,13 +130,13 @@ export const HerdBookCattleList = () => (
     <List
         filters={herdBookCattleFilters}
         actions={<ListActions />}
-        sort={{ field: 'created_at', order: 'DESC' }}
+        sort={{ field: 'createdAt', order: 'DESC' }}
     >
         <Datagrid rowClick={(id, resource, record) => `/admin/herd-book-cattle/${id}/show`}>
-            <ReferenceField source="herd_book_id" reference="herd-books" label="Livre">
+            <ReferenceField source="herdBookId" reference="herd-books" label="Livre">
                 <FunctionField render={(record: any) => `${record.year} - ${record.reference}`} />
             </ReferenceField>
-            <ReferenceField source="herd_book.owner_id" reference="owners" label="Propriétaire" link="show">
+            <ReferenceField source="herdBook.ownerId" reference="owners" label="Propriétaire" link="show">
                 <TextField source="name" />
             </ReferenceField>
             <FunctionField
@@ -189,8 +189,8 @@ export const HerdBookCattleList = () => (
                 label="Source"
                 render={(record: any) => record.cattle?.source?.type || '-'}
             />
-            <TextField source="n_carnet" label="N° Carnet" />
-            <ReferenceField source="category_id" reference="categories" label="Catégorie">
+            <TextField source="nCarnet" label="N° Carnet" />
+            <ReferenceField source="categoryId" reference="categories" label="Catégorie">
                 <TextField source="name" />
             </ReferenceField>
             <FunctionField
@@ -202,7 +202,7 @@ export const HerdBookCattleList = () => (
                         'STA003': '#f44336', // Mort - rouge
                         'STA004': '#2196f3', // Vendu - bleu
                     };
-                    const color = statusColors[record.status_id || ''] || '#9e9e9e';
+                    const color = statusColors[record.statusId || ''] || '#9e9e9e';
 
                     return (
                         <span style={{
@@ -219,7 +219,7 @@ export const HerdBookCattleList = () => (
                     );
                 }}
             />
-            <DateField source="created_at" label="Date d'inscription" showTime />
+            <DateField source="createdAt" label="Date d'inscription" showTime />
             <CustomShowButton />
             <CustomEditButton />
             <DeleteButtonField />
@@ -232,7 +232,7 @@ export const HerdBookCattleEdit = () => (
     <Edit>
         <SimpleForm toolbar={<EditToolbar />}>
             <ReferenceInput
-                source="herd_book_id"
+                source="herdBookId"
                 reference="herd-books"
                 label="Livre de troupeau"
             >
@@ -243,7 +243,7 @@ export const HerdBookCattleEdit = () => (
             </ReferenceInput>
 
             <ReferenceInput
-                source="cattle_id"
+                source="cattleId"
                 reference="cattle"
                 label="Bovin"
             >
@@ -254,13 +254,13 @@ export const HerdBookCattleEdit = () => (
             </ReferenceInput>
 
             <TextInput
-                source="n_carnet"
+                source="nCarnet"
                 label="N° Carnet"
                 helperText="Numéro de carnet pour cette année (optionnel)"
             />
 
             <ReferenceInput
-                source="category_id"
+                source="categoryId"
                 reference="categories"
                 label="Catégorie"
             >
@@ -268,7 +268,7 @@ export const HerdBookCattleEdit = () => (
             </ReferenceInput>
 
             <ReferenceInput
-                source="status_id"
+                source="statusId"
                 reference="status"
                 label="Statut"
             >
@@ -283,7 +283,7 @@ export const HerdBookCattleCreate = () => (
     <Create>
         <SimpleForm toolbar={<CreateToolbar />}>
             <ReferenceInput
-                source="herd_book_id"
+                source="herdBookId"
                 reference="herd-books"
                 label="Livre de troupeau"
                 sort={{ field: 'year', order: 'DESC' }}
@@ -350,13 +350,13 @@ export const HerdBookCattleCreate = () => (
             </FormDataConsumer>
 
             <TextInput
-                source="n_carnet"
+                source="nCarnet"
                 label="N° Carnet"
                 helperText="Numéro de carnet pour cette année (optionnel)"
             />
 
             <ReferenceInput
-                source="category_id"
+                source="categoryId"
                 reference="categories"
                 label="Catégorie"
             >
@@ -364,7 +364,7 @@ export const HerdBookCattleCreate = () => (
             </ReferenceInput>
 
             <ReferenceInput
-                source="status_id"
+                source="statusId"
                 reference="status"
                 label="Statut"
             >
@@ -384,15 +384,15 @@ export const HerdBookCattleShow = () => (
         <SimpleShowLayout>
             <TextField source="id" label="ID" />
 
-            <ReferenceField source="herd_book_id" reference="herd-books" label="Livre de troupeau" link="show">
+            <ReferenceField source="herdBookId" reference="herd-books" label="Livre de troupeau" link="show">
                 <FunctionField render={(record: any) => `${record.year} - ${record.reference}`} />
             </ReferenceField>
 
-            <ReferenceField source="herd_book.owner_id" reference="owners" label="Propriétaire" link="show">
+            <ReferenceField source="herdBook.ownerId" reference="owners" label="Propriétaire" link="show">
                 <TextField source="name" />
             </ReferenceField>
 
-            <ReferenceField source="cattle_id" reference="cattle" label="Bovin" link="show">
+            <ReferenceField source="cattleId" reference="cattle" label="Bovin" link="show">
                 <FunctionField
                     render={(record: any) => (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -421,18 +421,18 @@ export const HerdBookCattleShow = () => (
                 />
             </ReferenceField>
 
-            <TextField source="n_carnet" label="N° Carnet" />
+            <TextField source="nCarnet" label="N° Carnet" />
 
-            <ReferenceField source="category_id" reference="categories" label="Catégorie">
+            <ReferenceField source="categoryId" reference="categories" label="Catégorie">
                 <TextField source="name" />
             </ReferenceField>
 
-            <ReferenceField source="status_id" reference="status" label="Statut">
+            <ReferenceField source="statusId" reference="status" label="Statut">
                 <TextField source="name" />
             </ReferenceField>
 
-            <DateField source="created_at" label="Date d'inscription" showTime />
-            <DateField source="updated_at" label="Dernière modification" showTime />
+            <DateField source="createdAt" label="Date d'inscription" showTime />
+            <DateField source="updatedAt" label="Dernière modification" showTime />
         </SimpleShowLayout>
     </Show>
 );
