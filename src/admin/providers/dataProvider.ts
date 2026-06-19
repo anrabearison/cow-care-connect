@@ -1,6 +1,7 @@
 import { DataProvider, fetchUtils } from 'react-admin';
 import { stringify } from 'qs';
 import { API_CONFIG } from '@/config/api';
+import { transformCattleData, transformHerdBookCattleData } from '@/admin/utils/mappers';
 
 // Global getter for selected owner ID (will be set by AdminApp)
 let getSelectedOwnerIdFn: (() => string | null) | null = null;
@@ -31,33 +32,11 @@ const httpClient = (url: string, options: any = {}) => {
 const getResourcePath = (resource: string) => {
   const resourceMap: Record<string, string> = {
     'typeEvenements': 'event-types',
+    'herd-books': 'herd-books',
+    'herd-book-cattle': 'herd-book-cattle',
     // Add other mappings if needed
   };
   return resourceMap[resource] || resource;
-};
-
-// Helper function to transform cattle data before sending to API
-const transformCattleData = (data: any) => {
-  const transformed = { ...data };
-
-  // Extract IDs from reference objects
-  if (transformed.category && typeof transformed.category === 'object') {
-    transformed.category = transformed.category.id;
-  }
-  if (transformed.character && typeof transformed.character === 'object') {
-    transformed.character = transformed.character.id;
-  }
-  if (transformed.status && typeof transformed.status === 'object') {
-    transformed.status = transformed.status.id;
-  }
-
-  // Transform source.purchaseCategory if it's a string (old data)
-  if (transformed.source?.purchaseCategory && typeof transformed.source.purchaseCategory === 'string') {
-    // This shouldn't happen with proper ReferenceInput, but handle legacy data
-    delete transformed.source.purchaseCategory;
-  }
-
-  return transformed;
 };
 
 const realDataProvider: DataProvider = {
@@ -73,7 +52,7 @@ const realDataProvider: DataProvider = {
       sort: field,
       order: order,
       ...params.filter,
-      ...(selectedOwnerId && { owner_id: selectedOwnerId }),
+      ...(selectedOwnerId && { ownerId: selectedOwnerId }),
     };
     const url = `${apiUrl}/${getResourcePath(resource)}?${stringify(query)}`;
 
@@ -85,7 +64,7 @@ const realDataProvider: DataProvider = {
 
   getOne: (resource, params) => {
     const selectedOwnerId = getSelectedOwnerIdFn?.();
-    const query = selectedOwnerId ? stringify({ owner_id: selectedOwnerId }) : '';
+    const query = selectedOwnerId ? stringify({ ownerId: selectedOwnerId }) : '';
     const url = `${apiUrl}/${getResourcePath(resource)}/${params.id}${query ? `?${query}` : ''}`;
     return httpClient(url).then(({ json }) => ({
       data: json,
@@ -97,7 +76,7 @@ const realDataProvider: DataProvider = {
     const query = stringify(
       {
         id: params.ids,
-        ...(selectedOwnerId && { owner_id: selectedOwnerId }),
+        ...(selectedOwnerId && { ownerId: selectedOwnerId }),
       },
       { arrayFormat: 'repeat' }
     );
@@ -118,7 +97,7 @@ const realDataProvider: DataProvider = {
       order: order,
       ...params.filter,
       [params.target]: params.id,
-      ...(selectedOwnerId && { owner_id: selectedOwnerId }),
+      ...(selectedOwnerId && { ownerId: selectedOwnerId }),
     };
     const url = `${apiUrl}/${getResourcePath(resource)}?${stringify(query)}`;
 
@@ -129,11 +108,16 @@ const realDataProvider: DataProvider = {
   },
 
   update: (resource, params) => {
-    // Transform cattle data before sending
-    const data = resource === 'cattle' ? transformCattleData(params.data) : params.data;
+    // Transform data before sending depending on resource
+    let data = params.data;
+    if (resource === 'cattle') {
+      data = transformCattleData(params.data);
+    } else if (resource === 'herd-book-cattle') {
+      data = transformHerdBookCattleData(params.data);
+    }
 
     const selectedOwnerId = getSelectedOwnerIdFn?.();
-    const query = selectedOwnerId ? stringify({ owner_id: selectedOwnerId }) : '';
+    const query = selectedOwnerId ? stringify({ ownerId: selectedOwnerId }) : '';
     const url = `${apiUrl}/${getResourcePath(resource)}/${params.id}${query ? `?${query}` : ''}`;
 
     return httpClient(url, {
@@ -152,9 +136,40 @@ const realDataProvider: DataProvider = {
   },
 
   create: (resource, params) => {
-    // Transform cattle data before sending
-    const data = resource === 'cattle' ? transformCattleData(params.data) : params.data;
+    if (resource === 'cattle') {
+      // Extract herdBookId and nCarnet from data
+      const { herdBookId, nCarnet, ...cattleData } = params.data;
 
+      // Transform cattle data
+      const transformedData = transformCattleData(cattleData);
+
+      // Build query params for herd book registration
+      const queryParams: Record<string, string> = {};
+      if (herdBookId) queryParams.herdBookId = herdBookId;
+      if (nCarnet) queryParams.nCarnet = nCarnet;
+
+      const queryString = Object.keys(queryParams).length > 0
+        ? '?' + stringify(queryParams)
+        : '';
+
+      return httpClient(`${apiUrl}/${getResourcePath(resource)}${queryString}`, {
+        method: 'POST',
+        body: JSON.stringify(transformedData),
+      }).then(({ json }) => ({
+        data: json,
+      }));
+    } else if (resource === 'herd-book-cattle') {
+      const transformedData = transformHerdBookCattleData(params.data);
+      return httpClient(`${apiUrl}/${getResourcePath(resource)}`, {
+        method: 'POST',
+        body: JSON.stringify(transformedData),
+      }).then(({ json }) => ({
+        data: json,
+      }));
+    }
+
+    // Default behavior for other resources
+    const data = params.data;
     return httpClient(`${apiUrl}/${getResourcePath(resource)}`, {
       method: 'POST',
       body: JSON.stringify(data),
@@ -166,7 +181,7 @@ const realDataProvider: DataProvider = {
 
   delete: (resource, params) => {
     const selectedOwnerId = getSelectedOwnerIdFn?.();
-    const query = selectedOwnerId ? stringify({ owner_id: selectedOwnerId }) : '';
+    const query = selectedOwnerId ? stringify({ ownerId: selectedOwnerId }) : '';
     const url = `${apiUrl}/${getResourcePath(resource)}/${params.id}${query ? `?${query}` : ''}`;
 
     return httpClient(url, {

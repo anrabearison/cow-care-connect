@@ -29,15 +29,35 @@ const DeleteButtonField = () => {
     );
 };
 
+// Custom Buttons
+import { Link } from 'react-router-dom';
+import EditIcon from '@mui/icons-material/Edit';
+import { Button } from 'react-admin';
+
+const CustomEditButton = () => {
+    const record = useRecordContext();
+    if (!record) return null;
+    return (
+        <Button
+            component={Link}
+            to={`/admin/status/${record.id}`}
+            label="ra.action.edit"
+            onClick={(e) => e.stopPropagation()}
+        >
+            <EditIcon />
+        </Button>
+    );
+};
+
 // Liste des statuts
 export const StatusList = () => (
     <List>
-        <Datagrid rowClick="edit">
+        <Datagrid rowClick={(id, resource, record) => `/admin/status/${id}`}>
             <TextField source="id" label="ID" />
             <TextField source="name" label="Nom" />
-            <DateField source="created_at" label="Créé le" showTime />
-            <DateField source="updated_at" label="Modifié le" showTime />
-            <EditButton />
+            <DateField source="createdAt" label="Créé le" showTime />
+            <DateField source="updatedAt" label="Modifié le" showTime />
+            <CustomEditButton />
             <DeleteButtonField />
         </Datagrid>
     </List>
@@ -68,8 +88,8 @@ export const StatusShow = () => (
         <SimpleShowLayout>
             <TextField source="id" label="ID" />
             <TextField source="name" label="Nom" />
-            <DateField source="created_at" label="Créé le" showTime />
-            <DateField source="updated_at" label="Modifié le" showTime />
+            <DateField source="createdAt" label="Créé le" showTime />
+            <DateField source="updatedAt" label="Modifié le" showTime />
         </SimpleShowLayout>
     </Show>
 );

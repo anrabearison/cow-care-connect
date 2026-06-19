@@ -11,7 +11,9 @@ import {
     Medication,
     People,
     Psychology,
-    Business
+    Business,
+    MenuBook,
+    Assignment
 } from '@mui/icons-material';
 import { isSuperAdmin } from '@/constants/roles';
 
@@ -29,6 +31,8 @@ import { CategoryCreate, CategoryEdit, CategoryList, CategoryShow } from './reso
 import { StatusCreate, StatusEdit, StatusList, StatusShow } from './resources/status';
 import { CharactersCreate, CharactersEdit, CharactersList, CharactersShow } from './resources/characters';
 import { OwnerCreate, OwnerEdit, OwnerList, OwnerShow } from './resources/owners';
+import { HerdBookCreate, HerdBookEdit, HerdBookList, HerdBookShow } from './resources/herdBooks';
+import { HerdBookCattleCreate, HerdBookCattleEdit, HerdBookCattleList, HerdBookCattleShow } from './resources/herdBookCattle';
 import { Dashboard } from './components/Dashboard';
 import { Layout } from './components/Layout';
 import {
@@ -171,6 +175,24 @@ const AdminAppContent: React.FC = () => {
                         show={CharactersShow}
                         icon={Psychology}
                         options={{ label: 'Caractères' }}
+                    />
+                    <Resource
+                        name="herd-books"
+                        list={HerdBookList}
+                        edit={HerdBookEdit}
+                        create={HerdBookCreate}
+                        show={HerdBookShow}
+                        icon={MenuBook}
+                        options={{ label: 'Livres de troupeau' }}
+                    />
+                    <Resource
+                        name="herd-book-cattle"
+                        list={HerdBookCattleList}
+                        edit={HerdBookCattleEdit}
+                        create={HerdBookCattleCreate}
+                        show={HerdBookCattleShow}
+                        icon={Assignment}
+                        options={{ label: 'Inscriptions bovins' }}
                     />
                 </>
             )}

@@ -22,27 +22,27 @@ class ReferenceService {
     }
 
     async getEventTypes(): Promise<ApiResponse<TypeEvenement[]>> {
-        return this.fetchData<TypeEvenement[]>('/api/event-types', 'Erreur chargement types événements');
+        return this.fetchData<TypeEvenement[]>('/api/v1/event-types', 'Erreur chargement types événements');
     }
 
     async getVeterinarians(): Promise<ApiResponse<Veterinarian[]>> {
-        return this.fetchData<Veterinarian[]>('/api/veterinarians', 'Erreur chargement vétérinaires');
+        return this.fetchData<Veterinarian[]>('/api/v1/veterinarians', 'Erreur chargement vétérinaires');
     }
 
     async getMedicaments(): Promise<ApiResponse<Medicament[]>> {
-        return this.fetchData<Medicament[]>('/api/medicaments', 'Erreur chargement médicaments');
+        return this.fetchData<Medicament[]>('/api/v1/medicaments', 'Erreur chargement médicaments');
     }
 
     async getCategories(): Promise<ApiResponse<ReferenceItem[]>> {
-        return this.fetchData<ReferenceItem[]>('/api/categories', 'Erreur chargement catégories');
+        return this.fetchData<ReferenceItem[]>('/api/v1/categories', 'Erreur chargement catégories');
     }
 
     async getCharacters(): Promise<ApiResponse<ReferenceItem[]>> {
-        return this.fetchData<ReferenceItem[]>('/api/characters', 'Erreur chargement caractères');
+        return this.fetchData<ReferenceItem[]>('/api/v1/characters', 'Erreur chargement caractères');
     }
 
     async getStatuses(): Promise<ApiResponse<ReferenceItem[]>> {
-        return this.fetchData<ReferenceItem[]>('/api/status', 'Erreur chargement statuts');
+        return this.fetchData<ReferenceItem[]>('/api/v1/status', 'Erreur chargement statuts');
     }
 }
 

@@ -31,13 +31,14 @@ class CattleService {
       transformed.category = transformed.category.id;
     }
 
-    if (transformed.status && typeof transformed.status === 'object') {
-      transformed.status = transformed.status.id;
+    // Remove status from payload as it is not accepted by backend on create/update
+    if ('status' in transformed) {
+      delete transformed.status;
     }
 
-    // Handle nested source fields
-    if (transformed.source?.purchaseCategory && typeof transformed.source.purchaseCategory === 'object') {
-      transformed.source.purchaseCategory = transformed.source.purchaseCategory.id;
+    // Remove purchaseCategory from source if present (not supported by backend)
+    if (transformed.source && 'purchaseCategory' in transformed.source) {
+      delete transformed.source.purchaseCategory;
     }
 
     return transformed;
@@ -75,15 +76,29 @@ class CattleService {
     }
   }
 
-  async createCattle(cattle: Omit<Cattle, 'id'>): Promise<ApiResponse<Cattle>> {
+  async createCattle(
+    cattle: Omit<Cattle, 'id'>,
+    herdBookId?: string,
+    nCarnet?: string
+  ): Promise<ApiResponse<Cattle>> {
     try {
       const payload = this.transformCattleData(cattle);
-      const result = await apiClient.post<Cattle>(this.endpoint, payload);
+
+      // Build query params for herd book registration
+      const params: Record<string, string> = {};
+      if (herdBookId) params.herd_book_id = herdBookId;
+      if (nCarnet) params.n_carnet = nCarnet;
+
+      const queryString = Object.keys(params).length > 0
+        ? '?' + new URLSearchParams(params).toString()
+        : '';
+
+      const result = await apiClient.post<Cattle>(`${this.endpoint}${queryString}`, payload);
 
       return {
         data: result,
         success: true,
-        message: 'Bovin créé avec succès',
+        message: 'Bovin créé avec succès et inscrit dans le livre de troupeau',
       };
     } catch (error: any) {
       console.error('Error creating cattle:', error);

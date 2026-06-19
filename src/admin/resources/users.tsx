@@ -46,19 +46,54 @@ const DeleteButtonField = () => {
   );
 };
 
+import { Link } from 'react-router-dom';
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Button } from 'react-admin';
+
+const CustomEditButton = () => {
+  const record = useRecordContext();
+  if (!record) return null;
+  return (
+    <Button
+      component={Link}
+      to={`/admin/users/${record.id}`}
+      label="ra.action.edit"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <EditIcon />
+    </Button>
+  );
+};
+
+const CustomShowButton = () => {
+  const record = useRecordContext();
+  if (!record) return null;
+  return (
+    <Button
+      component={Link}
+      to={`/admin/users/${record.id}/show`}
+      label="ra.action.show"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <VisibilityIcon />
+    </Button>
+  );
+};
+
 // Liste des utilisateurs
 export const UserList = () => (
   <List filters={userFilters}>
-    <Datagrid rowClick="edit">
+    <Datagrid rowClick={(id, resource, record) => `/admin/users/${id}`}>
       <TextField source="id" label="ID" />
       <TextField source="name" label="Nom" />
       <EmailField source="email" label="Email" />
       <TextField source="role" label="Rôle" />
-      <ReferenceField source="owner_id" reference="owners" label="Propriétaire" link="show">
+      <ReferenceField source="ownerId" reference="owners" label="Propriétaire" link="show">
         <TextField source="name" />
       </ReferenceField>
-      <ShowButton />
-      <EditButton />
+      <CustomShowButton />
+      <CustomEditButton />
       <DeleteButtonField />
     </Datagrid>
   </List>
@@ -76,7 +111,7 @@ export const UserEdit = () => (
         choices={roleChoices}
         required
       />
-      <ReferenceInput source="owner_id" reference="owners" label="Propriétaire">
+      <ReferenceInput source="ownerId" reference="owners" label="Propriétaire">
         <SelectInput optionText="name" />
       </ReferenceInput>
       <PasswordInput source="password" label="Nouveau mot de passe (optionnel)" />
@@ -96,7 +131,7 @@ export const UserCreate = () => (
         choices={roleChoices}
         required
       />
-      <ReferenceInput source="owner_id" reference="owners" label="Propriétaire">
+      <ReferenceInput source="ownerId" reference="owners" label="Propriétaire">
         <SelectInput optionText="name" />
       </ReferenceInput>
       <PasswordInput source="password" label="Mot de passe" required />

@@ -8,31 +8,46 @@ export interface Cattle {
     id: string;
     name: string;
   };
-  category: {
-    id: string;
-    name: string;
-  };
   brand?: string;
-  herdBookNumber?: number;
   distinctiveSign?: string;
   photo?: string;
-  status: {
+  category?: {
     id: string;
     name: string;
   };
+  status?: {
+    id: string;
+    name: string;
+  };
+  n_carnet?: string;
   source: {
-    type: 'Acheté' | 'Né dans le troupeau';
+    type: 'ACHETE' | 'NE_DANS_TROUPEAU';
     supplier?: string;
     purchaseDate?: string;
-    purchaseCategory?: string;
     purchasePrice?: number;
     purchaseWeight?: number;
     purchaseHealthStatus?: string;
     purchaseNotes?: string;
-    motherId?: string; // Changed from number to string
+    motherId?: string;
   };
   events: CattleEvent[];
   treatments: Treatment[];
+  owner_id?: string;
+}
+
+// Type enrichi pour l'affichage avec informations du HerdBook
+export interface CattleWithHerdBookInfo extends Cattle {
+  // Informations du HerdBook courant (enrichies par le backend ou le frontend)
+  n_carnet?: string;
+  category: {
+    id: string;
+    name: string;
+  };
+  status: {
+    id: string;
+    name: string;
+  };
+  herd_book_year?: number;
 }
 
 export interface CattleEvent {
@@ -45,7 +60,7 @@ export interface CattleEvent {
 
 export interface Treatment {
   id: string; // Changed from number to string
-  type: 'Antibiotique' | 'Vaccin' | 'Vermifuge' | 'Anti-inflammatoire' | 'Vitamine' | 'Autre';
+  type: 'ANTIBIOTIQUE' | 'VACCIN' | 'VERMIFUGE' | 'ANTI_INFLAMMATOIRE' | 'VITAMINE' | 'AUTRE';
   date: string;
   product: string; // ID du médicament
   dosage: string | {

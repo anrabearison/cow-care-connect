@@ -18,6 +18,7 @@ interface AddBirthModalProps {
 }
 
 export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange, onAdd, motherName, motherId }) => {
+    const [errors, setErrors] = useState<Record<string, string>>({});
     const [formData, setFormData] = useState({
         name: '',
         nickname: '',
@@ -29,9 +30,20 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
         birthDescription: ''
     });
 
+    const validateForm = () => {
+        const newErrors: Record<string, string> = {};
+
+        if (!formData.name) newErrors.name = "Le nom du veau est obligatoire";
+        if (!formData.gender) newErrors.gender = "Le sexe est obligatoire";
+        if (!formData.birthDate) newErrors.birthDate = "La date de naissance est obligatoire";
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (formData.name && formData.gender && formData.birthDate) {
+        if (validateForm()) {
             const calfData: Omit<Cattle, 'id' | 'events' | 'treatments'> = {
                 name: formData.name,
                 nickname: formData.nickname || undefined,
@@ -45,17 +57,9 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                     id: 'CAT003',
                     name: 'Veau'
                 },
-                brand: formData.brand || undefined,
+                // brand removed as not supported by backend on birth create
                 distinctiveSign: formData.distinctiveSign || undefined,
-                photo: undefined,
-                status: {
-                    id: 'STAT001',
-                    name: 'Vivant'
-                },
-                source: {
-                    type: 'Né dans le troupeau',
-                    motherId: motherId
-                }
+                // photo, status, source removed as not supported by backend on birth create
             };
 
             onAdd(calfData);
@@ -71,6 +75,7 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                 distinctiveSign: '',
                 birthDescription: ''
             });
+            setErrors({});
             onOpenChange(false);
         }
     };
@@ -93,9 +98,13 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                                     id="name"
                                     placeholder="Ex: Petit Vato"
                                     value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    required
+                                    onChange={(e) => {
+                                        setFormData({ ...formData, name: e.target.value });
+                                        if (errors.name) setErrors({ ...errors, name: '' });
+                                    }}
+                                    className={errors.name ? 'border-red-500' : ''}
                                 />
+                                {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
                             </div>
 
                             <div className="grid gap-2">
@@ -113,10 +122,13 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                             <div className="grid gap-2">
                                 <Label htmlFor="gender">Sexe *</Label>
                                 <Select
-                                    value={formData.gender}
-                                    onValueChange={(value) => setFormData({ ...formData, gender: value as 'M' | 'F' })}
+                                    value={formData.gender || undefined}
+                                    onValueChange={(value) => {
+                                        setFormData({ ...formData, gender: value as 'M' | 'F' });
+                                        if (errors.gender) setErrors({ ...errors, gender: '' });
+                                    }}
                                 >
-                                    <SelectTrigger id="gender">
+                                    <SelectTrigger id="gender" className={errors.gender ? 'border-red-500' : ''}>
                                         <SelectValue placeholder="Sélectionner le sexe" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -124,6 +136,7 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                                         <SelectItem value="F">Femelle</SelectItem>
                                     </SelectContent>
                                 </Select>
+                                {errors.gender && <p className="text-sm text-red-500">{errors.gender}</p>}
                             </div>
 
                             <div className="grid gap-2">
@@ -132,9 +145,13 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                                     id="birthDate"
                                     type="date"
                                     value={formData.birthDate}
-                                    onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
-                                    required
+                                    onChange={(e) => {
+                                        setFormData({ ...formData, birthDate: e.target.value });
+                                        if (errors.birthDate) setErrors({ ...errors, birthDate: '' });
+                                    }}
+                                    className={errors.birthDate ? 'border-red-500' : ''}
                                 />
+                                {errors.birthDate && <p className="text-sm text-red-500">{errors.birthDate}</p>}
                             </div>
                         </div>
 

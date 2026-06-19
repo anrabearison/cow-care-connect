@@ -25,10 +25,10 @@ import { EditToolbar, CreateToolbar, ConfirmDeleteButton } from '../components/C
 const evenementFilters = [
   <TextInput source="q" label="Rechercher" alwaysOn />,
   <ReferenceInput source="type" reference="typeEvenements" label="Type">
-    <AutocompleteInput optionText="nom" />
+    <AutocompleteInput optionText="name" />
   </ReferenceInput>,
   <ReferenceInput source="cattleId" reference="cattle" label="Bovin">
-    <AutocompleteInput optionText="nom" />
+    <AutocompleteInput optionText="name" />
   </ReferenceInput>,
   <DateInput source="date" label="Date" />,
 ];
@@ -45,21 +45,56 @@ const DeleteButtonField = () => {
   );
 };
 
+import { Link } from 'react-router-dom';
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Button } from 'react-admin';
+
+const CustomEditButton = () => {
+  const record = useRecordContext();
+  if (!record) return null;
+  return (
+    <Button
+      component={Link}
+      to={`/admin/events/${record.id}`}
+      label="ra.action.edit"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <EditIcon />
+    </Button>
+  );
+};
+
+const CustomShowButton = () => {
+  const record = useRecordContext();
+  if (!record) return null;
+  return (
+    <Button
+      component={Link}
+      to={`/admin/events/${record.id}/show`}
+      label="ra.action.show"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <VisibilityIcon />
+    </Button>
+  );
+};
+
 // Liste des événements
 export const EvenementList = () => (
   <List filters={evenementFilters}>
-    <Datagrid rowClick="edit">
+    <Datagrid rowClick={(id, resource, record) => `/admin/events/${id}`}>
       <TextField source="id" label="ID" />
       <ReferenceField source="cattleId" reference="cattle" label="Bovin">
         <TextField source="name" />
       </ReferenceField>
       <ReferenceField source="type" reference="typeEvenements" label="Type">
-        <TextField source="nom" />
+        <TextField source="name" />
       </ReferenceField>
       <DateField source="date" label="Date" />
       <TextField source="description" label="Description" />
-      <ShowButton />
-      <EditButton />
+      <CustomShowButton />
+      <CustomEditButton />
       <DeleteButtonField />
     </Datagrid>
   </List>
@@ -73,7 +108,7 @@ export const EvenementEdit = () => (
         <AutocompleteInput optionText="name" />
       </ReferenceInput>
       <ReferenceInput source="type" reference="typeEvenements" label="Type">
-        <AutocompleteInput optionText="nom" />
+        <AutocompleteInput optionText="name" />
       </ReferenceInput>
       <DateInput source="date" label="Date" required />
       <TextInput source="description" label="Description" required />
@@ -90,7 +125,7 @@ export const EvenementCreate = () => (
         <AutocompleteInput optionText="name" />
       </ReferenceInput>
       <ReferenceInput source="type" reference="typeEvenements" label="Type">
-        <AutocompleteInput optionText="nom" />
+        <AutocompleteInput optionText="name" />
       </ReferenceInput>
       <DateInput source="date" label="Date" required />
       <TextInput source="description" label="Description" required />
@@ -108,7 +143,7 @@ export const EvenementShow = () => (
         <TextField source="name" />
       </ReferenceField>
       <ReferenceField source="type" reference="typeEvenements" label="Type">
-        <TextField source="nom" />
+        <TextField source="name" />
       </ReferenceField>
       <DateField source="date" label="Date" />
       <TextField source="description" label="Description" />

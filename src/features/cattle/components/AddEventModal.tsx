@@ -17,6 +17,7 @@ interface AddEventModalProps {
 }
 
 export const AddEventModal: React.FC<AddEventModalProps> = ({ open, onOpenChange, onAdd, cattleName }) => {
+    const [errors, setErrors] = useState<Record<string, string>>({});
     const [formData, setFormData] = useState({
         type: '',
         date: new Date().toISOString().split('T')[0],
@@ -41,9 +42,20 @@ export const AddEventModal: React.FC<AddEventModalProps> = ({ open, onOpenChange
         }
     }, [open]);
 
+    const validateForm = () => {
+        const newErrors: Record<string, string> = {};
+
+        if (!formData.type) newErrors.type = "Le type d'événement est obligatoire";
+        if (!formData.date) newErrors.date = "La date est obligatoire";
+        if (!formData.description) newErrors.description = "La description est obligatoire";
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (formData.type && formData.date && formData.description) {
+        if (validateForm()) {
             onAdd(formData);
             setFormData({
                 type: '',
@@ -51,6 +63,7 @@ export const AddEventModal: React.FC<AddEventModalProps> = ({ open, onOpenChange
                 description: '',
                 details: ''
             });
+            setErrors({});
             onOpenChange(false);
         }
     };
@@ -69,11 +82,14 @@ export const AddEventModal: React.FC<AddEventModalProps> = ({ open, onOpenChange
                         <div className="grid gap-2">
                             <Label htmlFor="type">Type d'événement *</Label>
                             <Select
-                                value={formData.type.toString()}
-                                onValueChange={(value) => setFormData({ ...formData, type: value })}
+                                value={formData.type || undefined}
+                                onValueChange={(value) => {
+                                    setFormData({ ...formData, type: value });
+                                    if (errors.type) setErrors({ ...errors, type: '' });
+                                }}
                                 disabled={loading}
                             >
-                                <SelectTrigger id="type">
+                                <SelectTrigger id="type" className={errors.type ? 'border-red-500' : ''}>
                                     <SelectValue placeholder={loading ? "Chargement..." : "Sélectionner un type"} />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -84,6 +100,7 @@ export const AddEventModal: React.FC<AddEventModalProps> = ({ open, onOpenChange
                                     ))}
                                 </SelectContent>
                             </Select>
+                            {errors.type && <p className="text-sm text-red-500">{errors.type}</p>}
                         </div>
 
                         <div className="grid gap-2">
@@ -92,9 +109,13 @@ export const AddEventModal: React.FC<AddEventModalProps> = ({ open, onOpenChange
                                 id="date"
                                 type="date"
                                 value={formData.date}
-                                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                                required
+                                onChange={(e) => {
+                                    setFormData({ ...formData, date: e.target.value });
+                                    if (errors.date) setErrors({ ...errors, date: '' });
+                                }}
+                                className={errors.date ? 'border-red-500' : ''}
                             />
+                            {errors.date && <p className="text-sm text-red-500">{errors.date}</p>}
                         </div>
 
                         <div className="grid gap-2">
@@ -103,9 +124,13 @@ export const AddEventModal: React.FC<AddEventModalProps> = ({ open, onOpenChange
                                 id="description"
                                 placeholder="Ex: Vaccination annuelle complète"
                                 value={formData.description}
-                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                required
+                                onChange={(e) => {
+                                    setFormData({ ...formData, description: e.target.value });
+                                    if (errors.description) setErrors({ ...errors, description: '' });
+                                }}
+                                className={errors.description ? 'border-red-500' : ''}
                             />
+                            {errors.description && <p className="text-sm text-red-500">{errors.description}</p>}
                         </div>
 
                         <div className="grid gap-2">

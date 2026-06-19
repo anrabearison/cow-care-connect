@@ -6,7 +6,7 @@ const API_URL = API_CONFIG.BASE_URL;
 export const authProvider: AuthProvider = {
   login: async ({ username, password }) => {
     try {
-      const response = await fetch(`${API_URL}/api/auth/login`, {
+      const response = await fetch(`${API_URL}/api/v1/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -72,6 +72,7 @@ export const authProvider: AuthProvider = {
         fullName: userData.name,
         avatar: undefined,
         owner: userData.owner?.name,
+        owner_id: userData.owner_id,
       });
     }
     return Promise.reject();

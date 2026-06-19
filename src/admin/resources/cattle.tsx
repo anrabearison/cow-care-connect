@@ -37,6 +37,7 @@ import {
 import { CloudinaryImageInput } from '../components/CloudinaryImageInput';
 import { EditToolbar, CreateToolbar, ConfirmDeleteButton } from '../components/ConfirmToolbars';
 import { Cattle } from '../../features/cattle/types';
+import { OwnerReferenceInput } from '../components/OwnerReferenceInput';
 
 // Custom ListActions without RefreshButton
 const ListActions = () => (
@@ -62,41 +63,91 @@ const DeleteButtonField = () => {
 
 // Filtres pour la liste des bovins
 const cattleFilters = [
-  <TextInput source="q" label="Rechercher" alwaysOn />,
-  <SelectInput source="gender" label="Genre" choices={[
-    { id: 'M', name: 'Mâle' },
-    { id: 'F', name: 'Femelle' },
-  ]} />,
-  <ReferenceInput source="category" reference="categories" label="Catégorie">
+  <TextInput
+    source="q"
+    label="Rechercher"
+    placeholder="Nom, surnom, marque, signe..."
+    alwaysOn
+  />,
+  <SelectInput
+    source="gender"
+    label="Genre"
+    choices={[
+      { id: 'M', name: '♂ Mâle' },
+      { id: 'F', name: '♀ Femelle' },
+    ]}
+  />,
+  <ReferenceInput
+    source="category"
+    reference="categories"
+    label="Catégorie"
+  >
     <SelectInput optionText="name" />
   </ReferenceInput>,
-  <SelectInput source="character" label="Caractère" choices={[
-    { id: 'Docile', name: 'Docile' },
-    { id: 'Agressif', name: 'Agressif' },
-    { id: 'Timide', name: 'Timide' },
-    { id: 'Energique', name: 'Énergique' },
-  ]} />,
+  <ReferenceInput
+    source="character"
+    reference="characters"
+    label="Caractère"
+  >
+    <SelectInput optionText="name" />
+  </ReferenceInput>,
+  <ReferenceInput
+    source="status"
+    reference="status"
+    label="Statut"
+  >
+    <SelectInput optionText="name" />
+  </ReferenceInput>,
+  <SelectInput
+    source="sourceType"
+    label="Type de source"
+    choices={[
+      { id: 'ACHETE', name: '🛒 Acheté' },
+      { id: 'NE_DANS_TROUPEAU', name: '🐄 Né dans le troupeau' },
+    ]}
+  />,
 ];
+
+// Custom Buttons
+import { Link } from 'react-router-dom';
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Button } from 'react-admin';
+
+const CustomEditButton = () => {
+  const record = useRecordContext();
+  if (!record) return null;
+  return (
+    <Button
+      component={Link}
+      to={`/admin/cattle/${record.id}`}
+      label="ra.action.edit"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <EditIcon />
+    </Button>
+  );
+};
+
+const CustomShowButton = () => {
+  const record = useRecordContext();
+  if (!record) return null;
+  return (
+    <Button
+      component={Link}
+      to={`/admin/cattle/${record.id}/show`}
+      label="ra.action.show"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <VisibilityIcon />
+    </Button>
+  );
+};
 
 // Liste des bovins
 export const CattleList = () => (
   <List filters={cattleFilters} actions={<ListActions />}>
-    <Datagrid rowClick="edit">
-      <TextField source="id" label="ID" />
-      <TextField source="name" label="Nom" />
-      <TextField source="nickname" label="Surnom" />
-      <TextField source="category.name" label="Catégorie" />
-      <TextField source="gender" label="Genre" />
-      <NumberField source="herdBookNumber" label="N° Carnet" />
-      <TextField source="brand" label="Marque" />
-      <TextField source="distinctiveSign" label="Signe Particulier" />
-      <TextField source="character.name" label="Caractère" />
-      <DateField source="birthDate" label="Date de naissance" />
-      <TextField source="status.name" label="Statut" />
-      <FunctionField
-        label="Source"
-        render={(record: Cattle) => record.source?.type || 'Non défini'}
-      />
+    <Datagrid rowClick={(id, resource, record) => `/admin/cattle/${id}/show`}>
       <FunctionField
         label="Photo"
         render={(record: Cattle) =>
@@ -104,23 +155,82 @@ export const CattleList = () => (
             <img
               src={record.photo}
               alt={record.name}
-              style={{ width: 50, height: 50, objectFit: 'cover', borderRadius: 4 }}
+              style={{
+                width: 60,
+                height: 60,
+                objectFit: 'cover',
+                borderRadius: 8,
+                border: '2px solid #e0e0e0'
+              }}
             />
           ) : (
-            <span style={{ color: '#999' }}>Aucune</span>
+            <div style={{
+              width: 60,
+              height: 60,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: '#f5f5f5',
+              borderRadius: 8,
+              color: '#999',
+              fontSize: '24px'
+            }}>
+              🐄
+            </div>
           )
         }
       />
       <FunctionField
-        label="Événements"
-        render={(record: Cattle) => record.events?.length || 0}
+        label="Identité"
+        render={(record: Cattle) => (
+          <div>
+            <div style={{ fontWeight: 'bold', fontSize: '0.95em' }}>{record.name}</div>
+            {record.nickname && (
+              <div style={{ fontSize: '0.85em', color: '#666', fontStyle: 'italic' }}>
+                "{record.nickname}"
+              </div>
+            )}
+          </div>
+        )}
       />
       <FunctionField
-        label="Traitements"
-        render={(record: Cattle) => record.treatments?.length || 0}
+        label="Genre"
+        render={(record: Cattle) => (
+          <span style={{ fontSize: '1.3em' }}>
+            {record.gender === 'M' ? '♂️' : '♀️'}
+          </span>
+        )}
       />
-      <ShowButton />
-      <EditButton />
+      <TextField source="category.name" label="Catégorie" />
+      <NumberField source="herdBookNumber" label="N° Carnet" />
+      <FunctionField
+        label="Statut"
+        render={(record: Cattle) => {
+          const statusColors: Record<string, string> = {
+            'STAT001': '#4caf50', // Actif - vert
+            'STAT002': '#ff9800', // Malade - orange
+            'STAT003': '#f44336', // Mort - rouge
+            'STAT004': '#2196f3', // Vendu - bleu
+          };
+          const color = statusColors[record.status?.id || ''] || '#9e9e9e';
+
+          return (
+            <span style={{
+              padding: '4px 12px',
+              borderRadius: 12,
+              backgroundColor: `${color}20`,
+              color: color,
+              fontWeight: 500,
+              fontSize: '0.85em',
+              display: 'inline-block'
+            }}>
+              {record.status?.name || 'Inconnu'}
+            </span>
+          );
+        }}
+      />
+      <CustomShowButton />
+      <CustomEditButton />
       <DeleteButtonField />
     </Datagrid>
   </List>
@@ -130,10 +240,11 @@ export const CattleList = () => (
 export const CattleEdit = () => (
   <Edit>
     <SimpleForm toolbar={<EditToolbar />}>
+      <OwnerReferenceInput />
       <TextInput source="name" label="Nom" required />
       <TextInput source="nickname" label="Surnom" />
-      <NumberInput source="herdBookNumber" label="N° Carnet" />
       <TextInput source="brand" label="Marque" />
+      <TextInput source="nCarnet" label="N° Carnet" />
       <TextInput source="distinctiveSign" label="Signe Particulier" />
       <SelectInput
         source="gender"
@@ -159,23 +270,15 @@ export const CattleEdit = () => (
         source="source.type"
         label="Type de source"
         choices={[
-          { id: 'Acheté', name: 'Acheté' },
-          { id: 'Né dans le troupeau', name: 'Né dans le troupeau' },
+          { id: 'ACHETE', name: 'Acheté' },
+          { id: 'NE_DANS_TROUPEAU', name: 'Né dans le troupeau' },
         ]}
         required
       />
       <TextInput source="source.supplier" label="Fournisseur" />
       <DateInput source="source.purchaseDate" label="Date d'achat" />
-      <SelectInput
-        source="source.purchaseCategory"
-        label="Catégorie à l'achat"
-        choices={[
-          { id: 'Taureau', name: 'Taureau' },
-          { id: 'Veau', name: 'Veau' },
-          { id: 'Zébu', name: 'Zébu' },
-          { id: 'Vache', name: 'Vache' },
-        ]}
-      />
+      <DateInput source="source.purchaseDate" label="Date d'achat" />
+      {/* purchaseCategory removed as not supported by backend */}
       <NumberInput source="source.purchasePrice" label="Prix d'achat (Ar)" />
       <NumberInput source="source.purchaseWeight" label="Poids à l'achat (kg)" />
       <TextInput source="source.purchaseHealthStatus" label="État de santé à l'achat" />
@@ -184,7 +287,7 @@ export const CattleEdit = () => (
       <ArrayInput source="events" label="Événements">
         <SimpleFormIterator inline>
           <ReferenceInput source="type" reference="typeEvenements" label="Type">
-            <AutocompleteInput optionText="nom" />
+            <AutocompleteInput optionText="name" />
           </ReferenceInput>
           <DateInput source="date" label="Date" />
           <TextInput source="description" label="Description" />
@@ -198,21 +301,21 @@ export const CattleEdit = () => (
             source="type"
             label="Type"
             choices={[
-              { id: 'Antibiotique', name: 'Antibiotique' },
-              { id: 'Vaccin', name: 'Vaccin' },
-              { id: 'Vermifuge', name: 'Vermifuge' },
-              { id: 'Anti-inflammatoire', name: 'Anti-inflammatoire' },
-              { id: 'Vitamine', name: 'Vitamine' },
-              { id: 'Autre', name: 'Autre' },
+              { id: 'ANTIBIOTIQUE', name: 'Antibiotique' },
+              { id: 'VACCIN', name: 'Vaccin' },
+              { id: 'VERMIFUGE', name: 'Vermifuge' },
+              { id: 'ANTI_INFLAMMATOIRE', name: 'Anti-inflammatoire' },
+              { id: 'VITAMINE', name: 'Vitamine' },
+              { id: 'AUTRE', name: 'Autre' },
             ]}
           />
           <DateInput source="date" label="Date" />
           <ReferenceInput source="product" reference="medicaments" label="Médicament">
-            <AutocompleteInput optionText="nom" />
+            <AutocompleteInput optionText="name" />
           </ReferenceInput>
           <TextInput source="dosage" label="Dose" />
           <ReferenceInput source="veterinarian" reference="veterinarians" label="Intervenant">
-            <AutocompleteInput optionText="nom" />
+            <AutocompleteInput optionText="name" />
           </ReferenceInput>
           <TextInput source="notes" label="Notes" multiline />
         </SimpleFormIterator>
@@ -225,10 +328,28 @@ export const CattleEdit = () => (
 export const CattleCreate = () => (
   <Create>
     <SimpleForm toolbar={<CreateToolbar />}>
+      <OwnerReferenceInput />
       <TextInput source="name" label="Nom" required />
       <TextInput source="nickname" label="Surnom" />
-      <NumberInput source="herdBookNumber" label="N° Carnet" />
+      <ReferenceInput
+        source="herdBookId"
+        reference="herd-books"
+        label="Livre de troupeau *"
+        sort={{ field: 'year', order: 'DESC' }}
+      >
+        <SelectInput
+          optionText={(record) => `${record.year} - ${record.reference}`}
+          validate={required()}
+        />
+      </ReferenceInput>
+      <TextInput
+        source="nCarnet"
+        label="N° Carnet"
+        helperText="Numéro de carnet pour ce livre de troupeau (optionnel)"
+      />
+
       <TextInput source="brand" label="Marque" />
+
       <TextInput source="distinctiveSign" label="Signe Particulier" />
       <SelectInput
         source="gender"
@@ -254,23 +375,15 @@ export const CattleCreate = () => (
         source="source.type"
         label="Type de source"
         choices={[
-          { id: 'Acheté', name: 'Acheté' },
-          { id: 'Né dans le troupeau', name: 'Né dans le troupeau' },
+          { id: 'ACHETE', name: 'Acheté' },
+          { id: 'NE_DANS_TROUPEAU', name: 'Né dans le troupeau' },
         ]}
         required
       />
       <TextInput source="source.supplier" label="Fournisseur" />
       <DateInput source="source.purchaseDate" label="Date d'achat" />
-      <SelectInput
-        source="source.purchaseCategory"
-        label="Catégorie à l'achat"
-        choices={[
-          { id: 'Taureau', name: 'Taureau' },
-          { id: 'Veau', name: 'Veau' },
-          { id: 'Zébu', name: 'Zébu' },
-          { id: 'Vache', name: 'Vache' },
-        ]}
-      />
+      <DateInput source="source.purchaseDate" label="Date d'achat" />
+      {/* purchaseCategory removed as not supported by backend */}
       <NumberInput source="source.purchasePrice" label="Prix d'achat (Ar)" />
       <NumberInput source="source.purchaseWeight" label="Poids à l'achat (kg)" />
       <TextInput source="source.purchaseHealthStatus" label="État de santé à l'achat" />
@@ -279,7 +392,7 @@ export const CattleCreate = () => (
       <ArrayInput source="events" label="Événements">
         <SimpleFormIterator inline>
           <ReferenceInput source="type" reference="typeEvenements" label="Type">
-            <AutocompleteInput optionText="nom" />
+            <AutocompleteInput optionText="name" />
           </ReferenceInput>
           <DateInput source="date" label="Date" />
           <TextInput source="description" label="Description" />
@@ -293,21 +406,21 @@ export const CattleCreate = () => (
             source="type"
             label="Type"
             choices={[
-              { id: 'Antibiotique', name: 'Antibiotique' },
-              { id: 'Vaccin', name: 'Vaccin' },
-              { id: 'Vermifuge', name: 'Vermifuge' },
-              { id: 'Anti-inflammatoire', name: 'Anti-inflammatoire' },
-              { id: 'Vitamine', name: 'Vitamine' },
-              { id: 'Autre', name: 'Autre' },
+              { id: 'ANTIBIOTIQUE', name: 'Antibiotique' },
+              { id: 'VACCIN', name: 'Vaccin' },
+              { id: 'VERMIFUGE', name: 'Vermifuge' },
+              { id: 'ANTI_INFLAMMATOIRE', name: 'Anti-inflammatoire' },
+              { id: 'VITAMINE', name: 'Vitamine' },
+              { id: 'AUTRE', name: 'Autre' },
             ]}
           />
           <DateInput source="date" label="Date" />
           <ReferenceInput source="product" reference="medicaments" label="Médicament">
-            <AutocompleteInput optionText="nom" />
+            <AutocompleteInput optionText="name" />
           </ReferenceInput>
           <TextInput source="dosage" label="Dose" />
           <ReferenceInput source="veterinarian" reference="veterinarians" label="Intervenant">
-            <AutocompleteInput optionText="nom" />
+            <AutocompleteInput optionText="name" />
           </ReferenceInput>
           <TextInput source="notes" label="Notes" multiline />
         </SimpleFormIterator>
@@ -339,7 +452,7 @@ const InlineField: React.FC<InlineFieldProps> = ({ label, children }) => {
 const GeneralInfoTab = () => (
   <Grid container spacing={3}>
     {/* En-tête avec Photo et Infos Principales */}
-    <Grid item xs={12} md={4}>
+    <Grid size={{ xs: 12, md: 4 }}>
       <Card sx={{ height: '100%' }}>
         <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
           <Box sx={{
@@ -376,7 +489,7 @@ const GeneralInfoTab = () => (
               render={(record: Cattle) => (
                 <Chip
                   label={record.status?.name || 'Inconnu'}
-                  color={record.status?.name === 'En bonne santé' ? 'success' : 'warning'}
+                  color={record.status?.id === 'STAT004' ? 'success' : 'warning'}
                   variant="outlined"
                 />
               )}
@@ -387,10 +500,10 @@ const GeneralInfoTab = () => (
     </Grid>
 
     {/* Détails */}
-    <Grid item xs={12} md={8}>
+    <Grid size={{ xs: 12, md: 8 }}>
       <Grid container spacing={3}>
         {/* Carte Identité */}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -398,7 +511,7 @@ const GeneralInfoTab = () => (
               </Typography>
               <Divider sx={{ mb: 2 }} />
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <InlineField label="Identifiant"><TextField source="id" /></InlineField>
                   <InlineField label="N° Carnet"><NumberField source="herdBookNumber" /></InlineField>
                   <InlineField label="Date de naissance"><DateField source="birthDate" /></InlineField>
@@ -408,34 +521,17 @@ const GeneralInfoTab = () => (
                     } />
                   </InlineField>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <InlineField label="Catégorie"><TextField source="category.name" /></InlineField>
                   <InlineField label="Caractère"><TextField source="character.name" /></InlineField>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* Carte Signes Distinctifs */}
-        <Grid item xs={12}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                🔍 Signes Distinctifs
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
                   <InlineField label="Marque"><TextField source="brand" /></InlineField>
-                </Grid>
-                <Grid item xs={12} sm={6}>
                   <InlineField label="Signe Particulier"><TextField source="distinctiveSign" /></InlineField>
                 </Grid>
               </Grid>
             </CardContent>
           </Card>
         </Grid>
+
       </Grid>
     </Grid>
   </Grid>
@@ -445,13 +541,13 @@ const OriginTab = () => (
   <Card>
     <CardContent>
       <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Typography variant="h6" gutterBottom>Source</Typography>
           <Divider sx={{ mb: 2 }} />
           <InlineField label="Type de source"><TextField source="source.type" /></InlineField>
           <InlineField label="Fournisseur"><TextField source="source.supplier" /></InlineField>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Typography variant="h6" gutterBottom>Détails de l'achat</Typography>
           <Divider sx={{ mb: 2 }} />
           <InlineField label="Date d'achat"><DateField source="source.purchaseDate" /></InlineField>
@@ -459,7 +555,7 @@ const OriginTab = () => (
           <InlineField label="Prix d'achat"><NumberField source="source.purchasePrice" options={{ style: 'currency', currency: 'MGA' }} /></InlineField>
           <InlineField label="Poids à l'achat"><NumberField source="source.purchaseWeight" /> kg</InlineField>
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Typography variant="h6" gutterBottom>État initial</Typography>
           <Divider sx={{ mb: 2 }} />
           <InlineField label="État de santé"><TextField source="source.purchaseHealthStatus" /></InlineField>
@@ -472,14 +568,14 @@ const OriginTab = () => (
 
 const HealthTab = () => (
   <Grid container spacing={3}>
-    <Grid item xs={12}>
+    <Grid size={{ xs: 12 }}>
       <Card>
         <CardContent>
           <Typography variant="h6" gutterBottom>Historique des Événements</Typography>
           <ArrayField source="events" label={false}>
             <Datagrid bulkActionButtons={false} hover={false} sx={{ '& .RaDatagrid-headerCell': { fontWeight: 'bold' } }}>
               <ReferenceField source="type" reference="typeEvenements" label="Type">
-                <TextField source="nom" />
+                <TextField source="name" />
               </ReferenceField>
               <DateField source="date" label="Date" />
               <TextField source="description" label="Description" />
@@ -489,7 +585,7 @@ const HealthTab = () => (
         </CardContent>
       </Card>
     </Grid>
-    <Grid item xs={12}>
+    <Grid size={{ xs: 12 }}>
       <Card>
         <CardContent>
           <Typography variant="h6" gutterBottom>Traitements Vétérinaires</Typography>
@@ -498,11 +594,11 @@ const HealthTab = () => (
               <TextField source="type" label="Type" />
               <DateField source="date" label="Date" />
               <ReferenceField source="product" reference="medicaments" label="Médicament">
-                <TextField source="nom" />
+                <TextField source="name" />
               </ReferenceField>
               <TextField source="dosage" label="Dose" />
               <ReferenceField source="veterinarian" reference="veterinarians" label="Intervenant">
-                <TextField source="nom" />
+                <TextField source="name" />
               </ReferenceField>
               <TextField source="notes" label="Notes" />
             </Datagrid>
@@ -527,6 +623,55 @@ export const CattleShow = () => (
 
       <Tab label="Santé & Suivi">
         <HealthTab />
+      </Tab>
+
+      <Tab label="Livres de troupeau">
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              Inscriptions dans les livres de troupeau
+            </Typography>
+            <ArrayField source="herdBookEntries" label={false}>
+              <Datagrid bulkActionButtons={false} hover={false}>
+                <ReferenceField source="herdBookId" reference="herd-books" label="Livre" link="show">
+                  <FunctionField render={(record: any) => `${record.year} - ${record.reference}`} />
+                </ReferenceField>
+                <TextField source="nCarnet" label="N° Carnet" />
+                <ReferenceField source="categoryId" reference="categories" label="Catégorie">
+                  <TextField source="name" />
+                </ReferenceField>
+                <FunctionField
+                  label="Statut"
+                  render={(record: any) => {
+                    const statusColors: Record<string, string> = {
+                      'STAT001': '#4caf50',
+                      'STAT002': '#ff9800',
+                      'STAT003': '#f44336',
+                      'STAT004': '#2196f3',
+                    };
+                    const color = statusColors[record.statusId || ''] || '#9e9e9e';
+
+                    return (
+                      <span style={{
+                        padding: '4px 12px',
+                        borderRadius: 12,
+                        backgroundColor: `${color}20`,
+                        color: color,
+                        fontWeight: 500,
+                        fontSize: '0.85em',
+                        display: 'inline-block'
+                      }}>
+                        {record.status?.name || 'Inconnu'}
+                      </span>
+                    );
+                  }}
+                />
+                <DateField source="createdAt" label="Date d'inscription" />
+                <ShowButton resource="herd-book-cattle" />
+              </Datagrid>
+            </ArrayField>
+          </CardContent>
+        </Card>
       </Tab>
     </TabbedShowLayout>
   </Show>

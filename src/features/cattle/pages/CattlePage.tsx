@@ -13,7 +13,10 @@ import { AddPurchaseModal } from '@/features/cattle/components/AddPurchaseModal'
 import { useCategories } from '@/features/common/hooks/useReferences';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useOwnerSelection } from '@/contexts/OwnerSelectionContext';
+import { useHerdBookSelection } from '@/contexts/HerdBookSelectionContext';
+import { HerdBookSelector } from '@/components/HerdBookSelector';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { BookOpen } from 'lucide-react';
 
 export default function CattlePage() {
   const { user } = useAuth();
@@ -28,7 +31,7 @@ export default function CattlePage() {
   const itemsPerPage = 6;
 
   // Check if Super Admin has selected an owner
-  const isSuperAdmin = user?.role === 'super_admin';
+  const isSuperAdmin = user?.role === 'SUPER_ADMIN';
   const canAddCattle = !isSuperAdmin || selectedOwnerId !== null;
 
   // Load categories with React Query
@@ -45,7 +48,13 @@ export default function CattlePage() {
     per_page: itemsPerPage,
   }), [searchTerm, genderFilter, categoryFilter, sourceFilter, currentPage]);
 
-  const { cattle, loading: isLoading, total } = useCattle(filters);
+  // Get selected HerdBook from context
+  const { selectedHerdBookId, selectedHerdBook, isLoading: herdBookLoading } = useHerdBookSelection();
+
+  const { cattle, loading: isLoading, total } = useCattle(
+    selectedHerdBookId || '',
+    filters
+  );
   const createCattleMutation = useCreateCattle();
 
   // Memoize reset filters function
@@ -66,14 +75,23 @@ export default function CattlePage() {
   }, [searchTerm, genderFilter, sourceFilter, categoryFilter]);
 
   // Memoize add cattle handler
-  const handleAddCattle = useCallback(async (cattleData: Omit<Cattle, 'id' | 'events' | 'treatments'>) => {
+  const handleAddCattle = useCallback(async (
+    cattleData: Omit<Cattle, 'id' | 'events' | 'treatments'>,
+    herdBookId?: string,
+    nCarnet?: string
+  ) => {
     const fullCattleData: Omit<Cattle, 'id'> = {
       ...cattleData,
+      owner_id: selectedOwnerId || undefined,
       events: [],
       treatments: []
     };
-    createCattleMutation.mutate(fullCattleData);
-  }, [createCattleMutation]);
+    createCattleMutation.mutate({
+      cattle: fullCattleData,
+      herdBookId: herdBookId || selectedHerdBookId || undefined,
+      nCarnet
+    });
+  }, [createCattleMutation, selectedOwnerId, selectedHerdBookId]);
 
 
   return (
@@ -112,6 +130,13 @@ export default function CattlePage() {
             </Tooltip>
           </TooltipProvider>
         </div>
+
+        {/* HerdBook Selector - NOUVEAU */}
+        <Card className="mb-6 shadow-card-soft border-none bg-white/50 backdrop-blur-sm">
+          <CardContent className="p-6">
+            <HerdBookSelector />
+          </CardContent>
+        </Card>
 
         {/* Filters */}
         <Card className="mb-8 shadow-card-soft border-none bg-white/50 backdrop-blur-sm">
@@ -178,8 +203,8 @@ export default function CattlePage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Toutes les sources</SelectItem>
-                  <SelectItem value="Acheté">Acheté</SelectItem>
-                  <SelectItem value="Né dans le troupeau">Né dans le troupeau</SelectItem>
+                  <SelectItem value="ACHETE">Acheté</SelectItem>
+                  <SelectItem value="NE_DANS_TROUPEAU">Né dans le troupeau</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -207,8 +232,24 @@ export default function CattlePage() {
           </p>
         </div>
 
-        {/* Cattle Grid */}
-        {isLoading ? (
+        {/* Cattle Grid - Conditional on HerdBook selection */}
+        {!selectedHerdBookId ? (
+          <Card className="text-center py-12 bg-white/50 backdrop-blur-sm">
+            <CardContent>
+              <div className="flex flex-col items-center gap-4">
+                <BookOpen className="h-16 w-16 text-muted-foreground" />
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">
+                    Sélectionnez un livre de troupeau
+                  </h3>
+                  <p className="text-muted-foreground">
+                    Veuillez sélectionner un livre de troupeau ci-dessus pour voir les bœufs
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ) : isLoading || herdBookLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {Array.from({ length: itemsPerPage }).map((_, index) => (
               <Card key={index} className="overflow-hidden">

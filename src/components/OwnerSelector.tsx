@@ -26,10 +26,10 @@ export const OwnerSelector = () => {
     const queryClient = useQueryClient();
 
     useEffect(() => {
-        if (user?.role === 'super_admin') {
+        if (user?.role === 'SUPER_ADMIN') {
             setLoading(true);
             apiClient
-                .get<{ data: Owner[] }>('/api/owners')
+                .get<{ data: Owner[] }>('/api/v1/owners')
                 .then((response) => {
                     setOwners(response.data);
                 })
@@ -72,7 +72,7 @@ export const OwnerSelector = () => {
         }, 100);
     };
 
-    if (user?.role !== 'super_admin') {
+    if (user?.role !== 'SUPER_ADMIN') {
         return null;
     }
 

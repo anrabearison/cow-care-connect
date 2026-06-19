@@ -9,17 +9,20 @@ import { Cattle } from '@/features/cattle/types';
 import { referenceService } from '@/features/common/services/referenceService';
 import { cattleService } from '@/features/cattle/services';
 import { useToast } from '@/hooks/use-toast';
+import { useHerdBookSelection } from '@/contexts/HerdBookSelectionContext';
 
 interface AddCattleModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onAdd: (cattleData: Omit<Cattle, 'id' | 'events' | 'treatments'>) => void;
+    onAdd: (cattleData: Omit<Cattle, 'id' | 'events' | 'treatments'>, nCarnet?: string) => void;
 }
 
 export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChange, onAdd }) => {
     const { toast } = useToast();
+    const { selectedHerdBook } = useHerdBookSelection();
     const [categories, setCategories] = useState<{ id: string, name: string }[]>([]);
     const [characters, setCharacters] = useState<{ id: string, name: string }[]>([]);
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
     const [formData, setFormData] = useState({
         name: '',
@@ -29,8 +32,8 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
         character: 1,
         category: '',
         brand: '',
-        herdBookNumber: '',
         distinctiveSign: '',
+        n_carnet: '',  // NOUVEAU
         sourceType: 'Acheté' as 'Acheté' | 'Né dans le troupeau',
         // Purchase fields
         supplier: '',
@@ -74,15 +77,22 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
         }
     }, [open, toast]);
 
+    const validateForm = () => {
+        const newErrors: Record<string, string> = {};
+
+        if (!formData.name) newErrors.name = "Le nom est obligatoire";
+        if (!formData.gender) newErrors.gender = "Le sexe est obligatoire";
+        if (!formData.birthDate) newErrors.birthDate = "La date de naissance est obligatoire";
+        if (!formData.category) newErrors.category = "La catégorie est obligatoire";
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!formData.name || !formData.gender || !formData.birthDate || !formData.category) {
-            toast({
-                variant: "destructive",
-                title: "Erreur",
-                description: "Veuillez remplir tous les champs obligatoires"
-            });
+        if (!validateForm()) {
             return;
         }
 
@@ -92,26 +102,22 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
             gender: formData.gender as 'M' | 'F',
             birthDate: formData.birthDate,
             character: {
-                id: formData.character,
-                name: characters.find(c => c.id === formData.character)?.name || 'Docile'
+                id: formData.character.toString(),
+                name: characters.find(c => c.id === formData.character.toString())?.name || 'Docile'
             },
             category: {
-                id: parseInt(formData.category),
-                name: categories.find(c => c.id === parseInt(formData.category))?.name || ''
+                id: formData.category,
+                name: categories.find(c => c.id === formData.category)?.name || ''
             },
             brand: formData.brand || undefined,
-            herdBookNumber: formData.herdBookNumber ? parseInt(formData.herdBookNumber) : undefined,
             distinctiveSign: formData.distinctiveSign || undefined,
             photo: undefined,
-            status: {
-                id: 1,
-                name: 'Vivant'
-            },
+            // status removed as not supported by backend on create
             source: {
                 type: formData.sourceType,
                 supplier: formData.sourceType === 'Acheté' ? formData.supplier : undefined,
                 purchaseDate: formData.sourceType === 'Acheté' ? formData.purchaseDate : undefined,
-                purchaseCategory: formData.sourceType === 'Acheté' ? parseInt(formData.category) : undefined, // Assuming purchase category is same as current category for now
+                // purchaseCategory removed as not supported by backend
                 purchasePrice: formData.sourceType === 'Acheté' && formData.purchasePrice ? parseFloat(formData.purchasePrice) : undefined,
                 purchaseWeight: formData.sourceType === 'Acheté' && formData.purchaseWeight ? parseFloat(formData.purchaseWeight) : undefined,
                 purchaseHealthStatus: formData.sourceType === 'Acheté' ? formData.purchaseHealthStatus : undefined,
@@ -119,7 +125,7 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
             }
         };
 
-        onAdd(cattleData);
+        onAdd(cattleData, formData.n_carnet || undefined);
         resetForm();
         onOpenChange(false);
     };
@@ -133,8 +139,8 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
             character: 1,
             category: '',
             brand: '',
-            herdBookNumber: '',
             distinctiveSign: '',
+            n_carnet: '',  // NOUVEAU
             sourceType: 'Acheté',
             supplier: '',
             purchaseDate: '',
@@ -143,6 +149,7 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
             purchaseHealthStatus: '',
             purchaseNotes: ''
         });
+        setErrors({});
     };
 
     return (
@@ -165,9 +172,13 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                     <Input
                                         id="name"
                                         value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        required
+                                        onChange={(e) => {
+                                            setFormData({ ...formData, name: e.target.value });
+                                            if (errors.name) setErrors({ ...errors, name: '' });
+                                        }}
+                                        className={errors.name ? 'border-red-500' : ''}
                                     />
+                                    {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="nickname">Surnom</Label>
@@ -181,9 +192,12 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                     <Label htmlFor="gender">Sexe *</Label>
                                     <Select
                                         value={formData.gender}
-                                        onValueChange={(value) => setFormData({ ...formData, gender: value as 'M' | 'F' })}
+                                        onValueChange={(value) => {
+                                            setFormData({ ...formData, gender: value as 'M' | 'F' });
+                                            if (errors.gender) setErrors({ ...errors, gender: '' });
+                                        }}
                                     >
-                                        <SelectTrigger id="gender">
+                                        <SelectTrigger id="gender" className={errors.gender ? 'border-red-500' : ''}>
                                             <SelectValue placeholder="Sélectionner" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -191,14 +205,18 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                             <SelectItem value="F">Femelle</SelectItem>
                                         </SelectContent>
                                     </Select>
+                                    {errors.gender && <p className="text-sm text-red-500">{errors.gender}</p>}
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="category">Catégorie *</Label>
                                     <Select
                                         value={formData.category}
-                                        onValueChange={(value) => setFormData({ ...formData, category: value })}
+                                        onValueChange={(value) => {
+                                            setFormData({ ...formData, category: value });
+                                            if (errors.category) setErrors({ ...errors, category: '' });
+                                        }}
                                     >
-                                        <SelectTrigger id="category">
+                                        <SelectTrigger id="category" className={errors.category ? 'border-red-500' : ''}>
                                             <SelectValue placeholder="Sélectionner" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -209,6 +227,7 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                             ))}
                                         </SelectContent>
                                     </Select>
+                                    {errors.category && <p className="text-sm text-red-500">{errors.category}</p>}
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="birthDate">Date de naissance *</Label>
@@ -216,9 +235,13 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                         id="birthDate"
                                         type="date"
                                         value={formData.birthDate}
-                                        onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
-                                        required
+                                        onChange={(e) => {
+                                            setFormData({ ...formData, birthDate: e.target.value });
+                                            if (errors.birthDate) setErrors({ ...errors, birthDate: '' });
+                                        }}
+                                        className={errors.birthDate ? 'border-red-500' : ''}
                                     />
+                                    {errors.birthDate && <p className="text-sm text-red-500">{errors.birthDate}</p>}
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="character">Caractère</Label>
@@ -247,12 +270,12 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                     />
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="herdBookNumber">Numéro Herd Book</Label>
+                                    <Label htmlFor="n_carnet">N° Carnet</Label>
                                     <Input
-                                        id="herdBookNumber"
-                                        type="number"
-                                        value={formData.herdBookNumber}
-                                        onChange={(e) => setFormData({ ...formData, herdBookNumber: e.target.value })}
+                                        id="n_carnet"
+                                        value={formData.n_carnet}
+                                        onChange={(e) => setFormData({ ...formData, n_carnet: e.target.value })}
+                                        placeholder="Numéro de carnet pour le livre de troupeau"
                                     />
                                 </div>
                             </div>

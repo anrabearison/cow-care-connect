@@ -4,9 +4,9 @@
 
 // Role constants
 export const USER_ROLES = {
-    SUPER_ADMIN: 'super_admin',
-    OWNER_ADMIN: 'owner_admin',
-    OWNER_USER: 'owner_user',
+    SUPER_ADMIN: 'SUPER_ADMIN',
+    OWNER_ADMIN: 'OWNER_ADMIN',
+    OWNER_USER: 'OWNER_USER',
 } as const;
 
 // Type for user roles

@@ -29,21 +29,21 @@ import { EditToolbar, CreateToolbar, ConfirmDeleteButton } from '../components/C
 const traitementFilters = [
   <TextInput source="q" label="Rechercher" alwaysOn />,
   <SelectInput source="type" label="Type" choices={[
-    { id: 'Antibiotique', name: 'Antibiotique' },
-    { id: 'Vaccin', name: 'Vaccin' },
-    { id: 'Vermifuge', name: 'Vermifuge' },
-    { id: 'Anti-inflammatoire', name: 'Anti-inflammatoire' },
-    { id: 'Vitamine', name: 'Vitamine' },
-    { id: 'Autre', name: 'Autre' },
+    { id: 'ANTIBIOTIQUE', name: 'Antibiotique' },
+    { id: 'VACCIN', name: 'Vaccin' },
+    { id: 'VERMIFUGE', name: 'Vermifuge' },
+    { id: 'ANTI_INFLAMMATOIRE', name: 'Anti-inflammatoire' },
+    { id: 'VITAMINE', name: 'Vitamine' },
+    { id: 'AUTRE', name: 'Autre' },
   ]} />,
   <ReferenceInput source="cattleId" reference="cattle" label="Bovin">
     <AutocompleteInput optionText="name" />
   </ReferenceInput>,
   <ReferenceInput source="product" reference="medicaments" label="Médicament">
-    <AutocompleteInput optionText="nom" />
+    <AutocompleteInput optionText="name" />
   </ReferenceInput>,
   <ReferenceInput source="veterinarian" reference="veterinarians" label="Intervenant">
-    <AutocompleteInput optionText="nom" />
+    <AutocompleteInput optionText="name" />
   </ReferenceInput>,
   <DateInput source="date" label="Date" />,
 ];
@@ -67,8 +67,8 @@ const DosageField = (props: { source?: string, label?: string }) => {
       render={(record: any) => {
         if (record.dosage && typeof record.dosage === 'object') {
           let text = `${record.dosage.quantite}${record.dosage.unite}`;
-          if (record.dosage.animal_poids) {
-            text += ` (pour ${record.dosage.animal_poids}kg)`;
+          if (record.dosage.animalPoids) {
+            text += ` (pour ${record.dosage.animalPoids}kg)`;
           }
           return text;
         }
@@ -78,10 +78,45 @@ const DosageField = (props: { source?: string, label?: string }) => {
   );
 };
 
+import { Link } from 'react-router-dom';
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Button } from 'react-admin';
+
+const CustomEditButton = () => {
+  const record = useRecordContext();
+  if (!record) return null;
+  return (
+    <Button
+      component={Link}
+      to={`/admin/treatments/${record.id}`}
+      label="ra.action.edit"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <EditIcon />
+    </Button>
+  );
+};
+
+const CustomShowButton = () => {
+  const record = useRecordContext();
+  if (!record) return null;
+  return (
+    <Button
+      component={Link}
+      to={`/admin/treatments/${record.id}/show`}
+      label="ra.action.show"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <VisibilityIcon />
+    </Button>
+  );
+};
+
 // Liste des traitements
 export const TraitementList = () => (
   <List filters={traitementFilters}>
-    <Datagrid rowClick="edit">
+    <Datagrid rowClick={(id, resource, record) => `/admin/treatments/${id}`}>
       <TextField source="id" label="ID" />
       <ReferenceField source="cattleId" reference="cattle" label="Bovin">
         <TextField source="name" />
@@ -89,14 +124,14 @@ export const TraitementList = () => (
       <TextField source="type" label="Type" />
       <DateField source="date" label="Date" />
       <ReferenceField source="product" reference="medicaments" label="Médicament">
-        <TextField source="nom" />
+        <TextField source="name" />
       </ReferenceField>
       <DosageField label="Dose" />
       <ReferenceField source="veterinarian" reference="veterinarians" label="Intervenant">
-        <TextField source="nom" />
+        <TextField source="name" />
       </ReferenceField>
-      <ShowButton />
-      <EditButton />
+      <CustomShowButton />
+      <CustomEditButton />
       <DeleteButtonField />
     </Datagrid>
   </List>
@@ -124,21 +159,23 @@ const DosageInput = () => (
         validate={required()}
       />
       <NumberInput
-        source="dosage.animal_poids"
+        source="dosage.animalPoids"
         label="Poids de l'animal"
         helperText="Ex: 300 (kg)"
       />
     </Box>
     <SelectInput
-      source="administration_route"
+      source="administrationRoute"
       label="Voie d'administration"
       choices={[
-        { id: 'Orale', name: 'Orale' },
-        { id: 'Intraveineuse', name: 'Intraveineuse' },
         { id: 'Intramusculaire', name: 'Intramusculaire' },
         { id: 'Sous-cutanée', name: 'Sous-cutanée' },
-        { id: 'Topique', name: 'Topique' },
-        { id: 'Intra-mammaire', name: 'Intra-mammaire' },
+        { id: 'Intraveineuse', name: 'Intraveineuse' },
+        { id: 'Orale', name: 'Orale' },
+        { id: 'Locale / Externe', name: 'Locale / Externe' },
+        { id: 'Intramammaire', name: 'Intramammaire' },
+        { id: 'Inhalation', name: 'Inhalation' },
+        { id: 'Autre', name: 'Autre' },
       ]}
       validate={required()}
     />
@@ -162,22 +199,22 @@ export const TraitementEdit = () => (
         source="type"
         label="Type"
         choices={[
-          { id: 'Antibiotique', name: 'Antibiotique' },
-          { id: 'Vaccin', name: 'Vaccin' },
-          { id: 'Vermifuge', name: 'Vermifuge' },
-          { id: 'Anti-inflammatoire', name: 'Anti-inflammatoire' },
-          { id: 'Vitamine', name: 'Vitamine' },
-          { id: 'Autre', name: 'Autre' },
+          { id: 'ANTIBIOTIQUE', name: 'Antibiotique' },
+          { id: 'VACCIN', name: 'Vaccin' },
+          { id: 'VERMIFUGE', name: 'Vermifuge' },
+          { id: 'ANTI_INFLAMMATOIRE', name: 'Anti-inflammatoire' },
+          { id: 'VITAMINE', name: 'Vitamine' },
+          { id: 'AUTRE', name: 'Autre' },
         ]}
         validate={required()}
       />
       <DateInput source="date" label="Date" validate={required()} />
       <ReferenceInput source="product" reference="medicaments" label="Médicament">
-        <AutocompleteInput optionText="nom" validate={required()} />
+        <AutocompleteInput optionText="name" validate={required()} />
       </ReferenceInput>
       <DosageInput />
       <ReferenceInput source="veterinarian" reference="veterinarians" label="Intervenant">
-        <AutocompleteInput optionText="nom" validate={required()} />
+        <AutocompleteInput optionText="name" validate={required()} />
       </ReferenceInput>
       <TextInput source="notes" label="Notes" multiline rows={3} />
     </SimpleForm>
@@ -195,22 +232,22 @@ export const TraitementCreate = () => (
         source="type"
         label="Type"
         choices={[
-          { id: 'Antibiotique', name: 'Antibiotique' },
-          { id: 'Vaccin', name: 'Vaccin' },
-          { id: 'Vermifuge', name: 'Vermifuge' },
-          { id: 'Anti-inflammatoire', name: 'Anti-inflammatoire' },
-          { id: 'Vitamine', name: 'Vitamine' },
-          { id: 'Autre', name: 'Autre' },
+          { id: 'ANTIBIOTIQUE', name: 'Antibiotique' },
+          { id: 'VACCIN', name: 'Vaccin' },
+          { id: 'VERMIFUGE', name: 'Vermifuge' },
+          { id: 'ANTI_INFLAMMATOIRE', name: 'Anti-inflammatoire' },
+          { id: 'VITAMINE', name: 'Vitamine' },
+          { id: 'AUTRE', name: 'Autre' },
         ]}
         validate={required()}
       />
       <DateInput source="date" label="Date" validate={required()} />
       <ReferenceInput source="product" reference="medicaments" label="Médicament">
-        <AutocompleteInput optionText="nom" validate={required()} />
+        <AutocompleteInput optionText="name" validate={required()} />
       </ReferenceInput>
       <DosageInput />
       <ReferenceInput source="veterinarian" reference="veterinarians" label="Intervenant">
-        <AutocompleteInput optionText="nom" validate={required()} />
+        <AutocompleteInput optionText="name" validate={required()} />
       </ReferenceInput>
       <TextInput source="notes" label="Notes" multiline rows={3} />
     </SimpleForm>
@@ -228,14 +265,14 @@ export const TraitementShow = () => (
       <TextField source="type" label="Type" />
       <DateField source="date" label="Date" />
       <ReferenceField source="product" reference="medicaments" label="Médicament">
-        <TextField source="nom" />
+        <TextField source="name" />
       </ReferenceField>
       <DosageField label="Dose" />
-      <TextField source="administration_route" label="Voie" />
-      <DateField source="withdrawal_end_date" label="Fin attente" />
+      <TextField source="administrationRoute" label="Voie" />
+      <DateField source="withdrawalEndDate" label="Fin attente" />
       <TextField source="dosage.notes" label="Notes dosage" />
       <ReferenceField source="veterinarian" reference="veterinarians" label="Intervenant">
-        <TextField source="nom" />
+        <TextField source="name" />
       </ReferenceField>
       <TextField source="notes" label="Notes" />
     </SimpleShowLayout>

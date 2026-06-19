@@ -28,7 +28,7 @@ export const medicaments: Medicament[] = [
   {
     id: 'MED001',
     nom: 'Ivermectine',
-    type: 'Vermifuge',
+    type: 'VERMIFUGE',
     dosageRecommande: '1 ml/50 kg',
     fabricant: 'VetPharma',
     notes: 'Traitement anti-parasitaire'
@@ -36,7 +36,7 @@ export const medicaments: Medicament[] = [
   {
     id: 'MED002',
     nom: 'Pénicilline G',
-    type: 'Antibiotique',
+    type: 'ANTIBIOTIQUE',
     dosageRecommande: '5 ml/100 kg',
     fabricant: 'MedVet',
     notes: 'Antibiotique à large spectre'
@@ -44,7 +44,7 @@ export const medicaments: Medicament[] = [
   {
     id: 'MED003',
     nom: 'Vaccin FMD',
-    type: 'Vaccin',
+    type: 'VACCIN',
     dosageRecommande: '2 ml par animal',
     fabricant: 'BioVet',
     notes: 'Vaccin contre la fièvre aphteuse'
