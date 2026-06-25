@@ -137,12 +137,12 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                                     <SelectValue placeholder="Sélectionner un type" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="Antibiotique">Antibiotique</SelectItem>
-                                    <SelectItem value="Vaccin">Vaccin</SelectItem>
-                                    <SelectItem value="Vermifuge">Vermifuge</SelectItem>
-                                    <SelectItem value="Anti-inflammatoire">Anti-inflammatoire</SelectItem>
-                                    <SelectItem value="Vitamine">Vitamine</SelectItem>
-                                    <SelectItem value="Autre">Autre</SelectItem>
+                                    <SelectItem value="ANTIBIOTIQUE">Antibiotique</SelectItem>
+                                    <SelectItem value="VACCIN">Vaccin</SelectItem>
+                                    <SelectItem value="VERMIFUGE">Vermifuge</SelectItem>
+                                    <SelectItem value="ANTI_INFLAMMATOIRE">Anti-inflammatoire</SelectItem>
+                                    <SelectItem value="VITAMINE">Vitamine</SelectItem>
+                                    <SelectItem value="AUTRE">Autre</SelectItem>
                                 </SelectContent>
                             </Select>
                             {errors.type && <p className="text-sm text-red-500">{errors.type}</p>}
@@ -250,9 +250,9 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="ml">ml</SelectItem>
-                                        <SelectItem value="mg">mg</SelectItem>
-                                        <SelectItem value="g">g</SelectItem>
+                                        <SelectItem value="ML">ml</SelectItem>
+                                        <SelectItem value="MG">mg</SelectItem>
+                                        <SelectItem value="G">g</SelectItem>
                                         <SelectItem value="UI">UI</SelectItem>
                                     </SelectContent>
                                 </Select>

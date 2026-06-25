@@ -119,14 +119,20 @@ export default function CattleDetailsPage() {
   const { toast } = useToast();
 
   // Helper functions using fetched data
-  const getVeterinarianName = (id: string) => {
-    const vet = (veterinariansData?.data as any[])?.find(v => v.id === id);
-    return vet ? vet.name : `Vétérinaire ${id}`;
+  const getVeterinarianName = (vet: string | any) => {
+    if (typeof vet === 'object' && vet?.name) {
+      return vet.name;
+    }
+    const vetData = (veterinariansData?.data as any[])?.find(v => v.id === vet);
+    return vetData ? vetData.name : `Vétérinaire ${vet}`;
   };
 
-  const getMedicamentName = (id: string) => {
-    const med = (medicamentsData?.data as any[])?.find(m => m.id === id);
-    return med ? med.name : `Médicament ${id}`;
+  const getMedicamentName = (med: string | any) => {
+    if (typeof med === 'object' && med?.name) {
+      return med.name;
+    }
+    const medData = (medicamentsData?.data as any[])?.find(m => m.id === med);
+    return medData ? medData.name : `Médicament ${med}`;
   };
 
   const getTypeEvenementName = (id: string) => {
