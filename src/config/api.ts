@@ -22,5 +22,6 @@ export const API_CONFIG = {
 
 // Helper pour construire les URLs complètes
 export const buildApiUrl = (endpoint: string): string => {
-  return `${API_CONFIG.BASE_URL}${endpoint}`;
+  const baseUrl = API_CONFIG.BASE_URL.replace(/\/+$/, '');
+  return `${baseUrl}${endpoint}`;
 };
