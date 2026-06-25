@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,8 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { CattleEvent } from '@/features/cattle/types';
-import { referenceService } from '@/features/common/services/referenceService';
-import { TypeEvenement } from '@/features/events/types';
+import { useEventTypes } from '@/features/common/hooks/useReferences';
+import { getEventTypeLabel } from '@/features/events/utils';
 
 interface AddEventModalProps {
     open: boolean;
@@ -24,23 +24,9 @@ export const AddEventModal: React.FC<AddEventModalProps> = ({ open, onOpenChange
         description: '',
         details: ''
     });
-    const [eventTypes, setEventTypes] = useState<TypeEvenement[]>([]);
-    const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        const loadEventTypes = async () => {
-            setLoading(true);
-            const response = await referenceService.getEventTypes();
-            if (response.success && response.data) {
-                setEventTypes(response.data);
-            }
-            setLoading(false);
-        };
-
-        if (open) {
-            loadEventTypes();
-        }
-    }, [open]);
+    const { data: eventTypesData, isLoading: loading } = useEventTypes();
+    const eventTypes = eventTypesData?.data ?? [];
 
     const validateForm = () => {
         const newErrors: Record<string, string> = {};
@@ -92,10 +78,15 @@ export const AddEventModal: React.FC<AddEventModalProps> = ({ open, onOpenChange
                                 <SelectTrigger id="type" className={errors.type ? 'border-red-500' : ''}>
                                     <SelectValue placeholder={loading ? "Chargement..." : "Sélectionner un type"} />
                                 </SelectTrigger>
-                                <SelectContent>
+                                <SelectContent position="popper" className="z-[100]">
+                                    {!loading && eventTypes.length === 0 && (
+                                        <div className="p-2 text-sm text-muted-foreground">
+                                            Aucun type d'événement disponible
+                                        </div>
+                                    )}
                                     {eventTypes.map((eventType) => (
-                                        <SelectItem key={eventType.id} value={eventType.id.toString()}>
-                                            {eventType.nom}
+                                        <SelectItem key={eventType.id} value={eventType.id}>
+                                            {getEventTypeLabel(eventType)}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>

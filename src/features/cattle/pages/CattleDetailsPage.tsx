@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { useCattle, useCattleById } from '@/features/cattle/hooks';
 import { useEventTypes, useMedicaments, useVeterinarians } from '@/features/common/hooks/useReferences';
+import { getEventTypeLabel } from '@/features/events/utils';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { useEffect, useState } from 'react';
@@ -129,8 +130,8 @@ export default function CattleDetailsPage() {
   };
 
   const getTypeEvenementName = (id: string) => {
-    const type = eventTypesData?.data?.find((t: any) => t.id === id);
-    return type ? type.nom : `Type ${id}`;
+    const type = eventTypesData?.data?.find((t) => t.id === id);
+    return type ? getEventTypeLabel(type) : `Type ${id}`;
   };
 
   const getTypeEvenementIcon = (id: string) => {
