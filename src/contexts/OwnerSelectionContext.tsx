@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 interface OwnerSelectionContextType {
     selectedOwnerId: string | null;
@@ -24,7 +24,9 @@ export const OwnerSelectionProvider: React.FC<{ children: ReactNode }> = ({ chil
         return stored || null;
     });
 
-    // Persist to localStorage when changed
+    // Persist to localStorage when changed.
+    // NOTE: do NOT clear on unmount — window.location.reload() unmounts React
+    // before the new value can be read on the next load, wiping the selection.
     const setSelectedOwnerId = (ownerId: string | null) => {
         setSelectedOwnerIdState(ownerId);
         if (ownerId) {
@@ -42,14 +44,6 @@ export const OwnerSelectionProvider: React.FC<{ children: ReactNode }> = ({ chil
             localStorage.setItem(STORAGE_NAME_KEY, name);
         }
     };
-
-    // Clear on unmount (logout)
-    useEffect(() => {
-        return () => {
-            localStorage.removeItem(STORAGE_KEY);
-            localStorage.removeItem(STORAGE_NAME_KEY);
-        };
-    }, []);
 
     return (
         <OwnerSelectionContext.Provider value={{
@@ -69,4 +63,10 @@ export const useOwnerSelection = () => {
         throw new Error('useOwnerSelection must be used within OwnerSelectionProvider');
     }
     return context;
+};
+
+/** Call this on explicit logout to clear the persisted owner selection. */
+export const clearOwnerSelection = () => {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(STORAGE_NAME_KEY);
 };

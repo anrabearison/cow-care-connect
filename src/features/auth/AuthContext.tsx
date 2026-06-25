@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { User } from '@/features/cattle/types';
 import { toast } from 'sonner';
 import { setOwnerIdGetter } from '@/utils/apiClient';
+import { clearOwnerSelection } from '@/contexts/OwnerSelectionContext';
 
 interface AuthContextType {
   user: User | null;
@@ -96,6 +97,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Toujours nettoyer localement
       localStorage.removeItem('auth_token');
       localStorage.removeItem('user_data');
+      clearOwnerSelection();
       setUser(null);
     }
   }, []);
