@@ -24,7 +24,7 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
         product: '',
         dosage: {
             quantite: 0,
-            unite: 'ml',
+            unite: 'ML',
             animal_poids: 0,
             notes: ''
         },
@@ -127,7 +127,7 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                         <div className="grid gap-2">
                             <Label htmlFor="type">Type de traitement *</Label>
                             <Select
-                                value={formData.type || undefined}
+                                value={formData.type}
                                 onValueChange={(value) => {
                                     setFormData({ ...formData, type: value as Treatment['type'] });
                                     if (errors.type) setErrors({ ...errors, type: '' });
@@ -166,7 +166,7 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                         <div className="grid gap-2">
                             <Label htmlFor="product">Médicament *</Label>
                             <Select
-                                value={formData.product || undefined}
+                                value={formData.product}
                                 onValueChange={(value) => {
                                     console.log('Selected medicament ID:', value);
                                     setFormData({ ...formData, product: value });
@@ -262,7 +262,7 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                         <div className="grid gap-2">
                             <Label htmlFor="veterinarian">Intervenant *</Label>
                             <Select
-                                value={formData.veterinarian || undefined}
+                                value={formData.veterinarian}
                                 onValueChange={(value) => {
                                     console.log('Selected veterinarian ID:', value);
                                     setFormData({ ...formData, veterinarian: value });

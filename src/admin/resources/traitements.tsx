@@ -78,6 +78,27 @@ const DosageField = (props: { source?: string, label?: string }) => {
   );
 };
 
+const AdministrationRouteField = (props: any) => {
+  return (
+    <FunctionField
+      {...props}
+      render={(record: any) => {
+        const routeLabels: Record<string, string> = {
+          'IM': 'Intramusculaire',
+          'SC': 'Sous-cutanée',
+          'IV': 'Intraveineuse',
+          'ORAL': 'Orale',
+          'TOPICAL': 'Locale / Externe',
+          'INTRAMAMMARY': 'Intramammaire',
+          'INHALATION': 'Inhalation',
+          'OTHER': 'Autre',
+        };
+        return routeLabels[record.administrationRoute] || record.administrationRoute;
+      }}
+    />
+  );
+};
+
 import { Link } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -123,13 +144,25 @@ export const TraitementList = () => (
       </ReferenceField>
       <TextField source="type" label="Type" />
       <DateField source="date" label="Date" />
-      <ReferenceField source="product" reference="medicaments" label="Médicament">
-        <TextField source="name" />
-      </ReferenceField>
+      <FunctionField
+        label="Médicament"
+        render={(record: any) => {
+          if (typeof record.product === 'object' && record.product?.name) {
+            return record.product.name;
+          }
+          return record.product || '-';
+        }}
+      />
       <DosageField label="Dose" />
-      <ReferenceField source="veterinarian" reference="veterinarians" label="Intervenant">
-        <TextField source="name" />
-      </ReferenceField>
+      <FunctionField
+        label="Intervenant"
+        render={(record: any) => {
+          if (typeof record.veterinarian === 'object' && record.veterinarian?.name) {
+            return record.veterinarian.name;
+          }
+          return record.veterinarian || '-';
+        }}
+      />
       <CustomShowButton />
       <CustomEditButton />
       <DeleteButtonField />
@@ -151,9 +184,9 @@ const DosageInput = () => (
         source="dosage.unite"
         label="Unité"
         choices={[
-          { id: 'ml', name: 'ml (millilitres)' },
-          { id: 'mg', name: 'mg (milligrammes)' },
-          { id: 'g', name: 'g (grammes)' },
+          { id: 'ML', name: 'ml (millilitres)' },
+          { id: 'MG', name: 'mg (milligrammes)' },
+          { id: 'G', name: 'g (grammes)' },
           { id: 'UI', name: 'UI (unités internationales)' },
         ]}
         validate={required()}
@@ -168,14 +201,14 @@ const DosageInput = () => (
       source="administrationRoute"
       label="Voie d'administration"
       choices={[
-        { id: 'Intramusculaire', name: 'Intramusculaire' },
-        { id: 'Sous-cutanée', name: 'Sous-cutanée' },
-        { id: 'Intraveineuse', name: 'Intraveineuse' },
-        { id: 'Orale', name: 'Orale' },
-        { id: 'Locale / Externe', name: 'Locale / Externe' },
-        { id: 'Intramammaire', name: 'Intramammaire' },
-        { id: 'Inhalation', name: 'Inhalation' },
-        { id: 'Autre', name: 'Autre' },
+        { id: 'IM', name: 'Intramusculaire' },
+        { id: 'SC', name: 'Sous-cutanée' },
+        { id: 'IV', name: 'Intraveineuse' },
+        { id: 'ORAL', name: 'Orale' },
+        { id: 'TOPICAL', name: 'Locale / Externe' },
+        { id: 'INTRAMAMMARY', name: 'Intramammaire' },
+        { id: 'INHALATION', name: 'Inhalation' },
+        { id: 'OTHER', name: 'Autre' },
       ]}
       validate={required()}
     />
@@ -268,7 +301,7 @@ export const TraitementShow = () => (
         <TextField source="name" />
       </ReferenceField>
       <DosageField label="Dose" />
-      <TextField source="administrationRoute" label="Voie" />
+      <AdministrationRouteField label="Voie" />
       <DateField source="withdrawalEndDate" label="Fin attente" />
       <TextField source="dosage.notes" label="Notes dosage" />
       <ReferenceField source="veterinarian" reference="veterinarians" label="Intervenant">
