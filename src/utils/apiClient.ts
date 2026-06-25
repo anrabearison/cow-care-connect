@@ -30,7 +30,7 @@ export interface RequestConfig extends RequestInit {
 
 class ApiClient {
     private baseURL: string;
-    private defaultTimeout: number = 30000; // 30 seconds
+    private defaultTimeout: number = 60000; // 60 seconds (useful for free tier cold starts)
 
     constructor(baseURL: string) {
         this.baseURL = baseURL;
