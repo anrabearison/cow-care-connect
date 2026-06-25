@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout as RALayout, AppBar, UserMenu, MenuItemLink, Logout, useGetIdentity } from 'react-admin';
+import { Layout as RALayout, AppBar, UserMenu, MenuItemLink, Logout } from 'react-admin';
 import { Settings, HelpCircle, ArrowLeft } from 'lucide-react';
 import { AdminBreadcrumb } from './AdminBreadcrumb';
 import { OwnerSelector } from './OwnerSelector';
@@ -22,8 +22,6 @@ const CustomUserMenu = () => (
 );
 
 const CustomAppBar = () => {
-  const { data: identity } = useGetIdentity();
-
   return (
     <AppBar userMenu={<CustomUserMenu />}>
       <a
@@ -36,12 +34,6 @@ const CustomAppBar = () => {
       </a>
       <span className="flex-1" />
       <OwnerSelector />
-      {/* @ts-ignore - owner property added in authProvider */}
-      {identity?.owner && (
-        <span className="mr-4 text-sm font-medium text-white/90 hidden sm:inline-block">
-          {identity.owner}
-        </span>
-      )}
     </AppBar>
   );
 };

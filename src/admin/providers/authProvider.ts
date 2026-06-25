@@ -1,5 +1,6 @@
 import { AuthProvider } from 'react-admin';
 import { API_CONFIG } from '@/config/api';
+import { clearOwnerSelection } from '@/admin/contexts/OwnerSelectionContext';
 
 const API_URL = API_CONFIG.BASE_URL;
 
@@ -36,6 +37,7 @@ export const authProvider: AuthProvider = {
   logout: () => {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('user_data');
+    clearOwnerSelection();
     return Promise.resolve();
   },
 
