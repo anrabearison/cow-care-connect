@@ -5,6 +5,39 @@ export const getEventTypeLabel = (
   eventType: Pick<TypeEvenement, 'id' | 'name'> & { nom?: string },
 ): string => eventType.name ?? eventType.nom ?? eventType.id;
 
+/**
+ * Table de correspondance : noms d'icônes textuels (stockés en base)
+ * → vrais caractères emoji. Assure la rétro-compatibilité avec les anciennes
+ * données seedées avant l'adoption des emojis natifs.
+ */
+const ICON_NAME_TO_EMOJI: Record<string, string> = {
+  baby:    '👶',
+  syringe: '💉',
+  scale:   '⚖️',
+  heart:   '❤️',
+  home:    '🏠',
+  medkit:  '🩺',
+  cart:    '🛒',
+  pill:    '💊',
+  stethoscope: '🩺',
+  thermometer: '🌡️',
+};
+
+/**
+ * Résout une valeur `icone` stockée en base vers un emoji affichable.
+ * - Si la valeur est déjà un emoji (ou contient un caractère non-ASCII), elle
+ *   est retournée telle quelle.
+ * - Si la valeur correspond à un nom connu dans ICON_NAME_TO_EMOJI, l'emoji
+ *   correspondant est retourné.
+ * - Sinon, l'emoji par défaut est retourné.
+ */
+export const resolveIconEmoji = (icone: string | null | undefined, defaultEmoji = '📝'): string => {
+  if (!icone) return defaultEmoji;
+  // Si la chaîne contient au moins un caractère non-ASCII, c'est déjà un emoji
+  if (/[^\x00-\x7F]/.test(icone)) return icone;
+  return ICON_NAME_TO_EMOJI[icone.toLowerCase()] ?? defaultEmoji;
+};
+
 // Types d'événements (fallback local si l'API est indisponible)
 export const typeEvenements: TypeEvenement[] = [
   { id: 'TE001', name: 'Naissance', description: 'Naissance d\'un veau', icone: '🐄' },
@@ -24,5 +57,5 @@ export const getTypeEvenementName = (typeId: string): string => {
 
 export const getTypeEvenementIcon = (typeId: string): string => {
   const type = typeEvenements.find(t => t.id === typeId);
-  return type?.icone || '📋';
+  return resolveIconEmoji(type?.icone, '📋');
 };

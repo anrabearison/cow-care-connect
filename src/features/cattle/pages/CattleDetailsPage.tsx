@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { useCattle, useCattleById } from '@/features/cattle/hooks';
 import { useEventTypes, useMedicaments, useVeterinarians } from '@/features/common/hooks/useReferences';
-import { getEventTypeLabel } from '@/features/events/utils';
+import { getEventTypeLabel, resolveIconEmoji } from '@/features/events/utils';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { useEffect, useState } from 'react';
@@ -142,7 +142,7 @@ export default function CattleDetailsPage() {
 
   const getTypeEvenementIcon = (id: string) => {
     const type = eventTypesData?.data?.find((t: any) => t.id === id);
-    return type?.icone || '📝';
+    return resolveIconEmoji(type?.icone, '📝');
   };
 
   // Fonction pour trouver les descendants potentiels
