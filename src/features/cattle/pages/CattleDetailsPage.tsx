@@ -121,12 +121,12 @@ export default function CattleDetailsPage() {
   // Helper functions using fetched data
   const getVeterinarianName = (id: string) => {
     const vet = (veterinariansData?.data as any[])?.find(v => v.id === id);
-    return vet ? vet.nom : `Vétérinaire ${id}`;
+    return vet ? vet.name : `Vétérinaire ${id}`;
   };
 
   const getMedicamentName = (id: string) => {
     const med = (medicamentsData?.data as any[])?.find(m => m.id === id);
-    return med ? med.nom : `Médicament ${id}`;
+    return med ? med.name : `Médicament ${id}`;
   };
 
   const getTypeEvenementName = (id: string) => {

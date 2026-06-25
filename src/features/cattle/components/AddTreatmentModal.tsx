@@ -183,7 +183,7 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                                     )}
                                     {medicaments.map((medicament) => (
                                         <SelectItem key={medicament.id} value={medicament.id}>
-                                            {medicament.nom}
+                                            {medicament.name}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -279,7 +279,7 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                                     )}
                                     {veterinarians.map((vet) => (
                                         <SelectItem key={vet.id} value={vet.id}>
-                                            {vet.nom}
+                                            {vet.name}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
