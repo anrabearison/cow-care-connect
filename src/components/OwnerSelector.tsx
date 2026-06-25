@@ -99,9 +99,9 @@ export const OwnerSelector = () => {
 
     return (
         <div className="flex items-center gap-2">
-            <Building2 className="h-4 w-4 text-muted-foreground" />
+            <Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
             <Select value={selectedOwnerId || '__all__'} onValueChange={handleOwnerChange} disabled={loading}>
-                <SelectTrigger className="w-[200px] h-9">
+                <SelectTrigger className="w-[150px] sm:w-[200px] h-9">
                     <SelectValue placeholder="Tous les propriétaires" />
                 </SelectTrigger>
                 <SelectContent>
@@ -116,10 +116,10 @@ export const OwnerSelector = () => {
             {selectedOwnerId && selectedOwnerName && (
                 <Badge
                     variant="secondary"
-                    className="cursor-pointer hover:bg-secondary/80 transition-colors"
+                    className="cursor-pointer hover:bg-secondary/80 transition-colors shrink-0"
                     onClick={handleClearSelection}
                 >
-                    Vue: {selectedOwnerName}
+                    <span className="hidden sm:inline">Vue: </span>{selectedOwnerName}
                     <X className="ml-1 h-3 w-3" />
                 </Badge>
             )}

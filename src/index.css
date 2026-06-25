@@ -120,6 +120,16 @@ Modern pastoral design with natural earth tones and elegant agricultural aesthet
 
   body {
     @apply bg-background text-foreground;
+    /* Empêcher le débordement horizontal sur mobile */
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  html {
+    /* S'assurer que le HTML prend toute la largeur */
+    width: 100%;
+    overflow-x: hidden;
   }
 }
 
