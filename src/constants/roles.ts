@@ -50,8 +50,12 @@ export const isAdmin = (role?: string): boolean => {
 
 /**
  * Check if a user is a super admin
+ * Accepts either a role string or a user object
  */
-export const isSuperAdmin = (role?: string): boolean => {
+export const isSuperAdmin = (roleOrUser?: string | any): boolean => {
+    if (!roleOrUser) return false;
+    // Si c'est un objet utilisateur, extraire le rôle
+    const role = typeof roleOrUser === 'object' ? roleOrUser.role : roleOrUser;
     return role === USER_ROLES.SUPER_ADMIN;
 };
 

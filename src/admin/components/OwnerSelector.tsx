@@ -18,7 +18,20 @@ export const OwnerSelector: React.FC = () => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        if (isSuperAdmin(permissions)) {
+        // Si l'utilisateur appartient à un propriétaire, le sélectionner par défaut
+        if (!isSuperAdmin(permissions) && permissions?.owner_id) {
+            setSelectedOwnerId(permissions.owner_id);
+            // Récupérer le nom du propriétaire
+            dataProvider.getOne('owners', { id: permissions.owner_id })
+                .then(({ data }) => {
+                    setOwners([data]);
+                })
+                .catch((error) => {
+                    console.error('Failed to load owner:', error);
+                });
+        }
+        // Si l'utilisateur est SUPER_ADMIN, charger tous les propriétaires
+        else if (isSuperAdmin(permissions)) {
             setLoading(true);
             dataProvider.getList('owners', {
                 pagination: { page: 1, perPage: 100 },
@@ -44,6 +57,25 @@ export const OwnerSelector: React.FC = () => {
         }
     }, [permissions, dataProvider]);
 
+    // Afficher le propriétaire pour les utilisateurs OWNER_ADMIN et OWNER_USER (en lecture seule)
+    if (!isSuperAdmin(permissions) && permissions?.owner_id) {
+        const selectedOwner = owners.find(o => o.id === selectedOwnerId);
+        return (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mr: 2 }}>
+                <Business sx={{ color: 'white', fontSize: 20 }} />
+                <Chip
+                    label={selectedOwner?.name || 'Chargement...'}
+                    size="small"
+                    sx={{
+                        bgcolor: 'rgba(255, 255, 255, 0.2)',
+                        color: 'white',
+                    }}
+                />
+            </Box>
+        );
+    }
+
+    // Afficher le sélecteur pour SUPER_ADMIN
     if (!isSuperAdmin(permissions)) {
         return null;
     }

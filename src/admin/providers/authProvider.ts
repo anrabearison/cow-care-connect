@@ -60,7 +60,8 @@ export const authProvider: AuthProvider = {
     const user = localStorage.getItem('user_data');
     if (user) {
       const userData = JSON.parse(user);
-      return Promise.resolve(userData.role);
+      // Renvoyer tout l'objet utilisateur pour avoir accès à owner_id
+      return Promise.resolve(userData);
     }
     return Promise.reject();
   },
