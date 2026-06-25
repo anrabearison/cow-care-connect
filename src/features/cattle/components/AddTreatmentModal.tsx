@@ -115,7 +115,7 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[500px]">
+            <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Ajouter un traitement</DialogTitle>
                     <DialogDescription>
@@ -298,11 +298,11 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                             />
                         </div>
                     </div>
-                    <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                    <DialogFooter className="flex-col sm:flex-row gap-2">
+                        <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="w-full sm:w-auto">
                             Annuler
                         </Button>
-                        <Button type="submit">Enregistrer</Button>
+                        <Button type="submit" className="w-full sm:w-auto">Enregistrer</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

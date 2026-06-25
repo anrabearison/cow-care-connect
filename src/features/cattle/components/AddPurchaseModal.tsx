@@ -134,7 +134,7 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
             photo: undefined,
             // status removed as not supported by backend on create
             source: {
-                type: 'Acheté',
+                type: 'ACHETE',
                 supplier: formData.supplier || undefined,
                 purchaseDate: formData.purchaseDate || undefined,
                 // purchaseCategory removed as not supported by backend
@@ -395,11 +395,11 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
                             </div>
                         </div>
                     </div>
-                    <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                    <DialogFooter className="flex-col sm:flex-row gap-2">
+                        <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="w-full sm:w-auto">
                             Annuler
                         </Button>
-                        <Button type="submit">Enregistrer l'achat</Button>
+                        <Button type="submit" className="w-full sm:w-auto">Enregistrer l'achat</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>
