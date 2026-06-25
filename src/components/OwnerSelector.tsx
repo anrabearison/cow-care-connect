@@ -26,29 +26,22 @@ export const OwnerSelector = () => {
     const queryClient = useQueryClient();
 
     useEffect(() => {
-        // Si l'utilisateur appartient à un propriétaire, le sélectionner par défaut
-        if (user?.owner_id && (user?.role === 'OWNER_ADMIN' || user?.role === 'OWNER_USER')) {
-            setSelectedOwnerId(user.owner_id);
-            // Récupérer le nom du propriétaire
+        if (user?.ownerId && (user?.role === 'OWNER_ADMIN' || user?.role === 'OWNER_USER')) {
+            setSelectedOwnerId(user.ownerId);
             apiClient
-                .get<{ data: Owner }>(`/api/v1/owners/${user.owner_id}`)
+                .get<Owner>(`/api/v1/owners/${user.ownerId}`)
                 .then((response) => {
-                    const ownerName = response.data?.name || 'Propriétaire inconnu';
-                    setSelectedOwnerName(ownerName);
+                    setSelectedOwnerName(response.name);
                 })
                 .catch((error) => {
                     console.error('Failed to load owner:', error);
-                    setSelectedOwnerName('Erreur de chargement');
                 });
-        }
-        // Si l'utilisateur est SUPER_ADMIN, charger tous les propriétaires
-        else if (user?.role === 'SUPER_ADMIN') {
+        } else if (user?.role === 'SUPER_ADMIN') {
             setLoading(true);
             apiClient
                 .get<{ data: Owner[] }>('/api/v1/owners')
                 .then((response) => {
-                    const ownersList = response.data || [];
-                    setOwners(ownersList);
+                    setOwners(response.data || []);
                 })
                 .catch((error) => {
                     console.error('Failed to load owners:', error);
@@ -89,7 +82,6 @@ export const OwnerSelector = () => {
         }, 100);
     };
 
-    // Afficher le propriétaire pour les utilisateurs OWNER_ADMIN et OWNER_USER (en lecture seule)
     if (user?.role === 'OWNER_ADMIN' || user?.role === 'OWNER_USER') {
         return (
             <div className="flex items-center gap-2">
@@ -101,7 +93,6 @@ export const OwnerSelector = () => {
         );
     }
 
-    // Afficher le sélecteur pour SUPER_ADMIN
     if (user?.role !== 'SUPER_ADMIN') {
         return null;
     }

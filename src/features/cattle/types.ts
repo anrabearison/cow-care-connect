@@ -80,9 +80,9 @@ export interface User {
   name: string;
   email: string;
   role: UserRole; // Using imported type
-  owner_id?: string; // New field
+  ownerId?: string; // New field
   owner?: Owner; // New field for full owner details
-  is_active?: boolean; // New field
+  isActive?: boolean; // New field
 }
 
 export interface Owner {

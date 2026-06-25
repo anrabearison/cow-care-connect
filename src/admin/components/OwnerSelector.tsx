@@ -18,20 +18,16 @@ export const OwnerSelector: React.FC = () => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        // Si l'utilisateur appartient à un propriétaire, le sélectionner par défaut
-        if (!isSuperAdmin(permissions) && permissions?.owner_id) {
-            setSelectedOwnerId(permissions.owner_id);
-            // Récupérer le nom du propriétaire
-            dataProvider.getOne('owners', { id: permissions.owner_id })
+        if (!isSuperAdmin(permissions) && permissions?.ownerId) {
+            setSelectedOwnerId(permissions.ownerId);
+            dataProvider.getOne('owners', { id: permissions.ownerId })
                 .then(({ data }) => {
                     setOwners([data]);
                 })
                 .catch((error) => {
                     console.error('Failed to load owner:', error);
                 });
-        }
-        // Si l'utilisateur est SUPER_ADMIN, charger tous les propriétaires
-        else if (isSuperAdmin(permissions)) {
+        } else if (isSuperAdmin(permissions)) {
             setLoading(true);
             dataProvider.getList('owners', {
                 pagination: { page: 1, perPage: 100 },
@@ -40,7 +36,6 @@ export const OwnerSelector: React.FC = () => {
             })
                 .then(({ data }) => {
                     setOwners(data);
-                    // Validate that the selected owner still exists
                     if (selectedOwnerId && !data.find((o: Owner) => o.id === selectedOwnerId)) {
                         console.warn(`Selected owner ${selectedOwnerId} not found in loaded owners, resetting selection`);
                         setSelectedOwnerId(null);
@@ -48,7 +43,6 @@ export const OwnerSelector: React.FC = () => {
                 })
                 .catch((error) => {
                     console.error('Failed to load owners:', error);
-                    // Reset selection on error
                     setSelectedOwnerId(null);
                 })
                 .finally(() => {
@@ -57,8 +51,7 @@ export const OwnerSelector: React.FC = () => {
         }
     }, [permissions, dataProvider]);
 
-    // Afficher le propriétaire pour les utilisateurs OWNER_ADMIN et OWNER_USER (en lecture seule)
-    if (!isSuperAdmin(permissions) && permissions?.owner_id) {
+    if (!isSuperAdmin(permissions) && permissions?.ownerId) {
         const selectedOwner = owners.find(o => o.id === selectedOwnerId);
         return (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mr: 2 }}>
@@ -75,7 +68,6 @@ export const OwnerSelector: React.FC = () => {
         );
     }
 
-    // Afficher le sélecteur pour SUPER_ADMIN
     if (!isSuperAdmin(permissions)) {
         return null;
     }

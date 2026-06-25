@@ -44,7 +44,6 @@ const realDataProvider: DataProvider = {
     const { page, perPage } = params.pagination;
     const { field, order } = params.sort;
 
-    // Add owner_id if available (for super admin)
     const selectedOwnerId = getSelectedOwnerIdFn?.();
     const query = {
       page,
@@ -88,7 +87,6 @@ const realDataProvider: DataProvider = {
     const { page, perPage } = params.pagination;
     const { field, order } = params.sort;
 
-    // Add owner_id if available (for super admin)
     const selectedOwnerId = getSelectedOwnerIdFn?.();
     const query = {
       page,
@@ -108,7 +106,6 @@ const realDataProvider: DataProvider = {
   },
 
   update: (resource, params) => {
-    // Transform data before sending depending on resource
     let data = params.data;
     if (resource === 'cattle') {
       data = transformCattleData(params.data);
