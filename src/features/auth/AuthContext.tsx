@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { User } from '@/features/cattle/types';
 import { toast } from 'sonner';
-import { setOwnerIdGetter } from '@/utils/apiClient';
 import { clearOwnerSelection } from '@/contexts/OwnerSelectionContext';
 
 interface AuthContextType {
@@ -25,24 +24,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Initialize owner ID getter
-  useEffect(() => {
-    setOwnerIdGetter(() => {
-      // Get user from state or localStorage as fallback
-      if (user?.owner?.id) return user.owner.id;
-
-      try {
-        const storedData = localStorage.getItem('user_data');
-        if (storedData) {
-          const parsedUser = JSON.parse(storedData);
-          return parsedUser?.owner?.id || null;
-        }
-      } catch (e) {
-        return null;
-      }
-      return null;
-    });
-  }, [user]);
 
   useEffect(() => {
     // Check for stored token on app load
