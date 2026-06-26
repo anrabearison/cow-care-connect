@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
-import { Search, Filter, Users, Plus, ChevronUp, ChevronDown } from 'lucide-react';
+import { Search, Filter, Users, Plus, ChevronUp, ChevronDown, Loader2 } from 'lucide-react';
 import { CattleCard } from '@/features/cattle/components/CattleCard';
 import { Cattle } from '@/features/cattle/types';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -51,11 +51,12 @@ export default function CattlePage() {
   // Get selected HerdBook from context
   const { selectedHerdBookId, selectedHerdBook, isLoading: herdBookLoading } = useHerdBookSelection();
 
-  const { cattle, loading: isLoading, total } = useCattle(
+  const { cattle, loading: isLoading, isFetching, total } = useCattle(
     selectedHerdBookId || '',
     filters
   );
   const createCattleMutation = useCreateCattle();
+  const isResultsLoading = isLoading || herdBookLoading || isFetching;
 
   // Memoize reset filters function
   const resetFilters = useCallback(() => {
@@ -165,12 +166,13 @@ export default function CattlePage() {
                   placeholder="Rechercher..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                  disabled={isResultsLoading}
                   className="pl-10 bg-white/80 border-primary/10 focus:border-primary/30 transition-all duration-300"
                 />
               </div>
 
               {/* Gender Filter */}
-              <Select value={genderFilter} onValueChange={setGenderFilter}>
+              <Select value={genderFilter} onValueChange={setGenderFilter} disabled={isResultsLoading}>
                 <SelectTrigger className="bg-white/80 border-primary/10">
                   <SelectValue placeholder="Genre" />
                 </SelectTrigger>
@@ -182,7 +184,7 @@ export default function CattlePage() {
               </Select>
 
               {/* Category Filter */}
-              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <Select value={categoryFilter} onValueChange={setCategoryFilter} disabled={isResultsLoading}>
                 <SelectTrigger className="bg-white/80 border-primary/10">
                   <SelectValue placeholder="Catégorie" />
                 </SelectTrigger>
@@ -197,7 +199,7 @@ export default function CattlePage() {
               </Select>
 
               {/* Source Filter */}
-              <Select value={sourceFilter} onValueChange={setSourceFilter}>
+              <Select value={sourceFilter} onValueChange={setSourceFilter} disabled={isResultsLoading}>
                 <SelectTrigger className="bg-white/80 border-primary/10">
                   <SelectValue placeholder="Source" />
                 </SelectTrigger>
@@ -212,6 +214,7 @@ export default function CattlePage() {
               <Button
                 variant="outline"
                 onClick={resetFilters}
+                disabled={isResultsLoading}
                 className="border-primary/20 text-primary hover:bg-primary/5 hover:text-primary transition-colors"
               >
                 Réinitialiser
@@ -222,11 +225,19 @@ export default function CattlePage() {
 
         {/* Results Info */}
         <div className="flex justify-between items-center mb-6">
-          <p className="text-muted-foreground">
-            {total} animal{total > 1 ? 'aux' : ''} trouvé{total > 1 ? 's' : ''}
-            {total > itemsPerPage && (
-              <span className="ml-2">
-                (Page {currentPage} sur {totalPages})
+          <p className="text-muted-foreground flex items-center gap-2">
+            <span>
+              {total} animal{total > 1 ? 'aux' : ''} trouvé{total > 1 ? 's' : ''}
+              {total > itemsPerPage && (
+                <span className="ml-2">
+                  (Page {currentPage} sur {totalPages})
+                </span>
+              )}
+            </span>
+            {isResultsLoading && (
+              <span className="inline-flex items-center gap-2 text-primary">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Chargement...
               </span>
             )}
           </p>
@@ -283,6 +294,12 @@ export default function CattlePage() {
           </div>
         ) : cattle.length > 0 ? (
           <>
+            {isFetching && !isLoading && (
+              <div className="mb-4 flex items-center justify-center gap-2 rounded-md border border-primary/10 bg-primary/5 px-4 py-3 text-sm font-medium text-primary">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Chargement des résultats...
+              </div>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               {cattle.map((cattle) => (
                 <CattleCard key={cattle.id} cattle={cattle} />

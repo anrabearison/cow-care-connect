@@ -47,6 +47,7 @@ export const useCattle = (herdBookId: string, filters?: Omit<CattleFilters, 'her
   return {
     cattle: query.data?.data || [],
     loading: query.isLoading,
+    isFetching: query.isFetching,
     error: query.error?.message || null,
     total: query.data?.total || 0,
     refreshCattle: query.refetch
