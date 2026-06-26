@@ -1,4 +1,5 @@
 import React from 'react';
+import { Box, Typography } from '@mui/material';
 import {
     List,
     Datagrid,
@@ -125,6 +126,41 @@ const CustomShowButton = () => {
     );
 };
 
+const ResponsiveFormSection = ({ title, children }: { title?: string; children: React.ReactNode }) => (
+    <Box
+        sx={{
+            border: '1px solid',
+            borderColor: 'divider',
+            borderRadius: 2,
+            bgcolor: 'background.paper',
+            p: { xs: 2, md: 3 },
+            mb: 3,
+            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+        }}
+    >
+        {title && (
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>
+                {title}
+            </Typography>
+        )}
+        <Box
+            sx={{
+                display: 'grid',
+                gap: { xs: 2, md: 3 },
+                gridTemplateColumns: { xs: '1fr', md: 'repeat(2, minmax(0, 1fr))' },
+            }}
+        >
+            {children}
+        </Box>
+    </Box>
+);
+
+const ResponsiveField = ({ children, fullWidth = false }: { children: React.ReactNode; fullWidth?: boolean }) => (
+    <Box sx={{ gridColumn: fullWidth ? { xs: 'span 1', md: 'span 2' } : 'span 1' }}>
+        {children}
+    </Box>
+);
+
 // Liste des inscriptions
 export const HerdBookCattleList = () => (
     <List
@@ -231,49 +267,64 @@ export const HerdBookCattleList = () => (
 export const HerdBookCattleEdit = () => (
     <Edit>
         <SimpleForm toolbar={<EditToolbar />}>
-            <ReferenceInput
-                source="herdBookId"
-                reference="herd-books"
-                label="Livre de troupeau"
-            >
-                <SelectInput
-                    optionText={(record) => `${record.year} - ${record.reference}`}
-                    validate={required()}
-                />
-            </ReferenceInput>
+            <ResponsiveFormSection title="Informations d’inscription">
+                <ResponsiveField>
+                    <ReferenceInput
+                        source="herdBookId"
+                        reference="herd-books"
+                        label="Livre de troupeau"
+                    >
+                        <SelectInput
+                            optionText={(record) => `${record.year} - ${record.reference}`}
+                            validate={required()}
+                            fullWidth
+                        />
+                    </ReferenceInput>
+                </ResponsiveField>
 
-            <ReferenceInput
-                source="cattleId"
-                reference="cattle"
-                label="Bovin"
-            >
-                <AutocompleteInput
-                    optionText="name"
-                    validate={required()}
-                />
-            </ReferenceInput>
+                <ResponsiveField>
+                    <ReferenceInput
+                        source="cattleId"
+                        reference="cattle"
+                        label="Bovin"
+                    >
+                        <AutocompleteInput
+                            optionText="name"
+                            validate={required()}
+                            fullWidth
+                        />
+                    </ReferenceInput>
+                </ResponsiveField>
 
-            <TextInput
-                source="nCarnet"
-                label="N° Carnet"
-                helperText="Numéro de carnet pour cette année (optionnel)"
-            />
+                <ResponsiveField>
+                    <TextInput
+                        source="nCarnet"
+                        label="N° Carnet"
+                        helperText="Numéro de carnet pour cette année (optionnel)"
+                        fullWidth
+                    />
+                </ResponsiveField>
 
-            <ReferenceInput
-                source="categoryId"
-                reference="categories"
-                label="Catégorie"
-            >
-                <SelectInput optionText="name" validate={required()} />
-            </ReferenceInput>
+                <ResponsiveField>
+                    <ReferenceInput
+                        source="categoryId"
+                        reference="categories"
+                        label="Catégorie"
+                    >
+                        <SelectInput optionText="name" validate={required()} fullWidth />
+                    </ReferenceInput>
+                </ResponsiveField>
 
-            <ReferenceInput
-                source="statusId"
-                reference="status"
-                label="Statut"
-            >
-                <SelectInput optionText="name" validate={required()} />
-            </ReferenceInput>
+                <ResponsiveField>
+                    <ReferenceInput
+                        source="statusId"
+                        reference="status"
+                        label="Statut"
+                    >
+                        <SelectInput optionText="name" validate={required()} fullWidth />
+                    </ReferenceInput>
+                </ResponsiveField>
+            </ResponsiveFormSection>
         </SimpleForm>
     </Edit>
 );
@@ -282,98 +333,153 @@ export const HerdBookCattleEdit = () => (
 export const HerdBookCattleCreate = () => (
     <Create>
         <SimpleForm toolbar={<CreateToolbar />}>
-            <ReferenceInput
-                source="herdBookId"
-                reference="herd-books"
-                label="Livre de troupeau"
-                sort={{ field: 'year', order: 'DESC' }}
-            >
-                <SelectInput
-                    optionText={(record) => `${record.year} - ${record.reference}`}
-                    validate={required()}
-                />
-            </ReferenceInput>
+            <ResponsiveFormSection title="Informations du bovin">
+                <ResponsiveField>
+                    <ReferenceInput
+                        source="herdBookId"
+                        reference="herd-books"
+                        label="Livre de troupeau"
+                        sort={{ field: 'year', order: 'DESC' }}
+                    >
+                        <SelectInput
+                            optionText={(record) => `${record.year} - ${record.reference}`}
+                            validate={required()}
+                            fullWidth
+                        />
+                    </ReferenceInput>
+                </ResponsiveField>
 
-            <TextInput source="cattle.name" label="Nom du bovin" required />
-            
-            <SelectInput
-                source="cattle.gender"
-                label="Genre"
-                choices={[
-                    { id: 'M', name: 'Mâle' },
-                    { id: 'F', name: 'Femelle' },
-                ]}
-                validate={required()}
-            />
-            
-            <DateInput 
-                source="cattle.birthDate" 
-                label="Date de naissance" 
-                validate={required()} 
-            />
-            
-            <ReferenceInput source="cattle.character" reference="characters" label="Caractère">
-                <AutocompleteInput optionText="name" validate={required()} />
-            </ReferenceInput>
-            
-            <SelectInput
-                source="cattle.source.type"
-                label="Type de source"
-                choices={[
-                    { id: 'ACHETE', name: 'Acheté' },
-                    { id: 'NE_DANS_TROUPEAU', name: 'Né dans le troupeau' },
-                ]}
-                validate={required()}
-            />
+                <ResponsiveField>
+                    <TextInput source="cattle.name" label="Nom du bovin" required fullWidth />
+                </ResponsiveField>
 
-            <FormDataConsumer>
-                {({ formData, ...rest }) => formData?.cattle?.source?.type === 'ACHETE' && (
-                    <div style={{ paddingLeft: '2em', borderLeft: '3px solid #e0e0e0', marginLeft: '1em', marginBottom: '1em' }}>
-                        <TextInput source="cattle.source.supplier" label="Fournisseur" {...rest} fullWidth />
-                        <DateInput source="cattle.source.purchaseDate" label="Date d'achat" {...rest} fullWidth />
-                        <NumberInput source="cattle.source.purchasePrice" label="Prix d'achat (Ar)" {...rest} fullWidth />
-                        <NumberInput source="cattle.source.purchaseWeight" label="Poids à l'achat (kg)" {...rest} fullWidth />
-                        <TextInput source="cattle.source.purchaseHealthStatus" label="État de santé à l'achat" {...rest} fullWidth />
-                        <TextInput source="cattle.source.purchaseNotes" label="Remarques achat" multiline rows={3} {...rest} fullWidth />
-                    </div>
-                )}
-            </FormDataConsumer>
+                <ResponsiveField>
+                    <SelectInput
+                        source="cattle.gender"
+                        label="Genre"
+                        choices={[
+                            { id: 'M', name: 'Mâle' },
+                            { id: 'F', name: 'Femelle' },
+                        ]}
+                        validate={required()}
+                        fullWidth
+                    />
+                </ResponsiveField>
 
-            <FormDataConsumer>
-                {({ formData, ...rest }) => formData?.cattle?.source?.type === 'NE_DANS_TROUPEAU' && (
-                    <div style={{ paddingLeft: '2em', borderLeft: '3px solid #e0e0e0', marginLeft: '1em', marginBottom: '1em' }}>
-                        <ReferenceInput source="cattle.source.motherId" reference="cattle" filter={{ gender: 'F' }} label="Mère (optionnel)" {...rest}>
-                            <AutocompleteInput optionText="name" fullWidth />
-                        </ReferenceInput>
-                    </div>
-                )}
-            </FormDataConsumer>
+                <ResponsiveField>
+                    <DateInput
+                        source="cattle.birthDate"
+                        label="Date de naissance"
+                        validate={required()}
+                        fullWidth
+                    />
+                </ResponsiveField>
 
-            <TextInput
-                source="nCarnet"
-                label="N° Carnet"
-                helperText="Numéro de carnet pour cette année (optionnel)"
-            />
+                <ResponsiveField>
+                    <ReferenceInput source="cattle.character" reference="characters" label="Caractère">
+                        <AutocompleteInput optionText="name" validate={required()} fullWidth />
+                    </ReferenceInput>
+                </ResponsiveField>
 
-            <ReferenceInput
-                source="categoryId"
-                reference="categories"
-                label="Catégorie"
-            >
-                <SelectInput optionText="name" validate={required()} />
-            </ReferenceInput>
+                <ResponsiveField>
+                    <TextInput
+                        source="nCarnet"
+                        label="N° Carnet"
+                        helperText="Numéro de carnet pour cette année (optionnel)"
+                        fullWidth
+                    />
+                </ResponsiveField>
 
-            <ReferenceInput
-                source="statusId"
-                reference="status"
-                label="Statut"
-            >
-                <SelectInput
-                    optionText="name"
-                    validate={required()}
-                    defaultValue="STA001"
-                />
-            </ReferenceInput>
+                <ResponsiveField>
+                    <ReferenceInput
+                        source="categoryId"
+                        reference="categories"
+                        label="Catégorie"
+                    >
+                        <SelectInput optionText="name" validate={required()} fullWidth />
+                    </ReferenceInput>
+                </ResponsiveField>
+
+                <ResponsiveField>
+                    <ReferenceInput
+                        source="statusId"
+                        reference="status"
+                        label="Statut"
+                    >
+                        <SelectInput
+                            optionText="name"
+                            validate={required()}
+                            defaultValue="STA001"
+                            fullWidth
+                        />
+                    </ReferenceInput>
+                </ResponsiveField>
+            </ResponsiveFormSection>
+
+            <ResponsiveFormSection title="Origine du bovin">
+                <ResponsiveField fullWidth>
+                    <SelectInput
+                        source="cattle.source.type"
+                        label="Type de source"
+                        choices={[
+                            { id: 'ACHETE', name: 'Acheté' },
+                            { id: 'NE_DANS_TROUPEAU', name: 'Né dans le troupeau' },
+                        ]}
+                        validate={required()}
+                        fullWidth
+                    />
+                </ResponsiveField>
+
+                <ResponsiveField fullWidth>
+                    <FormDataConsumer>
+                        {({ formData, ...rest }) => formData?.cattle?.source?.type === 'ACHETE' && (
+                            <Box
+                                sx={{
+                                    border: '1px solid',
+                                    borderColor: 'divider',
+                                    borderRadius: 2,
+                                    p: { xs: 2, md: 3 },
+                                    bgcolor: 'background.default',
+                                    display: 'grid',
+                                    gap: { xs: 2, md: 3 },
+                                    gridTemplateColumns: { xs: '1fr', md: 'repeat(2, minmax(0, 1fr))' },
+                                }}
+                            >
+                                <Box sx={{ gridColumn: { xs: 'span 1', md: 'span 2' } }}>
+                                    <TextInput source="cattle.source.supplier" label="Fournisseur" {...rest} fullWidth />
+                                </Box>
+                                <DateInput source="cattle.source.purchaseDate" label="Date d'achat" {...rest} fullWidth />
+                                <NumberInput source="cattle.source.purchasePrice" label="Prix d'achat (Ar)" {...rest} fullWidth />
+                                <NumberInput source="cattle.source.purchaseWeight" label="Poids à l'achat (kg)" {...rest} fullWidth />
+                                <TextInput source="cattle.source.purchaseHealthStatus" label="État de santé à l'achat" {...rest} fullWidth />
+                                <Box sx={{ gridColumn: { xs: 'span 1', md: 'span 2' } }}>
+                                    <TextInput source="cattle.source.purchaseNotes" label="Remarques achat" multiline rows={3} {...rest} fullWidth />
+                                </Box>
+                            </Box>
+                        )}
+                    </FormDataConsumer>
+                </ResponsiveField>
+
+                <ResponsiveField fullWidth>
+                    <FormDataConsumer>
+                        {({ formData, ...rest }) => formData?.cattle?.source?.type === 'NE_DANS_TROUPEAU' && (
+                            <Box
+                                sx={{
+                                    border: '1px solid',
+                                    borderColor: 'divider',
+                                    borderRadius: 2,
+                                    p: { xs: 2, md: 3 },
+                                    bgcolor: 'background.default',
+                                }}
+                            >
+                                <ReferenceInput source="cattle.source.motherId" reference="cattle" filter={{ gender: 'F' }} label="Mère (optionnel)" {...rest}>
+                                    <AutocompleteInput optionText="name" fullWidth />
+                                </ReferenceInput>
+                            </Box>
+                        )}
+                    </FormDataConsumer>
+                </ResponsiveField>
+            </ResponsiveFormSection>
         </SimpleForm>
     </Create>
 );
