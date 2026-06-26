@@ -1,5 +1,5 @@
 import React from 'react';
-import { Login, LoginForm } from 'react-admin';
+import { LoginForm } from 'react-admin';
 import { Box, Typography, Card, CardContent } from '@mui/material';
 
 export const AdminLogin = () => {
@@ -8,68 +8,91 @@ export const AdminLogin = () => {
             sx={{
                 display: 'flex',
                 minHeight: '100vh',
+                position: 'relative',
+                alignItems: 'center',
+                justifyContent: 'center',
                 backgroundImage: 'url(https://images.unsplash.com/photo-1500595046743-cd271d694d30?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
             }}
         >
-            {/* Left side - Demo credentials */}
+            {/* Overlay sombre */}
             <Box
                 sx={{
-                    width: { xs: '100%', md: '40%' },
+                    position: 'absolute',
+                    inset: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.52)',
+                    backdropFilter: 'blur(2px)',
+                }}
+            />
+
+            {/* Contenu centré */}
+            <Box
+                sx={{
+                    position: 'relative',
+                    zIndex: 1,
                     display: 'flex',
+                    flexDirection: 'column',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    p: 3,
-                    bgcolor: 'rgba(0, 0, 0, 0.6)',
+                    gap: 3,
+                    width: '100%',
+                    maxWidth: 420,
+                    px: 2,
                 }}
             >
-                <Card sx={{ maxWidth: 400, width: '100%' }}>
-                    <CardContent>
-                        <Typography variant="h5" gutterBottom align="center" color="primary">
-                            Comptes de Démonstration
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 3 }}>
-                            Utilisez l'un de ces comptes pour tester l'application
-                        </Typography>
+                {/* Logo / Titre */}
+                <Box sx={{ textAlign: 'center' }}>
+                    <Typography
+                        variant="h4"
+                        fontWeight={700}
+                        sx={{
+                            color: '#fff',
+                            letterSpacing: '-0.5px',
+                            textShadow: '0 2px 12px rgba(0,0,0,0.4)',
+                            mb: 0.5,
+                        }}
+                    >
+                        🐄 Ombiko
+                    </Typography>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            color: 'rgba(255,255,255,0.75)',
+                            fontWeight: 400,
+                            letterSpacing: '0.5px',
+                            textTransform: 'uppercase',
+                            fontSize: '0.72rem',
+                        }}
+                    >
+                        Gestion du bétail · Administration
+                    </Typography>
+                </Box>
 
-                        <Box sx={{ mb: 2, p: 2, bgcolor: 'action.hover', borderRadius: 1 }}>
-                            <Typography variant="subtitle1" fontWeight="bold" color="primary">
-                                Super Admin
-                            </Typography>
-                            <Typography variant="body2">📧 admin@ombiko.mg</Typography>
-                            <Typography variant="body2">🔑 admin123</Typography>
-                        </Box>
-
-                        <Box sx={{ mb: 2, p: 2, bgcolor: 'action.hover', borderRadius: 1 }}>
-                            <Typography variant="subtitle1" fontWeight="bold" color="primary">
-                                Admin Propriétaire
-                            </Typography>
-                            <Typography variant="body2">📧 jean@ombiko.mg</Typography>
-                            <Typography variant="body2">🔑 eleveur123</Typography>
-                        </Box>
-
-                        <Box sx={{ p: 2, bgcolor: 'action.hover', borderRadius: 1 }}>
-                            <Typography variant="subtitle1" fontWeight="bold" color="primary">
-                                Utilisateur Propriétaire
-                            </Typography>
-                            <Typography variant="body2">📧 employee@ombiko.mg</Typography>
-                            <Typography variant="body2">🔑 user123</Typography>
-                        </Box>
+                {/* Card avec LoginForm natif React-Admin (sans le wrapper Login qui impose son background) */}
+                <Card
+                    sx={{
+                        width: '100%',
+                        boxShadow: '0 8px 40px rgba(0,0,0,0.3)',
+                        borderRadius: 3,
+                        overflow: 'hidden',
+                    }}
+                >
+                    <CardContent sx={{ p: 3, pb: '24px !important' }}>
+                        <LoginForm />
                     </CardContent>
                 </Card>
-            </Box>
 
-            {/* Right side - Login form */}
-            <Box
-                sx={{
-                    width: { xs: '100%', md: '60%' },
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                }}
-            >
-                <Login />
+                {/* Footer discret */}
+                <Typography
+                    variant="caption"
+                    sx={{
+                        color: 'rgba(255,255,255,0.45)',
+                        textAlign: 'center',
+                        mt: 1,
+                    }}
+                >
+                    © {new Date().getFullYear()} Ombiko — Accès réservé
+                </Typography>
             </Box>
         </Box>
     );
