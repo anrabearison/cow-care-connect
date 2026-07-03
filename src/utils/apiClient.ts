@@ -197,6 +197,19 @@ class ApiClient {
     }
 
     /**
+     * PATCH request
+     */
+    async patch<T>(endpoint: string, data?: unknown, config?: RequestConfig): Promise<T> {
+        const url = this.buildUrl(endpoint);
+        const response = await this.fetchWithTimeout(url, {
+            ...config,
+            method: 'PATCH',
+            body: data ? JSON.stringify(data) : undefined,
+        });
+        return this.handleResponse<T>(response);
+    }
+
+    /**
      * DELETE request
      */
     async delete<T>(endpoint: string, config?: RequestConfig): Promise<T> {

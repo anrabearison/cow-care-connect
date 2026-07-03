@@ -1,5 +1,9 @@
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileText, Badge, Calendar, Download, Lock } from 'lucide-react';
+import { PassportGeneratorModal } from '@/features/passport/components/PassportGeneratorModal';
+import { CreatePassportDto } from '@/features/passport/types/passport.types';
+import { toast } from 'sonner';
 
 const REPORT_TYPES = [
   {
@@ -37,6 +41,31 @@ const REPORT_TYPES = [
 ];
 
 export default function ReportsPage() {
+  const [isPassportModalOpen, setIsPassportModalOpen] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const handleGeneratePassport = async (data: CreatePassportDto) => {
+    setIsGenerating(true);
+    try {
+      // TODO: Call passport service to create passport
+      // const passport = await passportService.create(data);
+      toast.success('Passeport créé avec succès');
+      setIsPassportModalOpen(false);
+    } catch (error) {
+      toast.error('Erreur lors de la création du passeport');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleReportClick = (reportId: string) => {
+    if (reportId === 'passport') {
+      setIsPassportModalOpen(true);
+    } else {
+      toast.info('Ce type de rapport sera bientôt disponible');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-earth">
       <div className="container mx-auto px-6 py-8">
@@ -56,7 +85,10 @@ export default function ReportsPage() {
           {REPORT_TYPES.map((report) => (
             <Card
               key={report.id}
-              className="shadow-card-soft border-none bg-white/50 backdrop-blur-sm hover:shadow-lg transition-shadow"
+              className={`shadow-card-soft border-none bg-white/50 backdrop-blur-sm hover:shadow-lg transition-shadow cursor-pointer ${
+                report.status === 'available' ? 'hover:border-primary/30' : ''
+              }`}
+              onClick={() => handleReportClick(report.id)}
             >
               <CardHeader>
                 <div className="flex items-start justify-between">
@@ -117,6 +149,13 @@ export default function ReportsPage() {
           </CardContent>
         </Card>
       </div>
+
+      <PassportGeneratorModal
+        open={isPassportModalOpen}
+        onOpenChange={setIsPassportModalOpen}
+        onGenerate={handleGeneratePassport}
+        isGenerating={isGenerating}
+      />
     </div>
   );
 }
