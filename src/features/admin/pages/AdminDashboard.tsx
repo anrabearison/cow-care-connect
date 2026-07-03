@@ -3,7 +3,7 @@ import { Beef, Users, Building2, Activity } from "lucide-react";
 
 const AdminDashboard = () => {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4 sm:p-6 lg:p-8">
       <div>
         <h1 className="text-2xl sm:text-3xl font-bold">Tableau de bord Administration</h1>
         <p className="text-muted-foreground mt-2">Vue d'ensemble de la gestion du bétail</p>
