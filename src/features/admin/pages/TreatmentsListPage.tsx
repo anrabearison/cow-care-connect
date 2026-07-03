@@ -150,6 +150,11 @@ const TreatmentsListPage = () => {
     setIsCreateDialogOpen(true);
   };
 
+  const formatDosage = (dosage?: TreatmentDosageData) => {
+    if (!dosage?.quantity || !dosage.unit) return "-";
+    return `${dosage.quantity} ${dosage.unit}`;
+  };
+
   const columns: Column<Treatment>[] = [
     { key: "id", header: "ID", render: (item) => <span className="font-mono text-sm">{item.id.slice(0, 8)}...</span> },
     { key: "cattle", header: "Bovin", render: (item) => {
@@ -171,7 +176,7 @@ const TreatmentsListPage = () => {
       return String(item.veterinarian || "-");
     }},
     { key: "date", header: "Date", render: (item) => new Date(item.date).toLocaleDateString("fr-FR") },
-    { key: "dosage", header: "Dosage", render: (item) => `${item.dosage.quantity} ${item.dosage.unit}` || "-" },
+    { key: "dosage", header: "Dosage", render: (item) => formatDosage(item.dosage) },
   ];
 
   return (
@@ -219,7 +224,7 @@ const TreatmentsListPage = () => {
                 return selectedItem.veterinarian || "-";
               })()}</p></div>
               <div><Label>Date</Label><p className="text-sm font-medium">{new Date(selectedItem.date).toLocaleDateString("fr-FR")}</p></div>
-              <div><Label>Dosage</Label><p className="text-sm font-medium">{`${selectedItem.dosage.quantity} ${selectedItem.dosage.unit}` || "-"}</p></div>
+              <div><Label>Dosage</Label><p className="text-sm font-medium">{formatDosage(selectedItem.dosage)}</p></div>
               <div><Label>Notes</Label><p className="text-sm font-medium">{selectedItem.notes || "-"}</p></div>
             </div>
           </div>
