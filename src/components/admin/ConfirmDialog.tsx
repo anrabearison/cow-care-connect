@@ -35,17 +35,18 @@ export function ConfirmDialog({
 }: ConfirmDialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+      <AlertDialogContent className="max-w-[95vw] sm:max-w-md">
         <AlertDialogHeader>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogTitle className="text-lg sm:text-xl">{title}</AlertDialogTitle>
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel disabled={loading}>{cancelText}</AlertDialogCancel>
+        <AlertDialogFooter className="flex-col sm:flex-row gap-2 sm:gap-3">
+          <AlertDialogCancel disabled={loading} className="w-full sm:w-auto">{cancelText}</AlertDialogCancel>
           <Button
             onClick={onConfirm}
             variant={variant === "destructive" ? "destructive" : "default"}
             disabled={loading}
+            className="w-full sm:w-auto"
           >
             {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
             {confirmText}

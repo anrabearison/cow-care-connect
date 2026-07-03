@@ -111,18 +111,24 @@ export function DataTable<T>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length + (canEdit || canView || canDelete ? 1 : 0)}
-                  className="text-center text-muted-foreground"
+                  className="text-center text-muted-foreground py-8"
                 >
-                  Chargement...
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                    <span className="text-sm">Chargement...</span>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : data.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={columns.length + (canEdit || canView || canDelete ? 1 : 0)}
-                  className="text-center text-muted-foreground"
+                  className="text-center text-muted-foreground py-8"
                 >
-                  Aucune donnée
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <span className="text-4xl">📭</span>
+                    <span className="text-sm">Aucune donnée disponible</span>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : (

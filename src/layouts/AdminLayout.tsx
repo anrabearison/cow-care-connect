@@ -39,7 +39,7 @@ export const AdminLayout = () => (
               >
                 <a href={FRONT_OFFICE_URL} target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="h-4 w-4" />
-                  Front Office
+                  <span className="hidden sm:inline">Front Office</span>
                 </a>
               </Button>
             </div>

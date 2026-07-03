@@ -212,7 +212,7 @@ const TreatmentsListPage = () => {
       <FormDialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen} title="Détails du traitement" submitText="Fermer" cancelText="" onSubmit={() => setIsViewDialogOpen(false)}>
         {selectedItem && (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div><Label>Bovin</Label><p className="text-sm font-medium">{getEntityLabel(selectedItem.cattle, selectedItem.cattleId || "-")}</p></div>
               <div><Label>Médicament</Label><p className="text-sm font-medium">{getEntityLabel(selectedItem.medicamentObj, getEntityLabel(selectedItem.product))}</p></div>
               <div><Label>Vétérinaire</Label><p className="text-sm font-medium">{getEntityLabel(selectedItem.veterinarianObj, getEntityLabel(selectedItem.veterinarian))}</p></div>
