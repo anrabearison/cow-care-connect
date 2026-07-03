@@ -22,6 +22,12 @@ export interface Cattle {
   nCarnet?: string;
   source: {
     type: 'ACHETE' | 'NE_DANS_TROUPEAU';
+    supplier?: string;
+    purchaseDate?: string;
+    purchasePrice?: number;
+    purchaseWeight?: number;
+    purchaseHealthStatus?: string;
+    purchaseNotes?: string;
   };
   motherId?: string;
   fatherId?: string;

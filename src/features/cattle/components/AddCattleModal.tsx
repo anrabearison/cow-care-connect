@@ -36,7 +36,13 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
         nCarnet: '',
         sourceType: 'Acheté' as 'Acheté' | 'Né dans le troupeau',
         motherId: '',
-        fatherId: ''
+        fatherId: '',
+        purchaseSupplier: '',
+        purchaseDate: '',
+        purchasePrice: '',
+        purchaseWeight: '',
+        purchaseHealthStatus: '',
+        purchaseNotes: ''
     });
 
     useEffect(() => {
@@ -112,6 +118,12 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
             fatherId: formData.sourceType === 'Né dans le troupeau' && formData.fatherId ? formData.fatherId : undefined,
             source: {
                 type: formData.sourceType === 'Acheté' ? 'ACHETE' : 'NE_DANS_TROUPEAU',
+                supplier: formData.sourceType === 'Acheté' ? formData.purchaseSupplier : undefined,
+                purchaseDate: formData.sourceType === 'Acheté' && formData.purchaseDate ? formData.purchaseDate : undefined,
+                purchasePrice: formData.sourceType === 'Acheté' && formData.purchasePrice ? parseFloat(formData.purchasePrice) : undefined,
+                purchaseWeight: formData.sourceType === 'Acheté' && formData.purchaseWeight ? parseFloat(formData.purchaseWeight) : undefined,
+                purchaseHealthStatus: formData.sourceType === 'Acheté' ? formData.purchaseHealthStatus : undefined,
+                purchaseNotes: formData.sourceType === 'Acheté' ? formData.purchaseNotes : undefined,
             }
         };
 
@@ -133,7 +145,13 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
             nCarnet: '',
             sourceType: 'Acheté',
             motherId: '',
-            fatherId: ''
+            fatherId: '',
+            purchaseSupplier: '',
+            purchaseDate: '',
+            purchasePrice: '',
+            purchaseWeight: '',
+            purchaseHealthStatus: '',
+            purchaseNotes: ''
         });
         setErrors({});
     };
@@ -288,8 +306,64 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                 </div>
 
                                 {formData.sourceType === 'Acheté' && (
-                                    <div className="p-4 bg-muted/20 rounded-md border text-sm text-muted-foreground">
-                                        Les détails d'achat (fournisseur, prix, etc.) seront gérés dans le module "Achats & Ventes".
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border p-4 rounded-md bg-muted/20">
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="purchaseSupplier">Fournisseur</Label>
+                                            <Input
+                                                id="purchaseSupplier"
+                                                value={formData.purchaseSupplier}
+                                                onChange={(e) => setFormData({ ...formData, purchaseSupplier: e.target.value })}
+                                                placeholder="Nom du fournisseur"
+                                            />
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="purchaseDate">Date d'achat</Label>
+                                            <Input
+                                                id="purchaseDate"
+                                                type="date"
+                                                value={formData.purchaseDate}
+                                                onChange={(e) => setFormData({ ...formData, purchaseDate: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="purchasePrice">Prix d'achat (MGA)</Label>
+                                            <Input
+                                                id="purchasePrice"
+                                                type="number"
+                                                value={formData.purchasePrice}
+                                                onChange={(e) => setFormData({ ...formData, purchasePrice: e.target.value })}
+                                                placeholder="Ex: 500000"
+                                            />
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="purchaseWeight">Poids à l'achat (kg)</Label>
+                                            <Input
+                                                id="purchaseWeight"
+                                                type="number"
+                                                value={formData.purchaseWeight}
+                                                onChange={(e) => setFormData({ ...formData, purchaseWeight: e.target.value })}
+                                                placeholder="Ex: 250"
+                                            />
+                                        </div>
+                                        <div className="grid gap-2 md:col-span-2">
+                                            <Label htmlFor="purchaseHealthStatus">État de santé à l'achat</Label>
+                                            <Input
+                                                id="purchaseHealthStatus"
+                                                value={formData.purchaseHealthStatus}
+                                                onChange={(e) => setFormData({ ...formData, purchaseHealthStatus: e.target.value })}
+                                                placeholder="Ex: En bonne santé"
+                                            />
+                                        </div>
+                                        <div className="grid gap-2 md:col-span-2">
+                                            <Label htmlFor="purchaseNotes">Notes d'achat</Label>
+                                            <Textarea
+                                                id="purchaseNotes"
+                                                value={formData.purchaseNotes}
+                                                onChange={(e) => setFormData({ ...formData, purchaseNotes: e.target.value })}
+                                                placeholder="Notes supplémentaires sur l'achat"
+                                                rows={3}
+                                            />
+                                        </div>
                                     </div>
                                 )}
 

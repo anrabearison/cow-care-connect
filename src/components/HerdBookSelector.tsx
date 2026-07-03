@@ -61,7 +61,7 @@ export const HerdBookSelector = () => {
                 Livre de troupeau
             </label>
 
-            <Select value={selectedHerdBookId || undefined} onValueChange={setSelectedHerdBookId}>
+            <Select defaultValue={selectedHerdBookId || undefined} onValueChange={setSelectedHerdBookId}>
                 <SelectTrigger className="w-full bg-white/80 border-primary/10">
                     <SelectValue placeholder="Sélectionner un livre de troupeau">
                         {selectedHerdBook && (
