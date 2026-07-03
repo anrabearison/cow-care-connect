@@ -25,10 +25,12 @@ const TreatmentsListPage = () => {
     type: "",
     date: "",
     product: "",
-    dosageQuantite: 0,
-    dosageUnite: "",
-    dosageAnimalPoids: undefined,
-    dosageNotes: "",
+    dosage: {
+      quantity: 0,
+      unit: "",
+      animalWeight: undefined,
+      notes: ""
+    },
     administrationRoute: "",
     veterinarian: "",
     notes: ""
@@ -55,10 +57,12 @@ const TreatmentsListPage = () => {
         type: "",
         date: "",
         product: "",
-        dosageQuantite: 0,
-        dosageUnite: "",
-        dosageAnimalPoids: undefined,
-        dosageNotes: "",
+        dosage: {
+          quantity: 0,
+          unit: "",
+          animalWeight: undefined,
+          notes: ""
+        },
         administrationRoute: "",
         veterinarian: "",
         notes: ""
@@ -113,10 +117,12 @@ const TreatmentsListPage = () => {
       type: item.type,
       date: item.date,
       product: item.product,
-      dosageQuantite: item.dosageQuantite,
-      dosageUnite: item.dosageUnite,
-      dosageAnimalPoids: item.animalPoids,
-      dosageNotes: item.dosageNotes || "",
+      dosage: {
+        quantity: item.dosage.quantity,
+        unit: item.dosage.unit,
+        animalWeight: item.dosage.animalWeight,
+        notes: item.dosage.notes || ""
+      },
       administrationRoute: item.administrationRoute || "",
       veterinarian: item.veterinarian,
       notes: item.notes || ""
@@ -131,10 +137,12 @@ const TreatmentsListPage = () => {
       type: "",
       date: "",
       product: "",
-      dosageQuantite: 0,
-      dosageUnite: "",
-      dosageAnimalPoids: undefined,
-      dosageNotes: "",
+      dosage: {
+        quantity: 0,
+        unit: "",
+        animalWeight: undefined,
+        notes: ""
+      },
       administrationRoute: "",
       veterinarian: "",
       notes: ""
@@ -163,7 +171,7 @@ const TreatmentsListPage = () => {
       return String(item.veterinarian || "-");
     }},
     { key: "date", header: "Date", render: (item) => new Date(item.date).toLocaleDateString("fr-FR") },
-    { key: "dosage", header: "Dosage", render: (item) => `${item.dosageQuantite} ${item.dosageUnite}` || "-" },
+    { key: "dosage", header: "Dosage", render: (item) => `${item.dosage.quantity} ${item.dosage.unit}` || "-" },
   ];
 
   return (
@@ -211,7 +219,7 @@ const TreatmentsListPage = () => {
                 return selectedItem.veterinarian || "-";
               })()}</p></div>
               <div><Label>Date</Label><p className="text-sm font-medium">{new Date(selectedItem.date).toLocaleDateString("fr-FR")}</p></div>
-              <div><Label>Dosage</Label><p className="text-sm font-medium">{`${selectedItem.dosageQuantite} ${selectedItem.dosageUnite}` || "-"}</p></div>
+              <div><Label>Dosage</Label><p className="text-sm font-medium">{`${selectedItem.dosage.quantity} ${selectedItem.dosage.unit}` || "-"}</p></div>
               <div><Label>Notes</Label><p className="text-sm font-medium">{selectedItem.notes || "-"}</p></div>
             </div>
           </div>
@@ -238,19 +246,19 @@ const TreatmentsListPage = () => {
           </div>
           <div>
             <Label>Quantité *</Label>
-            <Input type="number" value={formData.dosageQuantite} onChange={(e) => setFormData({ ...formData, dosageQuantite: Number(e.target.value) })} placeholder="Quantité" />
+            <Input type="number" value={formData.dosage?.quantity || 0} onChange={(e) => setFormData({ ...formData, dosage: { ...formData.dosage!, quantity: Number(e.target.value) } })} placeholder="Quantité" />
           </div>
           <div>
             <Label>Unité *</Label>
-            <Input value={formData.dosageUnite} onChange={(e) => setFormData({ ...formData, dosageUnite: e.target.value })} placeholder="Unité" />
+            <Input value={formData.dosage?.unit || ''} onChange={(e) => setFormData({ ...formData, dosage: { ...formData.dosage!, unit: e.target.value } })} placeholder="Unité" />
           </div>
           <div>
             <Label>Poids animal</Label>
-            <Input type="number" value={formData.dosageAnimalPoids || ""} onChange={(e) => setFormData({ ...formData, dosageAnimalPoids: e.target.value ? Number(e.target.value) : undefined })} placeholder="Poids de l'animal" />
+            <Input type="number" value={formData.dosage?.animalWeight || ""} onChange={(e) => setFormData({ ...formData, dosage: { ...formData.dosage!, animalWeight: e.target.value ? Number(e.target.value) : undefined } })} placeholder="Poids de l'animal" />
           </div>
           <div>
             <Label>Notes dosage</Label>
-            <Textarea value={formData.dosageNotes} onChange={(e) => setFormData({ ...formData, dosageNotes: e.target.value })} placeholder="Notes sur le dosage" rows={2} />
+            <Textarea value={formData.dosage?.notes || ''} onChange={(e) => setFormData({ ...formData, dosage: { ...formData.dosage!, notes: e.target.value } })} placeholder="Notes sur le dosage" rows={2} />
           </div>
           <div>
             <Label>Route d'administration</Label>

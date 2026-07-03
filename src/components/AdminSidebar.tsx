@@ -13,7 +13,9 @@ import {
   FileText, 
   LogOut, 
   LucideIcon,
-  Settings
+  Settings,
+  ShoppingCart,
+  Truck
 } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
@@ -77,6 +79,13 @@ const NAVIGATION_GROUPS = [
     label: 'Administration',
     items: [
       { title: 'Livres de troupeau', url: '/admin/herd-books', icon: Book },
+    ],
+  },
+  {
+    label: 'Achats',
+    items: [
+      { title: 'Historique achats', url: '/admin/purchases', icon: ShoppingCart },
+      { title: 'Fournisseurs', url: '/admin/suppliers', icon: Truck },
     ],
   },
 ];

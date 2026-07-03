@@ -47,14 +47,7 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
         character: 'none',
         category: '',
         brand: '',
-        distinctiveSign: '',
-        // Purchase fields
-        supplier: '',
-        purchaseDate: '',
-        purchasePrice: '',
-        purchaseWeight: '',
-        purchaseHealthStatus: '',
-        purchaseNotes: ''
+        distinctiveSign: ''
     });
 
     useEffect(() => {
@@ -102,7 +95,6 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
         if (!formData.gender) newErrors.gender = "Le sexe est obligatoire";
         if (!formData.birthDate) newErrors.birthDate = "La date de naissance est obligatoire";
         if (!formData.category) newErrors.category = "La catégorie est obligatoire";
-        if (!formData.purchaseDate) newErrors.purchaseDate = "La date d'achat est obligatoire";
         if (!selectedHerdBookId) newErrors.herdBook = "Le livre de troupeau est obligatoire";
 
         setErrors(newErrors);
@@ -134,14 +126,7 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
             photo: undefined,
             // status removed as not supported by backend on create
             source: {
-                type: 'ACHETE',
-                supplier: formData.supplier || undefined,
-                purchaseDate: formData.purchaseDate || undefined,
-                // purchaseCategory removed as not supported by backend
-                purchasePrice: formData.purchasePrice ? parseFloat(formData.purchasePrice) : undefined,
-                purchaseWeight: formData.purchaseWeight ? parseFloat(formData.purchaseWeight) : undefined,
-                purchaseHealthStatus: formData.purchaseHealthStatus || undefined,
-                purchaseNotes: formData.purchaseNotes || undefined,
+                type: 'ACHETE'
             }
         };
 
@@ -159,13 +144,7 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
             character: 'none',
             category: '',
             brand: '',
-            distinctiveSign: '',
-            supplier: '',
-            purchaseDate: '',
-            purchasePrice: '',
-            purchaseWeight: '',
-            purchaseHealthStatus: '',
-            purchaseNotes: ''
+            distinctiveSign: ''
         });
         setErrors({});
     };
@@ -332,66 +311,8 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
                         {/* Informations d'achat */}
                         <div>
                             <h3 className="text-lg font-medium mb-4">Informations d'achat</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="supplier">Fournisseur</Label>
-                                    <Input
-                                        id="supplier"
-                                        value={formData.supplier}
-                                        onChange={(e) => setFormData({ ...formData, supplier: e.target.value })}
-                                    />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="purchaseDate">Date d'achat *</Label>
-                                    <Input
-                                        id="purchaseDate"
-                                        type="date"
-                                        value={formData.purchaseDate}
-                                        onChange={(e) => {
-                                            setFormData({ ...formData, purchaseDate: e.target.value });
-                                            if (errors.purchaseDate) setErrors({ ...errors, purchaseDate: '' });
-                                        }}
-                                        className={errors.purchaseDate ? 'border-red-500' : ''}
-                                    />
-                                    {errors.purchaseDate && <p className="text-sm text-red-500">{errors.purchaseDate}</p>}
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="purchasePrice">Prix d'achat (Ar)</Label>
-                                    <Input
-                                        id="purchasePrice"
-                                        type="number"
-                                        step="0.01"
-                                        value={formData.purchasePrice}
-                                        onChange={(e) => setFormData({ ...formData, purchasePrice: e.target.value })}
-                                    />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="purchaseWeight">Poids à l'achat (kg)</Label>
-                                    <Input
-                                        id="purchaseWeight"
-                                        type="number"
-                                        step="0.01"
-                                        value={formData.purchaseWeight}
-                                        onChange={(e) => setFormData({ ...formData, purchaseWeight: e.target.value })}
-                                    />
-                                </div>
-                                <div className="grid gap-2 md:col-span-2">
-                                    <Label htmlFor="purchaseHealthStatus">État de santé à l'achat</Label>
-                                    <Input
-                                        id="purchaseHealthStatus"
-                                        value={formData.purchaseHealthStatus}
-                                        onChange={(e) => setFormData({ ...formData, purchaseHealthStatus: e.target.value })}
-                                    />
-                                </div>
-                                <div className="grid gap-2 md:col-span-2">
-                                    <Label htmlFor="purchaseNotes">Notes d'achat</Label>
-                                    <Textarea
-                                        id="purchaseNotes"
-                                        value={formData.purchaseNotes}
-                                        onChange={(e) => setFormData({ ...formData, purchaseNotes: e.target.value })}
-                                        rows={3}
-                                    />
-                                </div>
+                            <div className="p-4 bg-muted/20 rounded-md border text-sm text-muted-foreground">
+                                Les détails d'achat spécifiques (fournisseur, prix, etc.) seront gérés dans le module "Achats & Ventes". L'animal sera bien enregistré comme "Acheté".
                             </div>
                         </div>
                     </div>

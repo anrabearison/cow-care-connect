@@ -20,7 +20,7 @@ const MedicamentsListPage = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [formData, setFormData] = useState<CreateMedicamentData>({ id: "", name: "", type: "", dosageQuantite: undefined, dosageUnite: "", dosagePoids: undefined, dosageUnitePoids: "", dosageNotes: "", defaultRoute: "", withdrawalPeriodMeat: undefined, withdrawalPeriodMilk: undefined, dosageRecommandeOld: "", fabricant: "", notes: "" });
+  const [formData, setFormData] = useState<CreateMedicamentData>({ id: "", name: "", type: "", dosageQuantity: undefined, dosageUnit: "", dosageWeight: undefined, dosageWeightUnit: "", dosageNotes: "", defaultRoute: "", withdrawalPeriodMeat: undefined, withdrawalPeriodMilk: undefined, manufacturer: "", notes: "" });
 
   const { data: data, isLoading } = useQuery({
     queryKey: ["admin-medicaments", page, search],
@@ -38,7 +38,7 @@ const MedicamentsListPage = () => {
       toast({ title: "Succès", description: "Médicament créé avec succès" });
       queryClient.invalidateQueries({ queryKey: ["admin-medicaments"] });
       setIsCreateDialogOpen(false);
-      setFormData({ id: "", name: "", type: "", dosageQuantite: undefined, dosageUnite: "", dosagePoids: undefined, dosageUnitePoids: "", dosageNotes: "", defaultRoute: "", withdrawalPeriodMeat: undefined, withdrawalPeriodMilk: undefined, dosageRecommandeOld: "", fabricant: "", notes: "" });
+      setFormData({ id: "", name: "", type: "", dosageQuantity: undefined, dosageUnit: "", dosageWeight: undefined, dosageWeightUnit: "", dosageNotes: "", defaultRoute: "", withdrawalPeriodMeat: undefined, withdrawalPeriodMilk: undefined, manufacturer: "", notes: "" });
     },
     onError: () => {
       toast({ title: "Erreur", description: "Erreur lors de la création", variant: "destructive" });
@@ -84,13 +84,13 @@ const MedicamentsListPage = () => {
 
   const openEditDialog = (item: Medicament) => {
     setSelectedItem(item);
-    setFormData({ id: item.id, name: item.name, type: item.type, dosageQuantite: item.dosageQuantite, dosageUnite: item.dosageUnite || "", dosagePoids: item.dosagePoids, dosageUnitePoids: item.dosageUnitePoids || "", dosageNotes: item.dosageNotes || "", defaultRoute: item.defaultRoute || "", withdrawalPeriodMeat: item.withdrawalPeriodMeat, withdrawalPeriodMilk: item.withdrawalPeriodMilk, dosageRecommandeOld: item.dosageRecommandeOld || "", fabricant: item.fabricant || "", notes: item.notes || "" });
+    setFormData({ id: item.id, name: item.name, type: item.type, dosageQuantity: item.dosageQuantity, dosageUnit: item.dosageUnit || "", dosageWeight: item.dosageWeight, dosageWeightUnit: item.dosageWeightUnit || "", dosageNotes: item.dosageNotes || "", defaultRoute: item.defaultRoute || "", withdrawalPeriodMeat: item.withdrawalPeriodMeat, withdrawalPeriodMilk: item.withdrawalPeriodMilk, manufacturer: item.manufacturer || "", notes: item.notes || "" });
     setIsEditDialogOpen(true);
   };
 
   const openCreateDialog = () => {
     setSelectedItem(null);
-    setFormData({ id: "", name: "", type: "", dosageQuantite: undefined, dosageUnite: "", dosagePoids: undefined, dosageUnitePoids: "", dosageNotes: "", defaultRoute: "", withdrawalPeriodMeat: undefined, withdrawalPeriodMilk: undefined, dosageRecommandeOld: "", fabricant: "", notes: "" });
+    setFormData({ id: "", name: "", type: "", dosageQuantity: undefined, dosageUnit: "", dosageWeight: undefined, dosageWeightUnit: "", dosageNotes: "", defaultRoute: "", withdrawalPeriodMeat: undefined, withdrawalPeriodMilk: undefined, manufacturer: "", notes: "" });
     setIsCreateDialogOpen(true);
   };
 
@@ -98,7 +98,7 @@ const MedicamentsListPage = () => {
     { key: "id", header: "ID", render: (item) => <span className="font-mono text-sm">{item.id.slice(0, 8)}...</span> },
     { key: "name", header: "Nom" },
     { key: "type", header: "Type" },
-    { key: "fabricant", header: "Fabricant", render: (item) => item.fabricant || "-" },
+    { key: "manufacturer", header: "Fabricant", render: (item) => item.manufacturer || "-" },
   ];
 
   return (
@@ -129,7 +129,7 @@ const MedicamentsListPage = () => {
             <div className="grid grid-cols-2 gap-4">
               <div><Label>Nom</Label><p className="text-sm font-medium">{selectedItem.name}</p></div>
               <div><Label>Type</Label><p className="text-sm font-medium">{selectedItem.type}</p></div>
-              <div><Label>Fabricant</Label><p className="text-sm font-medium">{selectedItem.fabricant || "-"}</p></div>
+              <div><Label>Fabricant</Label><p className="text-sm font-medium">{selectedItem.manufacturer || "-"}</p></div>
               <div><Label>Notes</Label><p className="text-sm font-medium">{selectedItem.notes || "-"}</p></div>
             </div>
           </div>
@@ -152,7 +152,7 @@ const MedicamentsListPage = () => {
           </div>
           <div>
             <Label>Fabricant</Label>
-            <Input value={formData.fabricant} onChange={(e) => setFormData({ ...formData, fabricant: e.target.value })} placeholder="Fabricant" />
+            <Input value={formData.manufacturer} onChange={(e) => setFormData({ ...formData, manufacturer: e.target.value })} placeholder="Fabricant" />
           </div>
           <div>
             <Label>Notes</Label>
@@ -173,7 +173,7 @@ const MedicamentsListPage = () => {
           </div>
           <div>
             <Label>Fabricant</Label>
-            <Input value={formData.fabricant} onChange={(e) => setFormData({ ...formData, fabricant: e.target.value })} placeholder="Fabricant" />
+            <Input value={formData.manufacturer} onChange={(e) => setFormData({ ...formData, manufacturer: e.target.value })} placeholder="Fabricant" />
           </div>
           <div>
             <Label>Notes</Label>

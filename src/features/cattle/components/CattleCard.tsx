@@ -94,10 +94,10 @@ export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
             <span className="text-sm font-medium text-foreground">{cattle.gender === 'M' ? 'Mâle' : 'Femelle'}</span>
           </div>
 
-          {cattle.n_carnet && (
+          {cattle.nCarnet && (
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">N° Carnet</span>
-              <span className="text-sm font-medium text-foreground">{cattle.n_carnet}</span>
+              <span className="text-sm font-medium text-foreground">{cattle.nCarnet}</span>
             </div>
           )}
 

@@ -33,15 +33,10 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
         category: '',
         brand: '',
         distinctiveSign: '',
-        n_carnet: '',  // NOUVEAU
+        nCarnet: '',
         sourceType: 'Acheté' as 'Acheté' | 'Né dans le troupeau',
-        // Purchase fields
-        supplier: '',
-        purchaseDate: '',
-        purchasePrice: '',
-        purchaseWeight: '',
-        purchaseHealthStatus: '',
-        purchaseNotes: ''
+        motherId: '',
+        fatherId: ''
     });
 
     useEffect(() => {
@@ -113,19 +108,14 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
             distinctiveSign: formData.distinctiveSign || undefined,
             photo: undefined,
             // status removed as not supported by backend on create
+            motherId: formData.sourceType === 'Né dans le troupeau' && formData.motherId ? formData.motherId : undefined,
+            fatherId: formData.sourceType === 'Né dans le troupeau' && formData.fatherId ? formData.fatherId : undefined,
             source: {
-                type: formData.sourceType,
-                supplier: formData.sourceType === 'Acheté' ? formData.supplier : undefined,
-                purchaseDate: formData.sourceType === 'Acheté' ? formData.purchaseDate : undefined,
-                // purchaseCategory removed as not supported by backend
-                purchasePrice: formData.sourceType === 'Acheté' && formData.purchasePrice ? parseFloat(formData.purchasePrice) : undefined,
-                purchaseWeight: formData.sourceType === 'Acheté' && formData.purchaseWeight ? parseFloat(formData.purchaseWeight) : undefined,
-                purchaseHealthStatus: formData.sourceType === 'Acheté' ? formData.purchaseHealthStatus : undefined,
-                purchaseNotes: formData.sourceType === 'Acheté' ? formData.purchaseNotes : undefined,
+                type: formData.sourceType === 'Acheté' ? 'ACHETE' : 'NE_DANS_TROUPEAU',
             }
         };
 
-        onAdd(cattleData, formData.n_carnet || undefined);
+        onAdd(cattleData, formData.nCarnet || undefined);
         resetForm();
         onOpenChange(false);
     };
@@ -140,14 +130,10 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
             category: '',
             brand: '',
             distinctiveSign: '',
-            n_carnet: '',  // NOUVEAU
+            nCarnet: '',
             sourceType: 'Acheté',
-            supplier: '',
-            purchaseDate: '',
-            purchasePrice: '',
-            purchaseWeight: '',
-            purchaseHealthStatus: '',
-            purchaseNotes: ''
+            motherId: '',
+            fatherId: ''
         });
         setErrors({});
     };
@@ -270,11 +256,11 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                     />
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="n_carnet">N° Carnet</Label>
+                                    <Label htmlFor="nCarnet">N° Carnet</Label>
                                     <Input
-                                        id="n_carnet"
-                                        value={formData.n_carnet}
-                                        onChange={(e) => setFormData({ ...formData, n_carnet: e.target.value })}
+                                        id="nCarnet"
+                                        value={formData.nCarnet}
+                                        onChange={(e) => setFormData({ ...formData, nCarnet: e.target.value })}
                                         placeholder="Numéro de carnet pour le livre de troupeau"
                                     />
                                 </div>
@@ -302,58 +288,29 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                 </div>
 
                                 {formData.sourceType === 'Acheté' && (
+                                    <div className="p-4 bg-muted/20 rounded-md border text-sm text-muted-foreground">
+                                        Les détails d'achat (fournisseur, prix, etc.) seront gérés dans le module "Achats & Ventes".
+                                    </div>
+                                )}
+
+                                {formData.sourceType === 'Né dans le troupeau' && (
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border p-4 rounded-md bg-muted/20">
                                         <div className="grid gap-2">
-                                            <Label htmlFor="supplier">Fournisseur</Label>
+                                            <Label htmlFor="motherId">ID de la mère</Label>
                                             <Input
-                                                id="supplier"
-                                                value={formData.supplier}
-                                                onChange={(e) => setFormData({ ...formData, supplier: e.target.value })}
+                                                id="motherId"
+                                                value={formData.motherId}
+                                                onChange={(e) => setFormData({ ...formData, motherId: e.target.value })}
+                                                placeholder="UUID du bovin mère"
                                             />
                                         </div>
                                         <div className="grid gap-2">
-                                            <Label htmlFor="purchaseDate">Date d'achat</Label>
+                                            <Label htmlFor="fatherId">ID du père</Label>
                                             <Input
-                                                id="purchaseDate"
-                                                type="date"
-                                                value={formData.purchaseDate}
-                                                onChange={(e) => setFormData({ ...formData, purchaseDate: e.target.value })}
-                                            />
-                                        </div>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="purchasePrice">Prix d'achat (Ar)</Label>
-                                            <Input
-                                                id="purchasePrice"
-                                                type="number"
-                                                step="0.01"
-                                                value={formData.purchasePrice}
-                                                onChange={(e) => setFormData({ ...formData, purchasePrice: e.target.value })}
-                                            />
-                                        </div>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="purchaseWeight">Poids à l'achat (kg)</Label>
-                                            <Input
-                                                id="purchaseWeight"
-                                                type="number"
-                                                step="0.01"
-                                                value={formData.purchaseWeight}
-                                                onChange={(e) => setFormData({ ...formData, purchaseWeight: e.target.value })}
-                                            />
-                                        </div>
-                                        <div className="grid gap-2 md:col-span-2">
-                                            <Label htmlFor="purchaseHealthStatus">État de santé à l'achat</Label>
-                                            <Input
-                                                id="purchaseHealthStatus"
-                                                value={formData.purchaseHealthStatus}
-                                                onChange={(e) => setFormData({ ...formData, purchaseHealthStatus: e.target.value })}
-                                            />
-                                        </div>
-                                        <div className="grid gap-2 md:col-span-2">
-                                            <Label htmlFor="purchaseNotes">Notes d'achat</Label>
-                                            <Textarea
-                                                id="purchaseNotes"
-                                                value={formData.purchaseNotes}
-                                                onChange={(e) => setFormData({ ...formData, purchaseNotes: e.target.value })}
+                                                id="fatherId"
+                                                value={formData.fatherId}
+                                                onChange={(e) => setFormData({ ...formData, fatherId: e.target.value })}
+                                                placeholder="UUID du bovin père (Optionnel)"
                                             />
                                         </div>
                                     </div>

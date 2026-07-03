@@ -150,7 +150,7 @@ export default function CattleDetailsPage() {
     if (!cattle || !allCattle) return [];
 
     // Priorité à la liaison explicite via motherId
-    const directDescendants = allCattle.filter(c => c.source.motherId === cattle.id);
+    const directDescendants = allCattle.filter(c => c.motherId === cattle.id);
     if (directDescendants.length > 0) return directDescendants;
 
     // Fallback: Logique basée sur la date pour les anciens enregistrements sans motherId
@@ -162,7 +162,7 @@ export default function CattleDetailsPage() {
       if (descendant.id === cattle.id) return false;
       if (descendant.source.type !== 'NE_DANS_TROUPEAU') return false;
       // Si le descendant a une mère définie mais ce n'est pas ce bovin, on l'exclut
-      if (descendant.source.motherId && descendant.source.motherId !== cattle.id) return false;
+      if (descendant.motherId && descendant.motherId !== cattle.id) return false;
 
       const descendantBirthDate = new Date(descendant.birthDate);
       return descendantBirthDate > minDescendantDate;
@@ -474,48 +474,13 @@ export default function CattleDetailsPage() {
 
                 {/* Section pour les bovins achetés */}
                 {cattle.source.type === 'ACHETE' && (
-                  <Collapsible open={showPurchaseDetails} onOpenChange={setShowPurchaseDetails}>
-                    <CollapsibleTrigger asChild>
-                      <Button variant="ghost" className="w-full justify-between p-3 h-auto">
-                        <div className="text-left">
-                          <div className="flex items-center gap-2">
-                            <MapPin className="h-4 w-4" />
-                            <span className="font-medium">Acheté</span>
-                          </div>
-                        </div>
-                        <ChevronDown className="h-4 w-4 transition-transform duration-200" />
-                      </Button>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="space-y-3 pt-3">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {cattle.source.supplier && (
-                          <div>
-                            <p className="text-sm font-medium text-muted-foreground">Fournisseur</p>
-                            <p className="text-sm font-medium">{cattle.source.supplier}</p>
-                          </div>
-                        )}
-                        {cattle.source.purchaseDate && (
-                          <div>
-                            <p className="text-sm font-medium text-muted-foreground">Date d'achat</p>
-                            <p className="text-sm font-medium">{formatDate(cattle.source.purchaseDate)}</p>
-                          </div>
-                        )}
-                        {cattle.source.purchasePrice && (
-                          <div>
-                            <p className="text-sm font-medium text-muted-foreground">Prix d'achat</p>
-                            <p className="text-sm font-medium">{cattle.source.purchasePrice.toLocaleString('fr-FR')} Ar</p>
-                          </div>
-                        )}
-
-                      </div>
-                      {cattle.source.purchaseNotes && (
-                        <div className="pt-2 border-t">
-                          <p className="text-sm font-medium text-muted-foreground mb-2">Remarques</p>
-                          <p className="text-sm text-muted-foreground italic">"{cattle.source.purchaseNotes}"</p>
-                        </div>
-                      )}
-                    </CollapsibleContent>
-                  </Collapsible>
+                  <div className="space-y-2">
+                    <span className="text-muted-foreground">Source</span>
+                    <div className="flex items-center space-x-2">
+                      <MapPin className="h-4 w-4 text-primary" />
+                      <span className="font-medium">Acheté (Détails dans le module Achats)</span>
+                    </div>
+                  </div>
                 )}
 
                 {/* Section pour les bovins nés dans le troupeau */}
@@ -558,20 +523,20 @@ export default function CattleDetailsPage() {
                         <p className="text-sm text-muted-foreground">
                           Âge actuel: {calculateAge(cattle.birthDate)}
                         </p>
-                        {cattle.source.motherId && (
+                        {cattle.motherId && (
                           <div className="flex items-center space-x-1">
                             <span className="text-sm text-muted-foreground">Mère:</span>
-                            {allCattle?.find(c => c.id === cattle.source.motherId) ? (
+                            {allCattle?.find(c => c.id === cattle.motherId) ? (
                               <HoverCard>
                                 <HoverCardTrigger asChild>
                                   <span className="text-sm text-primary hover:underline font-medium cursor-pointer">
-                                    {allCattle.find(c => c.id === cattle.source.motherId)?.name}
-                                    {allCattle.find(c => c.id === cattle.source.motherId)?.nickname && ` (${allCattle.find(c => c.id === cattle.source.motherId)?.nickname})`}
+                                    {allCattle.find(c => c.id === cattle.motherId)?.name}
+                                    {allCattle.find(c => c.id === cattle.motherId)?.nickname && ` (${allCattle.find(c => c.id === cattle.motherId)?.nickname})`}
                                   </span>
                                 </HoverCardTrigger>
                                 <HoverCardContent className="w-80">
                                   {(() => {
-                                    const mother = allCattle.find(c => c.id === cattle.source.motherId);
+                                    const mother = allCattle.find(c => c.id === cattle.motherId);
                                     if (!mother) return null;
                                     const motherIdHash = mother.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
                                     const motherImageIndex = motherIdHash % cattleImages.length;
@@ -610,7 +575,7 @@ export default function CattleDetailsPage() {
                                 </HoverCardContent>
                               </HoverCard>
                             ) : (
-                              <span className="text-sm text-muted-foreground">{cattle.source.motherId}</span>
+                              <span className="text-sm text-muted-foreground">{cattle.motherId}</span>
                             )}
                           </div>
                         )}

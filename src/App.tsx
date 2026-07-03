@@ -33,6 +33,8 @@ const CharactersListPage = lazy(() => import("@/features/admin/pages/CharactersL
 const HerdBooksListPage = lazy(() => import("@/features/admin/pages/HerdBooksListPage"));
 const HerdBookCattleListPage = lazy(() => import("@/features/admin/pages/HerdBookCattleListPage"));
 const OwnersListPage = lazy(() => import("@/features/admin/pages/OwnersListPage"));
+const PurchasesListPage = lazy(() => import("@/features/admin/pages/PurchasesListPage"));
+const SuppliersListPage = lazy(() => import("@/features/admin/pages/SuppliersListPage"));
 
 
 // Internal component that has access to the context
@@ -74,6 +76,8 @@ const AppContent = () => {
                   <Route path="characters" element={<CharactersListPage />} />
                   <Route path="herd-books" element={<HerdBooksListPage />} />
                   <Route path="herd-book-cattle" element={<HerdBookCattleListPage />} />
+                  <Route path="purchases" element={<PurchasesListPage />} />
+                  <Route path="suppliers" element={<SuppliersListPage />} />
                   <Route
                     path="owners"
                     element={

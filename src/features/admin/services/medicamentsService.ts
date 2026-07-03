@@ -4,16 +4,15 @@ export interface Medicament {
   id: string;
   name: string;
   type: string;
-  dosageQuantite?: number;
-  dosageUnite?: string;
-  dosagePoids?: number;
-  dosageUnitePoids?: string;
+  dosageQuantity?: number;
+  dosageUnit?: string;
+  dosageWeight?: number;
+  dosageWeightUnit?: string;
   dosageNotes?: string;
   defaultRoute?: string;
   withdrawalPeriodMeat?: number;
   withdrawalPeriodMilk?: number;
-  dosageRecommandeOld?: string;
-  fabricant?: string;
+  manufacturer?: string;
   notes?: string;
   createdAt: string;
   updatedAt: string;
@@ -23,32 +22,30 @@ export interface CreateMedicamentData {
   id: string;
   name: string;
   type: string;
-  dosageQuantite?: number;
-  dosageUnite?: string;
-  dosagePoids?: number;
-  dosageUnitePoids?: string;
+  dosageQuantity?: number;
+  dosageUnit?: string;
+  dosageWeight?: number;
+  dosageWeightUnit?: string;
   dosageNotes?: string;
   defaultRoute?: string;
   withdrawalPeriodMeat?: number;
   withdrawalPeriodMilk?: number;
-  dosageRecommandeOld?: string;
-  fabricant?: string;
+  manufacturer?: string;
   notes?: string;
 }
 
 export interface UpdateMedicamentData {
   name?: string;
   type?: string;
-  dosageQuantite?: number;
-  dosageUnite?: string;
-  dosagePoids?: number;
-  dosageUnitePoids?: string;
+  dosageQuantity?: number;
+  dosageUnit?: string;
+  dosageWeight?: number;
+  dosageWeightUnit?: string;
   dosageNotes?: string;
   defaultRoute?: string;
   withdrawalPeriodMeat?: number;
   withdrawalPeriodMilk?: number;
-  dosageRecommandeOld?: string;
-  fabricant?: string;
+  manufacturer?: string;
   notes?: string;
 }
 

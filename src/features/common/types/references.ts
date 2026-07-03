@@ -1,8 +1,8 @@
 export interface Dosage {
-    quantite: number;
-    unite: string;
-    poids?: number;
-    unite_poids?: string;
+    quantity: number;
+    unit: string;
+    weight?: number;
+    weightUnit?: string;
     notes?: string;
 }
 
@@ -11,16 +11,17 @@ export interface Medicament {
     name: string;
     type?: string;
     dosage?: Dosage;
-    dosage_recommande?: string;
-    fabricant?: string;
+    manufacturer?: string;
 }
 
 export interface Veterinarian {
     id: string;
     name: string;
-    specialite?: string;
-    telephone?: string;
+    specialty?: string;
+    phone?: string;
     email?: string;
+    address?: string;
+    notes?: string;
 }
 
 export interface ReferenceItem {

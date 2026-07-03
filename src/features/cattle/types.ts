@@ -19,26 +19,21 @@ export interface Cattle {
     id: string;
     name: string;
   };
-  n_carnet?: string;
+  nCarnet?: string;
   source: {
     type: 'ACHETE' | 'NE_DANS_TROUPEAU';
-    supplier?: string;
-    purchaseDate?: string;
-    purchasePrice?: number;
-    purchaseWeight?: number;
-    purchaseHealthStatus?: string;
-    purchaseNotes?: string;
-    motherId?: string;
   };
+  motherId?: string;
+  fatherId?: string;
   events: CattleEvent[];
   treatments: Treatment[];
-  owner_id?: string;
+  ownerId?: string;
 }
 
 // Type enrichi pour l'affichage avec informations du HerdBook
 export interface CattleWithHerdBookInfo extends Cattle {
   // Informations du HerdBook courant (enrichies par le backend ou le frontend)
-  n_carnet?: string;
+  nCarnet?: string;
   category: {
     id: string;
     name: string;
@@ -64,9 +59,9 @@ export interface Treatment {
   date: string;
   product: string; // ID du médicament
   dosage: string | {
-    quantite: number;
-    unite: string;
-    animal_poids?: number;
+    quantity: number;
+    unit: string;
+    animalWeight?: number;
     notes?: string;
   };
   veterinarian: string; // ID de l'intervenant

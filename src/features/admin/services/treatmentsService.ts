@@ -1,5 +1,12 @@
 import { apiClient, ApiResponse } from '@/utils/apiClient';
 
+export interface TreatmentDosage {
+  quantity: number;
+  unit: string;
+  animalWeight?: number;
+  notes?: string;
+}
+
 export interface Treatment {
   id: string;
   cattleId: string;
@@ -7,10 +14,7 @@ export interface Treatment {
   type: string;
   date: string;
   product: string;
-  dosageQuantite: number;
-  dosageUnite: string;
-  animalPoids?: number;
-  dosageNotes?: string;
+  dosage: TreatmentDosage;
   administrationRoute?: string;
   veterinarian: string;
   veterinarianObj?: { id: string; name: string };
@@ -20,22 +24,12 @@ export interface Treatment {
   updatedAt: string;
 }
 
-export interface TreatmentDosageData {
-  quantite: number;
-  unite: string;
-  animalPoids?: number;
-  notes?: string;
-}
-
 export interface CreateTreatmentData {
   cattleId: string;
   type: string;
   date: string;
   product: string;
-  dosageQuantite: number;
-  dosageUnite: string;
-  dosageAnimalPoids?: number;
-  dosageNotes?: string;
+  dosage: TreatmentDosage;
   administrationRoute?: string;
   veterinarian: string;
   notes?: string;
@@ -46,10 +40,7 @@ export interface UpdateTreatmentData {
   type?: string;
   date?: string;
   product?: string;
-  dosageQuantite?: number;
-  dosageUnite?: string;
-  dosageAnimalPoids?: number;
-  dosageNotes?: string;
+  dosage?: Partial<TreatmentDosage>;
   administrationRoute?: string;
   veterinarian?: string;
   notes?: string;
