@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useOwnerSelection } from '@/contexts/OwnerSelectionContext';
-import { apiClient } from '@/utils/apiClient';
+import { apiClient, setOwnerIdGetter } from '@/utils/apiClient';
 import {
     Select,
     SelectContent,
@@ -17,6 +17,11 @@ interface Owner {
     id: string;
     name: string;
 }
+
+const refreshOwnerScopedQueries = async (queryClient: ReturnType<typeof useQueryClient>) => {
+    await queryClient.invalidateQueries();
+    await queryClient.refetchQueries({ type: 'active' });
+};
 
 export const OwnerSelector = () => {
     const { user } = useAuth();
@@ -50,36 +55,28 @@ export const OwnerSelector = () => {
                     setLoading(false);
                 });
         }
-    }, [user]);
+    }, [user, setSelectedOwnerId, setSelectedOwnerName]);
 
-    const handleOwnerChange = (ownerId: string) => {
+    const handleOwnerChange = async (ownerId: string) => {
         if (ownerId === '__all__') {
+            setOwnerIdGetter(() => null);
             setSelectedOwnerId(null);
             setSelectedOwnerName(null);
         } else {
             const owner = owners.find((o) => o.id === ownerId);
+            setOwnerIdGetter(() => ownerId);
             setSelectedOwnerId(ownerId);
             setSelectedOwnerName(owner?.name || null);
         }
 
-        // Invalidate all queries to refetch with new owner filter
-        queryClient.invalidateQueries();
-
-        // Refresh the page to ensure all data is updated
-        setTimeout(() => {
-            window.location.reload();
-        }, 100);
+        await refreshOwnerScopedQueries(queryClient);
     };
 
-    const handleClearSelection = () => {
+    const handleClearSelection = async () => {
+        setOwnerIdGetter(() => null);
         setSelectedOwnerId(null);
         setSelectedOwnerName(null);
-        queryClient.invalidateQueries();
-
-        // Refresh the page to ensure all data is updated
-        setTimeout(() => {
-            window.location.reload();
-        }, 100);
+        await refreshOwnerScopedQueries(queryClient);
     };
 
     if (user?.role === 'OWNER_ADMIN' || user?.role === 'OWNER_USER') {

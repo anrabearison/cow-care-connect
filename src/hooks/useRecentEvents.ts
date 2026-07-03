@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { apiClient } from '@/utils/apiClient';
 import { API_CONFIG } from '@/config/api';
 import { RecentEvent } from '@/types/events';
+import { useOwnerSelection } from '@/contexts/OwnerSelectionContext';
 
 interface EventResponse {
     id: number;
@@ -23,12 +24,16 @@ interface CattleResponse {
 }
 
 export const useRecentEvents = () => {
+    const { selectedOwnerId } = useOwnerSelection();
     const [events, setEvents] = useState<RecentEvent[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        let isMounted = true;
+
         const fetchEvents = async () => {
             try {
+                setIsLoading(true);
                 // Fetch recent events (5 most recent, sorted by date DESC)
                 const eventsResponse = await apiClient.get<PaginatedResponse<EventResponse>>(
                     `${API_CONFIG.ENDPOINTS.EVENTS}?per_page=5&sort=date&order=DESC`
@@ -51,17 +56,27 @@ export const useRecentEvents = () => {
                     date: event.date,
                 }));
 
-                setEvents(recentEvents);
+                if (isMounted) {
+                    setEvents(recentEvents);
+                }
             } catch (error) {
                 console.error('Failed to fetch recent events:', error);
-                setEvents([]);
+                if (isMounted) {
+                    setEvents([]);
+                }
             } finally {
-                setIsLoading(false);
+                if (isMounted) {
+                    setIsLoading(false);
+                }
             }
         };
 
         fetchEvents();
-    }, []);
+
+        return () => {
+            isMounted = false;
+        };
+    }, [selectedOwnerId]);
 
     return { events, isLoading };
 };

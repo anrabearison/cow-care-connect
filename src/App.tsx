@@ -1,7 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/features/auth/AuthContext";
-import { OwnerSelectionProvider, useOwnerSelection } from "@/contexts/OwnerSelectionContext";
-import { HerdBookSelectionProvider } from "@/contexts/HerdBookSelectionContext";
+import { useOwnerSelection } from "@/contexts/OwnerSelectionContext";
 import { setOwnerIdGetter } from "@/utils/apiClient";
 import { PrivateRoute } from "@/components/PrivateRoute";
 import { AdminRoute } from "@/components/AdminRoute";
@@ -59,53 +57,53 @@ const AppContent = () => {
           
           {/* Admin routes */}
           <Route
-            path="/admin/*"
+            path="/admin"
             element={
               <AdminRoute>
-                <AdminLayout>
-                  <Route index element={<AdminDashboard />} />
-                  <Route path="cattle" element={<CattleListPage />} />
-                  <Route path="users" element={<UsersListPage />} />
-                  <Route path="veterinarians" element={<VeterinariansListPage />} />
-                  <Route path="medicaments" element={<MedicamentsListPage />} />
-                  <Route path="event-types" element={<EventTypesListPage />} />
-                  <Route path="events" element={<EventsListPage />} />
-                  <Route path="treatments" element={<TreatmentsListPage />} />
-                  <Route path="categories" element={<CategoriesListPage />} />
-                  <Route path="status" element={<StatusListPage />} />
-                  <Route path="characters" element={<CharactersListPage />} />
-                  <Route path="herd-books" element={<HerdBooksListPage />} />
-                  <Route path="herd-book-cattle" element={<HerdBookCattleListPage />} />
-                  <Route path="purchases" element={<PurchasesListPage />} />
-                  <Route path="suppliers" element={<SuppliersListPage />} />
-                  <Route
-                    path="owners"
-                    element={
-                      <SuperAdminRoute>
-                        <OwnersListPage />
-                      </SuperAdminRoute>
-                    }
-                  />
-                </AdminLayout>
+                <AdminLayout />
               </AdminRoute>
             }
-          />
+          >
+            <Route index element={<AdminDashboard />} />
+            <Route path="cattle" element={<CattleListPage />} />
+            <Route path="users" element={<UsersListPage />} />
+            <Route path="veterinarians" element={<VeterinariansListPage />} />
+            <Route path="medicaments" element={<MedicamentsListPage />} />
+            <Route path="event-types" element={<EventTypesListPage />} />
+            <Route path="events" element={<EventsListPage />} />
+            <Route path="treatments" element={<TreatmentsListPage />} />
+            <Route path="categories" element={<CategoriesListPage />} />
+            <Route path="status" element={<StatusListPage />} />
+            <Route path="characters" element={<CharactersListPage />} />
+            <Route path="herd-books" element={<HerdBooksListPage />} />
+            <Route path="herd-book-cattle" element={<HerdBookCattleListPage />} />
+            <Route path="purchases" element={<PurchasesListPage />} />
+            <Route path="suppliers" element={<SuppliersListPage />} />
+            <Route
+              path="owners"
+              element={
+                <SuperAdminRoute>
+                  <OwnersListPage />
+                </SuperAdminRoute>
+              }
+            />
+          </Route>
           
           {/* Frontoffice routes */}
           <Route
-            path="/*"
+            path="/"
             element={
               <PrivateRoute>
-                <MainLayout>
-                  <Route index element={<HomePage />} />
-                  <Route path="cattle" element={<CattlePage />} />
-                  <Route path="cattle/:id" element={<CattleDetailsPage />} />
-                  <Route path="profile" element={<ProfilePage />} />
-                  <Route path="*" element={<NotFound />} />
-                </MainLayout>
+                <MainLayout />
               </PrivateRoute>
             }
-          />
+          >
+            <Route index element={<HomePage />} />
+            <Route path="cattle" element={<CattlePage />} />
+            <Route path="cattle/:id" element={<CattleDetailsPage />} />
+            <Route path="profile" element={<ProfilePage />} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
         </Routes>
       </Suspense>
     </BrowserRouter>

@@ -1,8 +1,8 @@
-import { ReactNode, Suspense } from "react";
+import { Suspense } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AdminSidebar } from "@/components/AdminSidebar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Routes, Route } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 const PageLoader = () => (
   <div className="flex items-center justify-center min-h-screen">
@@ -14,11 +14,7 @@ const PageLoader = () => (
   </div>
 );
 
-interface AdminLayoutProps {
-  children: ReactNode;
-}
-
-export const AdminLayout = ({ children }: AdminLayoutProps) => (
+export const AdminLayout = () => (
   <SidebarProvider>
     <div className="flex min-h-screen w-full flex-col overflow-hidden">
       <div className="flex flex-1 overflow-hidden">
@@ -33,9 +29,7 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => (
             </div>
           </header>
           <Suspense fallback={<PageLoader />}>
-            <Routes>
-              {children}
-            </Routes>
+            <Outlet />
           </Suspense>
         </main>
       </div>

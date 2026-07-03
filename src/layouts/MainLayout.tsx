@@ -1,10 +1,10 @@
-import { ReactNode, Suspense } from "react";
+import { Suspense } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { OwnerSelector } from "@/components/OwnerSelector";
 import { Footer } from "@/components/Footer";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Routes, Route } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 const PageLoader = () => (
   <div className="flex items-center justify-center min-h-screen">
@@ -16,11 +16,7 @@ const PageLoader = () => (
   </div>
 );
 
-interface MainLayoutProps {
-  children: ReactNode;
-}
-
-export const MainLayout = ({ children }: MainLayoutProps) => (
+export const MainLayout = () => (
   <SidebarProvider>
     <div className="flex min-h-screen w-full flex-col overflow-hidden">
       <div className="flex flex-1 overflow-hidden">
@@ -36,10 +32,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => (
             </div>
           </header>
           <Suspense fallback={<PageLoader />}>
-            <Routes>
-              {/* The nested routes are provided via children from App.tsx */}
-              {children}
-            </Routes>
+            <Outlet />
           </Suspense>
         </main>
       </div>
@@ -47,4 +40,3 @@ export const MainLayout = ({ children }: MainLayoutProps) => (
     </div>
   </SidebarProvider>
 );
-

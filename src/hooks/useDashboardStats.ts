@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { dashboardService, DashboardStats } from '@/features/dashboard/services';
+import { useOwnerSelection } from '@/contexts/OwnerSelectionContext';
 
 export const useDashboardStats = () => {
+    const { selectedOwnerId } = useOwnerSelection();
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
@@ -25,7 +27,7 @@ export const useDashboardStats = () => {
         };
 
         fetchStats();
-    }, []);
+    }, [selectedOwnerId]);
 
 
     return { stats, isLoading, error };

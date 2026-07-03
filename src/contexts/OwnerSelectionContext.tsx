@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useCallback, useContext, useState, ReactNode } from 'react';
 
 interface OwnerSelectionContextType {
     selectedOwnerId: string | null;
@@ -27,7 +27,7 @@ export const OwnerSelectionProvider: React.FC<{ children: ReactNode }> = ({ chil
     // Persist to localStorage when changed.
     // NOTE: do NOT clear on unmount — window.location.reload() unmounts React
     // before the new value can be read on the next load, wiping the selection.
-    const setSelectedOwnerId = (ownerId: string | null) => {
+    const setSelectedOwnerId = useCallback((ownerId: string | null) => {
         setSelectedOwnerIdState(ownerId);
         if (ownerId) {
             localStorage.setItem(STORAGE_KEY, ownerId);
@@ -36,14 +36,14 @@ export const OwnerSelectionProvider: React.FC<{ children: ReactNode }> = ({ chil
             localStorage.removeItem(STORAGE_NAME_KEY);
             setSelectedOwnerNameState(null);
         }
-    };
+    }, []);
 
-    const setSelectedOwnerName = (name: string | null) => {
+    const setSelectedOwnerName = useCallback((name: string | null) => {
         setSelectedOwnerNameState(name);
         if (name) {
             localStorage.setItem(STORAGE_NAME_KEY, name);
         }
-    };
+    }, []);
 
     return (
         <OwnerSelectionContext.Provider value={{

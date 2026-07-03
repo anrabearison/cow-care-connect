@@ -28,6 +28,9 @@ export interface RequestConfig extends RequestInit {
     timeout?: number;
 }
 
+type QueryValue = string | number | boolean | null | undefined;
+type QueryParams = Record<string, QueryValue>;
+
 class ApiClient {
     private baseURL: string;
     private defaultTimeout: number = 60000; // 60 seconds (useful for free tier cold starts)
@@ -91,10 +94,10 @@ class ApiClient {
 
             clearTimeout(timeoutId);
             return response;
-        } catch (error: any) {
+        } catch (error: unknown) {
             clearTimeout(timeoutId);
 
-            if (error.name === 'AbortError') {
+            if (error instanceof DOMException && error.name === 'AbortError') {
                 throw new NetworkError('La requête a expiré');
             }
 
@@ -113,7 +116,7 @@ class ApiClient {
         }
 
         // Try to parse JSON response
-        let data: any;
+        let data: unknown;
         try {
             data = await response.json();
         } catch {
@@ -127,41 +130,39 @@ class ApiClient {
 
         // Handle error responses
         if (!response.ok) {
-            const message = data.detail || data.message || ErrorMessages.UNKNOWN;
+            const errorData = data as { detail?: string; message?: string };
+            const message = errorData.detail || errorData.message || ErrorMessages.UNKNOWN;
             throw createErrorFromStatus(response.status, message);
         }
 
         return data;
     }
 
+    private getSelectedOwnerId(): string | null {
+        return getSelectedOwnerIdFn?.() ?? null;
+    }
+
+    private buildUrl(endpoint: string, params?: QueryParams): string {
+        const selectedOwnerId = this.getSelectedOwnerId();
+        const allParams = {
+            ...params,
+            ...(selectedOwnerId && !endpoint.includes('owner_id=') && { owner_id: selectedOwnerId }),
+        };
+        const queryString = this.buildQueryString(allParams);
+
+        if (!queryString) {
+            return `${this.baseURL}${endpoint}`;
+        }
+
+        const separator = endpoint.includes('?') ? '&' : '?';
+        return `${this.baseURL}${endpoint}${separator}${queryString.slice(1)}`;
+    }
+
     /**
      * GET request
      */
-    async get<T>(endpoint: string, params?: Record<string, any>, config?: RequestConfig): Promise<T> {
-        // Add owner_id if available (for super admin)
-        const selectedOwnerId = getSelectedOwnerIdFn?.();
-
-        // Check if endpoint already has query string
-        const hasQueryString = endpoint.includes('?');
-
-        let url: string;
-        if (hasQueryString) {
-            // Endpoint already has query string, just add owner_id if needed
-            url = `${this.baseURL}${endpoint}`;
-            if (selectedOwnerId) {
-                url += `&owner_id=${selectedOwnerId}`;
-            }
-        } else {
-            // Build query string from params and owner_id
-            const allParams = {
-                ...params,
-                ...(selectedOwnerId && { owner_id: selectedOwnerId }),
-            };
-
-            const queryString = this.buildQueryString(allParams);
-            url = `${this.baseURL}${endpoint}${queryString}`;
-        }
-
+    async get<T>(endpoint: string, params?: QueryParams, config?: RequestConfig): Promise<T> {
+        const url = this.buildUrl(endpoint, params);
         const response = await this.fetchWithTimeout(url, {
             ...config,
             method: 'GET',
@@ -172,8 +173,8 @@ class ApiClient {
     /**
      * POST request
      */
-    async post<T>(endpoint: string, data?: any, config?: RequestConfig): Promise<T> {
-        const url = `${this.baseURL}${endpoint}`;
+    async post<T>(endpoint: string, data?: unknown, config?: RequestConfig): Promise<T> {
+        const url = this.buildUrl(endpoint);
         const response = await this.fetchWithTimeout(url, {
             ...config,
             method: 'POST',
@@ -185,11 +186,8 @@ class ApiClient {
     /**
      * PUT request
      */
-    async put<T>(endpoint: string, data?: any, config?: RequestConfig): Promise<T> {
-        const selectedOwnerId = getSelectedOwnerIdFn?.();
-        const queryString = selectedOwnerId ? this.buildQueryString({ owner_id: selectedOwnerId }) : '';
-        const url = `${this.baseURL}${endpoint}${queryString}`;
-
+    async put<T>(endpoint: string, data?: unknown, config?: RequestConfig): Promise<T> {
+        const url = this.buildUrl(endpoint);
         const response = await this.fetchWithTimeout(url, {
             ...config,
             method: 'PUT',
@@ -202,10 +200,7 @@ class ApiClient {
      * DELETE request
      */
     async delete<T>(endpoint: string, config?: RequestConfig): Promise<T> {
-        const selectedOwnerId = getSelectedOwnerIdFn?.();
-        const queryString = selectedOwnerId ? this.buildQueryString({ owner_id: selectedOwnerId }) : '';
-        const url = `${this.baseURL}${endpoint}${queryString}`;
-
+        const url = this.buildUrl(endpoint);
         const response = await this.fetchWithTimeout(url, {
             ...config,
             method: 'DELETE',
@@ -216,7 +211,7 @@ class ApiClient {
     /**
      * Build query string from params
      */
-    buildQueryString(params: Record<string, any>): string {
+    buildQueryString(params: QueryParams): string {
         const searchParams = new URLSearchParams();
 
         Object.entries(params).forEach(([key, value]) => {
