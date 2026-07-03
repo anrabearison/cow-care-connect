@@ -20,7 +20,7 @@ const CategoriesListPage = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [formData, setFormData] = useState<CreateCategoryData>({ name: "", description: "" });
+  const [formData, setFormData] = useState<CreateCategoryData>({ name: "" });
 
   const { data: data, isLoading } = useQuery({
     queryKey: ["admin-categories", page, search],
@@ -38,7 +38,7 @@ const CategoriesListPage = () => {
       toast({ title: "Succès", description: "Catégorie créée avec succès" });
       queryClient.invalidateQueries({ queryKey: ["admin-categories"] });
       setIsCreateDialogOpen(false);
-      setFormData({ name: "", description: "" });
+      setFormData({ name: "" });
     },
     onError: () => {
       toast({ title: "Erreur", description: "Erreur lors de la création", variant: "destructive" });
@@ -84,13 +84,13 @@ const CategoriesListPage = () => {
 
   const openEditDialog = (item: Category) => {
     setSelectedItem(item);
-    setFormData({ name: item.name, description: item.description || "" });
+    setFormData({ name: item.name });
     setIsEditDialogOpen(true);
   };
 
   const openCreateDialog = () => {
     setSelectedItem(null);
-    setFormData({ name: "", description: "" });
+    setFormData({ name: "" });
     setIsCreateDialogOpen(true);
   };
 
@@ -126,7 +126,6 @@ const CategoriesListPage = () => {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div><Label>Nom</Label><p className="text-sm font-medium">{selectedItem.name}</p></div>
-              <div><Label>Description</Label><p className="text-sm font-medium">{selectedItem.description || "-"}</p></div>
             </div>
           </div>
         )}
@@ -138,10 +137,6 @@ const CategoriesListPage = () => {
             <Label>Nom *</Label>
             <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Nom de la catégorie" />
           </div>
-          <div>
-            <Label>Description</Label>
-            <Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} placeholder="Description de la catégorie" rows={3} />
-          </div>
         </div>
       </FormDialog>
 
@@ -150,10 +145,6 @@ const CategoriesListPage = () => {
           <div>
             <Label>Nom *</Label>
             <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Nom de la catégorie" />
-          </div>
-          <div>
-            <Label>Description</Label>
-            <Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} placeholder="Description de la catégorie" rows={3} />
           </div>
         </div>
       </FormDialog>
