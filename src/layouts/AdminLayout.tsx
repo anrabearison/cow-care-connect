@@ -3,6 +3,9 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AdminSidebar } from "@/components/AdminSidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Outlet } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { FRONT_OFFICE_URL } from "@/config/urls";
+import { ExternalLink } from "lucide-react";
 
 const PageLoader = () => (
   <div className="flex items-center justify-center min-h-screen">
@@ -26,6 +29,19 @@ export const AdminLayout = () => (
               <h2 className="text-sm font-medium text-muted-foreground">
                 Administration - Gestion du Bétail
               </h2>
+            </div>
+            <div className="px-4">
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
+                className="gap-2"
+              >
+                <a href={FRONT_OFFICE_URL} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="h-4 w-4" />
+                  Front Office
+                </a>
+              </Button>
             </div>
           </header>
           <Suspense fallback={<PageLoader />}>
