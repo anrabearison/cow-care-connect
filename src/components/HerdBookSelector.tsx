@@ -107,12 +107,6 @@ export const HerdBookSelector = () => {
                     {selectedHerdBook.description}
                 </p>
             )}
-
-            {selectedHerdBook && (
-                <p className="text-xs text-muted-foreground">
-                    Année sélectionnée: <span className="font-medium">{selectedHerdBook.year}</span>
-                </p>
-            )}
         </div>
     );
 };
