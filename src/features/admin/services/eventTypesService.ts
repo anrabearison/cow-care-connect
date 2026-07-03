@@ -10,7 +10,6 @@ export interface EventType {
 }
 
 export interface CreateEventTypeData {
-  id: string;
   nom: string;
   description?: string;
   icone?: string;

@@ -4,7 +4,8 @@ import { DataTable, Column } from "@/components/admin/DataTable";
 import { FormDialog } from "@/components/admin/FormDialog";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { useAuth } from "@/features/auth/AuthContext";
-import { usersService, User } from "@/features/admin/services/usersService";
+import { usersService, User, CreateUserData } from "@/features/admin/services/usersService";
+import { ownersService, Owner } from "@/features/admin/services/ownersService";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +26,13 @@ const UsersListPage = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [formData, setFormData] = useState<CreateUserData>({
+    name: '',
+    email: '',
+    password: '',
+    role: 'OWNER_USER',
+    ownerId: undefined,
+  });
 
   // Fetch users list
   const { data: usersData, isLoading } = useQuery({
@@ -35,6 +43,12 @@ const UsersListPage = () => {
         per_page: pageSize,
         q: search || undefined,
       }),
+  });
+
+  // Fetch owners list for dropdown
+  const { data: ownersData } = useQuery({
+    queryKey: ["admin-owners"],
+    queryFn: () => ownersService.getOwnersList({}),
   });
 
   // Delete mutation
@@ -62,6 +76,37 @@ const UsersListPage = () => {
     if (selectedUser) {
       deleteMutation.mutate(selectedUser.id);
     }
+  };
+
+  // Create mutation
+  const createMutation = useMutation({
+    mutationFn: (data: CreateUserData) => usersService.createUser(data),
+    onSuccess: () => {
+      toast({
+        title: "Succès",
+        description: "Utilisateur créé avec succès",
+      });
+      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+      setIsCreateDialogOpen(false);
+      setFormData({
+        name: '',
+        email: '',
+        password: '',
+        role: 'OWNER_USER',
+        ownerId: undefined,
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Erreur",
+        description: error.message || "Erreur lors de la création",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleCreate = () => {
+    createMutation.mutate(formData);
   };
 
   const columns: Column<User>[] = [
@@ -143,6 +188,13 @@ const UsersListPage = () => {
         onAdd={() => {
           setSelectedUser(null);
           setIsCreateDialogOpen(true);
+          setFormData({
+            name: '',
+            email: '',
+            password: '',
+            role: 'OWNER_USER',
+            ownerId: undefined,
+          });
         }}
         canEdit={true}
         canDelete={true}

@@ -20,7 +20,7 @@ const MedicamentsListPage = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [formData, setFormData] = useState<CreateMedicamentData>({ id: "", name: "", type: "", dosageQuantity: undefined, dosageUnit: "", dosageWeight: undefined, dosageWeightUnit: "", dosageNotes: "", defaultRoute: "", withdrawalPeriodMeat: undefined, withdrawalPeriodMilk: undefined, manufacturer: "", notes: "" });
+  const [formData, setFormData] = useState<CreateMedicamentData>({ name: "", type: "", dosageQuantity: undefined, dosageUnit: "", dosageWeight: undefined, dosageWeightUnit: "", dosageNotes: "", defaultRoute: "", withdrawalPeriodMeat: undefined, withdrawalPeriodMilk: undefined, manufacturer: "", notes: "" });
 
   const { data: data, isLoading } = useQuery({
     queryKey: ["admin-medicaments", page, search],
@@ -38,7 +38,7 @@ const MedicamentsListPage = () => {
       toast({ title: "Succès", description: "Médicament créé avec succès" });
       queryClient.invalidateQueries({ queryKey: ["admin-medicaments"] });
       setIsCreateDialogOpen(false);
-      setFormData({ id: "", name: "", type: "", dosageQuantity: undefined, dosageUnit: "", dosageWeight: undefined, dosageWeightUnit: "", dosageNotes: "", defaultRoute: "", withdrawalPeriodMeat: undefined, withdrawalPeriodMilk: undefined, manufacturer: "", notes: "" });
+      setFormData({ name: "", type: "", dosageQuantity: undefined, dosageUnit: "", dosageWeight: undefined, dosageWeightUnit: "", dosageNotes: "", defaultRoute: "", withdrawalPeriodMeat: undefined, withdrawalPeriodMilk: undefined, manufacturer: "", notes: "" });
     },
     onError: () => {
       toast({ title: "Erreur", description: "Erreur lors de la création", variant: "destructive" });
@@ -84,13 +84,13 @@ const MedicamentsListPage = () => {
 
   const openEditDialog = (item: Medicament) => {
     setSelectedItem(item);
-    setFormData({ id: item.id, name: item.name, type: item.type, dosageQuantity: item.dosageQuantity, dosageUnit: item.dosageUnit || "", dosageWeight: item.dosageWeight, dosageWeightUnit: item.dosageWeightUnit || "", dosageNotes: item.dosageNotes || "", defaultRoute: item.defaultRoute || "", withdrawalPeriodMeat: item.withdrawalPeriodMeat, withdrawalPeriodMilk: item.withdrawalPeriodMilk, manufacturer: item.manufacturer || "", notes: item.notes || "" });
+    setFormData({ name: item.name, type: item.type, dosageQuantity: item.dosageQuantity, dosageUnit: item.dosageUnit || "", dosageWeight: item.dosageWeight, dosageWeightUnit: item.dosageWeightUnit || "", dosageNotes: item.dosageNotes || "", defaultRoute: item.defaultRoute || "", withdrawalPeriodMeat: item.withdrawalPeriodMeat, withdrawalPeriodMilk: item.withdrawalPeriodMilk, manufacturer: item.manufacturer || "", notes: item.notes || "" });
     setIsEditDialogOpen(true);
   };
 
   const openCreateDialog = () => {
     setSelectedItem(null);
-    setFormData({ id: "", name: "", type: "", dosageQuantity: undefined, dosageUnit: "", dosageWeight: undefined, dosageWeightUnit: "", dosageNotes: "", defaultRoute: "", withdrawalPeriodMeat: undefined, withdrawalPeriodMilk: undefined, manufacturer: "", notes: "" });
+    setFormData({ name: "", type: "", dosageQuantity: undefined, dosageUnit: "", dosageWeight: undefined, dosageWeightUnit: "", dosageNotes: "", defaultRoute: "", withdrawalPeriodMeat: undefined, withdrawalPeriodMilk: undefined, manufacturer: "", notes: "" });
     setIsCreateDialogOpen(true);
   };
 
@@ -138,10 +138,6 @@ const MedicamentsListPage = () => {
 
       <FormDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} title="Créer un médicament" submitText="Créer" cancelText="Annuler" onSubmit={handleCreate} loading={createMutation.isPending}>
         <div className="space-y-4">
-          <div>
-            <Label>ID *</Label>
-            <Input value={formData.id} onChange={(e) => setFormData({ ...formData, id: e.target.value })} placeholder="ID du médicament" />
-          </div>
           <div>
             <Label>Nom *</Label>
             <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Nom du médicament" />

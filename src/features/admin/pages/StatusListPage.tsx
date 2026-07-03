@@ -21,7 +21,7 @@ const StatusListPage = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [formData, setFormData] = useState<CreateStatusData>({ id: "", name: "", description: "" });
+  const [formData, setFormData] = useState<CreateStatusData>({ name: "", description: "" });
 
   const { data: data, isLoading } = useQuery({
     queryKey: ["admin-status", page, search],
@@ -39,7 +39,7 @@ const StatusListPage = () => {
       toast({ title: "Succès", description: "Statut créé avec succès" });
       queryClient.invalidateQueries({ queryKey: ["admin-status"] });
       setIsCreateDialogOpen(false);
-      setFormData({ id: "", name: "", description: "" });
+      setFormData({ name: "", description: "" });
     },
     onError: () => {
       toast({ title: "Erreur", description: "Erreur lors de la création", variant: "destructive" });
@@ -85,13 +85,13 @@ const StatusListPage = () => {
 
   const openEditDialog = (item: Status) => {
     setSelectedItem(item);
-    setFormData({ id: item.id, name: item.name, description: item.description || "" });
+    setFormData({ name: item.name, description: item.description || "" });
     setIsEditDialogOpen(true);
   };
 
   const openCreateDialog = () => {
     setSelectedItem(null);
-    setFormData({ id: "", name: "", description: "" });
+    setFormData({ name: "", description: "" });
     setIsCreateDialogOpen(true);
   };
 
@@ -135,10 +135,6 @@ const StatusListPage = () => {
 
       <FormDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} title="Créer un statut" submitText="Créer" cancelText="Annuler" onSubmit={handleCreate} loading={createMutation.isPending}>
         <div className="space-y-4">
-          <div>
-            <Label>ID *</Label>
-            <Input value={formData.id} onChange={(e) => setFormData({ ...formData, id: e.target.value })} placeholder="ID du statut" />
-          </div>
           <div>
             <Label>Nom *</Label>
             <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Nom du statut" />

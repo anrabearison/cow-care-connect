@@ -21,7 +21,7 @@ const EventTypesListPage = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [formData, setFormData] = useState<CreateEventTypeData>({ id: "", nom: "", description: "", icone: "" });
+  const [formData, setFormData] = useState<CreateEventTypeData>({ nom: "", description: "", icone: "" });
 
   const { data: data, isLoading } = useQuery({
     queryKey: ["admin-event-types", page, search],
@@ -39,7 +39,7 @@ const EventTypesListPage = () => {
       toast({ title: "Succès", description: "Type d'événement créé avec succès" });
       queryClient.invalidateQueries({ queryKey: ["admin-event-types"] });
       setIsCreateDialogOpen(false);
-      setFormData({ id: "", nom: "", description: "", icone: "" });
+      setFormData({ nom: "", description: "", icone: "" });
     },
     onError: () => {
       toast({ title: "Erreur", description: "Erreur lors de la création", variant: "destructive" });
@@ -85,13 +85,13 @@ const EventTypesListPage = () => {
 
   const openEditDialog = (item: EventType) => {
     setSelectedItem(item);
-    setFormData({ id: item.id, nom: item.nom, description: item.description || "", icone: item.icone || "" });
+    setFormData({ nom: item.nom, description: item.description || "", icone: item.icone || "" });
     setIsEditDialogOpen(true);
   };
 
   const openCreateDialog = () => {
     setSelectedItem(null);
-    setFormData({ id: "", nom: "", description: "", icone: "" });
+    setFormData({ nom: "", description: "", icone: "" });
     setIsCreateDialogOpen(true);
   };
 
@@ -137,10 +137,6 @@ const EventTypesListPage = () => {
 
       <FormDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} title="Créer un type d'événement" submitText="Créer" cancelText="Annuler" onSubmit={handleCreate} loading={createMutation.isPending}>
         <div className="space-y-4">
-          <div>
-            <Label>ID *</Label>
-            <Input value={formData.id} onChange={(e) => setFormData({ ...formData, id: e.target.value })} placeholder="ID du type d'événement" />
-          </div>
           <div>
             <Label>Nom *</Label>
             <Input value={formData.nom} onChange={(e) => setFormData({ ...formData, nom: e.target.value })} placeholder="Nom du type d'événement" />

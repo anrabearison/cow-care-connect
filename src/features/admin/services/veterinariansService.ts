@@ -6,7 +6,7 @@ export interface Veterinarian {
   phone?: string;
   email?: string;
   address?: string;
-  specialization?: string;
+  specialty?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -16,7 +16,7 @@ export interface CreateVeterinarianData {
   phone?: string;
   email?: string;
   address?: string;
-  specialization?: string;
+  specialty?: string;
 }
 
 export interface UpdateVeterinarianData {
@@ -24,7 +24,7 @@ export interface UpdateVeterinarianData {
   phone?: string;
   email?: string;
   address?: string;
-  specialization?: string;
+  specialty?: string;
 }
 
 class VeterinariansService {

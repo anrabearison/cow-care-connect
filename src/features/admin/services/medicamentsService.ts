@@ -19,7 +19,6 @@ export interface Medicament {
 }
 
 export interface CreateMedicamentData {
-  id: string;
   name: string;
   type: string;
   dosageQuantity?: number;

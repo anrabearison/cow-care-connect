@@ -10,7 +10,6 @@ export interface Status {
 }
 
 export interface CreateStatusData {
-  id: string;
   name: string;
   description?: string;
 }

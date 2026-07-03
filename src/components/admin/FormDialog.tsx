@@ -45,7 +45,9 @@ export function FormDialog({
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
-            {description && <DialogDescription>{description}</DialogDescription>}
+            <DialogDescription className={description ? '' : 'sr-only'}>
+              {description || 'Formulaire'}
+            </DialogDescription>
           </DialogHeader>
           <div className="py-4">{children}</div>
           <DialogFooter>

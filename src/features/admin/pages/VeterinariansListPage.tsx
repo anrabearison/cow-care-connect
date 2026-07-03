@@ -20,7 +20,7 @@ const VeterinariansListPage = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [formData, setFormData] = useState<CreateVeterinarianData>({ name: "", phone: "", email: "", address: "", specialization: "" });
+  const [formData, setFormData] = useState<CreateVeterinarianData>({ name: "", phone: "", email: "", address: "", specialty: "" });
 
   const { data: data, isLoading } = useQuery({
     queryKey: ["admin-veterinarians", page, search],
@@ -38,7 +38,7 @@ const VeterinariansListPage = () => {
       toast({ title: "Succès", description: "Vétérinaire créé avec succès" });
       queryClient.invalidateQueries({ queryKey: ["admin-veterinarians"] });
       setIsCreateDialogOpen(false);
-      setFormData({ name: "", phone: "", email: "", address: "", specialization: "" });
+      setFormData({ name: "", phone: "", email: "", address: "", specialty: "" });
     },
     onError: () => {
       toast({ title: "Erreur", description: "Erreur lors de la création", variant: "destructive" });
@@ -84,13 +84,13 @@ const VeterinariansListPage = () => {
 
   const openEditDialog = (item: Veterinarian) => {
     setSelectedItem(item);
-    setFormData({ name: item.name, phone: item.phone || "", email: item.email || "", address: item.address || "", specialization: item.specialization || "" });
+    setFormData({ name: item.name, phone: item.phone || "", email: item.email || "", address: item.address || "", specialty: item.specialty || "" });
     setIsEditDialogOpen(true);
   };
 
   const openCreateDialog = () => {
     setSelectedItem(null);
-    setFormData({ name: "", phone: "", email: "", address: "", specialization: "" });
+    setFormData({ name: "", phone: "", email: "", address: "", specialty: "" });
     setIsCreateDialogOpen(true);
   };
 
@@ -99,7 +99,7 @@ const VeterinariansListPage = () => {
     { key: "name", header: "Nom" },
     { key: "phone", header: "Téléphone", render: (item) => item.phone || "-" },
     { key: "email", header: "Email", render: (item) => item.email || "-" },
-    { key: "specialization", header: "Spécialisation", render: (item) => item.specialization || "-" },
+    { key: "specialty", header: "Spécialisation", render: (item) => item.specialty || "-" },
   ];
 
   return (
@@ -131,7 +131,7 @@ const VeterinariansListPage = () => {
               <div><Label>Nom</Label><p className="text-sm font-medium">{selectedItem.name}</p></div>
               <div><Label>Téléphone</Label><p className="text-sm font-medium">{selectedItem.phone || "-"}</p></div>
               <div><Label>Email</Label><p className="text-sm font-medium">{selectedItem.email || "-"}</p></div>
-              <div><Label>Spécialisation</Label><p className="text-sm font-medium">{selectedItem.specialization || "-"}</p></div>
+              <div><Label>Spécialisation</Label><p className="text-sm font-medium">{selectedItem.specialty || "-"}</p></div>
             </div>
           </div>
         )}
@@ -153,7 +153,7 @@ const VeterinariansListPage = () => {
           </div>
           <div>
             <Label>Spécialisation</Label>
-            <Input value={formData.specialization} onChange={(e) => setFormData({ ...formData, specialization: e.target.value })} placeholder="Spécialisation" />
+            <Input value={formData.specialty} onChange={(e) => setFormData({ ...formData, specialty: e.target.value })} placeholder="Spécialisation" />
           </div>
           <div>
             <Label>Adresse</Label>
@@ -178,7 +178,7 @@ const VeterinariansListPage = () => {
           </div>
           <div>
             <Label>Spécialisation</Label>
-            <Input value={formData.specialization} onChange={(e) => setFormData({ ...formData, specialization: e.target.value })} placeholder="Spécialisation" />
+            <Input value={formData.specialty} onChange={(e) => setFormData({ ...formData, specialty: e.target.value })} placeholder="Spécialisation" />
           </div>
           <div>
             <Label>Adresse</Label>

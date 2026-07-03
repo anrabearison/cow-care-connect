@@ -9,7 +9,6 @@ export interface Character {
 }
 
 export interface CreateCharacterData {
-  id: string;
   name: string;
   description?: string;
 }

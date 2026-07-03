@@ -9,7 +9,6 @@ export interface Category {
 }
 
 export interface CreateCategoryData {
-  id: string;
   name: string;
   description?: string;
 }
