@@ -10,13 +10,13 @@ export interface TreatmentDosage {
 export interface Treatment {
   id: string;
   cattleId: string;
-  cattle?: { id: string; name: string; tagNumber: string };
-  type: string;
+  cattle?: string | { id: string; name: string; tagNumber?: string };
+  type: string | { id: string; name: string };
   date: string;
-  product: string;
+  product: string | { id: string; name: string };
   dosage: TreatmentDosage;
   administrationRoute?: string;
-  veterinarian: string;
+  veterinarian: string | { id: string; name: string };
   veterinarianObj?: { id: string; name: string };
   medicamentObj?: { id: string; name: string };
   notes?: string;

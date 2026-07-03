@@ -113,10 +113,10 @@ const TreatmentsListPage = () => {
   const openEditDialog = (item: Treatment) => {
     setSelectedItem(item);
     setFormData({
-      cattleId: item.cattleId,
-      type: item.type,
+      cattleId: getEntityId(item.cattle) || item.cattleId,
+      type: getEntityId(item.type),
       date: item.date,
-      product: item.product,
+      product: getEntityId(item.medicamentObj) || getEntityId(item.product),
       dosage: {
         quantity: item.dosage.quantity,
         unit: item.dosage.unit,
@@ -124,7 +124,7 @@ const TreatmentsListPage = () => {
         notes: item.dosage.notes || ""
       },
       administrationRoute: item.administrationRoute || "",
-      veterinarian: item.veterinarian,
+      veterinarian: getEntityId(item.veterinarianObj) || getEntityId(item.veterinarian),
       notes: item.notes || ""
     });
     setIsEditDialogOpen(true);
@@ -155,26 +155,34 @@ const TreatmentsListPage = () => {
     return `${dosage.quantity} ${dosage.unit}`;
   };
 
+  function getEntityLabel(value: unknown, fallback = "-") {
+    if (value === null || value === undefined || value === "") return fallback;
+    if (typeof value === "string" || typeof value === "number") return String(value);
+    if (typeof value === "object") {
+      const entity = value as { name?: unknown; label?: unknown; id?: unknown; tagNumber?: unknown };
+      if (entity.name) return String(entity.name);
+      if (entity.label) return String(entity.label);
+      if (entity.tagNumber) return String(entity.tagNumber);
+      if (entity.id) return String(entity.id);
+    }
+    return fallback;
+  }
+
+  function getEntityId(value: unknown) {
+    if (value === null || value === undefined) return "";
+    if (typeof value === "string" || typeof value === "number") return String(value);
+    if (typeof value === "object") {
+      const entity = value as { id?: unknown };
+      return entity.id ? String(entity.id) : "";
+    }
+    return "";
+  }
+
   const columns: Column<Treatment>[] = [
     { key: "id", header: "ID", render: (item) => <span className="font-mono text-sm">{item.id.slice(0, 8)}...</span> },
-    { key: "cattle", header: "Bovin", render: (item) => {
-      if (!item.cattle) return "-";
-      if (typeof item.cattle === 'string') return item.cattle;
-      if (item.cattle.name) return String(item.cattle.name);
-      return "-";
-    }},
-    { key: "medicament", header: "Médicament", render: (item) => {
-      if (!item.medicamentObj) return String(item.product || "-");
-      if (typeof item.medicamentObj === 'string') return item.medicamentObj;
-      if (item.medicamentObj.name) return String(item.medicamentObj.name);
-      return String(item.product || "-");
-    }},
-    { key: "veterinarian", header: "Vétérinaire", render: (item) => {
-      if (!item.veterinarianObj) return String(item.veterinarian || "-");
-      if (typeof item.veterinarianObj === 'string') return item.veterinarianObj;
-      if (item.veterinarianObj.name) return String(item.veterinarianObj.name);
-      return String(item.veterinarian || "-");
-    }},
+    { key: "cattle", header: "Bovin", render: (item) => getEntityLabel(item.cattle, item.cattleId || "-") },
+    { key: "medicament", header: "Médicament", render: (item) => getEntityLabel(item.medicamentObj, getEntityLabel(item.product)) },
+    { key: "veterinarian", header: "Vétérinaire", render: (item) => getEntityLabel(item.veterinarianObj, getEntityLabel(item.veterinarian)) },
     { key: "date", header: "Date", render: (item) => new Date(item.date).toLocaleDateString("fr-FR") },
     { key: "dosage", header: "Dosage", render: (item) => formatDosage(item.dosage) },
   ];
@@ -205,24 +213,9 @@ const TreatmentsListPage = () => {
         {selectedItem && (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <div><Label>Bovin</Label><p className="text-sm font-medium">{(() => {
-                if (!selectedItem.cattle) return "-";
-                if (typeof selectedItem.cattle === 'string') return selectedItem.cattle;
-                if (selectedItem.cattle.name) return selectedItem.cattle.name;
-                return "-";
-              })()}</p></div>
-              <div><Label>Médicament</Label><p className="text-sm font-medium">{(() => {
-                if (!selectedItem.medicamentObj) return selectedItem.product || "-";
-                if (typeof selectedItem.medicamentObj === 'string') return selectedItem.medicamentObj;
-                if (selectedItem.medicamentObj.name) return selectedItem.medicamentObj.name;
-                return selectedItem.product || "-";
-              })()}</p></div>
-              <div><Label>Vétérinaire</Label><p className="text-sm font-medium">{(() => {
-                if (!selectedItem.veterinarianObj) return selectedItem.veterinarian || "-";
-                if (typeof selectedItem.veterinarianObj === 'string') return selectedItem.veterinarianObj;
-                if (selectedItem.veterinarianObj.name) return selectedItem.veterinarianObj.name;
-                return selectedItem.veterinarian || "-";
-              })()}</p></div>
+              <div><Label>Bovin</Label><p className="text-sm font-medium">{getEntityLabel(selectedItem.cattle, selectedItem.cattleId || "-")}</p></div>
+              <div><Label>Médicament</Label><p className="text-sm font-medium">{getEntityLabel(selectedItem.medicamentObj, getEntityLabel(selectedItem.product))}</p></div>
+              <div><Label>Vétérinaire</Label><p className="text-sm font-medium">{getEntityLabel(selectedItem.veterinarianObj, getEntityLabel(selectedItem.veterinarian))}</p></div>
               <div><Label>Date</Label><p className="text-sm font-medium">{new Date(selectedItem.date).toLocaleDateString("fr-FR")}</p></div>
               <div><Label>Dosage</Label><p className="text-sm font-medium">{formatDosage(selectedItem.dosage)}</p></div>
               <div><Label>Notes</Label><p className="text-sm font-medium">{selectedItem.notes || "-"}</p></div>
@@ -300,19 +293,19 @@ const TreatmentsListPage = () => {
           </div>
           <div>
             <Label>Quantité *</Label>
-            <Input type="number" value={formData.dosageQuantite} onChange={(e) => setFormData({ ...formData, dosageQuantite: Number(e.target.value) })} placeholder="Quantité" />
+            <Input type="number" value={formData.dosage?.quantity || 0} onChange={(e) => setFormData({ ...formData, dosage: { ...formData.dosage!, quantity: Number(e.target.value) } })} placeholder="Quantité" />
           </div>
           <div>
             <Label>Unité *</Label>
-            <Input value={formData.dosageUnite} onChange={(e) => setFormData({ ...formData, dosageUnite: e.target.value })} placeholder="Unité" />
+            <Input value={formData.dosage?.unit || ""} onChange={(e) => setFormData({ ...formData, dosage: { ...formData.dosage!, unit: e.target.value } })} placeholder="Unité" />
           </div>
           <div>
             <Label>Poids animal</Label>
-            <Input type="number" value={formData.dosageAnimalPoids || ""} onChange={(e) => setFormData({ ...formData, dosageAnimalPoids: e.target.value ? Number(e.target.value) : undefined })} placeholder="Poids de l'animal" />
+            <Input type="number" value={formData.dosage?.animalWeight || ""} onChange={(e) => setFormData({ ...formData, dosage: { ...formData.dosage!, animalWeight: e.target.value ? Number(e.target.value) : undefined } })} placeholder="Poids de l'animal" />
           </div>
           <div>
             <Label>Notes dosage</Label>
-            <Textarea value={formData.dosageNotes} onChange={(e) => setFormData({ ...formData, dosageNotes: e.target.value })} placeholder="Notes sur le dosage" rows={2} />
+            <Textarea value={formData.dosage?.notes || ""} onChange={(e) => setFormData({ ...formData, dosage: { ...formData.dosage!, notes: e.target.value } })} placeholder="Notes sur le dosage" rows={2} />
           </div>
           <div>
             <Label>Route d'administration</Label>
