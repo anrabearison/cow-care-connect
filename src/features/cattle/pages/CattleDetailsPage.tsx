@@ -349,7 +349,6 @@ export default function CattleDetailsPage() {
             <h1 className="text-4xl font-bold text-foreground">
               {cattle.name}{cattle.nickname && ` (${cattle.nickname})`}
             </h1>
-            <p className="text-muted-foreground">ID: {cattle.id}</p>
           </div>
         </div>
 

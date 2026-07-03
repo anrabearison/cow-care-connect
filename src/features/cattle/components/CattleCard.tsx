@@ -45,11 +45,6 @@ export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
             <div className="text-6xl">🐄</div>
           </div>
         )}
-        <div className="absolute top-3 right-3">
-          <Badge className="bg-white/90 text-primary border-0 shadow-sm">
-            {cattle.id}
-          </Badge>
-        </div>
         <div className="absolute top-3 left-3">
           <div className="text-2xl bg-white/90 rounded-full w-8 h-8 flex items-center justify-center">
             {getGenderIcon(cattle.gender)}
