@@ -36,6 +36,11 @@ class CattleService {
       delete transformed.status;
     }
 
+    // Remove source from payload for birth registration (backend sets it automatically)
+    if ('source' in transformed) {
+      delete transformed.source;
+    }
+
     // Remove purchaseCategory from source if present (not supported by backend)
     if (transformed.source && 'purchaseCategory' in transformed.source) {
       delete transformed.source.purchaseCategory;

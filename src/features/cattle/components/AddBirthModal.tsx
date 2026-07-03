@@ -12,9 +12,20 @@ import { useEffect } from 'react';
 interface AddBirthModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onAdd: (calfData: Omit<Cattle, 'id' | 'events' | 'treatments'>) => void;
+    onAdd: (calfData: Omit<Cattle, 'id' | 'events' | 'treatments' | 'source'>) => void;
     motherName: string;
     motherId: string;
+}
+
+interface BirthFormData {
+    name: string;
+    nickname: string;
+    gender: 'M' | 'F' | '';
+    birthDate: string;
+    character: string;
+    brand: string;
+    distinctiveSign: string;
+    birthDescription: string;
 }
 
 export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange, onAdd, motherName, motherId }) => {
@@ -44,20 +55,20 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (validateForm()) {
-            const calfData: Omit<Cattle, 'id' | 'events' | 'treatments'> = {
+            const calfData: Omit<Cattle, 'id' | 'events' | 'treatments' | 'source'> = {
                 name: formData.name,
                 nickname: formData.nickname || undefined,
                 gender: formData.gender as 'M' | 'F',
                 birthDate: formData.birthDate,
                 character: {
-                    id: 'CHAR000',
-                    name: 'Aucun'
+                    id: 'docile',
+                    name: 'Docile'
                 },
                 category: {
-                    id: 'CAT003',
+                    id: 'b2e7888a-b294-4acd-8d28-2329bb6335a5',
                     name: 'Veau'
                 },
-                // brand removed as not supported by backend on birth create
+                brand: formData.brand || undefined,
                 distinctiveSign: formData.distinctiveSign || undefined,
                 // photo, status, source removed as not supported by backend on birth create
             };
@@ -122,7 +133,7 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                             <div className="grid gap-2">
                                 <Label htmlFor="gender">Sexe *</Label>
                                 <Select
-                                    value={formData.gender || undefined}
+                                    defaultValue={formData.gender || undefined}
                                     onValueChange={(value) => {
                                         setFormData({ ...formData, gender: value as 'M' | 'F' });
                                         if (errors.gender) setErrors({ ...errors, gender: '' });
