@@ -1,0 +1,44 @@
+import { ReactNode, Suspense } from "react";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AdminSidebar } from "@/components/AdminSidebar";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Routes, Route } from "react-router-dom";
+
+const PageLoader = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="space-y-4 w-full max-w-md p-6">
+      <Skeleton className="h-12 w-full" />
+      <Skeleton className="h-64 w-full" />
+      <Skeleton className="h-32 w-full" />
+    </div>
+  </div>
+);
+
+interface AdminLayoutProps {
+  children: ReactNode;
+}
+
+export const AdminLayout = ({ children }: AdminLayoutProps) => (
+  <SidebarProvider>
+    <div className="flex min-h-screen w-full flex-col overflow-hidden">
+      <div className="flex flex-1 overflow-hidden">
+        <AdminSidebar />
+        <main className="flex-1 overflow-y-auto w-full">
+          <header className="sticky top-0 z-10 h-12 flex items-center border-b bg-background/80 backdrop-blur-lg supports-[backdrop-filter]:bg-background/60 shadow-sm shrink-0">
+            <SidebarTrigger className="ml-4" />
+            <div className="flex-1 px-4">
+              <h2 className="text-sm font-medium text-muted-foreground">
+                Administration - Gestion du Bétail
+              </h2>
+            </div>
+          </header>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              {children}
+            </Routes>
+          </Suspense>
+        </main>
+      </div>
+    </div>
+  </SidebarProvider>
+);

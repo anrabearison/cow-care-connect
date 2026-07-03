@@ -4,7 +4,10 @@ import { OwnerSelectionProvider, useOwnerSelection } from "@/contexts/OwnerSelec
 import { HerdBookSelectionProvider } from "@/contexts/HerdBookSelectionContext";
 import { setOwnerIdGetter } from "@/utils/apiClient";
 import { PrivateRoute } from "@/components/PrivateRoute";
-import { MainLayout } from "@/components/MainLayout";
+import { AdminRoute } from "@/components/AdminRoute";
+import { SuperAdminRoute } from "@/components/SuperAdminRoute";
+import { MainLayout } from "@/layouts/MainLayout";
+import { AdminLayout } from "@/layouts/AdminLayout";
 import { lazy, Suspense, useEffect } from "react";
 import { AppProviders } from "@/AppProviders";
 
@@ -14,7 +17,22 @@ const CattleDetailsPage = lazy(() => import("@/features/cattle/pages/CattleDetai
 const ProfilePage = lazy(() => import("@/features/auth/pages/ProfilePage"));
 const LoginPage = lazy(() => import("@/features/auth/pages/LoginPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
-const AdminApp = lazy(() => import("@/admin/AdminApp").then(module => ({ default: module.AdminApp })));
+
+// Admin pages
+const AdminDashboard = lazy(() => import("@/features/admin/pages/AdminDashboard"));
+const CattleListPage = lazy(() => import("@/features/admin/pages/CattleListPage"));
+const UsersListPage = lazy(() => import("@/features/admin/pages/UsersListPage"));
+const VeterinariansListPage = lazy(() => import("@/features/admin/pages/VeterinariansListPage"));
+const MedicamentsListPage = lazy(() => import("@/features/admin/pages/MedicamentsListPage"));
+const EventTypesListPage = lazy(() => import("@/features/admin/pages/EventTypesListPage"));
+const EventsListPage = lazy(() => import("@/features/admin/pages/EventsListPage"));
+const TreatmentsListPage = lazy(() => import("@/features/admin/pages/TreatmentsListPage"));
+const CategoriesListPage = lazy(() => import("@/features/admin/pages/CategoriesListPage"));
+const StatusListPage = lazy(() => import("@/features/admin/pages/StatusListPage"));
+const CharactersListPage = lazy(() => import("@/features/admin/pages/CharactersListPage"));
+const HerdBooksListPage = lazy(() => import("@/features/admin/pages/HerdBooksListPage"));
+const HerdBookCattleListPage = lazy(() => import("@/features/admin/pages/HerdBookCattleListPage"));
+const OwnersListPage = lazy(() => import("@/features/admin/pages/OwnersListPage"));
 
 
 // Internal component that has access to the context
@@ -36,7 +54,40 @@ const AppContent = () => {
       <Suspense fallback={null}>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/admin/*" element={<AdminApp />} />
+          
+          {/* Admin routes */}
+          <Route
+            path="/admin/*"
+            element={
+              <AdminRoute>
+                <AdminLayout>
+                  <Route index element={<AdminDashboard />} />
+                  <Route path="cattle" element={<CattleListPage />} />
+                  <Route path="users" element={<UsersListPage />} />
+                  <Route path="veterinarians" element={<VeterinariansListPage />} />
+                  <Route path="medicaments" element={<MedicamentsListPage />} />
+                  <Route path="event-types" element={<EventTypesListPage />} />
+                  <Route path="events" element={<EventsListPage />} />
+                  <Route path="treatments" element={<TreatmentsListPage />} />
+                  <Route path="categories" element={<CategoriesListPage />} />
+                  <Route path="status" element={<StatusListPage />} />
+                  <Route path="characters" element={<CharactersListPage />} />
+                  <Route path="herd-books" element={<HerdBooksListPage />} />
+                  <Route path="herd-book-cattle" element={<HerdBookCattleListPage />} />
+                  <Route
+                    path="owners"
+                    element={
+                      <SuperAdminRoute>
+                        <OwnersListPage />
+                      </SuperAdminRoute>
+                    }
+                  />
+                </AdminLayout>
+              </AdminRoute>
+            }
+          />
+          
+          {/* Frontoffice routes */}
           <Route
             path="/*"
             element={
