@@ -21,7 +21,7 @@ const EventTypesListPage = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [formData, setFormData] = useState<CreateEventTypeData>({ nom: "", description: "", icone: "" });
+  const [formData, setFormData] = useState<CreateEventTypeData>({ name: "", description: "", icon: "" });
 
   const { data: data, isLoading } = useQuery({
     queryKey: ["admin-event-types", page, search],
@@ -39,7 +39,7 @@ const EventTypesListPage = () => {
       toast({ title: "Succès", description: "Type d'événement créé avec succès" });
       queryClient.invalidateQueries({ queryKey: ["admin-event-types"] });
       setIsCreateDialogOpen(false);
-      setFormData({ nom: "", description: "", icone: "" });
+      setFormData({ name: "", description: "", icon: "" });
     },
     onError: () => {
       toast({ title: "Erreur", description: "Erreur lors de la création", variant: "destructive" });
@@ -85,20 +85,20 @@ const EventTypesListPage = () => {
 
   const openEditDialog = (item: EventType) => {
     setSelectedItem(item);
-    setFormData({ nom: item.nom, description: item.description || "", icone: item.icone || "" });
+    setFormData({ name: item.name, description: item.description || "", icon: item.icon || "" });
     setIsEditDialogOpen(true);
   };
 
   const openCreateDialog = () => {
     setSelectedItem(null);
-    setFormData({ nom: "", description: "", icone: "" });
+    setFormData({ name: "", description: "", icon: "" });
     setIsCreateDialogOpen(true);
   };
 
   const columns: Column<EventType>[] = [
     { key: "id", header: "ID", render: (item) => <span className="font-mono text-sm">{item.id.slice(0, 8)}...</span> },
-    { key: "nom", header: "Nom" },
-    { key: "icone", header: "Icône", render: (item) => item.icone || "-" },
+    { key: "name", header: "Nom" },
+    { key: "icon", header: "Icône", render: (item) => item.icon || "-" },
   ];
 
   return (
@@ -127,8 +127,8 @@ const EventTypesListPage = () => {
         {selectedItem && (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <div><Label>Nom</Label><p className="text-sm font-medium">{selectedItem.nom}</p></div>
-              <div><Label>Icône</Label><p className="text-sm font-medium">{selectedItem.icone || "-"}</p></div>
+              <div><Label>Nom</Label><p className="text-sm font-medium">{selectedItem.name}</p></div>
+              <div><Label>Icône</Label><p className="text-sm font-medium">{selectedItem.icon || "-"}</p></div>
               <div><Label>Description</Label><p className="text-sm font-medium">{selectedItem.description || "-"}</p></div>
             </div>
           </div>
@@ -139,11 +139,11 @@ const EventTypesListPage = () => {
         <div className="space-y-4">
           <div>
             <Label>Nom *</Label>
-            <Input value={formData.nom} onChange={(e) => setFormData({ ...formData, nom: e.target.value })} placeholder="Nom du type d'événement" />
+            <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Nom du type d'événement" />
           </div>
           <div>
             <Label>Icône</Label>
-            <Input value={formData.icone} onChange={(e) => setFormData({ ...formData, icone: e.target.value })} placeholder="Icône" />
+            <Input value={formData.icon} onChange={(e) => setFormData({ ...formData, icon: e.target.value })} placeholder="Icône" />
           </div>
           <div>
             <Label>Description</Label>
@@ -156,11 +156,11 @@ const EventTypesListPage = () => {
         <div className="space-y-4">
           <div>
             <Label>Nom *</Label>
-            <Input value={formData.nom} onChange={(e) => setFormData({ ...formData, nom: e.target.value })} placeholder="Nom du type d'événement" />
+            <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Nom du type d'événement" />
           </div>
           <div>
             <Label>Icône</Label>
-            <Input value={formData.icone} onChange={(e) => setFormData({ ...formData, icone: e.target.value })} placeholder="Icône" />
+            <Input value={formData.icon} onChange={(e) => setFormData({ ...formData, icon: e.target.value })} placeholder="Icône" />
           </div>
           <div>
             <Label>Description</Label>
@@ -169,7 +169,7 @@ const EventTypesListPage = () => {
         </div>
       </FormDialog>
 
-      <ConfirmDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} title="Supprimer le type d'événement" description={`Êtes-vous sûr de vouloir supprimer "${selectedItem?.nom}" ?`} onConfirm={() => deleteMutation.mutate(selectedItem!.id)} confirmText="Supprimer" cancelText="Annuler" variant="destructive" loading={deleteMutation.isPending} />
+      <ConfirmDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} title="Supprimer le type d'événement" description={`Êtes-vous sûr de vouloir supprimer "${selectedItem?.name}" ?`} onConfirm={() => deleteMutation.mutate(selectedItem!.id)} confirmText="Supprimer" cancelText="Annuler" variant="destructive" loading={deleteMutation.isPending} />
     </div>
   );
 };

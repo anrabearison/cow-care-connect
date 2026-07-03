@@ -2,23 +2,23 @@ import { apiClient, ApiResponse } from '@/utils/apiClient';
 
 export interface EventType {
   id: string;
-  nom: string;
+  name: string;
   description?: string;
-  icone?: string;
+  icon?: string;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface CreateEventTypeData {
-  nom: string;
+  name: string;
   description?: string;
-  icone?: string;
+  icon?: string;
 }
 
 export interface UpdateEventTypeData {
-  nom?: string;
+  name?: string;
   description?: string;
-  icone?: string;
+  icon?: string;
 }
 
 class EventTypesService {
