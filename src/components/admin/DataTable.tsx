@@ -71,9 +71,9 @@ export function DataTable<T>({
   return (
     <div className="space-y-4">
       {/* Header with search and add button */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         {search && (
-          <div className="relative flex-1 max-w-sm">
+          <div className="relative w-full sm:flex-1 sm:max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Rechercher..."
@@ -84,25 +84,25 @@ export function DataTable<T>({
           </div>
         )}
         {canAdd && onAdd && (
-          <Button onClick={onAdd}>
+          <Button onClick={onAdd} className="w-full sm:w-auto">
             <Plus className="h-4 w-4 mr-2" />
             Ajouter
           </Button>
         )}
       </div>
 
-      {/* Table */}
-      <div className="border rounded-md">
+      {/* Table with horizontal scroll on mobile */}
+      <div className="border rounded-md overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
               {columns.map((column) => (
-                <TableHead key={String(column.key)}>
+                <TableHead key={String(column.key)} className="whitespace-nowrap">
                   {column.header}
                 </TableHead>
               ))}
               {(canEdit || canView || canDelete) && (
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="text-right whitespace-nowrap">Actions</TableHead>
               )}
             </TableRow>
           </TableHeader>
@@ -129,20 +129,21 @@ export function DataTable<T>({
               data.map((item, index) => (
                 <TableRow key={index}>
                   {columns.map((column) => (
-                    <TableCell key={String(column.key)}>
+                    <TableCell key={String(column.key)} className="whitespace-nowrap">
                       {column.render
                         ? column.render(item)
                         : String(item[column.key as keyof T] ?? "-")}
                     </TableCell>
                   ))}
                   {(canEdit || canView || canDelete) && (
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
+                    <TableCell className="text-right whitespace-nowrap">
+                      <div className="flex justify-end gap-1 sm:gap-2">
                         {canView && onView && (
                           <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => onView(item)}
+                            className="h-8 w-8"
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
@@ -152,6 +153,7 @@ export function DataTable<T>({
                             variant="ghost"
                             size="icon"
                             onClick={() => onEdit(item)}
+                            className="h-8 w-8"
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
@@ -161,7 +163,7 @@ export function DataTable<T>({
                             variant="ghost"
                             size="icon"
                             onClick={() => onDelete(item)}
-                            className="text-destructive hover:text-destructive"
+                            className="text-destructive hover:text-destructive h-8 w-8"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -178,16 +180,18 @@ export function DataTable<T>({
 
       {/* Pagination */}
       {pagination && totalPages > 1 && (
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="text-sm text-muted-foreground">
-            Page {pagination.page} sur {totalPages} ({pagination.total} éléments)
+            <span className="hidden sm:inline">Page {pagination.page} sur {totalPages} ({pagination.total} éléments)</span>
+            <span className="sm:hidden">{pagination.page}/{totalPages} ({pagination.total})</span>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 w-full sm:w-auto">
             <Button
               variant="outline"
               size="icon"
               onClick={() => pagination.onPageChange(pagination.page - 1)}
               disabled={pagination.page === 1}
+              className="flex-1 sm:flex-none"
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -196,6 +200,7 @@ export function DataTable<T>({
               size="icon"
               onClick={() => pagination.onPageChange(pagination.page + 1)}
               disabled={pagination.page === totalPages}
+              className="flex-1 sm:flex-none"
             >
               <ChevronRight className="h-4 w-4" />
             </Button>

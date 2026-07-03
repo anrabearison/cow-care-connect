@@ -105,12 +105,14 @@ const SuppliersListPage = () => {
 
     return (
         <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold flex items-center gap-2">
-                    <Building2 className="h-8 w-8 text-primary" />
-                    Fournisseurs
-                </h1>
-                <p className="text-muted-foreground mt-2">Gestion des fournisseurs de bétail</p>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
+                        <Building2 className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+                        Fournisseurs
+                    </h1>
+                    <p className="text-muted-foreground mt-2">Gestion des fournisseurs de bétail</p>
+                </div>
             </div>
 
             <DataTable

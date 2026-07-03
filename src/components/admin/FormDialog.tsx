@@ -41,25 +41,26 @@ export function FormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
+            <DialogTitle className="text-lg sm:text-xl">{title}</DialogTitle>
             <DialogDescription className={description ? '' : 'sr-only'}>
               {description || 'Formulaire'}
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">{children}</div>
-          <DialogFooter>
+          <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-3">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={loading}
+              className="w-full sm:w-auto"
             >
               {cancelText}
             </Button>
-            <Button type="submit" disabled={loading || disabled}>
+            <Button type="submit" disabled={loading || disabled} className="w-full sm:w-auto">
               {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               {submitText}
             </Button>
