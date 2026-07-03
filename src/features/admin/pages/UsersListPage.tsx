@@ -31,7 +31,7 @@ const UsersListPage = () => {
     email: '',
     password: '',
     role: 'OWNER_USER',
-    ownerId: undefined,
+    ownerId: '',
   });
 
   // Fetch users list
@@ -49,6 +49,33 @@ const UsersListPage = () => {
   const { data: ownersData } = useQuery({
     queryKey: ["admin-owners"],
     queryFn: () => ownersService.getOwnersList({}),
+  });
+
+  // Create mutation
+  const createMutation = useMutation({
+    mutationFn: (data: CreateUserData) => usersService.createUser(data),
+    onSuccess: () => {
+      toast({
+        title: "Succès",
+        description: "Utilisateur créé avec succès",
+      });
+      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+      setIsCreateDialogOpen(false);
+      setFormData({
+        name: '',
+        email: '',
+        password: '',
+        role: 'OWNER_USER',
+        ownerId: '',
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Erreur",
+        description: "Erreur lors de la création",
+        variant: "destructive",
+      });
+    },
   });
 
   // Delete mutation
@@ -78,35 +105,13 @@ const UsersListPage = () => {
     }
   };
 
-  // Create mutation
-  const createMutation = useMutation({
-    mutationFn: (data: CreateUserData) => usersService.createUser(data),
-    onSuccess: () => {
-      toast({
-        title: "Succès",
-        description: "Utilisateur créé avec succès",
-      });
-      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-      setIsCreateDialogOpen(false);
-      setFormData({
-        name: '',
-        email: '',
-        password: '',
-        role: 'OWNER_USER',
-        ownerId: undefined,
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Erreur",
-        description: error.message || "Erreur lors de la création",
-        variant: "destructive",
-      });
-    },
-  });
-
   const handleCreate = () => {
-    createMutation.mutate(formData);
+    // Remove ownerId if empty or SUPER_ADMIN
+    const dataToSend = {
+      ...formData,
+      ownerId: formData.role === USER_ROLES.SUPER_ADMIN || !formData.ownerId ? undefined : formData.ownerId,
+    };
+    createMutation.mutate(dataToSend);
   };
 
   const columns: Column<User>[] = [
@@ -275,27 +280,42 @@ const UsersListPage = () => {
         title="Créer un utilisateur"
         submitText="Créer"
         cancelText="Annuler"
-        onSubmit={() => {
-          // TODO: Implement create logic
-          setIsCreateDialogOpen(false);
-        }}
+        onSubmit={handleCreate}
+        loading={createMutation.isPending}
       >
         <div className="space-y-4">
           <div>
             <Label>Nom</Label>
-            <Input placeholder="Nom de l'utilisateur" />
+            <Input
+              placeholder="Nom de l'utilisateur"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            />
           </div>
           <div>
             <Label>Email</Label>
-            <Input type="email" placeholder="email@example.com" />
+            <Input
+              type="email"
+              placeholder="email@example.com"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            />
           </div>
           <div>
             <Label>Mot de passe</Label>
-            <Input type="password" placeholder="Mot de passe" />
+            <Input
+              type="password"
+              placeholder="Mot de passe"
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+            />
           </div>
           <div>
             <Label>Rôle</Label>
-            <Select>
+            <Select
+              defaultValue={formData.role}
+              onValueChange={(value) => setFormData({ ...formData, role: value as any, ownerId: '' })}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionner un rôle" />
               </SelectTrigger>
@@ -303,6 +323,25 @@ const UsersListPage = () => {
                 <SelectItem value={USER_ROLES.OWNER_USER}>Utilisateur</SelectItem>
                 <SelectItem value={USER_ROLES.OWNER_ADMIN}>Admin Propriétaire</SelectItem>
                 <SelectItem value={USER_ROLES.SUPER_ADMIN}>Super Admin</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Propriétaire</Label>
+            <Select
+              defaultValue={formData.ownerId}
+              onValueChange={(value) => setFormData({ ...formData, ownerId: value })}
+              disabled={formData.role === USER_ROLES.SUPER_ADMIN}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={formData.role === USER_ROLES.SUPER_ADMIN ? "Non requis pour Super Admin" : "Sélectionner un propriétaire"} />
+              </SelectTrigger>
+              <SelectContent>
+                {ownersData?.data?.map((owner) => (
+                  <SelectItem key={owner.id} value={owner.id}>
+                    {owner.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
