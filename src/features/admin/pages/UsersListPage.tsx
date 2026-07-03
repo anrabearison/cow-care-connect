@@ -198,7 +198,7 @@ const UsersListPage = () => {
             email: '',
             password: '',
             role: 'OWNER_USER',
-            ownerId: undefined,
+            ownerId: '',
           });
         }}
         canEdit={true}
@@ -344,6 +344,104 @@ const UsersListPage = () => {
                 ))}
               </SelectContent>
             </Select>
+          </div>
+        </div>
+      </FormDialog>
+
+      {/* View Dialog */}
+      <FormDialog
+        open={isViewDialogOpen}
+        onOpenChange={setIsViewDialogOpen}
+        title="Détails de l'utilisateur"
+        submitText="Fermer"
+        cancelText=""
+        onSubmit={() => {
+          setIsViewDialogOpen(false);
+        }}
+      >
+        <div className="space-y-4">
+          <div>
+            <Label>Nom</Label>
+            <div className="text-sm font-medium">{selectedUser?.name || '-'}</div>
+          </div>
+          <div>
+            <Label>Email</Label>
+            <div className="text-sm font-medium">{selectedUser?.email || '-'}</div>
+          </div>
+          <div>
+            <Label>Rôle</Label>
+            <div className="text-sm font-medium">{selectedUser?.role ? getRoleLabel(selectedUser.role) : '-'}</div>
+          </div>
+          <div>
+            <Label>Propriétaire</Label>
+            <div className="text-sm font-medium">
+              {selectedUser?.owner && typeof selectedUser.owner === 'object' ? selectedUser.owner.name : '-'}
+            </div>
+          </div>
+          <div>
+            <Label>Actif</Label>
+            <div className="text-sm font-medium">{selectedUser?.isActive ? 'Oui' : 'Non'}</div>
+          </div>
+          <div>
+            <Label>Créé le</Label>
+            <div className="text-sm font-medium">
+              {selectedUser?.createdAt ? new Date(selectedUser.createdAt).toLocaleDateString('fr-FR') : '-'}
+            </div>
+          </div>
+        </div>
+      </FormDialog>
+
+      {/* Edit Dialog */}
+      <FormDialog
+        open={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        title="Modifier l'utilisateur"
+        submitText="Enregistrer"
+        cancelText="Annuler"
+        onSubmit={() => {
+          setIsEditDialogOpen(false);
+        }}
+      >
+        <div className="space-y-4">
+          <div>
+            <Label>Nom</Label>
+            <Input
+              placeholder="Nom de l'utilisateur"
+              value={selectedUser?.name || ''}
+              disabled
+            />
+          </div>
+          <div>
+            <Label>Email</Label>
+            <Input
+              type="email"
+              placeholder="email@example.com"
+              value={selectedUser?.email || ''}
+              disabled
+            />
+          </div>
+          <div>
+            <Label>Rôle</Label>
+            <Select
+              defaultValue={selectedUser?.role}
+              disabled
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Rôle" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={USER_ROLES.OWNER_USER}>Utilisateur</SelectItem>
+                <SelectItem value={USER_ROLES.OWNER_ADMIN}>Admin Propriétaire</SelectItem>
+                <SelectItem value={USER_ROLES.SUPER_ADMIN}>Super Admin</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Actif</Label>
+            <Switch
+              checked={selectedUser?.isActive || false}
+              disabled
+            />
           </div>
         </div>
       </FormDialog>
