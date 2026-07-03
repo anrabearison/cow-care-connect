@@ -12,6 +12,7 @@ import { AppProviders } from "@/AppProviders";
 const HomePage = lazy(() => import("./pages/HomePage"));
 const CattlePage = lazy(() => import("@/features/cattle/pages/CattlePage"));
 const CattleDetailsPage = lazy(() => import("@/features/cattle/pages/CattleDetailsPage"));
+const ReportsPage = lazy(() => import("@/features/reports/pages/ReportsPage"));
 const ProfilePage = lazy(() => import("@/features/auth/pages/ProfilePage"));
 const LoginPage = lazy(() => import("@/features/auth/pages/LoginPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -101,6 +102,7 @@ const AppContent = () => {
             <Route index element={<HomePage />} />
             <Route path="cattle" element={<CattlePage />} />
             <Route path="cattle/:id" element={<CattleDetailsPage />} />
+            <Route path="reports" element={<ReportsPage />} />
             <Route path="profile" element={<ProfilePage />} />
             <Route path="*" element={<NotFound />} />
           </Route>

@@ -1,4 +1,4 @@
-import { Home, Beef, User, LogOut, Settings, LucideIcon } from 'lucide-react';
+import { Home, Beef, User, LogOut, Settings, FileText, LucideIcon } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
 import { isAdmin } from '@/constants/roles';
@@ -23,6 +23,7 @@ import { MOBILE_SIDEBAR_CLOSE_DELAY_MS, BUTTON_SCALE_CLASSES } from '@/constants
 const NAVIGATION_ITEMS = [
   { title: 'Accueil', url: '/', icon: Home },
   { title: 'Troupeau', url: '/cattle', icon: Beef },
+  { title: 'Rapports', url: '/reports', icon: FileText },
   { title: 'Profil', url: '/profile', icon: User },
 ];
 

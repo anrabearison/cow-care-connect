@@ -1,0 +1,122 @@
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { FileText, Badge, Calendar, Download, Lock } from 'lucide-react';
+
+const REPORT_TYPES = [
+  {
+    id: 'passport',
+    title: 'Passeport Bovin',
+    description: 'Document officiel pour le transfert de bétail entre villages',
+    icon: FileText,
+    status: 'available',
+    badge: 'Indispensable',
+  },
+  {
+    id: 'health',
+    title: 'Rapport Sanitaire',
+    description: 'Historique complet des vaccinations et traitements',
+    icon: Badge,
+    status: 'coming-soon',
+    badge: 'Bientôt disponible',
+  },
+  {
+    id: 'inventory',
+    title: 'Inventaire Troupeau',
+    description: 'Liste complète du troupeau avec statistiques',
+    icon: Calendar,
+    status: 'coming-soon',
+    badge: 'Bientôt disponible',
+  },
+  {
+    id: 'transfer',
+    title: 'Historique Transferts',
+    description: 'Journal des transferts de bétail',
+    icon: Download,
+    status: 'coming-soon',
+    badge: 'Bientôt disponible',
+  },
+];
+
+export default function ReportsPage() {
+  return (
+    <div className="min-h-screen bg-gradient-earth">
+      <div className="container mx-auto px-6 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center space-x-3 mb-2">
+            <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+            <h1 className="text-2xl sm:text-4xl font-bold text-foreground">Rapports</h1>
+          </div>
+          <p className="text-sm sm:text-lg text-muted-foreground">
+            Générez et téléchargez vos documents officiels
+          </p>
+        </div>
+
+        {/* Reports Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {REPORT_TYPES.map((report) => (
+            <Card
+              key={report.id}
+              className="shadow-card-soft border-none bg-white/50 backdrop-blur-sm hover:shadow-lg transition-shadow"
+            >
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className={`p-3 rounded-lg ${
+                      report.status === 'available'
+                        ? 'bg-primary/10 text-primary'
+                        : 'bg-muted/50 text-muted-foreground'
+                    }`}>
+                      <report.icon className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-xl">{report.title}</CardTitle>
+                      <CardDescription className="text-sm mt-1">
+                        {report.description}
+                      </CardDescription>
+                    </div>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <span className={`text-xs font-medium px-2 py-1 rounded-full ${
+                    report.status === 'available'
+                      ? 'bg-primary/10 text-primary'
+                      : 'bg-muted text-muted-foreground'
+                  }`}>
+                    {report.badge}
+                  </span>
+                  {report.status === 'available' ? (
+                    <Download className="h-5 w-5 text-primary" />
+                  ) : (
+                    <Lock className="h-5 w-5 text-muted-foreground" />
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Info Banner */}
+        <Card className="mt-8 shadow-card-soft border-none bg-white/50 backdrop-blur-sm">
+          <CardContent className="p-6">
+            <div className="flex items-start space-x-4">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <FileText className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-foreground mb-2">
+                  À propos des rapports
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Les rapports sont générés au format PDF et peuvent être téléchargés pour une impression ou une archivage.
+                  Le passeport bovin est un document officiel requis pour tout transfert de bétail entre villages.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
