@@ -35,7 +35,7 @@ const HerdBookCattleListPage = () => {
     cattleId: "", 
     nCarnet: "", 
     categoryId: "", 
-    statusId: "STA001" 
+    statusId: "" 
   });
   
   const [newCattleData, setNewCattleData] = useState<CattleData>({
@@ -138,7 +138,7 @@ const HerdBookCattleListPage = () => {
       toast({ title: "Succès", description: "Inscription créée avec succès" });
       queryClient.invalidateQueries({ queryKey: ["admin-herd-book-cattle"] });
       setIsCreateDialogOpen(false);
-      setFormData({ herdBookId: "", cattleId: "", nCarnet: "", categoryId: "", statusId: "STA001" });
+      setFormData({ herdBookId: "", cattleId: "", nCarnet: "", categoryId: "", statusId: "" });
     },
     onError: () => {
       toast({ title: "Erreur", description: "Erreur lors de la création", variant: "destructive" });
@@ -173,11 +173,49 @@ const HerdBookCattleListPage = () => {
   });
 
   const handleCreate = () => {
-    const submitData: CreateHerdBookCattleData = { ...formData };
-    if (cattleSourceType === 'new') {
-      submitData.cattle = newCattleData;
-      submitData.cattleId = undefined; // Clear cattleId when using embedded cattle
+    // Validation
+    if (!formData.herdBookId) {
+      toast({ title: "Erreur", description: "Veuillez sélectionner un livre de troupeau", variant: "destructive" });
+      return;
     }
+
+    if (!formData.categoryId) {
+      toast({ title: "Erreur", description: "Veuillez sélectionner une catégorie", variant: "destructive" });
+      return;
+    }
+
+    if (!formData.statusId) {
+      toast({ title: "Erreur", description: "Veuillez sélectionner un statut", variant: "destructive" });
+      return;
+    }
+
+    const submitData: CreateHerdBookCattleData = { ...formData };
+
+    if (cattleSourceType === 'new') {
+      // Validate new cattle fields
+      if (!newCattleData.name) {
+        toast({ title: "Erreur", description: "Veuillez entrer le nom du bovin", variant: "destructive" });
+        return;
+      }
+      if (!newCattleData.gender) {
+        toast({ title: "Erreur", description: "Veuillez sélectionner le sexe du bovin", variant: "destructive" });
+        return;
+      }
+      if (!newCattleData.birthDate) {
+        toast({ title: "Erreur", description: "Veuillez entrer la date de naissance", variant: "destructive" });
+        return;
+      }
+      submitData.cattle = newCattleData;
+      submitData.cattleId = undefined;
+    } else {
+      // Existing cattle validation
+      if (!formData.cattleId) {
+        toast({ title: "Erreur", description: "Veuillez sélectionner un bovin", variant: "destructive" });
+        return;
+      }
+    }
+
+    console.log('Submitting:', submitData);
     createMutation.mutate(submitData);
   };
 
@@ -195,11 +233,17 @@ const HerdBookCattleListPage = () => {
 
   const openCreateDialog = () => {
     setSelectedItem(null);
-    // Set defaults: most recent herd book and "Bonne santé" status
+    // Set defaults: most recent herd book and "En bonne santé" status
     const mostRecentHerdBook = herdBooks[0]; // Already sorted by year DESC
     const defaultHerdBook = mostRecentHerdBook?.id || "";
-    const defaultStatus = statuses.find(s => s.name?.toLowerCase().includes('bonne santé'));
-    const statusId = defaultStatus?.id || (statuses[0]?.id || "STA001");
+    
+    // Find "En bonne santé" status (case-insensitive partial match)
+    const defaultStatus = statuses.find(s => 
+      s.name?.toLowerCase().includes('bonne santé')
+    ) || statuses[0];
+    
+    const statusId = defaultStatus?.id || "";
+    
     setFormData({ herdBookId: defaultHerdBook, cattleId: "", nCarnet: "", categoryId: "", statusId });
     setCattleSourceType('existing');
     setNewCattleData({
