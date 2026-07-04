@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="cowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B4513;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#5D3A1A;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Head -->
+  <ellipse cx="32" cy="28" rx="18" ry="16" fill="url(#cowGradient)" />
+  <!-- Horns -->
+  <path d="M18 18 Q12 8 16 4 Q20 8 22 16" fill="#8B4513" stroke="#5D3A1A" stroke-width="1.5"/>
+  <path d="M46 18 Q52 8 48 4 Q44 8 42 16" fill="#8B4513" stroke="#5D3A1A" stroke-width="1.5"/>
+  <!-- Ears -->
+  <ellipse cx="16" cy="24" rx="6" ry="4" fill="#D2691E" transform="rotate(-20 16 24)"/>
+  <ellipse cx="48" cy="24" rx="6" ry="4" fill="#D2691E" transform="rotate(20 48 24)"/>
+  <!-- Eyes -->
+  <circle cx="24" cy="26" r="4" fill="white" />
+  <circle cx="40" cy="26" r="4" fill="white" />
+  <circle cx="25" cy="26" r="2" fill="#333" />
+  <circle cx="41" cy="26" r="2" fill="#333" />
+  <!-- Nose -->
+  <ellipse cx="32" cy="36" rx="8" ry="5" fill="#FFB6C1" />
+  <circle cx="28" cy="36" r="1.5" fill="#333" />
+  <circle cx="32" cy="36" r="1.5" fill="#333" />
+  <circle cx="36" cy="36" r="1.5" fill="#333" />
+</svg>
