@@ -1,106 +1,69 @@
-import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { FileText, Badge, Calendar, Download, Lock } from 'lucide-react';
-import { PassportGeneratorModal } from '@/features/passport/components/PassportGeneratorModal';
-import { CreatePassportDto } from '@/features/passport/types/passport.types';
-import { passportService } from '@/features/passport/services/passportService';
-import { toast } from 'sonner';
-import { PassportList } from '@/features/passport/components/PassportList';
-import { useQueryClient } from '@tanstack/react-query';
-import { passportKeys } from '@/features/passport/hooks';
+import { FileText, ShieldCheck, ClipboardList, ArrowRightLeft, Lock, ChevronRight } from 'lucide-react';
 
-const REPORT_TYPES = [
+interface ReportEntry {
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ComponentType<{ className?: string }>;
+  status: 'available' | 'coming-soon';
+  badge: string;
+  route: string;
+}
+
+const REPORTS: ReportEntry[] = [
   {
     id: 'passport',
-    title: 'Passeport Bovin',
-    description: 'Document officiel pour le transfert de bétail entre villages',
+    title: 'Passeports Bovins',
+    description: 'Documents officiels pour le transfert de bétail entre villages. Génération et téléchargement PDF.',
     icon: FileText,
     status: 'available',
-    badge: 'Indispensable',
+    badge: 'Disponible',
+    route: '/reports/passport',
   },
   {
     id: 'health',
     title: 'Rapport Sanitaire',
-    description: 'Historique complet des vaccinations et traitements',
-    icon: Badge,
+    description: 'Historique complet des vaccinations, traitements et visites vétérinaires par animal.',
+    icon: ShieldCheck,
     status: 'coming-soon',
     badge: 'Bientôt disponible',
+    route: '/reports/health',
   },
   {
     id: 'inventory',
-    title: 'Inventaire Troupeau',
-    description: 'Liste complète du troupeau avec statistiques',
-    icon: Calendar,
+    title: 'Inventaire du Troupeau',
+    description: 'Liste complète du troupeau avec statistiques par race, âge et statut.',
+    icon: ClipboardList,
     status: 'coming-soon',
     badge: 'Bientôt disponible',
+    route: '/reports/inventory',
   },
   {
-    id: 'transfer',
-    title: 'Historique Transferts',
-    description: 'Journal des transferts de bétail',
-    icon: Download,
+    id: 'transfers',
+    title: 'Historique des Transferts',
+    description: 'Journal complet des mouvements et transferts de bétail.',
+    icon: ArrowRightLeft,
     status: 'coming-soon',
     badge: 'Bientôt disponible',
+    route: '/reports/transfers',
   },
 ];
 
 export default function ReportsPage() {
-  const [isPassportModalOpen, setIsPassportModalOpen] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
-  const handleGeneratePassport = async (data: CreatePassportDto) => {
-    setIsGenerating(true);
-    try {
-      toast.loading('Création du passeport en cours...', { id: 'passport-creation' });
-      
-      // Create passport
-      const passport = await passportService.create(data);
-      
-      toast.success('Passeport créé avec succès', { id: 'passport-creation' });
-      setIsPassportModalOpen(false);
-      
-      // Generate PDF
-      toast.loading('Génération du PDF en cours...', { id: 'pdf-generation' });
-      await passportService.generatePdf(passport.id);
-      
-      toast.success('PDF généré avec succès', { id: 'pdf-generation' });
-      
-      // Download PDF
-      toast.loading('Téléchargement du PDF...', { id: 'pdf-download' });
-      const blob = await passportService.downloadPdf(passport.id);
-      
-      // Create download link
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `passeport-${passport.passportNumber}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      
-      toast.success('Passeport téléchargé avec succès', { id: 'pdf-download' });
-    } catch (error) {
-      console.error('Error generating passport:', error);
-      toast.error('Erreur lors de la création du passeport', { id: 'passport-creation' });
-    } finally {
-      setIsGenerating(false);
-      queryClient.invalidateQueries({ queryKey: passportKeys.all });
-    }
-  };
-
-  const handleReportClick = (reportId: string) => {
-    if (reportId === 'passport') {
-      setIsPassportModalOpen(true);
-    } else {
-      toast.info('Ce type de rapport sera bientôt disponible');
+  const handleClick = (report: ReportEntry) => {
+    if (report.status === 'available') {
+      navigate(report.route);
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-earth">
       <div className="container mx-auto px-6 py-8">
+
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center space-x-3 mb-2">
@@ -108,89 +71,61 @@ export default function ReportsPage() {
             <h1 className="text-2xl sm:text-4xl font-bold text-foreground">Rapports</h1>
           </div>
           <p className="text-sm sm:text-lg text-muted-foreground">
-            Générez et téléchargez vos documents officiels
+            Sélectionnez un type de rapport pour générer et télécharger vos documents officiels
           </p>
         </div>
 
-        {/* Reports Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {REPORT_TYPES.map((report) => (
-            <Card
-              key={report.id}
-              className={`shadow-card-soft border-none bg-white/50 backdrop-blur-sm hover:shadow-lg transition-shadow cursor-pointer ${
-                report.status === 'available' ? 'hover:border-primary/30' : ''
-              }`}
-              onClick={() => handleReportClick(report.id)}
-            >
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className={`p-3 rounded-lg ${
-                      report.status === 'available'
-                        ? 'bg-primary/10 text-primary'
-                        : 'bg-muted/50 text-muted-foreground'
-                    }`}>
-                      <report.icon className="h-6 w-6" />
+        {/* Reports grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {REPORTS.map((report) => {
+            const Icon = report.icon;
+            const available = report.status === 'available';
+            return (
+              <Card
+                key={report.id}
+                onClick={() => handleClick(report)}
+                className={[
+                  'shadow-card-soft border-none bg-white/50 backdrop-blur-sm transition-all duration-200',
+                  available
+                    ? 'cursor-pointer hover:shadow-lg hover:scale-[1.01] hover:border-primary/20'
+                    : 'opacity-70 cursor-not-allowed',
+                ].join(' ')}
+              >
+                <CardHeader>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-start gap-4">
+                      <div className={`p-3 rounded-xl shrink-0 ${available ? 'bg-primary/10 text-primary' : 'bg-muted/60 text-muted-foreground'}`}>
+                        <Icon className="h-6 w-6" />
+                      </div>
+                      <div className="min-w-0">
+                        <CardTitle className="text-lg">{report.title}</CardTitle>
+                        <CardDescription className="mt-1 text-sm leading-relaxed">
+                          {report.description}
+                        </CardDescription>
+                      </div>
                     </div>
-                    <div>
-                      <CardTitle className="text-xl">{report.title}</CardTitle>
-                      <CardDescription className="text-sm mt-1">
-                        {report.description}
-                      </CardDescription>
-                    </div>
+                    {available ? (
+                      <ChevronRight className="h-5 w-5 text-primary shrink-0 mt-1" />
+                    ) : (
+                      <Lock className="h-5 w-5 text-muted-foreground shrink-0 mt-1" />
+                    )}
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                    report.status === 'available'
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <span className={`inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-full ${
+                    available
                       ? 'bg-primary/10 text-primary'
                       : 'bg-muted text-muted-foreground'
                   }`}>
                     {report.badge}
                   </span>
-                  {report.status === 'available' ? (
-                    <Download className="h-5 w-5 text-primary" />
-                  ) : (
-                    <Lock className="h-5 w-5 text-muted-foreground" />
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
 
-        {/* Info Banner */}
-        <Card className="mt-8 shadow-card-soft border-none bg-white/50 backdrop-blur-sm">
-          <CardContent className="p-6">
-            <div className="flex items-start space-x-4">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <FileText className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-foreground mb-2">
-                  À propos des rapports
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  Les rapports sont générés au format PDF et peuvent être téléchargés pour une impression ou une archivage.
-                  Le passeport bovin est un document officiel requis pour tout transfert de bétail entre villages.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Passport List */}
-        <PassportList />
       </div>
-
-      <PassportGeneratorModal
-        open={isPassportModalOpen}
-        onOpenChange={setIsPassportModalOpen}
-        onGenerate={handleGeneratePassport}
-        isGenerating={isGenerating}
-      />
     </div>
   );
 }

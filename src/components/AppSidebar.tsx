@@ -1,4 +1,7 @@
-import { Home, Beef, User, LogOut, Settings, FileText, LucideIcon } from 'lucide-react';
+import {
+  Home, Beef, User, LogOut, Settings, FileText,
+  ShieldCheck, ClipboardList, ArrowRightLeft, ChevronDown, LucideIcon
+} from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
 import { isAdmin } from '@/constants/roles';
@@ -16,75 +19,113 @@ import {
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { MOBILE_SIDEBAR_CLOSE_DELAY_MS, BUTTON_SCALE_CLASSES } from '@/constants/ui';
 
-// Données statiques déplacées hors du composant
+// ─── Données de navigation ────────────────────────────────────────────────────
+
 const NAVIGATION_ITEMS = [
   { title: 'Accueil', url: '/', icon: Home },
   { title: 'Troupeau', url: '/cattle', icon: Beef },
-  { title: 'Rapports', url: '/reports', icon: FileText },
   { title: 'Profil', url: '/profile', icon: User },
+];
+
+const REPORT_ITEMS = [
+  { title: 'Vue d\'ensemble', url: '/reports', icon: FileText, exact: true },
+  { title: 'Passeports', url: '/reports/passport', icon: FileText, exact: false },
+  { title: 'Rapport Sanitaire', url: '/reports/health', icon: ShieldCheck, exact: false, disabled: true },
+  { title: 'Inventaire', url: '/reports/inventory', icon: ClipboardList, exact: false, disabled: true },
+  { title: 'Transferts', url: '/reports/transfers', icon: ArrowRightLeft, exact: false, disabled: true },
 ];
 
 const ADMIN_ITEMS = [
   { title: 'Administration', url: '/admin', icon: Settings },
 ];
 
-// Fonction utilitaire pure déplacée hors du composant
+// ─── Utilitaires ──────────────────────────────────────────────────────────────
+
 const getNavCls = ({ isActive }: { isActive: boolean }) =>
   isActive
-    ? "bg-primary/10 text-primary font-medium"
-    : "hover:bg-muted/50 text-muted-foreground hover:text-foreground";
+    ? 'bg-primary/10 text-primary font-medium'
+    : 'hover:bg-muted/50 text-muted-foreground hover:text-foreground';
 
-// Sous-composant pour éviter la duplication
+// ─── Sous-composants ──────────────────────────────────────────────────────────
+
 interface NavItemProps {
-  item: { title: string; url: string; icon: LucideIcon };
+  item: { title: string; url: string; icon: LucideIcon; exact?: boolean; disabled?: boolean };
   collapsed: boolean;
   onNavClick: (e: React.MouseEvent, url: string) => void;
+  indented?: boolean;
 }
 
-const NavItem = ({ item, collapsed, onNavClick }: NavItemProps) => (
-  <SidebarMenuItem key={item.title}>
-    <SidebarMenuButton asChild className={BUTTON_SCALE_CLASSES}>
-      <NavLink
-        to={item.url}
-        end
-        className={getNavCls}
-        onClick={(e) => onNavClick(e, item.url)}
-      >
-        <item.icon className="h-5 w-5 shrink-0" />
-        {!collapsed && <span>{item.title}</span>}
-      </NavLink>
-    </SidebarMenuButton>
-  </SidebarMenuItem>
-);
+const NavItem = ({ item, collapsed, onNavClick, indented = false }: NavItemProps) => {
+  if (item.disabled) {
+    return (
+      <SidebarMenuItem>
+        <SidebarMenuButton asChild className={BUTTON_SCALE_CLASSES}>
+          <span
+            className={`flex items-center gap-2 opacity-40 cursor-not-allowed ${indented && !collapsed ? 'pl-7' : ''}`}
+            title={collapsed ? item.title : undefined}
+          >
+            <item.icon className="h-4 w-4 shrink-0" />
+            {!collapsed && <span className="text-sm">{item.title}</span>}
+          </span>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    );
+  }
+
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton asChild className={BUTTON_SCALE_CLASSES}>
+        <NavLink
+          to={item.url}
+          end={item.exact ?? true}
+          className={({ isActive }) =>
+            `${getNavCls({ isActive })} ${indented && !collapsed ? 'pl-7' : ''}`
+          }
+          onClick={(e) => onNavClick(e, item.url)}
+          title={collapsed ? item.title : undefined}
+        >
+          <item.icon className="h-4 w-4 shrink-0" />
+          {!collapsed && <span className="text-sm">{item.title}</span>}
+        </NavLink>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  );
+};
+
+// ─── Composant principal ──────────────────────────────────────────────────────
 
 export function AppSidebar() {
   const { state, setOpenMobile } = useSidebar();
   const { user, logout } = useAuth();
   const isMobile = useIsMobile();
+  const location = useLocation();
 
-  const collapsed = state === "collapsed";
+  const collapsed = state === 'collapsed';
+
+  // Rapports ouverts par défaut si on est sur une page rapport
+  const isOnReports = location.pathname.startsWith('/reports');
+  const [reportsOpen, setReportsOpen] = useState(isOnReports);
 
   const handleNavClick = useCallback((e: React.MouseEvent, url: string) => {
-    // Fermer automatiquement le sidebar sur mobile après navigation
-    if (isMobile && state === "expanded") {
-      setTimeout(() => {
-        setOpenMobile(false);
-      }, MOBILE_SIDEBAR_CLOSE_DELAY_MS);
+    if (isMobile && state === 'expanded') {
+      setTimeout(() => setOpenMobile(false), MOBILE_SIDEBAR_CLOSE_DELAY_MS);
     }
   }, [isMobile, state, setOpenMobile]);
 
   const handleLogout = useCallback(() => {
-    if (isMobile && state === "expanded") {
-      setOpenMobile(false);
-    }
+    if (isMobile && state === 'expanded') setOpenMobile(false);
     logout();
   }, [isMobile, state, setOpenMobile, logout]);
 
+  const toggleReports = useCallback(() => {
+    if (!collapsed) setReportsOpen((v) => !v);
+  }, [collapsed]);
+
   return (
-    <Sidebar className={collapsed ? "w-14" : "w-64"} collapsible="icon">
+    <Sidebar className={collapsed ? 'w-14' : 'w-64'} collapsible="icon">
       <SidebarHeader className="border-b border-border p-4">
         {!collapsed && (
           <div className="flex items-center space-x-3">
@@ -92,7 +133,7 @@ export function AppSidebar() {
               <Beef className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h2 className="text-sm font-semibold">{user?.owner?.name || "Gestion Élevage"}</h2>
+              <h2 className="text-sm font-semibold">{user?.owner?.name || 'Gestion Élevage'}</h2>
               <p className="text-xs text-muted-foreground">{user?.name}</p>
             </div>
           </div>
@@ -107,8 +148,9 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
+        {/* Navigation principale */}
         <SidebarGroup>
-          <SidebarGroupLabel className={collapsed ? "sr-only" : ""}>
+          <SidebarGroupLabel className={collapsed ? 'sr-only' : ''}>
             Navigation
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -121,13 +163,65 @@ export function AppSidebar() {
                   onNavClick={handleNavClick}
                 />
               ))}
+
+              {/* Groupe Rapports avec sous-menu */}
+              {collapsed ? (
+                // En mode réduit : juste l'icône, lien vers /reports
+                <NavItem
+                  item={{ title: 'Rapports', url: '/reports', icon: FileText }}
+                  collapsed={collapsed}
+                  onNavClick={handleNavClick}
+                />
+              ) : (
+                <>
+                  {/* Bouton accordéon Rapports */}
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild className={BUTTON_SCALE_CLASSES}>
+                      <button
+                        onClick={toggleReports}
+                        className={`flex items-center justify-between w-full px-2 py-1.5 rounded-md text-sm transition-colors ${
+                          isOnReports
+                            ? 'bg-primary/10 text-primary font-medium'
+                            : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                        }`}
+                      >
+                        <span className="flex items-center gap-2">
+                          <FileText className="h-4 w-4 shrink-0" />
+                          <span>Rapports</span>
+                        </span>
+                        <ChevronDown
+                          className={`h-3.5 w-3.5 transition-transform duration-200 ${reportsOpen ? 'rotate-180' : ''}`}
+                        />
+                      </button>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+
+                  {/* Sous-items */}
+                  {reportsOpen && (
+                    <div className="overflow-hidden">
+                      <SidebarMenu className="border-l border-border ml-5 pl-1">
+                        {REPORT_ITEMS.map((item) => (
+                          <NavItem
+                            key={item.url}
+                            item={item}
+                            collapsed={false}
+                            onNavClick={handleNavClick}
+                            indented={false}
+                          />
+                        ))}
+                      </SidebarMenu>
+                    </div>
+                  )}
+                </>
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
+        {/* Administration */}
         {isAdmin(user?.role) && (
           <SidebarGroup>
-            <SidebarGroupLabel className={collapsed ? "sr-only" : ""}>
+            <SidebarGroupLabel className={collapsed ? 'sr-only' : ''}>
               Administration
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -145,10 +239,11 @@ export function AppSidebar() {
           </SidebarGroup>
         )}
 
+        {/* Déconnexion */}
         <div className="mt-auto p-3">
           <Button
             variant="ghost"
-            size={collapsed ? "icon" : "sm"}
+            size={collapsed ? 'icon' : 'sm'}
             onClick={handleLogout}
             className={`w-full text-destructive hover:text-destructive hover:bg-destructive/10 ${BUTTON_SCALE_CLASSES}`}
           >
