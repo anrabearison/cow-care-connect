@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { DataTable, Column } from "@/components/admin/DataTable";
 import { FormDialog } from "@/components/admin/FormDialog";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { herdBooksService, HerdBook, CreateHerdBookData, UpdateHerdBookData } from "@/features/admin/services/herdBooksService";
+import { ownersService, Owner } from "@/features/admin/services/ownersService";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -20,6 +22,7 @@ const HerdBooksListPage = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [owners, setOwners] = useState<Owner[]>([]);
   const [formData, setFormData] = useState<CreateHerdBookData>({ reference: "", year: new Date().getFullYear(), description: "", ownerId: "" });
 
   const { data: data, isLoading } = useQuery({
@@ -31,6 +34,21 @@ const HerdBooksListPage = () => {
         q: search || undefined,
       }),
   });
+
+  useEffect(() => {
+    const loadOwners = async () => {
+      try {
+        const response = await ownersService.getOwnersList({ per_page: 1000 });
+        if (response.success) {
+          setOwners(response.data || []);
+        }
+      } catch (error) {
+        console.error("Error loading owners", error);
+      }
+    };
+
+    loadOwners();
+  }, []);
 
   const createMutation = useMutation({
     mutationFn: (data: CreateHerdBookData) => herdBooksService.createHerdBook(data),
@@ -73,6 +91,21 @@ const HerdBooksListPage = () => {
   });
 
   const handleCreate = () => {
+    if (!formData.reference?.trim()) {
+      toast({ title: "Erreur", description: "Veuillez saisir une référence", variant: "destructive" });
+      return;
+    }
+
+    if (!formData.year || Number.isNaN(Number(formData.year))) {
+      toast({ title: "Erreur", description: "Veuillez saisir une année valide", variant: "destructive" });
+      return;
+    }
+
+    if (!formData.ownerId) {
+      toast({ title: "Erreur", description: "Veuillez sélectionner un propriétaire", variant: "destructive" });
+      return;
+    }
+
     createMutation.mutate(formData);
   };
 
@@ -156,8 +189,19 @@ const HerdBooksListPage = () => {
             <Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} placeholder="Description du livre de troupeau" rows={3} />
           </div>
           <div>
-            <Label>ID Propriétaire</Label>
-            <Input value={formData.ownerId} onChange={(e) => setFormData({ ...formData, ownerId: e.target.value })} placeholder="ID du propriétaire" />
+            <Label>Propriétaire</Label>
+            <Select value={formData.ownerId} onValueChange={(value) => setFormData({ ...formData, ownerId: value })}>
+              <SelectTrigger>
+                <SelectValue placeholder="Sélectionner un propriétaire" />
+              </SelectTrigger>
+              <SelectContent>
+                {owners.map((owner) => (
+                  <SelectItem key={owner.id} value={owner.id}>
+                    {owner.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </FormDialog>
@@ -177,8 +221,19 @@ const HerdBooksListPage = () => {
             <Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} placeholder="Description du livre de troupeau" rows={3} />
           </div>
           <div>
-            <Label>ID Propriétaire</Label>
-            <Input value={formData.ownerId} onChange={(e) => setFormData({ ...formData, ownerId: e.target.value })} placeholder="ID du propriétaire" />
+            <Label>Propriétaire</Label>
+            <Select value={formData.ownerId} onValueChange={(value) => setFormData({ ...formData, ownerId: value })}>
+              <SelectTrigger>
+                <SelectValue placeholder="Sélectionner un propriétaire" />
+              </SelectTrigger>
+              <SelectContent>
+                {owners.map((owner) => (
+                  <SelectItem key={owner.id} value={owner.id}>
+                    {owner.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </FormDialog>
