@@ -33,6 +33,10 @@ export const passportService = {
     return await apiClient.get<Blob>(`/api/v1/passport/${id}/download`, undefined, undefined, true);
   },
 
+  async previewHtml(id: string): Promise<string> {
+    return await apiClient.getText(`/api/v1/passport/${id}/preview`);
+  },
+
   async delete(id: string): Promise<void> {
     await apiClient.delete<void>(`/api/v1/passport/${id}`);
   },

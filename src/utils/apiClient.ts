@@ -180,6 +180,20 @@ class ApiClient {
         return this.handleResponse<T>(response, asBlob);
     }
 
+    async getText(endpoint: string, params?: QueryParams, config?: RequestConfig): Promise<string> {
+        const url = this.buildUrl(endpoint, params);
+        const response = await this.fetchWithTimeout(url, {
+            ...config,
+            method: 'GET',
+        });
+
+        if (!response.ok) {
+            throw createErrorFromStatus(response.status);
+        }
+
+        return response.text();
+    }
+
     /**
      * POST request
      */

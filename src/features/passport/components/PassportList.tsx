@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { FileText, Download, Loader2, RefreshCw } from 'lucide-react';
+import { FileText, Download, Eye, Loader2, RefreshCw } from 'lucide-react';
 import { usePassports } from '../hooks';
 import { useHerdBookSelection } from '@/contexts/HerdBookSelectionContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -33,6 +33,7 @@ export function PassportList() {
   const meta = paginatedData?.meta;
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [generatingId, setGeneratingId] = useState<string | null>(null);
+  const [previewingId, setPreviewingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [passportToDelete, setPassportToDelete] = useState<{id: string, number: string} | null>(null);
@@ -73,6 +74,34 @@ export function PassportList() {
       toast.error('Erreur lors du téléchargement du passeport');
     } finally {
       setDownloadingId(null);
+    }
+  };
+
+  const handlePreview = async (passportId: string, passportNumber: string) => {
+    const previewWindow = window.open('', '_blank');
+    if (!previewWindow) {
+      toast.error('Impossible d’ouvrir la prévisualisation. Vérifiez le blocage des popups.');
+      return;
+    }
+
+    previewWindow.document.write('<!doctype html><html><head><title>Chargement...</title></head><body style="font-family: sans-serif; padding: 24px;">Chargement de la prévisualisation...</body></html>');
+    previewWindow.document.close();
+    setPreviewingId(passportId);
+
+    try {
+      const html = await passportService.previewHtml(passportId);
+      previewWindow.document.open();
+      previewWindow.document.write(html);
+      previewWindow.document.close();
+      previewWindow.document.title = `Prévisualisation passeport ${passportNumber}`;
+    } catch (error) {
+      console.error('Error previewing passport:', error);
+      previewWindow.document.open();
+      previewWindow.document.write('<!doctype html><html><head><title>Erreur</title></head><body style="font-family: sans-serif; padding: 24px;">Erreur lors du chargement de la prévisualisation.</body></html>');
+      previewWindow.document.close();
+      toast.error('Erreur lors de la prévisualisation du passeport');
+    } finally {
+      setPreviewingId(null);
     }
   };
 
@@ -173,6 +202,19 @@ export function PassportList() {
                             <span className="sr-only">Générer PDF</span>
                           </Button>
                         )}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handlePreview(passport.id, passport.passportNumber)}
+                          disabled={previewingId === passport.id}
+                        >
+                          {previewingId === passport.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                          <span className="sr-only">Prévisualiser</span>
+                        </Button>
                         <Button
                           variant="ghost"
                           size="sm"
