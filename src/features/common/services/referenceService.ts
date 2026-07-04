@@ -44,6 +44,10 @@ class ReferenceService {
     async getStatuses(): Promise<ApiResponse<ReferenceItem[]>> {
         return this.fetchData<ReferenceItem[]>('/api/v1/status', 'Erreur chargement statuts');
     }
+
+    async getHerdBooks(): Promise<ApiResponse<ReferenceItem[]>> {
+        return this.fetchData<ReferenceItem[]>('/api/v1/herd-books', 'Erreur chargement livres de troupeau');
+    }
 }
 
 export const referenceService = new ReferenceService();

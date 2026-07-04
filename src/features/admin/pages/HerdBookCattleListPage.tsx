@@ -1,12 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { DataTable, Column } from "@/components/admin/DataTable";
 import { FormDialog } from "@/components/admin/FormDialog";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { herdBookCattleService, HerdBookCattle, CreateHerdBookCattleData, UpdateHerdBookCattleData, CattleData, CattleSourceData } from "@/features/admin/services/herdBookCattleService";
+import { cattleService } from "@/features/cattle/services";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
+import { referenceService } from "@/features/common/services/referenceService";
 
 const HerdBookCattleListPage = () => {
   const queryClient = useQueryClient();
@@ -19,7 +22,33 @@ const HerdBookCattleListPage = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [formData, setFormData] = useState<CreateHerdBookCattleData>({ herdBookId: "", cattleId: "", nCarnet: "", categoryId: "", statusId: "STA001" });
+  
+  // New state for reference data
+  const [herdBooks, setHerdBooks] = useState<{ id: string; reference: string; year?: number }[]>([]);
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+  const [statuses, setStatuses] = useState<{ id: string; name: string }[]>([]);
+  const [unregisteredCattle, setUnregisteredCattle] = useState<{ id: string; name: string }[]>([]);
+  const [cattleSourceType, setCattleSourceType] = useState<'existing' | 'new'>('existing');
+  
+  const [formData, setFormData] = useState<CreateHerdBookCattleData>({ 
+    herdBookId: "", 
+    cattleId: "", 
+    nCarnet: "", 
+    categoryId: "", 
+    statusId: "STA001" 
+  });
+  
+  const [newCattleData, setNewCattleData] = useState<CattleData>({
+    name: '',
+    nickname: '',
+    gender: '',
+    birthDate: '',
+    character: '',
+    brand: '',
+    distinctiveSign: '',
+    photo: '',
+    source: { type: 'ACHETE' },
+  });
 
   const { data: data, isLoading } = useQuery({
     queryKey: ["admin-herd-book-cattle", page, search],
@@ -30,6 +59,78 @@ const HerdBookCattleListPage = () => {
         q: search || undefined,
       }),
   });
+
+  // Load reference data
+  useEffect(() => {
+    const loadReferenceData = async () => {
+      try {
+        // Load herd books
+        const hbResponse = await referenceService.getHerdBooks();
+        if (hbResponse.success) {
+          const sorted = (hbResponse.data || []).sort((a, b) => (b.year || 0) - (a.year || 0));
+          setHerdBooks(sorted);
+        }
+
+        // Load categories
+        const catResponse = await referenceService.getCategories();
+        if (catResponse.success) {
+          setCategories(catResponse.data);
+        }
+
+        // Load statuses
+        const statResponse = await referenceService.getStatuses();
+        if (statResponse.success) {
+          setStatuses(statResponse.data);
+        }
+      } catch (error) {
+        console.error('Error loading reference data:', error);
+      }
+    };
+
+    loadReferenceData();
+  }, []);
+
+  // Load unregistered cattle when herdBookId or dialog changes
+  useEffect(() => {
+    const loadUnregisteredCattle = async () => {
+      if (!formData.herdBookId) {
+        setUnregisteredCattle([]);
+        return;
+      }
+      try {
+        // Get all cattle registered in this herd book
+        const registeredResponse = await herdBookCattleService.getHerdBookCattleList({ 
+          herd_book_id: formData.herdBookId,
+          per_page: 1000 
+        });
+        const registeredCattleIds = new Set(
+          (registeredResponse.data || [])
+            .map(item => item.cattleId)
+            .filter(Boolean)
+        );
+        
+        // Get all cattle
+        const allCattleResponse = await cattleService.getCattleList({ per_page: 1000 });
+        if (allCattleResponse.success && allCattleResponse.data) {
+          // Filter out cattle already registered in this herd book
+          const filtered = (allCattleResponse.data as any[])
+            .filter(c => c.id && !registeredCattleIds.has(c.id))
+            .map(c => ({ 
+              id: c.id, 
+              name: c.name || 'Bovin sans nom' 
+            }));
+          setUnregisteredCattle(filtered);
+        }
+      } catch (error) {
+        console.error('Error loading unregistered cattle:', error);
+        setUnregisteredCattle([]);
+      }
+    };
+
+    if (isCreateDialogOpen || isEditDialogOpen) {
+      loadUnregisteredCattle();
+    }
+  }, [formData.herdBookId, isCreateDialogOpen, isEditDialogOpen]);
 
   const createMutation = useMutation({
     mutationFn: (data: CreateHerdBookCattleData) => herdBookCattleService.createHerdBookCattle(data),
@@ -72,7 +173,12 @@ const HerdBookCattleListPage = () => {
   });
 
   const handleCreate = () => {
-    createMutation.mutate(formData);
+    const submitData: CreateHerdBookCattleData = { ...formData };
+    if (cattleSourceType === 'new') {
+      submitData.cattle = newCattleData;
+      submitData.cattleId = undefined; // Clear cattleId when using embedded cattle
+    }
+    createMutation.mutate(submitData);
   };
 
   const handleUpdate = () => {
@@ -89,7 +195,24 @@ const HerdBookCattleListPage = () => {
 
   const openCreateDialog = () => {
     setSelectedItem(null);
-    setFormData({ herdBookId: "", cattleId: "", nCarnet: "", categoryId: "", statusId: "STA001" });
+    // Set defaults: most recent herd book and "Bonne santé" status
+    const mostRecentHerdBook = herdBooks[0]; // Already sorted by year DESC
+    const defaultHerdBook = mostRecentHerdBook?.id || "";
+    const defaultStatus = statuses.find(s => s.name?.toLowerCase().includes('bonne santé'));
+    const statusId = defaultStatus?.id || (statuses[0]?.id || "STA001");
+    setFormData({ herdBookId: defaultHerdBook, cattleId: "", nCarnet: "", categoryId: "", statusId });
+    setCattleSourceType('existing');
+    setNewCattleData({
+      name: '',
+      nickname: '',
+      gender: '',
+      birthDate: '',
+      character: '',
+      brand: '',
+      distinctiveSign: '',
+      photo: '',
+      source: { type: 'ACHETE' },
+    });
     setIsCreateDialogOpen(true);
   };
 
@@ -178,27 +301,160 @@ const HerdBookCattleListPage = () => {
         )}
       </FormDialog>
 
-      <FormDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} title="Créer une inscription" submitText="Créer" cancelText="Annuler" onSubmit={handleCreate} loading={createMutation.isPending}>
-        <div className="space-y-4">
+      <FormDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} title="Créer une inscription bovine" submitText="Créer" cancelText="Annuler" onSubmit={handleCreate} loading={createMutation.isPending}>
+        <div className="space-y-6">
+          {/* Herd Book Selection */}
           <div>
-            <Label>ID Livre de troupeau *</Label>
-            <Input value={formData.herdBookId} onChange={(e) => setFormData({ ...formData, herdBookId: e.target.value })} placeholder="ID du livre de troupeau" />
+            <Label htmlFor="herdBook">Livre de troupeau *</Label>
+            <Select value={formData.herdBookId} onValueChange={(value) => setFormData({ ...formData, herdBookId: value })}>
+              <SelectTrigger id="herdBook">
+                <SelectValue placeholder="Sélectionner un livre de troupeau" />
+              </SelectTrigger>
+              <SelectContent>
+                {herdBooks.map((hb) => (
+                  <SelectItem key={hb.id} value={hb.id}>
+                    {hb.reference} {hb.year ? `(${hb.year})` : ''}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
+
+          {/* Cattle Source Type Selection */}
           <div>
-            <Label>ID Bovin (optionnel si création bovin imbriquée)</Label>
-            <Input value={formData.cattleId} onChange={(e) => setFormData({ ...formData, cattleId: e.target.value })} placeholder="ID du bovin existant" />
+            <Label>Source du bovin</Label>
+            <div className="flex gap-4 mt-2">
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  checked={cattleSourceType === 'existing'}
+                  onChange={() => setCattleSourceType('existing')}
+                  className="w-4 h-4"
+                />
+                <span className="text-sm">Bovin existant</span>
+              </label>
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  checked={cattleSourceType === 'new'}
+                  onChange={() => setCattleSourceType('new')}
+                  className="w-4 h-4"
+                />
+                <span className="text-sm">Nouveau bovin</span>
+              </label>
+            </div>
           </div>
+
+          {/* Existing Cattle Selection */}
+          {cattleSourceType === 'existing' && (
+            <div>
+              <Label htmlFor="cattleId">Sélectionner un bovin *</Label>
+              <Select value={formData.cattleId} onValueChange={(value) => setFormData({ ...formData, cattleId: value })}>
+                <SelectTrigger id="cattleId">
+                  <SelectValue placeholder="Sélectionner un bovin non inscrit" />
+                </SelectTrigger>
+                <SelectContent>
+                  {unregisteredCattle.map((cattle) => (
+                    <SelectItem key={cattle.id} value={cattle.id}>
+                      {cattle.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {/* New Cattle Embedded Form */}
+          {cattleSourceType === 'new' && (
+            <div className="border p-4 rounded-md bg-muted/20 space-y-4">
+              <h4 className="font-medium">Informations du nouveau bovin</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="cattleName">Nom *</Label>
+                  <Input
+                    id="cattleName"
+                    value={newCattleData.name}
+                    onChange={(e) => setNewCattleData({ ...newCattleData, name: e.target.value })}
+                    placeholder="Nom du bovin"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="cattleNickname">Surnom</Label>
+                  <Input
+                    id="cattleNickname"
+                    value={newCattleData.nickname}
+                    onChange={(e) => setNewCattleData({ ...newCattleData, nickname: e.target.value })}
+                    placeholder="Surnom"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="cattleGender">Sexe *</Label>
+                  <Select value={newCattleData.gender} onValueChange={(value) => setNewCattleData({ ...newCattleData, gender: value })}>
+                    <SelectTrigger id="cattleGender">
+                      <SelectValue placeholder="Sélectionner" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="M">Mâle</SelectItem>
+                      <SelectItem value="F">Femelle</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="cattleBirthDate">Date de naissance *</Label>
+                  <Input
+                    id="cattleBirthDate"
+                    type="date"
+                    value={newCattleData.birthDate}
+                    onChange={(e) => setNewCattleData({ ...newCattleData, birthDate: e.target.value })}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Category Selection */}
           <div>
-            <Label>N° Carnet</Label>
-            <Input value={formData.nCarnet} onChange={(e) => setFormData({ ...formData, nCarnet: e.target.value })} placeholder="Numéro de carnet" />
+            <Label htmlFor="category">Catégorie *</Label>
+            <Select value={formData.categoryId} onValueChange={(value) => setFormData({ ...formData, categoryId: value })}>
+              <SelectTrigger id="category">
+                <SelectValue placeholder="Sélectionner une catégorie" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((cat) => (
+                  <SelectItem key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
+
+          {/* Status Selection */}
           <div>
-            <Label>ID Catégorie *</Label>
-            <Input value={formData.categoryId} onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })} placeholder="ID de la catégorie" />
+            <Label htmlFor="status">Statut *</Label>
+            <Select value={formData.statusId} onValueChange={(value) => setFormData({ ...formData, statusId: value })}>
+              <SelectTrigger id="status">
+                <SelectValue placeholder="Sélectionner un statut" />
+              </SelectTrigger>
+              <SelectContent>
+                {statuses.map((stat) => (
+                  <SelectItem key={stat.id} value={stat.id}>
+                    {stat.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
+
+          {/* N° Carnet */}
           <div>
-            <Label>ID Statut</Label>
-            <Input value={formData.statusId} onChange={(e) => setFormData({ ...formData, statusId: e.target.value })} placeholder="ID du statut" />
+            <Label htmlFor="nCarnet">N° Carnet</Label>
+            <Input
+              id="nCarnet"
+              value={formData.nCarnet}
+              onChange={(e) => setFormData({ ...formData, nCarnet: e.target.value })}
+              placeholder="Numéro de carnet"
+            />
           </div>
         </div>
       </FormDialog>
@@ -206,24 +462,73 @@ const HerdBookCattleListPage = () => {
       <FormDialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} title="Modifier l'inscription" submitText="Enregistrer" cancelText="Annuler" onSubmit={handleUpdate} loading={updateMutation.isPending}>
         <div className="space-y-4">
           <div>
-            <Label>ID Livre de troupeau *</Label>
-            <Input value={formData.herdBookId} onChange={(e) => setFormData({ ...formData, herdBookId: e.target.value })} placeholder="ID du livre de troupeau" />
+            <Label htmlFor="editHerdBook">Livre de troupeau *</Label>
+            <Select value={formData.herdBookId} onValueChange={(value) => setFormData({ ...formData, herdBookId: value })}>
+              <SelectTrigger id="editHerdBook">
+                <SelectValue placeholder="Sélectionner un livre de troupeau" />
+              </SelectTrigger>
+              <SelectContent>
+                {herdBooks.map((hb) => (
+                  <SelectItem key={hb.id} value={hb.id}>
+                    {hb.reference} {hb.year ? `(${hb.year})` : ''}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div>
-            <Label>ID Bovin (optionnel si création bovin imbriquée)</Label>
-            <Input value={formData.cattleId} onChange={(e) => setFormData({ ...formData, cattleId: e.target.value })} placeholder="ID du bovin existant" />
+            <Label htmlFor="editCattleId">Bovin *</Label>
+            <Select value={formData.cattleId} onValueChange={(value) => setFormData({ ...formData, cattleId: value })}>
+              <SelectTrigger id="editCattleId">
+                <SelectValue placeholder="Sélectionner un bovin" />
+              </SelectTrigger>
+              <SelectContent>
+                {unregisteredCattle.map((cattle) => (
+                  <SelectItem key={cattle.id} value={cattle.id}>
+                    {cattle.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div>
-            <Label>N° Carnet</Label>
-            <Input value={formData.nCarnet} onChange={(e) => setFormData({ ...formData, nCarnet: e.target.value })} placeholder="Numéro de carnet" />
+            <Label htmlFor="editCategory">Catégorie *</Label>
+            <Select value={formData.categoryId} onValueChange={(value) => setFormData({ ...formData, categoryId: value })}>
+              <SelectTrigger id="editCategory">
+                <SelectValue placeholder="Sélectionner une catégorie" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((cat) => (
+                  <SelectItem key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div>
-            <Label>ID Catégorie *</Label>
-            <Input value={formData.categoryId} onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })} placeholder="ID de la catégorie" />
+            <Label htmlFor="editStatus">Statut *</Label>
+            <Select value={formData.statusId} onValueChange={(value) => setFormData({ ...formData, statusId: value })}>
+              <SelectTrigger id="editStatus">
+                <SelectValue placeholder="Sélectionner un statut" />
+              </SelectTrigger>
+              <SelectContent>
+                {statuses.map((stat) => (
+                  <SelectItem key={stat.id} value={stat.id}>
+                    {stat.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div>
-            <Label>ID Statut</Label>
-            <Input value={formData.statusId} onChange={(e) => setFormData({ ...formData, statusId: e.target.value })} placeholder="ID du statut" />
+            <Label htmlFor="editNCarnet">N° Carnet</Label>
+            <Input
+              id="editNCarnet"
+              value={formData.nCarnet}
+              onChange={(e) => setFormData({ ...formData, nCarnet: e.target.value })}
+              placeholder="Numéro de carnet"
+            />
           </div>
         </div>
       </FormDialog>
