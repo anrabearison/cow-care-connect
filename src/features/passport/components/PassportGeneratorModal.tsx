@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -13,6 +16,37 @@ import { useHerdBookSelection } from '@/contexts/HerdBookSelectionContext';
 import { useHerdBookCattle } from '@/features/herdbook/hooks';
 import { CreatePassportDto } from '../types/passport.types';
 
+// ─── Schéma de validation Zod ────────────────────────────────────────────────
+
+const passportSchema = z.object({
+  passportNumber: z
+    .string()
+    .min(1, 'Le numéro de passeport est requis')
+    .regex(/^[A-Z0-9\-]+$/, 'Format invalide (ex: PASS-2024-0001)'),
+  location: z.string().min(1, "Le lieu d'émission est requis"),
+  issueDate: z.string().min(1, "La date d'émission est requise"),
+  district: z.string().min(1, "L'arrondissement est requis"),
+  applicantName: z.string().min(2, 'Le nom du demandeur est requis (min. 2 caractères)'),
+  cinNumber: z
+    .string()
+    .min(1, 'Le numéro CIN est requis')
+    .regex(/^[\d\s]+$/, 'Le CIN doit contenir uniquement des chiffres et espaces'),
+  cinIssueDate: z.string().min(1, 'La date du CIN est requise'),
+  cinIssueLocation: z.string().min(1, 'Le lieu de délivrance du CIN est requis'),
+  residenceCommune: z.string().min(1, 'La commune de résidence est requise'),
+  village: z.string().min(1, 'Le village est requis'),
+  commune: z.string().min(1, 'La kaominina est requise'),
+  residenceDistrict: z.string().min(1, 'Le distrika est requis'),
+  region: z.string().min(1, 'Le faritra est requis'),
+  purchaseCommune: z.string().min(1, "La commune d'achat est requise"),
+  verificationDate: z.string().min(1, 'La date de vérification est requise'),
+  arreteDate: z.string().min(1, "La date de l'arrêté est requise"),
+});
+
+type PassportFormValues = z.infer<typeof passportSchema>;
+
+// ─── Types ───────────────────────────────────────────────────────────────────
+
 interface PassportGeneratorModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -20,64 +54,105 @@ interface PassportGeneratorModalProps {
   isGenerating?: boolean;
 }
 
-export function PassportGeneratorModal({ open, onOpenChange, onGenerate, isGenerating = false }: PassportGeneratorModalProps) {
+// ─── Composant champ de formulaire ───────────────────────────────────────────
+
+function FormField({
+  id,
+  label,
+  error,
+  required = false,
+  children,
+}: {
+  id: string;
+  label: string;
+  error?: string;
+  required?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <Label htmlFor={id}>
+        {label} {required && <span className="text-destructive">*</span>}
+      </Label>
+      {children}
+      {error && <p className="text-xs text-destructive mt-1">{error}</p>}
+    </div>
+  );
+}
+
+// ─── Composant principal ──────────────────────────────────────────────────────
+
+export function PassportGeneratorModal({
+  open,
+  onOpenChange,
+  onGenerate,
+  isGenerating = false,
+}: PassportGeneratorModalProps) {
   const { selectedHerdBookId } = useHerdBookSelection();
-  const { data: herdBookCattleData } = useHerdBookCattle(selectedHerdBookId || '', 1, 1000);
+
+  // Pagination raisonnable pour éviter le chargement de 1000 bovins en une fois
+  // On charge par page de 50 ; l'utilisateur peut filtrer via la recherche
+  const { data: herdBookCattleData } = useHerdBookCattle(selectedHerdBookId || '', 1, 50);
   const herdBookCattle = herdBookCattleData?.data || [];
-  
-  const [selectedCattleIds, setSelectedCattleIds] = useState<string[]>([]);
-  const [formData, setFormData] = useState({
-    passportNumber: '',
-    location: '',
-    issueDate: new Date().toISOString().split('T')[0],
-    district: '',
-    applicantName: '',
-    cinNumber: '',
-    cinIssueDate: '',
-    cinIssueLocation: '',
-    residenceCommune: '',
-    village: '',
-    commune: '',
-    residenceDistrict: '',
-    region: '',
-    purchaseCommune: '',
-    verificationDate: new Date().toISOString().split('T')[0],
-    arreteDate: new Date().toISOString().split('T')[0],
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    reset,
+    formState: { errors },
+  } = useForm<PassportFormValues>({
+    resolver: zodResolver(passportSchema),
+    defaultValues: {
+      issueDate: new Date().toISOString().split('T')[0],
+      verificationDate: new Date().toISOString().split('T')[0],
+      arreteDate: new Date().toISOString().split('T')[0],
+    },
   });
 
+  // IDs des bovins sélectionnés — géré manuellement car hors schéma Zod
+  const [selectedCattleIds, setSelectedCattleIds] = [
+    watch('_selectedCattleIds' as any) as string[] | undefined,
+    (ids: string[]) => setValue('_selectedCattleIds' as any, ids as any),
+  ];
+  const cattleIds: string[] = (selectedCattleIds as any) || [];
+
+  // Reset complet à la fermeture du modal
+  useEffect(() => {
+    if (!open) {
+      reset();
+      setValue('_selectedCattleIds' as any, [] as any);
+    }
+  }, [open, reset, setValue]);
+
   const handleCattleToggle = (cattleId: string) => {
-    setSelectedCattleIds(prev =>
-      prev.includes(cattleId)
-        ? prev.filter(id => id !== cattleId)
-        : [...prev, cattleId]
-    );
+    const current = cattleIds;
+    const updated = current.includes(cattleId)
+      ? current.filter((id) => id !== cattleId)
+      : [...current, cattleId];
+    setValue('_selectedCattleIds' as any, updated as any);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (selectedCattleIds.length === 0) {
-      alert('Veuillez sélectionner au moins un bœuf');
+  const onSubmit = (values: PassportFormValues) => {
+    if (cattleIds.length === 0) {
+      toast.error('Veuillez sélectionner au moins un bœuf');
       return;
     }
 
     if (!selectedHerdBookId) {
-      alert('Veuillez sélectionner un livre de troupeau');
+      toast.error('Veuillez sélectionner un livre de troupeau');
       return;
     }
 
     const passportData: CreatePassportDto = {
-      ...formData,
+      ...values,
       herdBookId: selectedHerdBookId,
-      totalCattle: selectedCattleIds.length,
-      cattleIds: selectedCattleIds,
+      totalCattle: cattleIds.length,
+      cattleIds,
     };
 
     onGenerate(passportData);
-  };
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   return (
@@ -86,260 +161,247 @@ export function PassportGeneratorModal({ open, onOpenChange, onGenerate, isGener
         <DialogHeader className="p-6 pb-4">
           <DialogTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
-            Génération de Passeport Bovin
+            Nouveau Brouillon de Passeport Bovin
           </DialogTitle>
           <DialogDescription>
-            Remplissez les informations requises pour générer le passeport de transfert
+            Remplissez les informations requises. Le PDF sera généré depuis la liste des passeports.
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="flex flex-col h-full">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col h-full">
           <ScrollArea className="flex-1 max-h-[60vh] px-6">
             <div className="space-y-6 pb-6">
-              {/* Cattle Selection */}
+
+              {/* Sélection des bœufs */}
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">Sélection des Bœufs</CardTitle>
                   <CardDescription>
-                    Sélectionnez les bœufs à inclure dans ce passeport ({selectedCattleIds.length} sélectionné{selectedCattleIds.length > 1 ? 's' : ''})
+                    Sélectionnez les bœufs à inclure dans ce passeport (
+                    {cattleIds.length} sélectionné{cattleIds.length > 1 ? 's' : ''})
+                    {herdBookCattle.length === 50 && (
+                      <span className="text-muted-foreground text-xs ml-1">
+                        — Affichage limité aux 50 premiers
+                      </span>
+                    )}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ScrollArea className="h-48 border rounded-md p-2">
                     <div className="space-y-2">
-                      {herdBookCattle.map((hbc) => (
-                        <div
-                          key={hbc.id}
-                          className="flex items-center space-x-3 p-2 hover:bg-muted/50 rounded-md"
-                        >
-                          <Checkbox
-                            id={hbc.id}
-                            checked={selectedCattleIds.includes(hbc.id)}
-                            onCheckedChange={() => handleCattleToggle(hbc.id)}
-                          />
-                          <Label
-                            htmlFor={hbc.id}
-                            className="flex-1 cursor-pointer flex items-center gap-2"
+                      {herdBookCattle.length === 0 ? (
+                        <p className="text-sm text-muted-foreground text-center py-4">
+                          Aucun bovin trouvé dans ce livre de troupeau
+                        </p>
+                      ) : (
+                        herdBookCattle.map((hbc) => (
+                          <div
+                            key={hbc.id}
+                            className="flex items-center space-x-3 p-2 hover:bg-muted/50 rounded-md cursor-pointer"
+                            onClick={() => handleCattleToggle(hbc.id)}
                           >
-                            <span className="font-medium">{hbc.cattle?.name || 'N/A'}</span>
-                            <Badge variant="outline" className="text-xs">
-                              {hbc.n_carnet || 'N/A'}
-                            </Badge>
-                            <span className="text-muted-foreground text-sm">
-                              - {hbc.cattle?.character?.name || 'N/A'}
-                            </span>
-                          </Label>
-                        </div>
-                      ))}
+                            <Checkbox
+                              id={hbc.id}
+                              checked={cattleIds.includes(hbc.id)}
+                              onCheckedChange={() => handleCattleToggle(hbc.id)}
+                            />
+                            <Label
+                              htmlFor={hbc.id}
+                              className="flex-1 cursor-pointer flex items-center gap-2"
+                            >
+                              <span className="font-medium">{hbc.cattle?.name || 'N/A'}</span>
+                              <Badge variant="outline" className="text-xs">
+                                {hbc.n_carnet || 'N/A'}
+                              </Badge>
+                              <span className="text-muted-foreground text-sm">
+                                — {hbc.cattle?.character?.name || 'N/A'}
+                              </span>
+                            </Label>
+                          </div>
+                        ))
+                      )}
                     </div>
                   </ScrollArea>
                 </CardContent>
               </Card>
 
-              {/* Emission Information */}
+              {/* Informations d'émission */}
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">Informations d'Émission</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="passportNumber">Numéro de Passeport *</Label>
+                  <FormField id="passportNumber" label="Numéro de Passeport" error={errors.passportNumber?.message} required>
                     <Input
                       id="passportNumber"
-                      value={formData.passportNumber}
-                      onChange={(e) => handleInputChange('passportNumber', e.target.value)}
                       placeholder="PASS-2024-0001"
-                      required
+                      {...register('passportNumber')}
+                      className={errors.passportNumber ? 'border-destructive' : ''}
                     />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="location">Lieu d'émission *</Label>
+                  </FormField>
+                  <FormField id="location" label="Lieu d'émission" error={errors.location?.message} required>
                     <Input
                       id="location"
-                      value={formData.location}
-                      onChange={(e) => handleInputChange('location', e.target.value)}
                       placeholder="Antananarivo"
-                      required
+                      {...register('location')}
+                      className={errors.location ? 'border-destructive' : ''}
                     />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="issueDate">Date d'émission *</Label>
+                  </FormField>
+                  <FormField id="issueDate" label="Date d'émission" error={errors.issueDate?.message} required>
                     <Input
                       id="issueDate"
                       type="date"
-                      value={formData.issueDate}
-                      onChange={(e) => handleInputChange('issueDate', e.target.value)}
-                      required
+                      {...register('issueDate')}
+                      className={errors.issueDate ? 'border-destructive' : ''}
                     />
-                  </div>
-                  <div className="space-y-2 md:col-span-3">
-                    <Label htmlFor="district">Arrondissement *</Label>
-                    <Input
-                      id="district"
-                      value={formData.district}
-                      onChange={(e) => handleInputChange('district', e.target.value)}
-                      placeholder="Antananarivo I"
-                      required
-                    />
+                  </FormField>
+                  <div className="sm:col-span-2 lg:col-span-3">
+                    <FormField id="district" label="Arrondissement" error={errors.district?.message} required>
+                      <Input
+                        id="district"
+                        placeholder="Antananarivo I"
+                        {...register('district')}
+                        className={errors.district ? 'border-destructive' : ''}
+                      />
+                    </FormField>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Applicant Information */}
+              {/* Informations du demandeur */}
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">Informations du Demandeur</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="applicantName">Nom du demandeur *</Label>
+                  <FormField id="applicantName" label="Nom du demandeur" error={errors.applicantName?.message} required>
                     <Input
                       id="applicantName"
-                      value={formData.applicantName}
-                      onChange={(e) => handleInputChange('applicantName', e.target.value)}
                       placeholder="Jean Rasoanaivo"
-                      required
+                      {...register('applicantName')}
+                      className={errors.applicantName ? 'border-destructive' : ''}
                     />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="cinNumber">Numéro CIN *</Label>
+                  </FormField>
+                  <FormField id="cinNumber" label="Numéro CIN" error={errors.cinNumber?.message} required>
                     <Input
                       id="cinNumber"
-                      value={formData.cinNumber}
-                      onChange={(e) => handleInputChange('cinNumber', e.target.value)}
                       placeholder="101 234 567 890"
-                      required
+                      {...register('cinNumber')}
+                      className={errors.cinNumber ? 'border-destructive' : ''}
                     />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="cinIssueDate">Date CIN *</Label>
+                  </FormField>
+                  <FormField id="cinIssueDate" label="Date CIN" error={errors.cinIssueDate?.message} required>
                     <Input
                       id="cinIssueDate"
                       type="date"
-                      value={formData.cinIssueDate}
-                      onChange={(e) => handleInputChange('cinIssueDate', e.target.value)}
-                      required
+                      {...register('cinIssueDate')}
+                      className={errors.cinIssueDate ? 'border-destructive' : ''}
                     />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="cinIssueLocation">Lieu CIN *</Label>
+                  </FormField>
+                  <FormField id="cinIssueLocation" label="Lieu de délivrance CIN" error={errors.cinIssueLocation?.message} required>
                     <Input
                       id="cinIssueLocation"
-                      value={formData.cinIssueLocation}
-                      onChange={(e) => handleInputChange('cinIssueLocation', e.target.value)}
                       placeholder="Antananarivo"
-                      required
+                      {...register('cinIssueLocation')}
+                      className={errors.cinIssueLocation ? 'border-destructive' : ''}
                     />
-                  </div>
+                  </FormField>
                 </CardContent>
               </Card>
 
-              {/* Residence Information */}
+              {/* Informations de résidence */}
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">Informations de Résidence</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="residenceCommune">Commune de résidence *</Label>
+                  <FormField id="residenceCommune" label="Commune de résidence" error={errors.residenceCommune?.message} required>
                     <Input
                       id="residenceCommune"
-                      value={formData.residenceCommune}
-                      onChange={(e) => handleInputChange('residenceCommune', e.target.value)}
                       placeholder="Antananarivo"
-                      required
+                      {...register('residenceCommune')}
+                      className={errors.residenceCommune ? 'border-destructive' : ''}
                     />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="village">Village *</Label>
+                  </FormField>
+                  <FormField id="village" label="Village (Fokontany)" error={errors.village?.message} required>
                     <Input
                       id="village"
-                      value={formData.village}
-                      onChange={(e) => handleInputChange('village', e.target.value)}
                       placeholder="67 Ha"
-                      required
+                      {...register('village')}
+                      className={errors.village ? 'border-destructive' : ''}
                     />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="commune">Kaominina *</Label>
+                  </FormField>
+                  <FormField id="commune" label="Kaominina" error={errors.commune?.message} required>
                     <Input
                       id="commune"
-                      value={formData.commune}
-                      onChange={(e) => handleInputChange('commune', e.target.value)}
-                      placeholder="Antananarivo"
-                      required
+                      placeholder="Antananarivo Renivohitra"
+                      {...register('commune')}
+                      className={errors.commune ? 'border-destructive' : ''}
                     />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="residenceDistrict">Distrika *</Label>
+                  </FormField>
+                  <FormField id="residenceDistrict" label="Distrika" error={errors.residenceDistrict?.message} required>
                     <Input
                       id="residenceDistrict"
-                      value={formData.residenceDistrict}
-                      onChange={(e) => handleInputChange('residenceDistrict', e.target.value)}
                       placeholder="Antananarivo I"
-                      required
+                      {...register('residenceDistrict')}
+                      className={errors.residenceDistrict ? 'border-destructive' : ''}
                     />
-                  </div>
-                  <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="region">Faritra *</Label>
-                    <Input
-                      id="region"
-                      value={formData.region}
-                      onChange={(e) => handleInputChange('region', e.target.value)}
-                      placeholder="Analamanga"
-                      required
-                    />
+                  </FormField>
+                  <div className="sm:col-span-2">
+                    <FormField id="region" label="Faritra (Région)" error={errors.region?.message} required>
+                      <Input
+                        id="region"
+                        placeholder="Analamanga"
+                        {...register('region')}
+                        className={errors.region ? 'border-destructive' : ''}
+                      />
+                    </FormField>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Transfer Information */}
+              {/* Informations de transfert */}
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">Informations de Transfert</CardTitle>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="purchaseCommune">Commune du lieu d'achat *</Label>
+                <CardContent>
+                  <FormField id="purchaseCommune" label="Commune du lieu d'achat" error={errors.purchaseCommune?.message} required>
                     <Input
                       id="purchaseCommune"
-                      value={formData.purchaseCommune}
-                      onChange={(e) => handleInputChange('purchaseCommune', e.target.value)}
                       placeholder="Antananarivo"
-                      required
+                      {...register('purchaseCommune')}
+                      className={errors.purchaseCommune ? 'border-destructive' : ''}
                     />
-                  </div>
+                  </FormField>
                 </CardContent>
               </Card>
 
-              {/* Verification Information */}
+              {/* Informations de vérification */}
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">Informations de Vérification</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="verificationDate">Date de vérification *</Label>
+                  <FormField id="verificationDate" label="Date de vérification" error={errors.verificationDate?.message} required>
                     <Input
                       id="verificationDate"
                       type="date"
-                      value={formData.verificationDate}
-                      onChange={(e) => handleInputChange('verificationDate', e.target.value)}
-                      required
+                      {...register('verificationDate')}
+                      className={errors.verificationDate ? 'border-destructive' : ''}
                     />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="arreteDate">Date de l'arrêté *</Label>
+                  </FormField>
+                  <FormField id="arreteDate" label="Date de l'arrêté" error={errors.arreteDate?.message} required>
                     <Input
                       id="arreteDate"
                       type="date"
-                      value={formData.arreteDate}
-                      onChange={(e) => handleInputChange('arreteDate', e.target.value)}
-                      required
+                      {...register('arreteDate')}
+                      className={errors.arreteDate ? 'border-destructive' : ''}
                     />
-                  </div>
+                  </FormField>
                 </CardContent>
               </Card>
+
             </div>
           </ScrollArea>
 
@@ -354,15 +416,15 @@ export function PassportGeneratorModal({ open, onOpenChange, onGenerate, isGener
             </Button>
             <Button
               type="submit"
-              disabled={isGenerating || selectedCattleIds.length === 0}
+              disabled={isGenerating || cattleIds.length === 0}
             >
               {isGenerating ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Génération...
+                  Création...
                 </>
               ) : (
-                'Générer le Passeport'
+                `Créer le brouillon${cattleIds.length > 0 ? ` (${cattleIds.length} bœuf${cattleIds.length > 1 ? 's' : ''})` : ''}`
               )}
             </Button>
           </DialogFooter>

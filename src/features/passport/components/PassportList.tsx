@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { FileText, Download, Loader2 } from 'lucide-react';
+import { FileText, Download, Loader2, RefreshCw } from 'lucide-react';
 import { usePassports } from '../hooks';
 import { useHerdBookSelection } from '@/contexts/HerdBookSelectionContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -10,6 +10,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { passportService } from '../services/passportService';
 import { toast } from 'sonner';
 import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { passportKeys } from '../hooks';
 
 const STATUS_BADGES: Record<string, { label: string; className: string }> = {
   DRAFT: { label: 'Brouillon', className: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100' },
@@ -22,6 +24,24 @@ export function PassportList() {
   const { selectedHerdBookId } = useHerdBookSelection();
   const { data: passports, isLoading, error } = usePassports(selectedHerdBookId || undefined);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [generatingId, setGeneratingId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+
+  const handleGenerate = async (passportId: string) => {
+    setGeneratingId(passportId);
+    try {
+      toast.loading('Génération du PDF en cours...', { id: 'pdf-generation' });
+      await passportService.generatePdf(passportId);
+      toast.success('PDF généré avec succès', { id: 'pdf-generation' });
+      // Refresh passport list to show updated status
+      queryClient.invalidateQueries({ queryKey: passportKeys.all });
+    } catch (error) {
+      console.error('Error generating passport PDF:', error);
+      toast.error('Erreur lors de la génération du PDF', { id: 'pdf-generation' });
+    } finally {
+      setGeneratingId(null);
+    }
+  };
 
   const handleDownload = async (passportId: string, passportNumber: string) => {
     setDownloadingId(passportId);
@@ -101,19 +121,36 @@ export function PassportList() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDownload(passport.id, passport.passportNumber)}
-                        disabled={downloadingId === passport.id || passport.status === 'DRAFT'}
-                      >
-                        {downloadingId === passport.id ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Download className="h-4 w-4" />
+                      <div className="flex justify-end gap-2">
+                        {passport.status === 'DRAFT' && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleGenerate(passport.id)}
+                            disabled={generatingId === passport.id}
+                          >
+                            {generatingId === passport.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <RefreshCw className="h-4 w-4" />
+                            )}
+                            <span className="sr-only">Générer PDF</span>
+                          </Button>
                         )}
-                        <span className="sr-only">Télécharger</span>
-                      </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDownload(passport.id, passport.passportNumber)}
+                          disabled={downloadingId === passport.id || passport.status === 'DRAFT'}
+                        >
+                          {downloadingId === passport.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Download className="h-4 w-4" />
+                          )}
+                          <span className="sr-only">Télécharger</span>
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

@@ -108,11 +108,19 @@ class ApiClient {
     /**
      * Parse response and handle errors
      */
-    private async handleResponse<T>(response: Response): Promise<T> {
+    private async handleResponse<T>(response: Response, asBlob: boolean = false): Promise<T> {
         // Handle authentication errors
         if (response.status === 401) {
             this.handleAuthError();
             throw new AuthenticationError();
+        }
+
+        // Handle binary responses (like PDFs)
+        if (asBlob) {
+            if (!response.ok) {
+                throw createErrorFromStatus(response.status);
+            }
+            return (await response.blob()) as unknown as T;
         }
 
         // Try to parse JSON response
@@ -163,13 +171,13 @@ class ApiClient {
     /**
      * GET request
      */
-    async get<T>(endpoint: string, params?: QueryParams, config?: RequestConfig): Promise<T> {
+    async get<T>(endpoint: string, params?: QueryParams, config?: RequestConfig, asBlob: boolean = false): Promise<T> {
         const url = this.buildUrl(endpoint, params);
         const response = await this.fetchWithTimeout(url, {
             ...config,
             method: 'GET',
         });
-        return this.handleResponse<T>(response);
+        return this.handleResponse<T>(response, asBlob);
     }
 
     /**

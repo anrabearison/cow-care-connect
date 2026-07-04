@@ -24,7 +24,7 @@ export const passportService = {
   },
 
   async downloadPdf(id: string): Promise<Blob> {
-    return await apiClient.get<Blob>(`/api/v1/passport/${id}/download`);
+    return await apiClient.get<Blob>(`/api/v1/passport/${id}/download`, undefined, undefined, true);
   },
 
   async delete(id: string): Promise<void> {
