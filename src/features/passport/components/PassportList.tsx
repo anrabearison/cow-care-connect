@@ -12,6 +12,10 @@ import { toast } from 'sonner';
 import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { passportKeys } from '../hooks';
+import { useAuth } from '@/features/auth/AuthContext';
+import { isAdmin } from '@/constants/roles';
+import { ConfirmDialog } from '@/components/admin/ConfirmDialog';
+import { Trash2 } from 'lucide-react';
 
 const STATUS_BADGES: Record<string, { label: string; className: string }> = {
   DRAFT: { label: 'Brouillon', className: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100' },
@@ -25,7 +29,11 @@ export function PassportList() {
   const { data: passports, isLoading, error } = usePassports(selectedHerdBookId || undefined);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [generatingId, setGeneratingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [passportToDelete, setPassportToDelete] = useState<{id: string, number: string} | null>(null);
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const handleGenerate = async (passportId: string) => {
     setGeneratingId(passportId);
@@ -61,6 +69,30 @@ export function PassportList() {
       toast.error('Erreur lors du téléchargement du passeport');
     } finally {
       setDownloadingId(null);
+    }
+  };
+
+  const confirmDelete = (passportId: string, passportNumber: string) => {
+    setPassportToDelete({ id: passportId, number: passportNumber });
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (!passportToDelete) return;
+    
+    setDeletingId(passportToDelete.id);
+    try {
+      toast.loading('Suppression en cours...', { id: 'passport-delete' });
+      await passportService.delete(passportToDelete.id);
+      toast.success('Passeport supprimé avec succès', { id: 'passport-delete' });
+      queryClient.invalidateQueries({ queryKey: passportKeys.all });
+    } catch (error) {
+      console.error('Error deleting passport:', error);
+      toast.error('Erreur lors de la suppression du passeport', { id: 'passport-delete' });
+    } finally {
+      setDeletingId(null);
+      setIsDeleteDialogOpen(false);
+      setPassportToDelete(null);
     }
   };
 
@@ -150,6 +182,23 @@ export function PassportList() {
                           )}
                           <span className="sr-only">Télécharger</span>
                         </Button>
+                        
+                        {isAdmin(user?.role) && (passport.status === 'DRAFT' || passport.status === 'GENERATED') && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                            onClick={() => confirmDelete(passport.id, passport.passportNumber)}
+                            disabled={deletingId === passport.id}
+                          >
+                            {deletingId === passport.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="h-4 w-4" />
+                            )}
+                            <span className="sr-only">Supprimer</span>
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
@@ -163,6 +212,17 @@ export function PassportList() {
           </div>
         )}
       </CardContent>
+
+      <ConfirmDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onConfirm={handleDelete}
+        title="Supprimer le passeport"
+        description={`Êtes-vous sûr de vouloir supprimer le passeport n° ${passportToDelete?.number} ? Cette action est irréversible.`}
+        confirmText="Supprimer"
+        cancelText="Annuler"
+        variant="destructive"
+      />
     </Card>
   );
 }
