@@ -26,7 +26,11 @@ const STATUS_BADGES: Record<string, { label: string; className: string }> = {
 
 export function PassportList() {
   const { selectedHerdBookId } = useHerdBookSelection();
-  const { data: passports, isLoading, error } = usePassports(selectedHerdBookId || undefined);
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 10;
+  const { data: paginatedData, isLoading, error } = usePassports(selectedHerdBookId || undefined, page, itemsPerPage);
+  const passports = paginatedData?.data || [];
+  const meta = paginatedData?.meta;
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [generatingId, setGeneratingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -205,6 +209,31 @@ export function PassportList() {
                 ))}
               </TableBody>
             </Table>
+            {meta && meta.total > itemsPerPage && (
+              <div className="flex items-center justify-between p-4 border-t">
+                <p className="text-sm text-muted-foreground">
+                  Affichage de {(page - 1) * itemsPerPage + 1} à {Math.min(page * itemsPerPage, meta.total)} sur {meta.total}
+                </p>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                  >
+                    Précédent
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage((p) => Math.min(meta.last_page, p + 1))}
+                    disabled={page >= meta.last_page}
+                  >
+                    Suivant
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <div className="text-center py-8 text-muted-foreground">

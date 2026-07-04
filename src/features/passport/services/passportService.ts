@@ -6,9 +6,15 @@ export const passportService = {
     return await apiClient.post<Passport>('/api/v1/passport', data);
   },
 
-  async findAll(herdBookId?: string): Promise<Passport[]> {
-    const params = herdBookId ? { herdBookId } as Record<string, string> : {};
-    return await apiClient.get<Passport[]>('/api/v1/passport', params);
+  async findAll(herdBookId?: string, page: number = 1, limit: number = 10): Promise<{ data: Passport[], meta: any }> {
+    const params: Record<string, string> = {
+      page: page.toString(),
+      limit: limit.toString(),
+    };
+    if (herdBookId) {
+      params.herdBookId = herdBookId;
+    }
+    return await apiClient.get<{ data: Passport[], meta: any }>('/api/v1/passport', params);
   },
 
   async findOne(id: string): Promise<Passport> {
