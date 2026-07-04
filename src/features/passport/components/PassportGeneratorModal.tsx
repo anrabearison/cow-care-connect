@@ -10,7 +10,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { FileText, Loader2 } from 'lucide-react';
 import { useHerdBookSelection } from '@/contexts/HerdBookSelectionContext';
-import { useCattle } from '@/features/cattle/hooks';
+import { useHerdBookCattle } from '@/features/herdbook/hooks';
 import { CreatePassportDto } from '../types/passport.types';
 
 interface PassportGeneratorModalProps {
@@ -22,7 +22,8 @@ interface PassportGeneratorModalProps {
 
 export function PassportGeneratorModal({ open, onOpenChange, onGenerate, isGenerating = false }: PassportGeneratorModalProps) {
   const { selectedHerdBookId } = useHerdBookSelection();
-  const { cattle } = useCattle(selectedHerdBookId || '', { page: 1, per_page: 1000 });
+  const { data: herdBookCattleData } = useHerdBookCattle(selectedHerdBookId || '', 1, 1000);
+  const herdBookCattle = herdBookCattleData?.data || [];
   
   const [selectedCattleIds, setSelectedCattleIds] = useState<string[]>([]);
   const [formData, setFormData] = useState({
@@ -35,7 +36,7 @@ export function PassportGeneratorModal({ open, onOpenChange, onGenerate, isGener
     cinIssueDate: '',
     cinIssueLocation: '',
     residenceCommune: '',
-    fokontany: '',
+    village: '',
     commune: '',
     residenceDistrict: '',
     region: '',
@@ -81,8 +82,8 @@ export function PassportGeneratorModal({ open, onOpenChange, onGenerate, isGener
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
-        <DialogHeader>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden p-0">
+        <DialogHeader className="p-6 pb-4">
           <DialogTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
             Génération de Passeport Bovin
@@ -92,9 +93,9 @@ export function PassportGeneratorModal({ open, onOpenChange, onGenerate, isGener
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <ScrollArea className="max-h-[60vh] pr-4">
-            <div className="space-y-6">
+        <form onSubmit={handleSubmit} className="flex flex-col h-full">
+          <ScrollArea className="flex-1 max-h-[60vh] px-6">
+            <div className="space-y-6 pb-6">
               {/* Cattle Selection */}
               <Card>
                 <CardHeader>
@@ -106,26 +107,26 @@ export function PassportGeneratorModal({ open, onOpenChange, onGenerate, isGener
                 <CardContent>
                   <ScrollArea className="h-48 border rounded-md p-2">
                     <div className="space-y-2">
-                      {cattle.map((cattleItem) => (
+                      {herdBookCattle.map((hbc) => (
                         <div
-                          key={cattleItem.id}
+                          key={hbc.id}
                           className="flex items-center space-x-3 p-2 hover:bg-muted/50 rounded-md"
                         >
                           <Checkbox
-                            id={cattleItem.id}
-                            checked={selectedCattleIds.includes(cattleItem.id)}
-                            onCheckedChange={() => handleCattleToggle(cattleItem.id)}
+                            id={hbc.id}
+                            checked={selectedCattleIds.includes(hbc.id)}
+                            onCheckedChange={() => handleCattleToggle(hbc.id)}
                           />
                           <Label
-                            htmlFor={cattleItem.id}
+                            htmlFor={hbc.id}
                             className="flex-1 cursor-pointer flex items-center gap-2"
                           >
-                            <span className="font-medium">{cattleItem.name}</span>
+                            <span className="font-medium">{hbc.cattle?.name || 'N/A'}</span>
                             <Badge variant="outline" className="text-xs">
-                              {cattleItem.nCarnet || 'N/A'}
+                              {hbc.n_carnet || 'N/A'}
                             </Badge>
                             <span className="text-muted-foreground text-sm">
-                              - {cattleItem.character?.name}
+                              - {hbc.cattle?.character?.name || 'N/A'}
                             </span>
                           </Label>
                         </div>
@@ -140,7 +141,7 @@ export function PassportGeneratorModal({ open, onOpenChange, onGenerate, isGener
                 <CardHeader>
                   <CardTitle className="text-lg">Informations d'Émission</CardTitle>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="passportNumber">Numéro de Passeport *</Label>
                     <Input
@@ -189,7 +190,7 @@ export function PassportGeneratorModal({ open, onOpenChange, onGenerate, isGener
                 <CardHeader>
                   <CardTitle className="text-lg">Informations du Demandeur</CardTitle>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="applicantName">Nom du demandeur *</Label>
                     <Input
@@ -238,7 +239,7 @@ export function PassportGeneratorModal({ open, onOpenChange, onGenerate, isGener
                 <CardHeader>
                   <CardTitle className="text-lg">Informations de Résidence</CardTitle>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="residenceCommune">Commune de résidence *</Label>
                     <Input
@@ -250,11 +251,11 @@ export function PassportGeneratorModal({ open, onOpenChange, onGenerate, isGener
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="fokontany">Fokontany *</Label>
+                    <Label htmlFor="village">Village *</Label>
                     <Input
-                      id="fokontany"
-                      value={formData.fokontany}
-                      onChange={(e) => handleInputChange('fokontany', e.target.value)}
+                      id="village"
+                      value={formData.village}
+                      onChange={(e) => handleInputChange('village', e.target.value)}
                       placeholder="67 Ha"
                       required
                     />
@@ -316,7 +317,7 @@ export function PassportGeneratorModal({ open, onOpenChange, onGenerate, isGener
                 <CardHeader>
                   <CardTitle className="text-lg">Informations de Vérification</CardTitle>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="verificationDate">Date de vérification *</Label>
                     <Input
@@ -342,7 +343,7 @@ export function PassportGeneratorModal({ open, onOpenChange, onGenerate, isGener
             </div>
           </ScrollArea>
 
-          <DialogFooter className="gap-2">
+          <DialogFooter className="gap-2 p-6 pt-4 border-t">
             <Button
               type="button"
               variant="outline"

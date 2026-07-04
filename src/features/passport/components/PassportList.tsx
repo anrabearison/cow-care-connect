@@ -1,0 +1,131 @@
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
+import { FileText, Download, Loader2 } from 'lucide-react';
+import { usePassports } from '../hooks';
+import { useHerdBookSelection } from '@/contexts/HerdBookSelectionContext';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { passportService } from '../services/passportService';
+import { toast } from 'sonner';
+import { useState } from 'react';
+
+const STATUS_BADGES: Record<string, { label: string; className: string }> = {
+  DRAFT: { label: 'Brouillon', className: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100' },
+  GENERATED: { label: 'Généré', className: 'bg-blue-100 text-blue-800 hover:bg-blue-100' },
+  USED: { label: 'Utilisé', className: 'bg-green-100 text-green-800 hover:bg-green-100' },
+  CANCELLED: { label: 'Annulé', className: 'bg-red-100 text-red-800 hover:bg-red-100' },
+};
+
+export function PassportList() {
+  const { selectedHerdBookId } = useHerdBookSelection();
+  const { data: passports, isLoading, error } = usePassports(selectedHerdBookId || undefined);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+
+  const handleDownload = async (passportId: string, passportNumber: string) => {
+    setDownloadingId(passportId);
+    try {
+      const blob = await passportService.downloadPdf(passportId);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `passeport-${passportNumber}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      toast.success('Passeport téléchargé avec succès');
+    } catch (error) {
+      console.error('Error downloading passport:', error);
+      toast.error('Erreur lors du téléchargement du passeport');
+    } finally {
+      setDownloadingId(null);
+    }
+  };
+
+  if (!selectedHerdBookId) {
+    return null;
+  }
+
+  return (
+    <Card className="mt-8 shadow-card-soft border-none bg-white/50 backdrop-blur-sm">
+      <CardHeader>
+        <CardTitle className="text-xl flex items-center gap-2">
+          <FileText className="h-5 w-5 text-primary" />
+          Derniers Passeports Générés
+        </CardTitle>
+        <CardDescription>
+          Historique des passeports pour le livre de troupeau sélectionné
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {isLoading ? (
+          <div className="flex justify-center py-8">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : error ? (
+          <div className="text-center py-8 text-destructive">
+            Erreur lors du chargement des passeports
+          </div>
+        ) : passports && passports.length > 0 ? (
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Numéro</TableHead>
+                  <TableHead>Demandeur</TableHead>
+                  <TableHead>Date d'émission</TableHead>
+                  <TableHead>Bœufs</TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {passports.map((passport) => (
+                  <TableRow key={passport.id}>
+                    <TableCell className="font-medium">{passport.passportNumber}</TableCell>
+                    <TableCell>{passport.applicantName || 'N/A'}</TableCell>
+                    <TableCell>
+                      {passport.issueDate 
+                        ? format(new Date(passport.issueDate), 'dd MMM yyyy', { locale: fr })
+                        : 'N/A'}
+                    </TableCell>
+                    <TableCell>{passport.totalCattle}</TableCell>
+                    <TableCell>
+                      <Badge 
+                        variant="secondary" 
+                        className={STATUS_BADGES[passport.status]?.className || ''}
+                      >
+                        {STATUS_BADGES[passport.status]?.label || passport.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDownload(passport.id, passport.passportNumber)}
+                        disabled={downloadingId === passport.id || passport.status === 'DRAFT'}
+                      >
+                        {downloadingId === passport.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Download className="h-4 w-4" />
+                        )}
+                        <span className="sr-only">Télécharger</span>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        ) : (
+          <div className="text-center py-8 text-muted-foreground">
+            Aucun passeport trouvé pour ce livre de troupeau.
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}

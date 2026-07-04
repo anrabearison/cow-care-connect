@@ -66,8 +66,8 @@ export const herdBookService = {
      */
     getCattleInHerdBook: async (herdBookId: string, page = 1, perPage = 10) => {
         return apiClient.get<{ data: HerdBookCattleWithDetails[]; total: number }>(
-            `/api/v1/herd-books/${herdBookId}/cattle`,
-            { params: { page, per_page: perPage } }
+            `/api/v1/herd-book-cattle/herd-book/${herdBookId}`,
+            { page, per_page: perPage }
         );
     },
 

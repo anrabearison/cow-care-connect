@@ -36,6 +36,10 @@ export interface HerdBookCattleWithDetails extends HerdBookCattle {
         gender: 'M' | 'F';
         birthDate: string;
         photo?: string;
+        character?: {
+            id: string;
+            name: string;
+        };
     };
 }
 

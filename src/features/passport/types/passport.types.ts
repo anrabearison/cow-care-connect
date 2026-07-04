@@ -8,7 +8,7 @@ export enum PassportStatus {
 export interface Location {
   id: string;
   name: string;
-  type: 'REGION' | 'DISTRICT' | 'COMMUNE' | 'FOKONTANY';
+  type: 'REGION' | 'DISTRICT' | 'COMMUNE' | 'VILLAGE';
   code?: string;
   parentId?: string;
   regionId?: string;
@@ -23,13 +23,13 @@ export interface Applicant {
   cinIssueDate: string;
   cinIssueLocation: string;
   residenceCommuneId?: string;
-  fokontanyId?: string;
+  villageId?: string;
   communeId?: string;
   districtId?: string;
   regionId?: string;
   // Legacy fields
   residenceCommune?: string;
-  fokontany?: string;
+  village?: string;
   commune?: string;
   district?: string;
   region?: string;
@@ -100,8 +100,8 @@ export interface Passport {
   // Residence information with Location references
   residenceCommuneId?: string;
   residenceCommune?: Location;
-  fokontanyId?: string;
-  fokontany?: Location;
+  villageId?: string;
+  village?: Location;
   communeId?: string;
   commune?: Location;
   residenceDistrictId?: string;
@@ -110,7 +110,7 @@ export interface Passport {
   region?: Location;
   // Legacy residence fields
   residenceCommuneLegacy?: string;
-  fokontanyLegacy?: string;
+  villageLegacy?: string;
   communeLegacy?: string;
   residenceDistrictLegacy?: string;
   regionLegacy?: string;
@@ -145,7 +145,7 @@ export interface CreatePassportDto {
   cinIssueDate: string;
   cinIssueLocation: string;
   residenceCommune: string;
-  fokontany: string;
+  village: string;
   commune: string;
   residenceDistrict: string;
   region: string;

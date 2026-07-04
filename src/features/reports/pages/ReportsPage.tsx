@@ -3,7 +3,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { FileText, Badge, Calendar, Download, Lock } from 'lucide-react';
 import { PassportGeneratorModal } from '@/features/passport/components/PassportGeneratorModal';
 import { CreatePassportDto } from '@/features/passport/types/passport.types';
+import { passportService } from '@/features/passport/services/passportService';
 import { toast } from 'sonner';
+import { PassportList } from '@/features/passport/components/PassportList';
+import { useQueryClient } from '@tanstack/react-query';
+import { passportKeys } from '@/features/passport/hooks';
 
 const REPORT_TYPES = [
   {
@@ -43,18 +47,46 @@ const REPORT_TYPES = [
 export default function ReportsPage() {
   const [isPassportModalOpen, setIsPassportModalOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const queryClient = useQueryClient();
 
   const handleGeneratePassport = async (data: CreatePassportDto) => {
     setIsGenerating(true);
     try {
-      // TODO: Call passport service to create passport
-      // const passport = await passportService.create(data);
-      toast.success('Passeport créé avec succès');
+      toast.loading('Création du passeport en cours...', { id: 'passport-creation' });
+      
+      // Create passport
+      const passport = await passportService.create(data);
+      
+      toast.success('Passeport créé avec succès', { id: 'passport-creation' });
       setIsPassportModalOpen(false);
+      
+      // Generate PDF
+      toast.loading('Génération du PDF en cours...', { id: 'pdf-generation' });
+      await passportService.generatePdf(passport.id);
+      
+      toast.success('PDF généré avec succès', { id: 'pdf-generation' });
+      
+      // Download PDF
+      toast.loading('Téléchargement du PDF...', { id: 'pdf-download' });
+      const blob = await passportService.downloadPdf(passport.id);
+      
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `passeport-${passport.passportNumber}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast.success('Passeport téléchargé avec succès', { id: 'pdf-download' });
     } catch (error) {
-      toast.error('Erreur lors de la création du passeport');
+      console.error('Error generating passport:', error);
+      toast.error('Erreur lors de la création du passeport', { id: 'passport-creation' });
     } finally {
       setIsGenerating(false);
+      queryClient.invalidateQueries({ queryKey: passportKeys.all });
     }
   };
 
@@ -148,6 +180,9 @@ export default function ReportsPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Passport List */}
+        <PassportList />
       </div>
 
       <PassportGeneratorModal
