@@ -106,6 +106,15 @@ const UsersListPage = () => {
   };
 
   const handleCreate = () => {
+    if (formData.role !== USER_ROLES.SUPER_ADMIN && !formData.ownerId) {
+      toast({
+        title: "Erreur",
+        description: "Veuillez sélectionner un propriétaire",
+        variant: "destructive",
+      });
+      return;
+    }
+
     // Remove ownerId if empty or SUPER_ADMIN
     const dataToSend = {
       ...formData,
@@ -313,7 +322,7 @@ const UsersListPage = () => {
           <div>
             <Label>Rôle</Label>
             <Select
-              defaultValue={formData.role}
+              value={formData.role}
               onValueChange={(value) => setFormData({ ...formData, role: value as any, ownerId: '' })}
             >
               <SelectTrigger>
@@ -329,7 +338,7 @@ const UsersListPage = () => {
           <div>
             <Label>Propriétaire</Label>
             <Select
-              defaultValue={formData.ownerId}
+              value={formData.ownerId}
               onValueChange={(value) => setFormData({ ...formData, ownerId: value })}
               disabled={formData.role === USER_ROLES.SUPER_ADMIN}
             >

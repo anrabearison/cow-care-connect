@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { DataTable, Column } from "@/components/admin/DataTable";
 import { FormDialog } from "@/components/admin/FormDialog";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { purchasesService, Purchase, Supplier, CreatePurchaseData } from "@/features/admin/services/purchasesService";
+import { ownersService, Owner } from "@/features/admin/services/ownersService";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
@@ -23,6 +25,7 @@ const PurchasesListPage = () => {
     const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
     const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [owners, setOwners] = useState<Owner[]>([]);
     const [formData, setFormData] = useState<CreatePurchaseData>({
         ownerId: "",
         purchaseDate: new Date().toISOString().split("T")[0],
@@ -42,6 +45,21 @@ const PurchasesListPage = () => {
         queryKey: ["admin-suppliers-all"],
         queryFn: () => purchasesService.getSuppliersList({ per_page: 100 }),
     });
+
+    useEffect(() => {
+        const loadOwners = async () => {
+            try {
+                const response = await ownersService.getOwnersList({ per_page: 1000 });
+                if (response.success) {
+                    setOwners(response.data || []);
+                }
+            } catch (error) {
+                console.error("Error loading owners", error);
+            }
+        };
+
+        loadOwners();
+    }, []);
 
     const createMutation = useMutation({
         mutationFn: (d: CreatePurchaseData) => purchasesService.createPurchase(d),
@@ -85,6 +103,15 @@ const PurchasesListPage = () => {
     const removeItem = (index: number) => setFormData({ ...formData, items: formData.items.filter((_, i) => i !== index) });
 
     const totalAmount = formData.items.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
+
+    const handleCreate = () => {
+        if (!formData.ownerId) {
+            toast({ title: "Erreur", description: "Veuillez sélectionner un propriétaire", variant: "destructive" });
+            return;
+        }
+
+        createMutation.mutate(formData);
+    };
 
     const columns: Column<Purchase>[] = [
         { key: "id", header: "ID", render: (item) => <span className="font-mono text-sm">{item.id.slice(0, 8)}...</span> },
@@ -168,14 +195,25 @@ const PurchasesListPage = () => {
                 title="Nouvel achat de bétail"
                 submitText="Créer l'achat"
                 cancelText="Annuler"
-                onSubmit={() => createMutation.mutate(formData)}
+                onSubmit={handleCreate}
                 loading={createMutation.isPending}
             >
                 <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <Label>ID Propriétaire *</Label>
-                            <Input value={formData.ownerId} onChange={(e) => setFormData({ ...formData, ownerId: e.target.value })} placeholder="UUID du propriétaire" />
+                            <Label>Propriétaire *</Label>
+                            <Select value={formData.ownerId} onValueChange={(value) => setFormData({ ...formData, ownerId: value })}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Sélectionner un propriétaire" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {owners.map((owner) => (
+                                        <SelectItem key={owner.id} value={owner.id}>
+                                            {owner.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
                         <div>
                             <Label>Date d'achat *</Label>
