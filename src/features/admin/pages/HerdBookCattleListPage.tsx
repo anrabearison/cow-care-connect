@@ -24,11 +24,12 @@ const HerdBookCattleListPage = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   
   // New state for reference data
-  const [herdBooks, setHerdBooks] = useState<{ id: string; reference: string; year?: number }[]>([]);
+  const [herdBooks, setHerdBooks] = useState<{ id: string; reference?: string; name?: string; year?: number }[]>([]);
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
   const [statuses, setStatuses] = useState<{ id: string; name: string }[]>([]);
   const [unregisteredCattle, setUnregisteredCattle] = useState<{ id: string; name: string }[]>([]);
   const [cattleSourceType, setCattleSourceType] = useState<'existing' | 'new'>('existing');
+  const hasExistingCattleOptions = unregisteredCattle.length > 0;
   
   const [formData, setFormData] = useState<CreateHerdBookCattleData>({ 
     herdBookId: "", 
@@ -67,7 +68,14 @@ const HerdBookCattleListPage = () => {
         // Load herd books
         const hbResponse = await referenceService.getHerdBooks();
         if (hbResponse.success) {
-          const sorted = (hbResponse.data || []).sort((a, b) => (b.year || 0) - (a.year || 0));
+          const sorted = (hbResponse.data || [])
+            .map((item: any) => ({
+              id: item.id,
+              reference: item.reference || item.name || '',
+              name: item.name || item.reference || '',
+              year: item.year,
+            }))
+            .sort((a, b) => (b.year || 0) - (a.year || 0));
           setHerdBooks(sorted);
         }
 
@@ -120,6 +128,10 @@ const HerdBookCattleListPage = () => {
               name: c.name || 'Bovin sans nom' 
             }));
           setUnregisteredCattle(filtered);
+
+          if (filtered.length === 0) {
+            setCattleSourceType('new');
+          }
         }
       } catch (error) {
         console.error('Error loading unregistered cattle:', error);
@@ -245,7 +257,7 @@ const HerdBookCattleListPage = () => {
     const statusId = defaultStatus?.id || "";
     
     setFormData({ herdBookId: defaultHerdBook, cattleId: "", nCarnet: "", categoryId: "", statusId });
-    setCattleSourceType('existing');
+    setCattleSourceType(hasExistingCattleOptions ? 'existing' : 'new');
     setNewCattleData({
       name: '',
       nickname: '',
@@ -368,11 +380,12 @@ const HerdBookCattleListPage = () => {
           <div>
             <Label>Source du bovin</Label>
             <div className="flex gap-4 mt-2">
-              <label className="flex items-center gap-2">
+              <label className={`flex items-center gap-2 ${!hasExistingCattleOptions ? 'opacity-50' : ''}`}>
                 <input
                   type="radio"
                   checked={cattleSourceType === 'existing'}
                   onChange={() => setCattleSourceType('existing')}
+                  disabled={!hasExistingCattleOptions}
                   className="w-4 h-4"
                 />
                 <span className="text-sm">Bovin existant</span>
@@ -388,6 +401,12 @@ const HerdBookCattleListPage = () => {
               </label>
             </div>
           </div>
+
+          {!hasExistingCattleOptions && (
+            <p className="text-sm text-muted-foreground">
+              Aucun bovin non inscrit n’est disponible pour ce livre de troupeau. Le formulaire utilisera automatiquement le mode « Nouveau bovin ».
+            </p>
+          )}
 
           {/* Existing Cattle Selection */}
           {cattleSourceType === 'existing' && (
