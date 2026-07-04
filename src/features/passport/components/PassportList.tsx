@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { passportService } from '../services/passportService';
 import { toast } from 'sonner';
 import { useState } from 'react';
@@ -34,6 +35,9 @@ export function PassportList() {
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [generatingId, setGeneratingId] = useState<string | null>(null);
   const [previewingId, setPreviewingId] = useState<string | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [previewHtml, setPreviewHtml] = useState('');
+  const [previewPassportNumber, setPreviewPassportNumber] = useState('');
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [passportToDelete, setPassportToDelete] = useState<{id: string, number: string} | null>(null);
@@ -78,28 +82,18 @@ export function PassportList() {
   };
 
   const handlePreview = async (passportId: string, passportNumber: string) => {
-    const previewWindow = window.open('', '_blank');
-    if (!previewWindow) {
-      toast.error('Impossible d’ouvrir la prévisualisation. Vérifiez le blocage des popups.');
-      return;
-    }
-
-    previewWindow.document.write('<!doctype html><html><head><title>Chargement...</title></head><body style="font-family: sans-serif; padding: 24px;">Chargement de la prévisualisation...</body></html>');
-    previewWindow.document.close();
+    setPreviewPassportNumber(passportNumber);
+    setPreviewHtml('');
+    setIsPreviewOpen(true);
     setPreviewingId(passportId);
 
     try {
       const html = await passportService.previewHtml(passportId);
-      previewWindow.document.open();
-      previewWindow.document.write(html);
-      previewWindow.document.close();
-      previewWindow.document.title = `Prévisualisation passeport ${passportNumber}`;
+      setPreviewHtml(html);
     } catch (error) {
       console.error('Error previewing passport:', error);
-      previewWindow.document.open();
-      previewWindow.document.write('<!doctype html><html><head><title>Erreur</title></head><body style="font-family: sans-serif; padding: 24px;">Erreur lors du chargement de la prévisualisation.</body></html>');
-      previewWindow.document.close();
       toast.error('Erreur lors de la prévisualisation du passeport');
+      setIsPreviewOpen(false);
     } finally {
       setPreviewingId(null);
     }
@@ -294,6 +288,30 @@ export function PassportList() {
         cancelText="Annuler"
         variant="destructive"
       />
+
+      <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+        <DialogContent className="h-[92vh] max-w-[96vw] gap-3 p-4 sm:max-w-[1120px]">
+          <DialogHeader>
+            <DialogTitle>Prévisualisation du passeport</DialogTitle>
+            <DialogDescription>
+              Passeport n° {previewPassportNumber}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="min-h-0 flex-1 overflow-hidden rounded-md border bg-muted/20">
+            {previewHtml ? (
+              <iframe
+                title={`Prévisualisation passeport ${previewPassportNumber}`}
+                srcDoc={previewHtml}
+                className="h-full w-full bg-white"
+              />
+            ) : (
+              <div className="flex h-full min-h-[480px] items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
