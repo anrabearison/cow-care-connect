@@ -47,8 +47,8 @@ const UsersListPage = () => {
 
   // Fetch owners list for dropdown
   const { data: ownersData } = useQuery({
-    queryKey: ["admin-owners"],
-    queryFn: () => ownersService.getOwnersList({}),
+    queryKey: ["admin-owners", 1, 50],
+    queryFn: () => ownersService.getOwnersList({ page: 1, per_page: 50 }),
   });
 
   // Create mutation

@@ -42,14 +42,14 @@ const PurchasesListPage = () => {
     });
 
     const { data: suppliersData } = useQuery({
-        queryKey: ["admin-suppliers-all"],
-        queryFn: () => purchasesService.getSuppliersList({ per_page: 100 }),
+        queryKey: ["admin-suppliers-all", 1, 50],
+        queryFn: () => purchasesService.getSuppliersList({ page: 1, per_page: 50 }),
     });
 
     useEffect(() => {
         const loadOwners = async () => {
             try {
-                const response = await ownersService.getOwnersList({ per_page: 1000 });
+                const response = await ownersService.getOwnersList({ page: 1, per_page: 50 });
                 if (response.success) {
                     setOwners(response.data || []);
                 }

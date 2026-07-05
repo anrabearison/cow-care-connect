@@ -101,7 +101,12 @@ export default function CattleDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const { selectedHerdBookId } = useHerdBookSelection();
   const { cattle, loading, error } = useCattleById(id || '');
-  const { cattle: allCattle } = useCattle(selectedHerdBookId || ''); // Pour trouver les descendants
+  const { cattle: mother } = useCattleById(cattle?.motherId || '');
+  const { cattle: descendants } = useCattle(selectedHerdBookId || '', {
+    motherId: id || undefined,
+    page: 1,
+    per_page: 50,
+  });
 
   // Fetch reference data
   const { data: eventTypesData } = useEventTypes();
@@ -144,32 +149,6 @@ export default function CattleDetailsPage() {
     const type = eventTypesData?.data?.find((t: any) => t.id === id);
     return resolveIconEmoji(type?.icone, '📝');
   };
-
-  // Fonction pour trouver les descendants potentiels
-  const findDescendants = () => {
-    if (!cattle || !allCattle) return [];
-
-    // Priorité à la liaison explicite via motherId
-    const directDescendants = allCattle.filter(c => c.motherId === cattle.id);
-    if (directDescendants.length > 0) return directDescendants;
-
-    // Fallback: Logique basée sur la date pour les anciens enregistrements sans motherId
-    const currentBirthDate = new Date(cattle.birthDate);
-    const minDescendantDate = new Date(currentBirthDate);
-    minDescendantDate.setMonth(minDescendantDate.getMonth() + 9); // Gestation minimum
-
-    return allCattle.filter(descendant => {
-      if (descendant.id === cattle.id) return false;
-      if (descendant.source.type !== 'NE_DANS_TROUPEAU') return false;
-      // Si le descendant a une mère définie mais ce n'est pas ce bovin, on l'exclut
-      if (descendant.motherId && descendant.motherId !== cattle.id) return false;
-
-      const descendantBirthDate = new Date(descendant.birthDate);
-      return descendantBirthDate > minDescendantDate;
-    });
-  };
-
-  const descendants = findDescendants();
 
   // Handle Escape key to close lightbox
   useEffect(() => {
@@ -525,18 +504,16 @@ export default function CattleDetailsPage() {
                         {cattle.motherId && (
                           <div className="flex items-center space-x-1">
                             <span className="text-sm text-muted-foreground">Mère:</span>
-                            {allCattle?.find(c => c.id === cattle.motherId) ? (
+                            {mother ? (
                               <HoverCard>
                                 <HoverCardTrigger asChild>
                                   <span className="text-sm text-primary hover:underline font-medium cursor-pointer">
-                                    {allCattle.find(c => c.id === cattle.motherId)?.name}
-                                    {allCattle.find(c => c.id === cattle.motherId)?.nickname && ` (${allCattle.find(c => c.id === cattle.motherId)?.nickname})`}
+                                    {mother.name}
+                                    {mother.nickname && ` (${mother.nickname})`}
                                   </span>
                                 </HoverCardTrigger>
                                 <HoverCardContent className="w-80">
                                   {(() => {
-                                    const mother = allCattle.find(c => c.id === cattle.motherId);
-                                    if (!mother) return null;
                                     const motherIdHash = mother.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
                                     const motherImageIndex = motherIdHash % cattleImages.length;
                                     const motherImage = mother.photo || cattleImages[motherImageIndex];

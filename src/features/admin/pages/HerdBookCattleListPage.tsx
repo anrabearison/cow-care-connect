@@ -106,30 +106,20 @@ const HerdBookCattleListPage = () => {
         return;
       }
       try {
-        // Get all cattle registered in this herd book
-        const registeredResponse = await herdBookCattleService.getHerdBookCattleList({ 
-          herd_book_id: formData.herdBookId,
-          per_page: 1000 
+        const response = await cattleService.getCattleList({
+          excludedHerdBookId: formData.herdBookId,
+          page: 1,
+          per_page: 50,
         });
-        const registeredCattleIds = new Set(
-          (registeredResponse.data || [])
-            .map(item => item.cattleId)
-            .filter(Boolean)
-        );
-        
-        // Get all cattle
-        const allCattleResponse = await cattleService.getCattleList({ per_page: 1000 });
-        if (allCattleResponse.success && allCattleResponse.data) {
-          // Filter out cattle already registered in this herd book
-          const filtered = (allCattleResponse.data as any[])
-            .filter(c => c.id && !registeredCattleIds.has(c.id))
-            .map(c => ({ 
-              id: c.id, 
-              name: c.name || 'Bovin sans nom' 
-            }));
-          setUnregisteredCattle(filtered);
 
-          if (filtered.length === 0) {
+        if (response.success && response.data) {
+          const options = (response.data as any[]).map(c => ({
+            id: c.id,
+            name: c.name || 'Bovin sans nom',
+          }));
+          setUnregisteredCattle(options);
+
+          if (options.length === 0) {
             setCattleSourceType('new');
           }
         }

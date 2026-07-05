@@ -9,8 +9,14 @@ export interface CattleFilters {
   character?: string;
   category?: string;
   source_type?: string;
+  sourceType?: string;
+  mother_id?: string;
+  motherId?: string;
+  excluded_herd_book_id?: string;
+  excludedHerdBookId?: string;
   page?: number;
   per_page?: number;
+  perPage?: number;
 }
 
 class CattleService {

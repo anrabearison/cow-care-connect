@@ -68,9 +68,12 @@ class HerdBookCattleService {
   async getHerdBookCattleList(filters?: {
     page?: number;
     per_page?: number;
+    perPage?: number;
     q?: string;
     herd_book_id?: string;
+    herdBookId?: string;
     cattle_id?: string;
+    cattleId?: string;
   }): Promise<ApiResponse<HerdBookCattle[]>> {
     try {
       const queryString = apiClient.buildQueryString(filters || {});
