@@ -1,6 +1,6 @@
 import { memo, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileText, ArrowLeft, Plus } from 'lucide-react';
+import { IdCard, ArrowLeft, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -70,7 +70,7 @@ const PassportReportPage = memo(function PassportReportPage() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-primary/10 rounded-lg">
-                <FileText className="h-6 w-6 text-primary" />
+                <IdCard className="h-6 w-6 text-primary" />
               </div>
               <div>
                 <h1 className="text-2xl sm:text-3xl font-bold text-foreground">

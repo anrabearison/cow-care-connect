@@ -1,8 +1,8 @@
 import {
-  Home, Beef, User, LogOut, Settings, FileText,
+  Home, Beef, User, LogOut, Settings, ChartColumn, IdCard,
   ShieldCheck, ClipboardList, ArrowRightLeft, ChevronDown, LucideIcon
 } from 'lucide-react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
 import { isAdmin } from '@/constants/roles';
 import {
@@ -31,8 +31,7 @@ const NAVIGATION_ITEMS = [
 ];
 
 const REPORT_ITEMS = [
-  { title: 'Vue d\'ensemble', url: '/reports', icon: FileText, exact: true },
-  { title: 'Passeports', url: '/reports/passport', icon: FileText, exact: false },
+  { title: 'Passeports', url: '/reports/passport', icon: IdCard, exact: false },
   { title: 'Rapport Sanitaire', url: '/reports/health', icon: ShieldCheck, exact: false, disabled: true },
   { title: 'Inventaire', url: '/reports/inventory', icon: ClipboardList, exact: false, disabled: true },
   { title: 'Transferts', url: '/reports/transfers', icon: ArrowRightLeft, exact: false, disabled: true },
@@ -102,6 +101,7 @@ export function AppSidebar() {
   const { user, logout } = useAuth();
   const isMobile = useIsMobile();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const collapsed = state === 'collapsed';
 
@@ -123,6 +123,12 @@ export function AppSidebar() {
   const toggleReports = useCallback(() => {
     if (!collapsed) setReportsOpen((v) => !v);
   }, [collapsed]);
+
+  const handleReportsClick = useCallback((e: React.MouseEvent) => {
+    navigate('/reports');
+    if (!collapsed) setReportsOpen(true);
+    handleNavClick(e, '/reports');
+  }, [collapsed, handleNavClick, navigate]);
 
   return (
     <Sidebar className={collapsed ? 'w-14' : 'w-64'} collapsible="icon">
@@ -168,7 +174,7 @@ export function AppSidebar() {
               {collapsed ? (
                 // En mode réduit : juste l'icône, lien vers /reports
                 <NavItem
-                  item={{ title: 'Rapports', url: '/reports', icon: FileText }}
+                  item={{ title: 'Rapports', url: '/reports', icon: ChartColumn, exact: false }}
                   collapsed={collapsed}
                   onNavClick={handleNavClick}
                 />
@@ -178,7 +184,7 @@ export function AppSidebar() {
                   <SidebarMenuItem>
                     <SidebarMenuButton asChild className={BUTTON_SCALE_CLASSES}>
                       <button
-                        onClick={toggleReports}
+                        onClick={handleReportsClick}
                         className={`flex items-center justify-between w-full px-2 py-1.5 rounded-md text-sm transition-colors ${
                           isOnReports
                             ? 'bg-primary/10 text-primary font-medium'
@@ -186,10 +192,14 @@ export function AppSidebar() {
                         }`}
                       >
                         <span className="flex items-center gap-2">
-                          <FileText className="h-4 w-4 shrink-0" />
+                          <ChartColumn className="h-4 w-4 shrink-0" />
                           <span>Rapports</span>
                         </span>
                         <ChevronDown
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleReports();
+                          }}
                           className={`h-3.5 w-3.5 transition-transform duration-200 ${reportsOpen ? 'rotate-180' : ''}`}
                         />
                       </button>

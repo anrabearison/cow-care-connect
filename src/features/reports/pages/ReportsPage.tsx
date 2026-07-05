@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { FileText, ShieldCheck, ClipboardList, ArrowRightLeft, Lock, ChevronRight } from 'lucide-react';
+import { ChartColumn, IdCard, ShieldCheck, ClipboardList, ArrowRightLeft, Lock, ChevronRight } from 'lucide-react';
 
 interface ReportEntry {
   id: string;
@@ -17,7 +17,7 @@ const REPORTS: ReportEntry[] = [
     id: 'passport',
     title: 'Passeports Bovins',
     description: 'Documents officiels pour le transfert de bétail entre villages. Génération et téléchargement PDF.',
-    icon: FileText,
+    icon: IdCard,
     status: 'available',
     badge: 'Disponible',
     route: '/reports/passport',
@@ -67,7 +67,7 @@ export default function ReportsPage() {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center space-x-3 mb-2">
-            <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+            <ChartColumn className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
             <h1 className="text-2xl sm:text-4xl font-bold text-foreground">Rapports</h1>
           </div>
           <p className="text-sm sm:text-lg text-muted-foreground">
