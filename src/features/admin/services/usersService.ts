@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '@/config/api';
 import { apiClient, ApiResponse } from '@/utils/apiClient';
 
 export interface User {
@@ -29,7 +30,7 @@ export interface UpdateUserData {
 }
 
 class UsersService {
-  private readonly endpoint = '/api/v1/users';
+  private readonly endpoint = API_ENDPOINTS.USERS.BASE;
 
   async getUsersList(filters?: {
     page?: number;

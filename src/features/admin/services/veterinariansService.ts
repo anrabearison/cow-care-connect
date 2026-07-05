@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '@/config/api';
 import { apiClient, ApiResponse } from '@/utils/apiClient';
 
 export interface Veterinarian {
@@ -28,7 +29,7 @@ export interface UpdateVeterinarianData {
 }
 
 class VeterinariansService {
-  private readonly endpoint = '/api/v1/veterinarians';
+  private readonly endpoint = API_ENDPOINTS.VETERINARIANS.BASE;
 
   async getVeterinariansList(filters?: {
     page?: number;

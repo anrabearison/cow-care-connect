@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '@/config/api';
 import { apiClient, ApiResponse } from '@/utils/apiClient';
 
 // ─── Supplier ────────────────────────────────────────────────────────────────
@@ -87,8 +88,8 @@ export interface UpdatePurchaseData {
 // ─── Service ─────────────────────────────────────────────────────────────────
 
 class PurchasesService {
-    private readonly purchasesEndpoint = '/api/v1/purchases';
-    private readonly suppliersEndpoint = '/api/v1/suppliers';
+    private readonly purchasesEndpoint = API_ENDPOINTS.PURCHASES.BASE;
+    private readonly suppliersEndpoint = API_ENDPOINTS.SUPPLIERS.BASE;
 
     // Purchases
     async getPurchasesList(filters?: { page?: number; per_page?: number; supplierId?: string }): Promise<ApiResponse<Purchase[]>> {

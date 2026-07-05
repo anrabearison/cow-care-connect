@@ -1,9 +1,10 @@
+import { API_ENDPOINTS } from '@/config/api';
 import { apiClient } from '@/utils/apiClient';
 import { Passport, CreatePassportDto } from '../types/passport.types';
 
 export const passportService = {
   async create(data: CreatePassportDto): Promise<Passport> {
-    return await apiClient.post<Passport>('/api/v1/passport', data);
+    return await apiClient.post<Passport>(API_ENDPOINTS.PASSPORT.BASE, data);
   },
 
   async findAll(herdBookId?: string, page: number = 1, limit: number = 10): Promise<{ data: Passport[], meta: any }> {
@@ -14,30 +15,30 @@ export const passportService = {
     if (herdBookId) {
       params.herdBookId = herdBookId;
     }
-    return await apiClient.get<{ data: Passport[], meta: any }>('/api/v1/passport', params);
+    return await apiClient.get<{ data: Passport[], meta: any }>(API_ENDPOINTS.PASSPORT.BASE, params);
   },
 
   async findOne(id: string): Promise<Passport> {
-    return await apiClient.get<Passport>(`/api/v1/passport/${id}`);
+    return await apiClient.get<Passport>(API_ENDPOINTS.PASSPORT.byId(id));
   },
 
   async update(id: string, data: Partial<CreatePassportDto>): Promise<Passport> {
-    return await apiClient.patch<Passport>(`/api/v1/passport/${id}`, data);
+    return await apiClient.patch<Passport>(API_ENDPOINTS.PASSPORT.byId(id), data);
   },
 
   async generatePdf(id: string): Promise<Passport> {
-    return await apiClient.post<Passport>(`/api/v1/passport/${id}/generate`);
+    return await apiClient.post<Passport>(API_ENDPOINTS.PASSPORT.GENERATE(id));
   },
 
   async downloadPdf(id: string): Promise<Blob> {
-    return await apiClient.get<Blob>(`/api/v1/passport/${id}/download`, undefined, undefined, true);
+    return await apiClient.get<Blob>(API_ENDPOINTS.PASSPORT.DOWNLOAD(id), undefined, undefined, true);
   },
 
   async previewHtml(id: string): Promise<string> {
-    return await apiClient.getText(`/api/v1/passport/${id}/preview`);
+    return await apiClient.getText(API_ENDPOINTS.PASSPORT.PREVIEW(id));
   },
 
   async delete(id: string): Promise<void> {
-    await apiClient.delete<void>(`/api/v1/passport/${id}`);
+    await apiClient.delete<void>(API_ENDPOINTS.PASSPORT.byId(id));
   },
 };

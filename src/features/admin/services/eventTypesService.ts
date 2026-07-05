@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '@/config/api';
 import { apiClient, ApiResponse } from '@/utils/apiClient';
 
 export interface EventType {
@@ -22,7 +23,7 @@ export interface UpdateEventTypeData {
 }
 
 class EventTypesService {
-  private readonly endpoint = '/api/v1/event-types';
+  private readonly endpoint = API_ENDPOINTS.EVENT_TYPES.BASE;
 
   async getEventTypesList(filters?: {
     page?: number;

@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '@/config/api';
 import { apiClient, ApiResponse } from '@/utils/apiClient';
 
 export interface Character {
@@ -19,7 +20,7 @@ export interface UpdateCharacterData {
 }
 
 class CharactersService {
-  private readonly endpoint = '/api/v1/characters';
+  private readonly endpoint = API_ENDPOINTS.CHARACTERS.BASE;
 
   async getCharactersList(filters?: {
     page?: number;

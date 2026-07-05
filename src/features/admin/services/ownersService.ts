@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '@/config/api';
 import { apiClient, ApiResponse } from '@/utils/apiClient';
 
 export interface Owner {
@@ -31,7 +32,7 @@ export interface UpdateOwnerData {
 }
 
 class OwnersService {
-  private readonly endpoint = '/api/v1/owners';
+  private readonly endpoint = API_ENDPOINTS.OWNERS.BASE;
 
   async getOwnersList(filters?: {
     page?: number;

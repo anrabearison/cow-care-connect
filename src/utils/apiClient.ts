@@ -153,7 +153,7 @@ class ApiClient {
     private buildUrl(endpoint: string, params?: QueryParams): string {
         const selectedOwnerId = this.getSelectedOwnerId();
         // Skip owner_id for passport endpoints as they don't use it
-        const shouldSkipOwnerId = endpoint.startsWith('/api/v1/passport');
+        const shouldSkipOwnerId = endpoint.startsWith(API_ENDPOINTS.PASSPORT.BASE);
         const allParams = {
             ...params,
             ...(selectedOwnerId && !shouldSkipOwnerId && !endpoint.includes('owner_id=') && { owner_id: selectedOwnerId }),
@@ -263,5 +263,5 @@ class ApiClient {
 }
 
 // Export singleton instance
-import { API_CONFIG } from '@/config/api';
+import { API_CONFIG, API_ENDPOINTS } from '@/config/api';
 export const apiClient = new ApiClient(API_CONFIG.BASE_URL);

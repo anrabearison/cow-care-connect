@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '@/config/api';
 import { apiClient, ApiResponse } from '@/utils/apiClient';
 
 export interface Category {
@@ -16,7 +17,7 @@ export interface UpdateCategoryData {
 }
 
 class CategoriesService {
-  private readonly endpoint = '/api/v1/categories';
+  private readonly endpoint = API_ENDPOINTS.CATEGORIES.BASE;
 
   async getCategoriesList(filters?: {
     page?: number;

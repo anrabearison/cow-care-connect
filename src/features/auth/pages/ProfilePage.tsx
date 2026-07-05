@@ -10,6 +10,7 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { User, Mail, Shield, Edit3, Save, X } from 'lucide-react';
 import { getRoleLabel, getRoleColor } from '@/constants/roles';
+import { EXTERNAL_URLS } from '@/config/api';
 
 const ProfilePage = () => {
   const { user } = useAuth();
@@ -115,7 +116,7 @@ const ProfilePage = () => {
             <CardContent className="space-y-4 sm:space-y-6">
               <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
                 <Avatar className="h-16 w-16 sm:h-20 sm:w-20">
-                  <AvatarImage src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=0d9488&color=fff`} />
+                  <AvatarImage src={`${EXTERNAL_URLS.UI_AVATARS_API}?name=${encodeURIComponent(user.name)}&background=0d9488&color=fff`} />
                   <AvatarFallback className="text-base sm:text-lg">
                     {user.name.split(' ').map(n => n[0]).join('').toUpperCase()}
                   </AvatarFallback>

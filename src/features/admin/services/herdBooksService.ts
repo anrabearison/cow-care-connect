@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '@/config/api';
 import { apiClient, ApiResponse } from '@/utils/apiClient';
 
 export interface HerdBook {
@@ -26,7 +27,7 @@ export interface UpdateHerdBookData {
 }
 
 class HerdBooksService {
-  private readonly endpoint = '/api/v1/herd-books';
+  private readonly endpoint = API_ENDPOINTS.HERD_BOOKS.BASE;
 
   async getHerdBooksList(filters?: {
     page?: number;

@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '@/config/api';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useOwnerSelection } from '@/contexts/OwnerSelectionContext';
@@ -34,7 +35,7 @@ export const OwnerSelector = () => {
         if (user?.ownerId && (user?.role === 'OWNER_ADMIN' || user?.role === 'OWNER_USER')) {
             setSelectedOwnerId(user.ownerId);
             apiClient
-                .get<Owner>(`/api/v1/owners/${user.ownerId}`)
+                .get<Owner>(API_ENDPOINTS.OWNERS.byId(user.ownerId))
                 .then((response) => {
                     setSelectedOwnerName(response.name);
                 })
@@ -44,7 +45,7 @@ export const OwnerSelector = () => {
         } else if (user?.role === 'SUPER_ADMIN') {
             setLoading(true);
             apiClient
-                .get<{ data: Owner[] }>('/api/v1/owners')
+                .get<{ data: Owner[] }>(API_ENDPOINTS.OWNERS.BASE)
                 .then((response) => {
                     setOwners(response.data || []);
                 })

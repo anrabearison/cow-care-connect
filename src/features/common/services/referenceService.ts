@@ -1,4 +1,4 @@
-import { buildApiUrl } from '@/config/api';
+import { API_ENDPOINTS, buildApiUrl } from '@/config/api';
 import { ApiResponse } from '@/utils/apiClient';
 import { TypeEvenement } from '@/features/events/types';
 import { fetchWithAuth } from '@/utils/fetchUtils';
@@ -22,31 +22,31 @@ class ReferenceService {
     }
 
     async getEventTypes(): Promise<ApiResponse<TypeEvenement[]>> {
-        return this.fetchData<TypeEvenement[]>('/api/v1/event-types', 'Erreur chargement types événements');
+        return this.fetchData<TypeEvenement[]>(API_ENDPOINTS.EVENT_TYPES.BASE, 'Erreur chargement types événements');
     }
 
     async getVeterinarians(): Promise<ApiResponse<Veterinarian[]>> {
-        return this.fetchData<Veterinarian[]>('/api/v1/veterinarians', 'Erreur chargement vétérinaires');
+        return this.fetchData<Veterinarian[]>(API_ENDPOINTS.VETERINARIANS.BASE, 'Erreur chargement vétérinaires');
     }
 
     async getMedicaments(): Promise<ApiResponse<Medicament[]>> {
-        return this.fetchData<Medicament[]>('/api/v1/medicaments', 'Erreur chargement médicaments');
+        return this.fetchData<Medicament[]>(API_ENDPOINTS.MEDICAMENTS.BASE, 'Erreur chargement médicaments');
     }
 
     async getCategories(): Promise<ApiResponse<ReferenceItem[]>> {
-        return this.fetchData<ReferenceItem[]>('/api/v1/categories', 'Erreur chargement catégories');
+        return this.fetchData<ReferenceItem[]>(API_ENDPOINTS.CATEGORIES.BASE, 'Erreur chargement catégories');
     }
 
     async getCharacters(): Promise<ApiResponse<ReferenceItem[]>> {
-        return this.fetchData<ReferenceItem[]>('/api/v1/characters', 'Erreur chargement caractères');
+        return this.fetchData<ReferenceItem[]>(API_ENDPOINTS.CHARACTERS.BASE, 'Erreur chargement caractères');
     }
 
     async getStatuses(): Promise<ApiResponse<ReferenceItem[]>> {
-        return this.fetchData<ReferenceItem[]>('/api/v1/status', 'Erreur chargement statuts');
+        return this.fetchData<ReferenceItem[]>(API_ENDPOINTS.STATUS.BASE, 'Erreur chargement statuts');
     }
 
     async getHerdBooks(): Promise<ApiResponse<ReferenceItem[]>> {
-        return this.fetchData<ReferenceItem[]>('/api/v1/herd-books', 'Erreur chargement livres de troupeau');
+        return this.fetchData<ReferenceItem[]>(API_ENDPOINTS.HERD_BOOKS.BASE, 'Erreur chargement livres de troupeau');
     }
 }
 

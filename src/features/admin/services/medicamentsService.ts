@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '@/config/api';
 import { apiClient, ApiResponse } from '@/utils/apiClient';
 
 export interface Medicament {
@@ -49,7 +50,7 @@ export interface UpdateMedicamentData {
 }
 
 class MedicamentsService {
-  private readonly endpoint = '/api/v1/medicaments';
+  private readonly endpoint = API_ENDPOINTS.MEDICAMENTS.BASE;
 
   async getMedicamentsList(filters?: {
     page?: number;

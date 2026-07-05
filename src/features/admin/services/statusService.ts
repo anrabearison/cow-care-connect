@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '@/config/api';
 import { apiClient, ApiResponse } from '@/utils/apiClient';
 
 export interface Status {
@@ -20,7 +21,7 @@ export interface UpdateStatusData {
 }
 
 class StatusService {
-  private readonly endpoint = '/api/v1/status';
+  private readonly endpoint = API_ENDPOINTS.STATUS.BASE;
 
   async getStatusList(filters?: {
     page?: number;

@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '@/config/api';
 import { apiClient, ApiResponse } from '@/utils/apiClient';
 
 export interface TreatmentDosage {
@@ -47,7 +48,7 @@ export interface UpdateTreatmentData {
 }
 
 class TreatmentsService {
-  private readonly endpoint = '/api/v1/treatments';
+  private readonly endpoint = API_ENDPOINTS.TREATMENTS.BASE;
 
   async getTreatmentsList(filters?: {
     page?: number;
