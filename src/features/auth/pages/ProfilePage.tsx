@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { User, Mail, Shield, Edit3, Save, X, Link2, Unlink, Loader2 } from 'lucide-react';
 import { getRoleLabel, getRoleColor } from '@/constants/roles';
 import { EXTERNAL_URLS } from '@/config/api';
+import { APP_URLS } from '@/config/urls';
 import { ProviderInfo } from '@/features/auth/services';
 
 const ProfilePage = () => {
@@ -46,7 +47,7 @@ const ProfilePage = () => {
     setLinkingGoogle(true);
     try {
       const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-      const redirectUri = `${window.location.origin}/auth/google/callback`;
+      const redirectUri = APP_URLS.GOOGLE_CALLBACK;
       const scope = 'email profile';
       
       const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}&response_type=code&state=link`;

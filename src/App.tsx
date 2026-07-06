@@ -8,6 +8,7 @@ import { MainLayout } from "@/layouts/MainLayout";
 import { AdminLayout } from "@/layouts/AdminLayout";
 import { lazy, Suspense, useEffect } from "react";
 import { AppProviders } from "@/AppProviders";
+import { APP_ROUTE_PATHS } from "@/config/urls";
 
 const HomePage = lazy(() => import("./pages/HomePage"));
 const CattlePage = lazy(() => import("@/features/cattle/pages/CattlePage"));
@@ -35,6 +36,7 @@ const CharactersListPage = lazy(() => import("@/features/admin/pages/CharactersL
 const HerdBooksListPage = lazy(() => import("@/features/admin/pages/HerdBooksListPage"));
 const HerdBookCattleListPage = lazy(() => import("@/features/admin/pages/HerdBookCattleListPage"));
 const OwnersListPage = lazy(() => import("@/features/admin/pages/OwnersListPage"));
+const InvitationsListPage = lazy(() => import("@/features/admin/pages/InvitationsListPage"));
 const PurchasesListPage = lazy(() => import("@/features/admin/pages/PurchasesListPage"));
 const SuppliersListPage = lazy(() => import("@/features/admin/pages/SuppliersListPage"));
 
@@ -58,8 +60,8 @@ const AppContent = () => {
       <Suspense fallback={null}>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
-          <Route path="/invitation" element={<InvitationPage />} />
+          <Route path={APP_ROUTE_PATHS.GOOGLE_CALLBACK} element={<GoogleCallbackPage />} />
+          <Route path={APP_ROUTE_PATHS.INVITATION} element={<InvitationPage />} />
           
           {/* Admin routes */}
           <Route
@@ -90,6 +92,14 @@ const AppContent = () => {
               element={
                 <SuperAdminRoute>
                   <OwnersListPage />
+                </SuperAdminRoute>
+              }
+            />
+            <Route
+              path="invitations"
+              element={
+                <SuperAdminRoute>
+                  <InvitationsListPage />
                 </SuperAdminRoute>
               }
             />

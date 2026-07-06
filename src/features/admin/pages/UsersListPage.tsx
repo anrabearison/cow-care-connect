@@ -6,9 +6,11 @@ import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { useAuth } from "@/features/auth/AuthContext";
 import { usersService, User, CreateUserData } from "@/features/admin/services/usersService";
 import { ownersService, Owner } from "@/features/admin/services/ownersService";
+import { invitationsService, InvitationCreateData, InvitationResponse } from "@/features/admin/services/invitationsService";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
@@ -26,6 +28,7 @@ const UsersListPage = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isInvitationDialogOpen, setIsInvitationDialogOpen] = useState(false);
   const [formData, setFormData] = useState<CreateUserData>({
     name: '',
     email: '',
@@ -33,6 +36,12 @@ const UsersListPage = () => {
     role: 'OWNER_USER',
     ownerId: '',
   });
+  const [invitationFormData, setInvitationFormData] = useState<InvitationCreateData>({
+    email: '',
+    role: 'OWNER_USER',
+    ownerId: '',
+  });
+  const [createdInvitation, setCreatedInvitation] = useState<InvitationResponse | null>(null);
 
   // Fetch users list
   const { data: usersData, isLoading } = useQuery({
@@ -99,6 +108,24 @@ const UsersListPage = () => {
     },
   });
 
+  const createInvitationMutation = useMutation({
+    mutationFn: (data: InvitationCreateData) => invitationsService.createInvitation(data),
+    onSuccess: (invitation) => {
+      toast({
+        title: "Succès",
+        description: "Invitation créée avec succès",
+      });
+      setCreatedInvitation(invitation);
+    },
+    onError: () => {
+      toast({
+        title: "Erreur",
+        description: "Erreur lors de la création de l'invitation",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleDelete = () => {
     if (selectedUser) {
       deleteMutation.mutate(selectedUser.id);
@@ -121,6 +148,32 @@ const UsersListPage = () => {
       ownerId: formData.role === USER_ROLES.SUPER_ADMIN || !formData.ownerId ? undefined : formData.ownerId,
     };
     createMutation.mutate(dataToSend);
+  };
+
+  const handleCreateInvitation = () => {
+    if (!invitationFormData.email) {
+      toast({
+        title: "Erreur",
+        description: "Veuillez saisir un email pour l'invitation",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (invitationFormData.role !== USER_ROLES.SUPER_ADMIN && !invitationFormData.ownerId) {
+      toast({
+        title: "Erreur",
+        description: "Veuillez sélectionner un propriétaire pour cette invitation",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    createInvitationMutation.mutate({
+      email: invitationFormData.email,
+      role: invitationFormData.role,
+      ownerId: invitationFormData.role === USER_ROLES.SUPER_ADMIN ? undefined : invitationFormData.ownerId || undefined,
+    });
   };
 
   const columns: Column<User>[] = [
@@ -173,6 +226,15 @@ const UsersListPage = () => {
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold">Utilisateurs</h1>
           <p className="text-muted-foreground mt-2">Gestion des utilisateurs</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button onClick={() => {
+            setCreatedInvitation(null);
+            setInvitationFormData({ email: '', role: 'OWNER_USER', ownerId: '' });
+            setIsInvitationDialogOpen(true);
+          }}>
+            Créer une invitation
+          </Button>
         </div>
       </div>
 
@@ -278,6 +340,113 @@ const UsersListPage = () => {
         variant="destructive"
         loading={deleteMutation.isPending}
       />
+
+      {/* Invitation Dialog */}
+      <FormDialog
+        open={isInvitationDialogOpen}
+        onOpenChange={(open) => {
+          setIsInvitationDialogOpen(open);
+          if (!open) {
+            setCreatedInvitation(null);
+          }
+        }}
+        title="Créer une invitation"
+        submitText="Générer"
+        cancelText="Annuler"
+        onSubmit={handleCreateInvitation}
+        loading={createInvitationMutation.isPending}
+      >
+        <div className="space-y-4">
+          <div>
+            <Label>Email</Label>
+            <Input
+              type="email"
+              placeholder="email@example.com"
+              value={invitationFormData.email}
+              onChange={(e) => setInvitationFormData({ ...invitationFormData, email: e.target.value })}
+            />
+          </div>
+          <div>
+            <Label>Rôle</Label>
+            <Select
+              value={invitationFormData.role}
+              onValueChange={(value) => setInvitationFormData({ ...invitationFormData, role: value as any, ownerId: '' })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Sélectionner un rôle" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={USER_ROLES.OWNER_USER}>Utilisateur</SelectItem>
+                <SelectItem value={USER_ROLES.OWNER_ADMIN}>Admin Propriétaire</SelectItem>
+                <SelectItem value={USER_ROLES.SUPER_ADMIN}>Super Admin</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Propriétaire</Label>
+            <Select
+              value={invitationFormData.ownerId}
+              onValueChange={(value) => setInvitationFormData({ ...invitationFormData, ownerId: value })}
+              disabled={invitationFormData.role === USER_ROLES.SUPER_ADMIN}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={invitationFormData.role === USER_ROLES.SUPER_ADMIN ? "Non requis pour Super Admin" : "Sélectionner un propriétaire"} />
+              </SelectTrigger>
+              <SelectContent>
+                {ownersData?.data?.map((owner) => (
+                  <SelectItem key={owner.id} value={owner.id}>
+                    {owner.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {createdInvitation && (
+            <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+              <p className="font-semibold">Invitation créée</p>
+              <p className="text-sm text-muted-foreground mb-2">Copiez le lien ci-dessous et fournissez-le à la personne invitée.</p>
+              <div className="rounded-md bg-white p-3 border border-slate-200 font-mono text-sm break-words">
+                {`${APP_URLS.INVITATION}?token=${createdInvitation.token}`}
+              </div>
+              <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <Label>Expire le</Label>
+                  <p className="text-sm font-medium">{new Date(createdInvitation.expiresAt).toLocaleDateString('fr-FR')}</p>
+                </div>
+                <div>
+                  <Label>Email</Label>
+                  <p className="text-sm font-medium">{createdInvitation.email}</p>
+                </div>
+              </div>
+              <div className="mt-4">
+                <Button
+                  variant="outline"
+                  className="w-full sm:w-auto"
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(`${APP_URLS.INVITATION}?token=${createdInvitation.token}`);
+                      toast({
+                        title: "Copié",
+                        description: "Le lien d'invitation a été copié dans le presse-papiers.",
+                      });
+                    } catch (error) {
+                      console.error('Copy invitation link error:', error);
+                      toast({
+                        title: "Erreur",
+                        description: "Impossible de copier le lien. Veuillez le copier manuellement.",
+                        variant: "destructive",
+                      });
+                    }
+                  }}
+                >
+                  Copier le lien
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      </FormDialog>
 
       {/* Create Dialog */}
       <FormDialog

@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Beef, Loader2, Eye, EyeOff } from 'lucide-react';
 import heroImage from '@/assets/hero-cattle.jpg';
+import { APP_URLS } from '@/config/urls';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('admin@ombiko.mg');
@@ -40,7 +41,7 @@ export default function LoginPage() {
     
     // Rediriger vers Google OAuth2
     const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-    const redirectUri = `${window.location.origin}/auth/google/callback`;
+    const redirectUri = APP_URLS.GOOGLE_CALLBACK;
     const scope = 'email profile';
     const state = invitationToken || '';
     

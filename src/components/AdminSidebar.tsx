@@ -11,6 +11,7 @@ import {
   Brain,
   Book,
   FileText,
+  Mail,
   LogOut,
   LucideIcon,
   Settings,
@@ -97,6 +98,7 @@ const SUPER_ADMIN_GROUPS = [
     label: 'Super Admin',
     items: [
       { title: 'Propriétaires', url: '/admin/owners', icon: Building2 },
+      { title: 'Invitations', url: '/admin/invitations', icon: Mail },
     ],
   },
 ];

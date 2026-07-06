@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Beef, Loader2, CheckCircle, XCircle, Clock } from 'lucide-react';
 import { apiClient } from '@/utils/apiClient';
+import { API_ENDPOINTS } from '@/config/api';
+import { APP_URLS } from '@/config/urls';
 
 interface InvitationData {
   email: string;
@@ -31,12 +33,13 @@ export default function InvitationPage() {
       }
 
       try {
-        const data = await apiClient.get<InvitationData>(`/invitations/validate/${token}`, { skipAuth: true });
+        const data = await apiClient.get<InvitationData>(`${API_ENDPOINTS.INVITATIONS.BASE}/validate/${token}`, undefined, { skipAuth: true });
         setInvitation(data);
         setLoading(false);
       } catch (err: any) {
         console.error('Invitation validation error:', err);
-        setError(err.response?.data?.message || 'Invitation invalide ou expirée');
+        const message = err instanceof Error ? err.message : err?.response?.data?.message || 'Invitation invalide ou expirée';
+        setError(message);
         setLoading(false);
       }
     };
@@ -48,7 +51,7 @@ export default function InvitationPage() {
     if (!token) return;
     
     const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-    const redirectUri = `${window.location.origin}/auth/google/callback`;
+    const redirectUri = APP_URLS.GOOGLE_CALLBACK;
     const scope = 'email profile';
     const state = token;
     

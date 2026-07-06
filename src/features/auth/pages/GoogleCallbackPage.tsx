@@ -21,7 +21,8 @@ export default function GoogleCallbackPage() {
       }
 
       try {
-        const success = await loginWithGoogle(code, state || undefined);
+        const invitationToken = state ?? undefined;
+        const success = await loginWithGoogle(code, invitationToken);
         if (success) {
           navigate('/');
         } else {

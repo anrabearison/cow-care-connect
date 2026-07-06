@@ -56,6 +56,7 @@ export const API_ENDPOINTS = {
     BASE: `${API_PREFIX}/upload`,
   },
   VETERINARIANS: createResourceEndpoints('veterinarians'),
+  INVITATIONS: createResourceEndpoints('invitations'),
 } as const;
 
 export const EXTERNAL_URLS = {

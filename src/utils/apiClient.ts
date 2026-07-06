@@ -153,8 +153,10 @@ class ApiClient {
 
     private buildUrl(endpoint: string, params?: QueryParams): string {
         const selectedOwnerId = this.getSelectedOwnerId();
-        // Skip owner_id for passport endpoints as they don't use it
-        const shouldSkipOwnerId = endpoint.startsWith(API_ENDPOINTS.PASSPORT.BASE);
+        // Skip owner_id for endpoint groups that don't accept owner filtering
+        const shouldSkipOwnerId =
+            endpoint.startsWith(API_ENDPOINTS.PASSPORT.BASE) ||
+            endpoint.startsWith(API_ENDPOINTS.AUTH.BASE);
         const allParams = {
             ...params,
             ...(selectedOwnerId && !shouldSkipOwnerId && !endpoint.includes('owner_id=') && { owner_id: selectedOwnerId }),

@@ -73,7 +73,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     try {
       const { authService } = await import('./services');
-      const response = await authService.loginWithGoogle(code, invitationToken);
+      const response = await authService.loginWithGoogle(code, invitationToken ?? '');
 
       if (response.success) {
         setUser(response.user);
