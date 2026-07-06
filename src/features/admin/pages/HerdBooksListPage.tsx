@@ -128,7 +128,6 @@ const HerdBooksListPage = () => {
   };
 
   const columns: Column<HerdBook>[] = [
-    { key: "id", header: "ID", render: (item) => <span className="font-mono text-sm">{item.id.slice(0, 8)}...</span> },
     { key: "reference", header: "Référence" },
     { key: "year", header: "Année" },
     { key: "owner", header: "Propriétaire", render: (item) => {
@@ -165,6 +164,7 @@ const HerdBooksListPage = () => {
         {selectedItem && (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
+              <div><Label>ID</Label><p className="text-sm font-medium font-mono">{selectedItem.id}</p></div>
               <div><Label>Référence</Label><p className="text-sm font-medium">{selectedItem.reference}</p></div>
               <div><Label>Année</Label><p className="text-sm font-medium">{selectedItem.year}</p></div>
               <div><Label>Propriétaire</Label><p className="text-sm font-medium">{selectedItem.owner?.name || "-"}</p></div>

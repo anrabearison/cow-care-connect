@@ -97,7 +97,6 @@ const EventsListPage = () => {
   };
 
   const columns: Column<Event>[] = [
-    { key: "id", header: "ID", render: (item) => <span className="font-mono text-sm">{item.id.slice(0, 8)}...</span> },
     { key: "cattle", header: "Bovin", render: (item) => {
       if (!item.cattle) return "-";
       if (typeof item.cattle === 'string') return item.cattle;
@@ -140,6 +139,7 @@ const EventsListPage = () => {
         {selectedItem && (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
+              <div><Label>ID</Label><p className="text-sm font-medium font-mono">{selectedItem.id}</p></div>
               <div><Label>Bovin</Label><p className="text-sm font-medium">{(() => {
                 if (!selectedItem.cattle) return "-";
                 if (typeof selectedItem.cattle === 'string') return selectedItem.cattle;

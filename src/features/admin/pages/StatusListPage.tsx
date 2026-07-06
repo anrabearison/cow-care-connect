@@ -96,7 +96,6 @@ const StatusListPage = () => {
   };
 
   const columns: Column<Status>[] = [
-    { key: "id", header: "ID", render: (item) => <span className="font-mono text-sm">{item.id.slice(0, 8)}...</span> },
     { key: "name", header: "Nom" },
   ];
 
@@ -126,6 +125,7 @@ const StatusListPage = () => {
         {selectedItem && (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
+              <div><Label>ID</Label><p className="text-sm font-medium font-mono">{selectedItem.id}</p></div>
               <div><Label>Nom</Label><p className="text-sm font-medium">{selectedItem.name}</p></div>
               <div><Label>Description</Label><p className="text-sm font-medium">{selectedItem.description || "-"}</p></div>
             </div>

@@ -95,7 +95,6 @@ const OwnersListPage = () => {
   };
 
   const columns: Column<Owner>[] = [
-    { key: "id", header: "ID", render: (item) => <span className="font-mono text-sm">{item.id.slice(0, 8)}...</span> },
     { key: "name", header: "Nom" },
     { key: "email", header: "Email", render: (item) => item.email || "-" },
     { key: "phone", header: "Téléphone", render: (item) => item.phone || "-" },
@@ -128,6 +127,7 @@ const OwnersListPage = () => {
         {selectedItem && (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
+              <div><Label>ID</Label><p className="text-sm font-medium font-mono">{selectedItem.id}</p></div>
               <div><Label>Nom</Label><p className="text-sm font-medium">{selectedItem.name}</p></div>
               <div><Label>Email</Label><p className="text-sm font-medium">{selectedItem.email || "-"}</p></div>
               <div><Label>Téléphone</Label><p className="text-sm font-medium">{selectedItem.phone || "-"}</p></div>

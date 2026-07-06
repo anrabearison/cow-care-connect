@@ -125,13 +125,6 @@ const UsersListPage = () => {
 
   const columns: Column<User>[] = [
     {
-      key: "id",
-      header: "ID",
-      render: (item) => (
-        <span className="font-mono text-sm">{item.id.slice(0, 8)}...</span>
-      ),
-    },
-    {
       key: "name",
       header: "Nom",
     },
@@ -238,6 +231,10 @@ const UsersListPage = () => {
         {selectedUser && (
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <Label>ID</Label>
+                <p className="text-sm font-medium font-mono">{selectedUser.id}</p>
+              </div>
               <div>
                 <Label>Nom</Label>
                 <p className="text-sm font-medium">{selectedUser.name}</p>

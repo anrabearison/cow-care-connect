@@ -270,7 +270,6 @@ const HerdBookCattleListPage = () => {
   };
 
   const columns: Column<HerdBookCattle>[] = [
-    { key: "id", header: "ID", render: (item) => <span className="font-mono text-sm">{item.id.slice(0, 8)}...</span> },
     { key: "herdBook", header: "Livre de troupeau", render: (item) => {
       if (!item.herdBook) return "-";
       if (typeof item.herdBook === 'string') return item.herdBook;
@@ -326,6 +325,7 @@ const HerdBookCattleListPage = () => {
         {selectedItem && (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
+              <div><Label>ID</Label><p className="text-sm font-medium font-mono">{selectedItem.id}</p></div>
               <div><Label>Livre de troupeau</Label><p className="text-sm font-medium">{(() => {
                 if (!selectedItem.herdBook) return "-";
                 if (typeof selectedItem.herdBook === 'string') return selectedItem.herdBook;
