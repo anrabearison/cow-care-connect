@@ -24,7 +24,7 @@ export const HerdBookSelectionProvider: React.FC<{ children: ReactNode }> = ({ c
     // Si super admin, utiliser l'owner sélectionné, sinon utiliser l'owner de l'utilisateur
     const effectiveOwnerId = user?.role === 'SUPER_ADMIN'
         ? selectedOwnerId
-        : (user?.owner_id || user?.owner?.id);
+        : (user?.ownerId || user?.owner?.id);
 
     // Charger les HerdBooks pour le propriétaire - SEULEMENT si l'utilisateur est connecté
     const { data: herdBooksData, isLoading, error } = useHerdBooks(effectiveOwnerId || undefined);
