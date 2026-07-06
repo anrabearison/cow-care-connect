@@ -274,8 +274,10 @@ const HerdBookCattleListPage = () => {
     { key: "herdBook", header: "Livre de troupeau", render: (item) => {
       if (!item.herdBook) return "-";
       if (typeof item.herdBook === 'string') return item.herdBook;
-      if (item.herdBook.name) return String(item.herdBook.name);
-      return "-";
+      const hb = item.herdBook as any;
+      const name = hb.name || hb.reference || '-';
+      const year = hb.year ? ` (${hb.year})` : '';
+      return `${name}${year}`;
     }},
     { key: "cattle", header: "Bovin", render: (item) => {
       if (!item.cattle) return "-";
@@ -327,8 +329,10 @@ const HerdBookCattleListPage = () => {
               <div><Label>Livre de troupeau</Label><p className="text-sm font-medium">{(() => {
                 if (!selectedItem.herdBook) return "-";
                 if (typeof selectedItem.herdBook === 'string') return selectedItem.herdBook;
-                if (selectedItem.herdBook.name) return selectedItem.herdBook.name;
-                return "-";
+                const hb = selectedItem.herdBook as any;
+                const name = hb.name || hb.reference || '-';
+                const year = hb.year ? ` (${hb.year})` : '';
+                return `${name}${year}`;
               })()}</p></div>
               <div><Label>Bovin</Label><p className="text-sm font-medium">{(() => {
                 if (!selectedItem.cattle) return "-";
