@@ -68,12 +68,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const loginWithGoogle = async (code: string, invitationToken?: string): Promise<boolean> => {
+    const loginWithGoogle = async (code: string, invitationToken?: string): Promise<boolean> => {
     setIsLoading(true);
 
     try {
       const { authService } = await import('./services');
-      const response = await authService.loginWithGoogle(code, invitationToken ?? '');
+      const response = await authService.loginWithGoogle(code, invitationToken);
 
       if (response.success) {
         setUser(response.user);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
 import { Loader2 } from 'lucide-react';
@@ -8,9 +8,12 @@ export default function GoogleCallbackPage() {
   const [searchParams] = useSearchParams();
   const { loginWithGoogle } = useAuth();
   const [error, setError] = useState<string | null>(null);
+  const handledRef = useRef(false);
 
   useEffect(() => {
     const handleGoogleCallback = async () => {
+      if (handledRef.current) return;
+      handledRef.current = true;
       const code = searchParams.get('code');
       const state = searchParams.get('state'); // C'est le token d'invitation
 
