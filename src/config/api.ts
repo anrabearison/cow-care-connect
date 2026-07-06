@@ -57,6 +57,10 @@ export const API_ENDPOINTS = {
   },
   VETERINARIANS: createResourceEndpoints('veterinarians'),
   INVITATIONS: createResourceEndpoints('invitations'),
+  DASHBOARD: {
+    BASE: `${API_PREFIX}/dashboard`,
+    STATS: `${API_PREFIX}/dashboard/stats`,
+  },
 } as const;
 
 export const EXTERNAL_URLS = {

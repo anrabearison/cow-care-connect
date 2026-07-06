@@ -1,7 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Beef, Users, Building2, Activity } from "lucide-react";
+import { Beef, Users, Building2, Activity, Loader2 } from "lucide-react";
+import { useDashboardStats } from "@/hooks/useDashboardStats";
 
 const AdminDashboard = () => {
+  const { stats, isLoading, error } = useDashboardStats();
+
   return (
     <div className="space-y-6 p-4 sm:p-6 lg:p-8">
       <div>
@@ -16,8 +19,16 @@ const AdminDashboard = () => {
             <Beef className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">-</div>
-            <p className="text-xs text-muted-foreground">Données à charger</p>
+            {isLoading ? (
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            ) : (
+              <>
+                <div className="text-2xl font-bold">{stats?.totalCattle || 0}</div>
+                <p className="text-xs text-muted-foreground">
+                  {stats?.males || 0} mâles, {stats?.females || 0} femelles
+                </p>
+              </>
+            )}
           </CardContent>
         </Card>
 
@@ -27,8 +38,14 @@ const AdminDashboard = () => {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">-</div>
-            <p className="text-xs text-muted-foreground">Données à charger</p>
+            {isLoading ? (
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            ) : (
+              <>
+                <div className="text-2xl font-bold">{stats?.totalUsers || 0}</div>
+                <p className="text-xs text-muted-foreground">Utilisateurs enregistrés</p>
+              </>
+            )}
           </CardContent>
         </Card>
 
@@ -38,8 +55,14 @@ const AdminDashboard = () => {
             <Building2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">-</div>
-            <p className="text-xs text-muted-foreground">Données à charger</p>
+            {isLoading ? (
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            ) : (
+              <>
+                <div className="text-2xl font-bold">{stats?.totalOwners || 0}</div>
+                <p className="text-xs text-muted-foreground">Propriétaires actifs</p>
+              </>
+            )}
           </CardContent>
         </Card>
 
@@ -49,20 +72,52 @@ const AdminDashboard = () => {
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">-</div>
-            <p className="text-xs text-muted-foreground">Données à charger</p>
+            {isLoading ? (
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            ) : (
+              <>
+                <div className="text-2xl font-bold">{stats?.totalEvents || 0}</div>
+                <p className="text-xs text-muted-foreground">{stats?.totalTreatments || 0} traitements</p>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
 
+      {error && (
+        <Card className="border-destructive/20 bg-destructive/5">
+          <CardContent className="pt-6">
+            <p className="text-destructive text-sm">
+              Erreur lors du chargement des statistiques: {error.message}
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardHeader>
-          <CardTitle>Administration en cours de migration</CardTitle>
+          <CardTitle>Santé du troupeau</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">
-            Les pages d'administration sont en cours de migration depuis React Admin vers des composants React classiques avec shadcn/ui.
-          </p>
+          {isLoading ? (
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          ) : (
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Bovins en bonne santé</span>
+                <span className="font-medium">{stats?.healthyCattle || 0} / {stats?.totalCattle || 0}</span>
+              </div>
+              <div className="w-full bg-secondary rounded-full h-2">
+                <div 
+                  className="bg-primary h-2 rounded-full transition-all" 
+                  style={{ width: `${stats?.healthPercentage || 0}%` }}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground text-right">
+                {stats?.healthPercentage?.toFixed(1) || 0}% de santé
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

@@ -1,5 +1,5 @@
 import { apiClient } from '@/utils/apiClient';
-import { API_CONFIG } from '@/config/api';
+import { API_ENDPOINTS } from '@/config/api';
 
 export interface DashboardStats {
     totalCattle: number;
@@ -7,16 +7,16 @@ export interface DashboardStats {
     healthPercentage: number;
     totalEvents: number;
     totalTreatments: number;
+    totalUsers: number;
+    totalOwners: number;
+    males: number;
+    females: number;
 }
 
 class DashboardService {
-    private readonly endpoint = API_CONFIG.ENDPOINTS.CATTLE;
-
     async getStatistics(): Promise<DashboardStats> {
         try {
-
-            const stats = await apiClient.get<DashboardStats>(`${this.endpoint}/statistics`);
-
+            const stats = await apiClient.get<DashboardStats>(API_ENDPOINTS.DASHBOARD.STATS);
             return stats;
         } catch (error: any) {
             console.error('❌ Error fetching dashboard statistics:', error);
