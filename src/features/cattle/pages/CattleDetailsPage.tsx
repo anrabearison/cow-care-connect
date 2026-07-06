@@ -125,7 +125,7 @@ export default function CattleDetailsPage() {
       return vet.name;
     }
     const vetData = (veterinariansData?.data as any[])?.find(v => v.id === vet);
-    return vetData ? vetData.name : `Vétérinaire ${vet}`;
+    return vetData ? vetData.name : 'Vétérinaire inconnu';
   };
 
   const getMedicamentName = (med: string | any) => {
@@ -133,12 +133,12 @@ export default function CattleDetailsPage() {
       return med.name;
     }
     const medData = (medicamentsData?.data as any[])?.find(m => m.id === med);
-    return medData ? medData.name : `Médicament ${med}`;
+    return medData ? medData.name : 'Médicament inconnu';
   };
 
   const getTypeEvenementName = (id: string) => {
     const type = eventTypesData?.data?.find((t) => t.id === id);
-    return type ? getEventTypeLabel(type) : `Type ${id}`;
+    return type ? getEventTypeLabel(type) : 'Type inconnu';
   };
 
   const getTypeEvenementIcon = (id: string) => {
@@ -423,10 +423,10 @@ export default function CattleDetailsPage() {
                   </div>
                 )}
 
-                {cattle.n_carnet && (
+                {cattle.nCarnet && (
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">N° Carnet</span>
-                    <span className="font-medium">{cattle.n_carnet}</span>
+                    <span className="font-medium">{cattle.nCarnet}</span>
                   </div>
                 )}
 
@@ -512,7 +512,6 @@ export default function CattleDetailsPage() {
                                             {mother.name}
                                             {mother.nickname && <span className="text-muted-foreground font-normal"> ({mother.nickname})</span>}
                                           </h4>
-                                          <p className="text-sm text-muted-foreground">ID: {mother.id}</p>
                                         </div>
                                         <div className="flex items-center gap-4">
                                           <div className="h-16 w-16 rounded-md overflow-hidden">
@@ -599,7 +598,6 @@ export default function CattleDetailsPage() {
                                           {descendant.name}
                                           {descendant.nickname && <span className="text-muted-foreground font-normal"> ({descendant.nickname})</span>}
                                         </h4>
-                                        <p className="text-sm text-muted-foreground">ID: {descendant.id}</p>
                                       </div>
                                       <div className="flex items-center gap-4">
                                         <div className="h-16 w-16 rounded-md overflow-hidden">

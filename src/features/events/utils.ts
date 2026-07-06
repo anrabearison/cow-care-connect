@@ -3,7 +3,7 @@ import { TypeEvenement } from './types';
 /** Libellé d'un type d'événement (API: `name`, ancien mock: `nom`) */
 export const getEventTypeLabel = (
   eventType: Pick<TypeEvenement, 'id' | 'name'> & { nom?: string },
-): string => eventType.name ?? eventType.nom ?? eventType.id;
+): string => eventType.name ?? eventType.nom ?? 'Événement';
 
 /**
  * Table de correspondance : noms d'icônes textuels (stockés en base)
@@ -52,7 +52,7 @@ export const typeEvenements: TypeEvenement[] = [
 
 export const getTypeEvenementName = (typeId: string): string => {
   const type = typeEvenements.find(t => t.id === typeId);
-  return type ? getEventTypeLabel(type) : typeId;
+  return type ? getEventTypeLabel(type) : 'Type inconnu';
 };
 
 export const getTypeEvenementIcon = (typeId: string): string => {
