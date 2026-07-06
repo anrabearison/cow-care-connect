@@ -15,6 +15,19 @@ export interface AuthResponse {
   message?: string;
 }
 
+export interface GoogleOAuthResponse {
+  access_token: string;
+  token_type: string;
+  user: User;
+}
+
+export interface ProviderInfo {
+  provider: string;
+  linked: boolean;
+  providerUserId?: string;
+  lastLoginAt?: string;
+}
+
 class AuthService {
   private readonly endpoint = API_CONFIG.ENDPOINTS.AUTH;
 
@@ -41,6 +54,65 @@ class AuthService {
       throw new AuthenticationError(ErrorMessages.LOGIN_ERROR);
     } catch (error: any) {
       console.error('Error during login:', error);
+      throw error;
+    }
+  }
+
+  async loginWithGoogle(code: string, invitationToken?: string): Promise<AuthResponse> {
+    try {
+      const result = await apiClient.post<GoogleOAuthResponse>(
+        `${this.endpoint}/google`,
+        { code, state: invitationToken },
+        { skipAuth: true }
+      );
+
+      if (result.access_token && result.user) {
+        localStorage.setItem('auth_token', result.access_token);
+        localStorage.setItem('user_data', JSON.stringify(result.user));
+
+        return {
+          user: result.user,
+          token: result.access_token,
+          success: true,
+          message: 'Connexion avec Google réussie',
+        };
+      }
+
+      throw new AuthenticationError(ErrorMessages.LOGIN_ERROR);
+    } catch (error: any) {
+      console.error('Error during Google login:', error);
+      throw error;
+    }
+  }
+
+  async linkGoogleAccount(code: string): Promise<ProviderInfo> {
+    try {
+      const result = await apiClient.post<ProviderInfo>(
+        `${this.endpoint}/google/link`,
+        { code, provider: 'GOOGLE' }
+      );
+      return result;
+    } catch (error: any) {
+      console.error('Error linking Google account:', error);
+      throw error;
+    }
+  }
+
+  async unlinkProvider(provider: string): Promise<void> {
+    try {
+      await apiClient.delete(`${this.endpoint}/providers/${provider}`);
+    } catch (error: any) {
+      console.error('Error unlinking provider:', error);
+      throw error;
+    }
+  }
+
+  async getUserProviders(): Promise<ProviderInfo[]> {
+    try {
+      const result = await apiClient.get<ProviderInfo[]>(`${this.endpoint}/providers`);
+      return result;
+    } catch (error: any) {
+      console.error('Error getting user providers:', error);
       throw error;
     }
   }

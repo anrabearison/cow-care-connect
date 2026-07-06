@@ -16,6 +16,8 @@ const ReportsPage = lazy(() => import("@/features/reports/pages/ReportsPage"));
 const PassportReportPage = lazy(() => import("@/features/reports/pages/PassportReportPage"));
 const ProfilePage = lazy(() => import("@/features/auth/pages/ProfilePage"));
 const LoginPage = lazy(() => import("@/features/auth/pages/LoginPage"));
+const GoogleCallbackPage = lazy(() => import("@/features/auth/pages/GoogleCallbackPage"));
+const InvitationPage = lazy(() => import("@/features/auth/pages/InvitationPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Admin pages
@@ -56,6 +58,8 @@ const AppContent = () => {
       <Suspense fallback={null}>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
+          <Route path="/invitation" element={<InvitationPage />} />
           
           {/* Admin routes */}
           <Route

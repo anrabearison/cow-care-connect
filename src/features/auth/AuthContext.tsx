@@ -6,6 +6,7 @@ import { clearOwnerSelection } from '@/contexts/OwnerSelectionContext';
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<boolean>;
+  loginWithGoogle: (code: string, invitationToken?: string) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
 }
@@ -67,6 +68,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const loginWithGoogle = async (code: string, invitationToken?: string): Promise<boolean> => {
+    setIsLoading(true);
+
+    try {
+      const { authService } = await import('./services');
+      const response = await authService.loginWithGoogle(code, invitationToken);
+
+      if (response.success) {
+        setUser(response.user);
+        setIsLoading(false);
+        return true;
+      } else {
+        setIsLoading(false);
+        return false;
+      }
+    } catch (error) {
+      console.error('Google login error:', error);
+      toast.error('Erreur lors de la connexion avec Google');
+      setIsLoading(false);
+      return false;
+    }
+  };
+
   const logout = useCallback(async () => {
     try {
       const { authService } = await import('./services');
@@ -84,7 +108,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, login, loginWithGoogle, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );
