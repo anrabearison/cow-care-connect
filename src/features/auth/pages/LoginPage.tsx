@@ -6,13 +6,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Beef, Loader2 } from 'lucide-react';
+import { Beef, Loader2, Eye, EyeOff } from 'lucide-react';
 import heroImage from '@/assets/hero-cattle.jpg';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('admin@ombiko.mg');
   const [password, setPassword] = useState('admin123');
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const { user, login, isLoading } = useAuth();
   const navigate = useNavigate();
 
@@ -98,15 +99,24 @@ export default function LoginPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="password">Mot de passe</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  className="transition-all duration-300 focus:scale-[1.02]"
-                />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    required
+                    className="transition-all duration-300 focus:scale-[1.02] pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
               </div>
 
               <Button
@@ -124,32 +134,6 @@ export default function LoginPage() {
                 )}
               </Button>
             </form>
-
-            <div className="mt-6 p-4 bg-muted/50 rounded-lg space-y-3">
-              <p className="text-sm font-semibold text-center text-muted-foreground">
-                Comptes de démonstration :
-              </p>
-
-              <div className="space-y-2 text-xs text-muted-foreground">
-                <div className="p-2 bg-background/50 rounded">
-                  <p className="font-semibold">Super Admin</p>
-                  <p>Email: admin@ombiko.mg</p>
-                  <p>Mot de passe: admin123</p>
-                </div>
-
-                <div className="p-2 bg-background/50 rounded">
-                  <p className="font-semibold">Administrateur Propriétaire</p>
-                  <p>Email: jean@ombiko.mg</p>
-                  <p>Mot de passe: eleveur123</p>
-                </div>
-
-                <div className="p-2 bg-background/50 rounded">
-                  <p className="font-semibold">Utilisateur Propriétaire</p>
-                  <p>Email: employee@ombiko.mg</p>
-                  <p>Mot de passe: user123</p>
-                </div>
-              </div>
-            </div>
           </CardContent>
         </Card>
       </div>
