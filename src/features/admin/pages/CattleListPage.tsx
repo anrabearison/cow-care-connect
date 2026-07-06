@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import { isSuperAdmin } from "@/constants/roles";
+import { CattlePhotosInput, CattlePhotoInputValue } from "@/features/cattle/components/CattlePhotosInput";
 
 const CattleListPage = () => {
   const { user } = useAuth();
@@ -23,6 +24,7 @@ const CattleListPage = () => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [photos, setPhotos] = useState<CattlePhotoInputValue[]>([]);
 
   // Fetch cattle list
   const { data: cattleData, isLoading } = useQuery({
@@ -60,6 +62,52 @@ const CattleListPage = () => {
     if (selectedCattle) {
       deleteMutation.mutate(selectedCattle.id);
     }
+  };
+
+  const updatePhotosMutation = useMutation({
+    mutationFn: ({ id, photos }: { id: string; photos: CattlePhotoInputValue[] }) =>
+      cattleService.updateCattle(id, { photos }),
+    onSuccess: () => {
+      toast({
+        title: "Succès",
+        description: "Photos du bovin mises à jour",
+      });
+      queryClient.invalidateQueries({ queryKey: ["admin-cattle"] });
+      queryClient.invalidateQueries({ queryKey: ["cattle"] });
+      setIsEditDialogOpen(false);
+      setSelectedCattle(null);
+      setPhotos([]);
+    },
+    onError: () => {
+      toast({
+        title: "Erreur",
+        description: "Erreur lors de la mise à jour des photos",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const openPhotosDialog = (cattle: Cattle) => {
+    setSelectedCattle(cattle);
+    const initialPhotos = (cattle.photos && cattle.photos.length > 0
+      ? cattle.photos
+      : cattle.photo
+        ? [{ url: cattle.photo, position: 0, isPrimary: true }]
+        : []
+    ).map((photo, index) => ({
+      id: photo.id,
+      url: photo.url,
+      publicId: photo.publicId,
+      position: photo.position ?? index,
+      isPrimary: photo.isPrimary ?? index === 0,
+    }));
+    setPhotos(initialPhotos);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleUpdatePhotos = () => {
+    if (!selectedCattle) return;
+    updatePhotosMutation.mutate({ id: selectedCattle.id, photos });
   };
 
   const columns: Column<Cattle>[] = [
@@ -140,8 +188,7 @@ const CattleListPage = () => {
         columns={columns}
         loading={isLoading}
         onEdit={(item) => {
-          setSelectedCattle(item);
-          setIsEditDialogOpen(true);
+          openPhotosDialog(item);
         }}
         onView={(item) => {
           setSelectedCattle(item);
@@ -222,6 +269,22 @@ const CattleListPage = () => {
             </div>
           </div>
         )}
+      </FormDialog>
+
+      <FormDialog
+        open={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        title={`Photos de ${selectedCattle?.name || "bovin"}`}
+        submitText="Enregistrer"
+        cancelText="Annuler"
+        onSubmit={handleUpdatePhotos}
+        loading={updatePhotosMutation.isPending}
+      >
+        <CattlePhotosInput
+          value={photos}
+          onChange={setPhotos}
+          disabled={updatePhotosMutation.isPending}
+        />
       </FormDialog>
 
       {/* Delete Confirmation Dialog */}

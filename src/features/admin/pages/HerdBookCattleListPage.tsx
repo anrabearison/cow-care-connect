@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { referenceService } from "@/features/common/services/referenceService";
+import { CattlePhotosInput, CattlePhotoInputValue } from "@/features/cattle/components/CattlePhotosInput";
 
 const HerdBookCattleListPage = () => {
   const queryClient = useQueryClient();
@@ -29,6 +30,7 @@ const HerdBookCattleListPage = () => {
   const [statuses, setStatuses] = useState<{ id: string; name: string }[]>([]);
   const [unregisteredCattle, setUnregisteredCattle] = useState<{ id: string; name: string }[]>([]);
   const [cattleSourceType, setCattleSourceType] = useState<'existing' | 'new'>('existing');
+  const [newCattlePhotos, setNewCattlePhotos] = useState<CattlePhotoInputValue[]>([]);
   const hasExistingCattleOptions = unregisteredCattle.length > 0;
   
   const [formData, setFormData] = useState<CreateHerdBookCattleData>({ 
@@ -207,7 +209,11 @@ const HerdBookCattleListPage = () => {
         toast({ title: "Erreur", description: "Veuillez entrer la date de naissance", variant: "destructive" });
         return;
       }
-      submitData.cattle = newCattleData;
+      submitData.cattle = {
+        ...newCattleData,
+        photos: newCattlePhotos,
+        photo: newCattlePhotos.find(photo => photo.isPrimary)?.url || newCattlePhotos[0]?.url || '',
+      };
       submitData.cattleId = undefined;
     } else {
       // Existing cattle validation
@@ -259,6 +265,7 @@ const HerdBookCattleListPage = () => {
       photo: '',
       source: { type: 'ACHETE' },
     });
+    setNewCattlePhotos([]);
     setIsCreateDialogOpen(true);
   };
 
@@ -462,6 +469,11 @@ const HerdBookCattleListPage = () => {
                   />
                 </div>
               </div>
+              <CattlePhotosInput
+                value={newCattlePhotos}
+                onChange={setNewCattlePhotos}
+                disabled={createMutation.isPending}
+              />
             </div>
           )}
 

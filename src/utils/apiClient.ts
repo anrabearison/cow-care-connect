@@ -59,8 +59,9 @@ class ApiClient {
      * Build headers with authentication
      */
     private buildHeaders(config: RequestConfig = {}): HeadersInit {
+        const hasFormDataBody = config.body instanceof FormData;
         const headers: HeadersInit = {
-            'Content-Type': 'application/json',
+            ...(hasFormDataBody ? {} : { 'Content-Type': 'application/json' }),
             ...config.headers,
         };
 
@@ -199,10 +200,11 @@ class ApiClient {
      */
     async post<T>(endpoint: string, data?: unknown, config?: RequestConfig): Promise<T> {
         const url = this.buildUrl(endpoint);
+        const isFormData = data instanceof FormData;
         const response = await this.fetchWithTimeout(url, {
             ...config,
             method: 'POST',
-            body: data ? JSON.stringify(data) : undefined,
+            body: data ? (isFormData ? data : JSON.stringify(data)) : undefined,
         });
         return this.handleResponse<T>(response);
     }

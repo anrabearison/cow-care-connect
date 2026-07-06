@@ -52,6 +52,9 @@ export const API_ENDPOINTS = {
   PURCHASES: createResourceEndpoints('purchases'),
   STATUS: createResourceEndpoints('status'),
   SUPPLIERS: createResourceEndpoints('suppliers'),
+  UPLOAD: {
+    BASE: `${API_PREFIX}/upload`,
+  },
   VETERINARIANS: createResourceEndpoints('veterinarians'),
 } as const;
 

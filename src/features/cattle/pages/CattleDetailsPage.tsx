@@ -26,19 +26,15 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { useEffect, useState } from 'react';
 import { calculateAge as commonCalculateAge } from '../utils/helpers';
-import cattlePortrait1 from '@/assets/cattle-portrait-1.jpg';
-import cattlePortrait2 from '@/assets/cattle-portrait-2.jpg';
-import cattlePortrait3 from '@/assets/cattle-portrait-3.jpg';
 
 import { AddTreatmentModal } from '@/features/cattle/components/AddTreatmentModal';
 import { AddEventModal } from '@/features/cattle/components/AddEventModal';
 import { AddBirthModal } from '@/features/cattle/components/AddBirthModal';
+import { CattlePhotoCarousel, getCattlePrimaryImage } from '@/features/cattle/components/CattlePhotoCarousel';
 import { Cattle, CattleEvent, Treatment } from '@/features/cattle/types';
 import { cattleService } from "@/features/cattle";
 import { useToast } from '@/hooks/use-toast';
 import { formatDosage } from '@/features/cattle/utils/dosageUtils';
-
-const cattleImages = [cattlePortrait1, cattlePortrait2, cattlePortrait3];
 
 const calculateAge = (birthDate: string) => commonCalculateAge(birthDate);
 
@@ -307,13 +303,6 @@ export default function CattleDetailsPage() {
     return <Navigate to="/cattle" replace />;
   }
 
-  // Use actual cattle photo if available, otherwise use a consistent fallback image based on the cattle ID
-  const idHash = cattle.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  const imageIndex = idHash % cattleImages.length;
-  const cattleImage = cattle.photo || cattleImages[imageIndex];
-
-
-
   return (
     <div className="min-h-screen bg-gradient-earth">
       <div className="container mx-auto px-6 py-8">
@@ -341,10 +330,10 @@ export default function CattleDetailsPage() {
                 className="relative h-64 sm:h-80 cursor-pointer group"
                 onClick={() => setIsImageOpen(true)}
               >
-                <img
-                  src={cattleImage}
-                  alt={`Photo de ${cattle.name}`}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                <CattlePhotoCarousel
+                  cattle={cattle}
+                  className="h-full w-full"
+                  imageClassName="transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
                   <span className="text-white bg-black/50 px-4 py-2 rounded-full text-sm backdrop-blur-sm font-medium flex items-center gap-2">
@@ -376,10 +365,10 @@ export default function CattleDetailsPage() {
                 >
                   <X className="h-6 w-6 sm:h-8 sm:w-8" />
                 </button>
-                <img
-                  src={cattleImage}
-                  alt={`Photo de ${cattle.name}`}
-                  className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-200"
+                <CattlePhotoCarousel
+                  cattle={cattle}
+                  className="max-h-[85vh] w-full max-w-5xl rounded-lg shadow-2xl animate-in zoom-in-95 duration-200"
+                  imageClassName="max-h-[85vh] object-contain bg-black"
                   onClick={(e) => e.stopPropagation()}
                 />
               </div>
@@ -514,9 +503,7 @@ export default function CattleDetailsPage() {
                                 </HoverCardTrigger>
                                 <HoverCardContent className="w-80">
                                   {(() => {
-                                    const motherIdHash = mother.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-                                    const motherImageIndex = motherIdHash % cattleImages.length;
-                                    const motherImage = mother.photo || cattleImages[motherImageIndex];
+                                    const motherImage = getCattlePrimaryImage(mother);
 
                                     return (
                                       <div className="grid gap-4">
@@ -603,9 +590,7 @@ export default function CattleDetailsPage() {
                               </HoverCardTrigger>
                               <HoverCardContent className="w-80">
                                 {(() => {
-                                        const descendantIdHash = descendant.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-                                        const descendantImageIndex = descendantIdHash % cattleImages.length;
-                                        const descendantImage = descendant.photo || cattleImages[descendantImageIndex];
+                                        const descendantImage = getCattlePrimaryImage(descendant);
 
                                   return (
                                     <div className="grid gap-4">

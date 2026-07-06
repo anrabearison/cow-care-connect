@@ -21,6 +21,12 @@ export interface CattleData {
   brand?: string;
   distinctiveSign?: string;
   photo?: string;
+  photos?: {
+    url: string;
+    publicId?: string;
+    position: number;
+    isPrimary: boolean;
+  }[];
   source: CattleSourceData;
   category?: string;
   ownerId?: string;

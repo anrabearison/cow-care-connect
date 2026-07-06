@@ -11,6 +11,7 @@ export interface Cattle {
   brand?: string;
   distinctiveSign?: string;
   photo?: string;
+  photos?: CattlePhoto[];
   category?: {
     id: string;
     name: string;
@@ -34,6 +35,14 @@ export interface Cattle {
   events: CattleEvent[];
   treatments: Treatment[];
   ownerId?: string;
+}
+
+export interface CattlePhoto {
+  id?: string;
+  url: string;
+  publicId?: string;
+  position: number;
+  isPrimary: boolean;
 }
 
 // Type enrichi pour l'affichage avec informations du HerdBook

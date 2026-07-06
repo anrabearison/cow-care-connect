@@ -5,9 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Calendar, MapPin, Heart } from 'lucide-react';
 import { Cattle } from '@/features/cattle/types';
-import cattlePortrait1 from '@/assets/cattle-portrait-1.jpg';
-import cattlePortrait2 from '@/assets/cattle-portrait-2.jpg';
-import cattlePortrait3 from '@/assets/cattle-portrait-3.jpg';
+import { CattlePhotoCarousel } from './CattlePhotoCarousel';
 import {
   calculateAge,
   getCharacterColor,
@@ -16,35 +14,19 @@ import {
   getStatusColor
 } from '../utils/helpers';
 
-const cattleImages = [cattlePortrait1, cattlePortrait2, cattlePortrait3];
-
 interface CattleCardProps {
   cattle: Cattle;
 }
 
 export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
-
-  // Pick a consistent image based on the cattle ID string
-  const idHash = cattle.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  const imageIndex = idHash % cattleImages.length;
-  const cattleImage = cattle.photo || cattleImages[imageIndex];
-
   return (
     <Card className="overflow-hidden hover:shadow-farm transition-all duration-300 group">
       <Link to={`/cattle/${cattle.id}`} className="block relative h-48 overflow-hidden">
-        {cattle.photo || imageIndex < 3 ? (
-          <img
-            src={cattleImage}
-            alt={`Photo de ${cattle.name}`}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            loading="lazy"
-            decoding="async"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/20">
-            <div className="text-6xl">🐄</div>
-          </div>
-        )}
+        <CattlePhotoCarousel
+          cattle={cattle}
+          className="h-full w-full"
+          imageClassName="group-hover:scale-105 transition-transform duration-300"
+        />
         <div className="absolute top-3 left-3">
           <div className="text-2xl bg-white/90 rounded-full w-8 h-8 flex items-center justify-center">
             {getGenderIcon(cattle.gender)}
