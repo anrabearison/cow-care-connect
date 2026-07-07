@@ -15,6 +15,8 @@ export interface ChatRequest {
 export interface ChatResponse {
   response: string;
   source?: 'rag' | 'fallback' | 'error';
+  severity?: 'critical' | 'high' | 'medium' | 'low';
+  confidence?: number;
 }
 
 export class HealthService {
