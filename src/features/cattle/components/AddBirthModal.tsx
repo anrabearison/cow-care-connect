@@ -6,29 +6,15 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Cattle } from '@/features/cattle/types';
-import { cattleService } from '@/features/cattle/services';
-import { useEffect } from 'react';
 
 interface AddBirthModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onAdd: (calfData: Omit<Cattle, 'id' | 'events' | 'treatments' | 'source'>) => void;
     motherName: string;
-    motherId: string;
 }
 
-interface BirthFormData {
-    name: string;
-    nickname: string;
-    gender: 'M' | 'F' | '';
-    birthDate: string;
-    character: string;
-    brand: string;
-    distinctiveSign: string;
-    birthDescription: string;
-}
-
-export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange, onAdd, motherName, motherId }) => {
+export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange, onAdd, motherName }) => {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [formData, setFormData] = useState({
         name: '',

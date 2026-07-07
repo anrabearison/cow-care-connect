@@ -5,5 +5,3 @@ export interface RecentEvent {
     cattleName: string;
     date: string;
 }
-
-export type EventType = 'vaccination' | 'traitement' | 'naissance' | 'vente' | 'autre';
