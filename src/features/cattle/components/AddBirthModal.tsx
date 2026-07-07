@@ -13,9 +13,10 @@ interface AddBirthModalProps {
     onOpenChange: (open: boolean) => void;
     onAdd: (calfData: Omit<Cattle, 'id' | 'events' | 'treatments' | 'source'>) => void;
     motherName: string;
+    motherId?: string;
 }
 
-export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange, onAdd, motherName }) => {
+export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange, onAdd, motherName, motherId }) => {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [formData, setFormData] = useState({
         name: '',

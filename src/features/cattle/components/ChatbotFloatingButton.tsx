@@ -2,16 +2,34 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Stethoscope, X, MessageSquare } from 'lucide-react';
 import { HealthChatbot } from './HealthChatbot';
+import { Message } from './ChatMessage';
+import { ChatMessage as ApiChatMessage } from '../services/health.service';
 import { Cattle } from '../types';
 
 interface ChatbotFloatingButtonProps {
   cattleId: string;
   cattle: Cattle;
+  messages?: Message[];
+  setMessages?: React.Dispatch<React.SetStateAction<Message[]>>;
+  apiHistory?: ApiChatMessage[];
+  setApiHistory?: React.Dispatch<React.SetStateAction<ApiChatMessage[]>>;
+  severity?: 'critical' | 'high' | 'medium' | 'low';
+  setSeverity?: React.Dispatch<React.SetStateAction<'critical' | 'high' | 'medium' | 'low'>>;
+  confidence?: number | null;
+  setConfidence?: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
 export const ChatbotFloatingButton: React.FC<ChatbotFloatingButtonProps> = ({
   cattleId,
   cattle,
+  messages,
+  setMessages,
+  apiHistory,
+  setApiHistory,
+  severity,
+  setSeverity,
+  confidence,
+  setConfidence,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -53,7 +71,18 @@ export const ChatbotFloatingButton: React.FC<ChatbotFloatingButtonProps> = ({
 
             {/* Chat Content */}
             <div className="p-4 max-h-[500px] overflow-y-auto">
-              <HealthChatbot cattleId={cattleId} cattle={cattle} />
+              <HealthChatbot
+                cattleId={cattleId}
+                cattle={cattle}
+                messages={messages}
+                setMessages={setMessages}
+                apiHistory={apiHistory}
+                setApiHistory={setApiHistory}
+                severity={severity}
+                setSeverity={setSeverity}
+                confidence={confidence}
+                setConfidence={setConfidence}
+              />
             </div>
           </div>
         </div>

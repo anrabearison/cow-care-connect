@@ -33,10 +33,12 @@ import { AddBirthModal } from '@/features/cattle/components/AddBirthModal';
 import { CattlePhotoCarousel, getCattlePrimaryImage } from '@/features/cattle/components/CattlePhotoCarousel';
 import { HealthChatbot } from '@/features/cattle/components/HealthChatbot';
 import { ChatbotFloatingButton } from '@/features/cattle/components/ChatbotFloatingButton';
+import { Message } from '@/features/cattle/components/ChatMessage';
 import { Cattle, CattleEvent, Treatment } from '@/features/cattle/types';
 import { cattleService } from "@/features/cattle";
 import { useToast } from '@/hooks/use-toast';
 import { formatDosage } from '@/features/cattle/utils/dosageUtils';
+import { ChatMessage as ApiChatMessage } from '@/features/cattle/services/health.service';
 
 const calculateAge = (birthDate: string) => commonCalculateAge(birthDate);
 
@@ -104,7 +106,27 @@ export default function CattleDetailsPage() {
   const [isImageOpen, setIsImageOpen] = useState(false);
   const [localTreatments, setLocalTreatments] = useState<Treatment[]>([]);
   const [localEvents, setLocalEvents] = useState<CattleEvent[]>([]);
+  const [chatMessages, setChatMessages] = useState<Message[]>([]);
+  const [chatApiHistory, setChatApiHistory] = useState<ApiChatMessage[]>([]);
+  const [chatSeverity, setChatSeverity] = useState<'critical' | 'high' | 'medium' | 'low'>('low');
+  const [chatConfidence, setChatConfidence] = useState<number | null>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (cattle?.name) {
+      setChatMessages([
+        {
+          id: 'welcome',
+          role: 'model',
+          content: `Bonjour ! Je suis l'assistant santé pour ${cattle.name}. Décrivez les symptômes que vous observez et je vous aiderai à identifier les problèmes possibles.`,
+          timestamp: new Date(),
+        },
+      ]);
+      setChatApiHistory([]);
+      setChatSeverity('low');
+      setChatConfidence(null);
+    }
+  }, [cattle?.id, cattle?.name]);
 
   // Helper functions using fetched data
   const getVeterinarianName = (vet: string | any) => {
@@ -691,22 +713,6 @@ export default function CattleDetailsPage() {
               </CardContent>
             </Card>
 
-            {/* Health Chatbot Section */}
-            <Card className="shadow-card-soft border-primary/20 bg-gradient-to-br from-blue-50 to-white">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Stethoscope className="h-5 w-5 text-primary" />
-                  <span>Assistant Santé IA</span>
-                </CardTitle>
-                <CardDescription>
-                  Décrivez les symptômes pour obtenir des conseils d'IA
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <HealthChatbot cattleId={cattle.id} cattle={cattle} />
-              </CardContent>
-            </Card>
-
             {/* Treatment History */}
             <Card className="shadow-farm">
               <CardHeader>
@@ -763,6 +769,33 @@ export default function CattleDetailsPage() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Health Chatbot Section */}
+            <Card className="shadow-card-soft border-primary/20 bg-gradient-to-br from-blue-50 to-white">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Stethoscope className="h-5 w-5 text-primary" />
+                  <span>Assistant Santé IA</span>
+                </CardTitle>
+                <CardDescription>
+                  Décrivez les symptômes pour obtenir des conseils d'IA
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <HealthChatbot
+                  cattleId={cattle.id}
+                  cattle={cattle}
+                  messages={chatMessages}
+                  setMessages={setChatMessages}
+                  apiHistory={chatApiHistory}
+                  setApiHistory={setChatApiHistory}
+                  severity={chatSeverity}
+                  setSeverity={setChatSeverity}
+                  confidence={chatConfidence}
+                  setConfidence={setChatConfidence}
+                />
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
@@ -789,7 +822,18 @@ export default function CattleDetailsPage() {
       />
 
       {/* Floating Chatbot Button */}
-      <ChatbotFloatingButton cattleId={cattle.id} cattle={cattle} />
+      <ChatbotFloatingButton
+        cattleId={cattle.id}
+        cattle={cattle}
+        messages={chatMessages}
+        setMessages={setChatMessages}
+        apiHistory={chatApiHistory}
+        setApiHistory={setChatApiHistory}
+        severity={chatSeverity}
+        setSeverity={setChatSeverity}
+        confidence={chatConfidence}
+        setConfidence={setChatConfidence}
+      />
     </div>
   );
 }

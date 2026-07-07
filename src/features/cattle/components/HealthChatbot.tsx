@@ -11,23 +11,51 @@ import { Cattle } from '../types';
 interface HealthChatbotProps {
   cattleId: string;
   cattle: Cattle;
+  messages?: Message[];
+  setMessages?: React.Dispatch<React.SetStateAction<Message[]>>;
+  apiHistory?: ApiChatMessage[];
+  setApiHistory?: React.Dispatch<React.SetStateAction<ApiChatMessage[]>>;
+  severity?: 'critical' | 'high' | 'medium' | 'low';
+  setSeverity?: React.Dispatch<React.SetStateAction<'critical' | 'high' | 'medium' | 'low'>>;
+  confidence?: number | null;
+  setConfidence?: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
-export const HealthChatbot: React.FC<HealthChatbotProps> = ({ cattleId, cattle }) => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 'welcome',
-      role: 'model',
-      content: `Bonjour ! Je suis l'assistant santé pour ${cattle.name}. Décrivez les symptômes que vous observez et je vous aiderai à identifier les problèmes possibles.`,
-      timestamp: new Date(),
-    },
-  ]);
-  const [severity, setSeverity] = useState<'critical' | 'high' | 'medium' | 'low'>('low');
-  const [confidence, setConfidence] = useState<number | null>(null);
+const createWelcomeMessage = (cattleName: string): Message => ({
+  id: 'welcome',
+  role: 'model',
+  content: `Bonjour ! Je suis l'assistant santé pour ${cattleName}. Décrivez les symptômes que vous observez et je vous aiderai à identifier les problèmes possibles.`,
+  timestamp: new Date(),
+});
+
+export const HealthChatbot: React.FC<HealthChatbotProps> = ({
+  cattleId,
+  cattle,
+  messages: externalMessages,
+  setMessages: setExternalMessages,
+  apiHistory: externalApiHistory,
+  setApiHistory: setExternalApiHistory,
+  severity: externalSeverity,
+  setSeverity: setExternalSeverity,
+  confidence: externalConfidence,
+  setConfidence: setExternalConfidence,
+}) => {
+  const [localMessages, setLocalMessages] = useState<Message[]>(() => [createWelcomeMessage(cattle.name)]);
+  const [localSeverity, setLocalSeverity] = useState<'critical' | 'high' | 'medium' | 'low'>('low');
+  const [localConfidence, setLocalConfidence] = useState<number | null>(null);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [apiHistory, setApiHistory] = useState<ApiChatMessage[]>([]);
+  const [localApiHistory, setLocalApiHistory] = useState<ApiChatMessage[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const messages = externalMessages ?? localMessages;
+  const setMessages = setExternalMessages ?? setLocalMessages;
+  const apiHistory = externalApiHistory ?? localApiHistory;
+  const setApiHistory = setExternalApiHistory ?? setLocalApiHistory;
+  const severity = externalSeverity ?? localSeverity;
+  const setSeverity = setExternalSeverity ?? setLocalSeverity;
+  const confidence = externalConfidence ?? localConfidence;
+  const setConfidence = setExternalConfidence ?? setLocalConfidence;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
