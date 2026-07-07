@@ -31,6 +31,8 @@ import { AddTreatmentModal } from '@/features/cattle/components/AddTreatmentModa
 import { AddEventModal } from '@/features/cattle/components/AddEventModal';
 import { AddBirthModal } from '@/features/cattle/components/AddBirthModal';
 import { CattlePhotoCarousel, getCattlePrimaryImage } from '@/features/cattle/components/CattlePhotoCarousel';
+import { HealthChatbot } from '@/features/cattle/components/HealthChatbot';
+import { ChatbotFloatingButton } from '@/features/cattle/components/ChatbotFloatingButton';
 import { Cattle, CattleEvent, Treatment } from '@/features/cattle/types';
 import { cattleService } from "@/features/cattle";
 import { useToast } from '@/hooks/use-toast';
@@ -689,6 +691,22 @@ export default function CattleDetailsPage() {
               </CardContent>
             </Card>
 
+            {/* Health Chatbot Section */}
+            <Card className="shadow-card-soft border-primary/20 bg-gradient-to-br from-blue-50 to-white">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Stethoscope className="h-5 w-5 text-primary" />
+                  <span>Assistant Santé IA</span>
+                </CardTitle>
+                <CardDescription>
+                  Décrivez les symptômes pour obtenir des conseils d'IA
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <HealthChatbot cattleId={cattle.id} cattle={cattle} />
+              </CardContent>
+            </Card>
+
             {/* Treatment History */}
             <Card className="shadow-farm">
               <CardHeader>
@@ -769,6 +787,9 @@ export default function CattleDetailsPage() {
         motherName={`${cattle.name}${cattle.nickname ? ` (${cattle.nickname})` : ''}`}
         motherId={cattle.id}
       />
+
+      {/* Floating Chatbot Button */}
+      <ChatbotFloatingButton cattleId={cattle.id} cattle={cattle} />
     </div>
   );
 }
