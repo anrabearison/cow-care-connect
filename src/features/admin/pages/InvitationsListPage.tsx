@@ -13,8 +13,6 @@ import { useAuth } from '@/features/auth/AuthContext';
 import { ownersService } from '@/features/admin/services/ownersService';
 import { invitationsService, InvitationCreateData, InvitationResponse } from '@/features/admin/services/invitationsService';
 import { getRoleLabel, USER_ROLES } from '@/constants/roles';
-import { apiClient } from '@/utils/apiClient';
-import { APP_URLS } from '@/config/urls';
 
 const InvitationsListPage = () => {
   const { user } = useAuth();
@@ -52,6 +50,7 @@ const InvitationsListPage = () => {
       });
       setCreatedInvitation(invitation);
       queryClient.invalidateQueries({ queryKey: ['admin-invitations'] });
+      setIsCreateDialogOpen(false);
     },
     onError: (error: any) => {
       toast({
@@ -237,16 +236,6 @@ const InvitationsListPage = () => {
               </SelectContent>
             </Select>
           </div>
-
-          {createdInvitation && (
-            <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
-              <p className="font-semibold">Invitation créée</p>
-              <p className="text-sm text-muted-foreground mb-2">Copiez le lien ci-dessous et fournissez-le à la personne invitée.</p>
-              <div className="rounded-md bg-white p-3 border border-slate-200 font-mono text-sm break-words">
-                {`${APP_URLS.INVITATION}?token=${createdInvitation.token}`}
-              </div>
-            </div>
-          )}
         </div>
       </FormDialog>
 
