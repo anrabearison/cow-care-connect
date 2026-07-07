@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { CattleEvent } from '@/features/cattle/types';
 import { useEventTypes } from '@/features/common/hooks/useReferences';
 import { getEventTypeLabel } from '@/features/events/utils';
+import { getTodayDate } from '@/utils/dateUtils';
 
 interface AddEventModalProps {
     open: boolean;
@@ -45,7 +46,7 @@ export const AddEventModal: React.FC<AddEventModalProps> = ({ open, onOpenChange
             onAdd(formData);
             setFormData({
                 type: '',
-                date: new Date().toISOString().split('T')[0],
+                date: getTodayDate(),
                 description: '',
                 details: ''
             });

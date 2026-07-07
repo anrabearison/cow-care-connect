@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Cattle } from '@/features/cattle/types';
+import { getTodayDate } from '@/utils/dateUtils';
 
 interface AddBirthModalProps {
     open: boolean;
@@ -20,7 +21,7 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
         name: '',
         nickname: '',
         gender: '' as 'M' | 'F' | '',
-        birthDate: new Date().toISOString().split('T')[0],
+        birthDate: getTodayDate(),
         character: 1,
         brand: '',
         distinctiveSign: '',
@@ -62,7 +63,7 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                 name: '',
                 nickname: '',
                 gender: '',
-                birthDate: new Date().toISOString().split('T')[0],
+                birthDate: getTodayDate(),
                 character: 1,
                 brand: '',
                 distinctiveSign: '',

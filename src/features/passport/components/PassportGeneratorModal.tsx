@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
+import { getTodayDate } from '@/utils/dateUtils';
 import {
   Dialog,
   DialogContent,
@@ -106,7 +107,7 @@ const PassportFormContent = memo(function PassportFormContent({
   const { data: herdBookCattleData } = useHerdBookCattle(herdBookId, 1, 50);
   const herdBookCattle = herdBookCattleData?.data ?? [];
 
-  const today = useMemo(() => new Date().toISOString().split('T')[0], []);
+  const today = useMemo(() => getTodayDate(), []);
 
   const {
     register,

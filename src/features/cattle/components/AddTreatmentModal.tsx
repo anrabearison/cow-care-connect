@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Treatment } from '@/features/cattle/types';
 import { useMedicaments, useVeterinarians } from '@/features/common/hooks/useReferences';
 import { Medicament } from '@/features/common/types';
+import { getTodayDate } from '@/utils/dateUtils';
 
 interface AddTreatmentModalProps {
     open: boolean;
@@ -20,7 +21,7 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [formData, setFormData] = useState({
         type: '' as Treatment['type'],
-        date: new Date().toISOString().split('T')[0],
+        date: getTodayDate(),
         product: '',
         dosage: {
             quantite: 0,
@@ -96,7 +97,7 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
             onAdd(formData);
             setFormData({
                 type: '' as Treatment['type'],
-                date: new Date().toISOString().split('T')[0],
+                date: getTodayDate(),
                 product: '',
                 dosage: {
                     quantite: 0,
