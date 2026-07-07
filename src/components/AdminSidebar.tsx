@@ -43,12 +43,14 @@ import { MOBILE_SIDEBAR_CLOSE_DELAY_MS, BUTTON_SCALE_CLASSES } from '@/constants
 const NAVIGATION_GROUPS = [
   {
     label: 'Général',
+    icon: Settings,
     items: [
       { title: 'Tableau de bord', url: '/admin', icon: Settings },
     ],
   },
   {
     label: 'Gestion du troupeau',
+    icon: Beef,
     items: [
       { title: 'Bovins', url: '/admin/cattle', icon: Beef },
       { title: 'Inscriptions bovins', url: '/admin/herd-book-cattle', icon: FileText },
@@ -56,6 +58,7 @@ const NAVIGATION_GROUPS = [
   },
   {
     label: 'Personnel',
+    icon: Users,
     items: [
       { title: 'Utilisateurs', url: '/admin/users', icon: Users },
       { title: 'Intervenants', url: '/admin/veterinarians', icon: Stethoscope },
@@ -63,6 +66,7 @@ const NAVIGATION_GROUPS = [
   },
   {
     label: 'Médical',
+    icon: Stethoscope,
     items: [
       { title: 'Médicaments', url: '/admin/medicaments', icon: Pill },
       { title: 'Traitements', url: '/admin/treatments', icon: Activity },
@@ -71,6 +75,7 @@ const NAVIGATION_GROUPS = [
   },
   {
     label: 'Référence',
+    icon: Tag,
     items: [
       { title: 'Catégories', url: '/admin/categories', icon: Tag },
       { title: 'Statuts', url: '/admin/status', icon: Flag },
@@ -80,12 +85,14 @@ const NAVIGATION_GROUPS = [
   },
   {
     label: 'Administration',
+    icon: Book,
     items: [
       { title: 'Livres de troupeau', url: '/admin/herd-books', icon: Book },
     ],
   },
   {
     label: 'Achats',
+    icon: ShoppingCart,
     items: [
       { title: 'Historique achats', url: '/admin/purchases', icon: ShoppingCart },
       { title: 'Fournisseurs', url: '/admin/suppliers', icon: Truck },
@@ -96,6 +103,7 @@ const NAVIGATION_GROUPS = [
 const SUPER_ADMIN_GROUPS = [
   {
     label: 'Super Admin',
+    icon: Building2,
     items: [
       { title: 'Propriétaires', url: '/admin/owners', icon: Building2 },
       { title: 'Invitations', url: '/admin/invitations', icon: Mail },
@@ -123,8 +131,8 @@ const NavItem = ({ item, collapsed, onNavClick }: NavItemProps) => (
         className={getNavCls}
         onClick={(e) => onNavClick(e, item.url)}
       >
-        <item.icon className="h-5 w-5 shrink-0" />
-        {!collapsed && <span>{item.title}</span>}
+        <item.icon className="h-4 w-4 shrink-0" />
+        {!collapsed && <span className="text-sm">{item.title}</span>}
       </NavLink>
     </SidebarMenuButton>
   </SidebarMenuItem>
@@ -243,11 +251,14 @@ export function AdminSidebar() {
           return (
             <SidebarGroup key={group.label}>
               <SidebarGroupLabel
-                className={collapsed ? "sr-only" : "cursor-pointer hover:bg-muted/50 transition-colors"}
+                className={collapsed ? "sr-only" : ""}
                 onClick={() => !collapsed && toggleGroup(group.label)}
               >
                 <div className="flex items-center justify-between w-full">
-                  <span>{group.label}</span>
+                  <div className="flex items-center gap-2">
+                    <group.icon className="h-4 w-4" />
+                    <span className="text-sm">{group.label}</span>
+                  </div>
                   {!collapsed && (
                     <Button
                       variant="ghost"
@@ -290,11 +301,14 @@ export function AdminSidebar() {
           return (
             <SidebarGroup key={group.label}>
               <SidebarGroupLabel
-                className={collapsed ? "sr-only" : "cursor-pointer hover:bg-muted/50 transition-colors"}
+                className={collapsed ? "sr-only" : ""}
                 onClick={() => !collapsed && toggleGroup(group.label)}
               >
                 <div className="flex items-center justify-between w-full">
-                  <span>{group.label}</span>
+                  <div className="flex items-center gap-2">
+                    <group.icon className="h-4 w-4" />
+                    <span className="text-sm">{group.label}</span>
+                  </div>
                   {!collapsed && (
                     <Button
                       variant="ghost"
@@ -340,7 +354,7 @@ export function AdminSidebar() {
             className={`w-full text-destructive hover:text-destructive hover:bg-destructive/10 ${BUTTON_SCALE_CLASSES}`}
           >
             <LogOut className="h-5 w-5 shrink-0" />
-            {!collapsed && <span className="ml-2">Déconnexion</span>}
+            {!collapsed && <span className="ml-2 text-sm">Déconnexion</span>}
           </Button>
         </div>
       </SidebarContent>
