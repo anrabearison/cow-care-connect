@@ -39,24 +39,6 @@ export const getCharacterColor = (character: string): string => {
 };
 
 /**
- * Get color class for category badge
- */
-export const getCategoryColor = (name: string): string => {
-    switch (name) {
-        case 'Taureau':
-            return 'bg-purple-100 text-purple-800 border-purple-200';
-        case 'Vache':
-            return 'bg-pink-100 text-pink-800 border-pink-200';
-        case 'Veau':
-            return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-        case 'Zébu':
-            return 'bg-indigo-100 text-indigo-800 border-indigo-200';
-        default:
-            return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-};
-
-/**
  * Get gender icon
  */
 export const getGenderIcon = (gender: string): string => {

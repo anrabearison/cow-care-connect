@@ -64,10 +64,6 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                     id: 'docile',
                     name: 'Docile'
                 },
-                category: {
-                    id: 'b2e7888a-b294-4acd-8d28-2329bb6335a5',
-                    name: 'Veau'
-                },
                 brand: formData.brand || undefined,
                 distinctiveSign: formData.distinctiveSign || undefined,
                 // photo, status, source removed as not supported by backend on birth create

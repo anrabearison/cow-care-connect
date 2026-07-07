@@ -7,7 +7,6 @@ export interface CattleFilters {
   q?: string;
   gender?: 'M' | 'F';
   character?: string;
-  category?: string;
   source_type?: string;
   sourceType?: string;
   mother_id?: string;
@@ -33,10 +32,6 @@ class CattleService {
       transformed.character = transformed.character.id;
     }
 
-    if (transformed.category && typeof transformed.category === 'object') {
-      transformed.category = transformed.category.id;
-    }
-
     // Remove status from payload as it is not accepted by backend on create/update
     if ('status' in transformed) {
       delete transformed.status;
@@ -47,9 +42,9 @@ class CattleService {
       delete transformed.source;
     }
 
-    // Remove purchaseCategory from source if present (not supported by backend)
-    if (transformed.source && 'purchaseCategory' in transformed.source) {
-      delete transformed.source.purchaseCategory;
+    // Remove category from payload as it's now managed in herdBookCattle
+    if ('category' in transformed) {
+      delete transformed.category;
     }
 
     return transformed;

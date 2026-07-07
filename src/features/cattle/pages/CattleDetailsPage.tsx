@@ -61,21 +61,6 @@ const getCharacterColor = (character: string) => {
   }
 };
 
-const getCategoryColor = (name: string) => {
-  switch (name) {
-    case 'Taureau':
-      return 'bg-purple-100 text-purple-800 border-purple-200';
-    case 'Vache':
-      return 'bg-pink-100 text-pink-800 border-pink-200';
-    case 'Veau':
-      return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    case 'Zébu':
-      return 'bg-indigo-100 text-indigo-800 border-indigo-200';
-    default:
-      return 'bg-gray-100 text-gray-800 border-gray-200';
-  }
-};
-
 const getTreatmentIcon = (treatmentType: string) => {
   switch (treatmentType) {
     case 'ANTIBIOTIQUE':
@@ -405,13 +390,6 @@ export default function CattleDetailsPage() {
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Catégorie</span>
-                  <Badge className={getCategoryColor(cattle.category.name)}>
-                    {cattle.category.name}
-                  </Badge>
-                </div>
-
-                <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Sexe</span>
                   <span className="font-medium">{cattle.gender === 'M' ? 'Mâle' : 'Femelle'}</span>
                 </div>
@@ -518,7 +496,6 @@ export default function CattleDetailsPage() {
                                             <img src={motherImage} alt={mother.name} className="h-full w-full object-cover" />
                                           </div>
                                           <div className="space-y-1">
-                                            {mother.category && <Badge className={getCategoryColor(mother.category.name)}>{mother.category.name}</Badge>}
                                             <p className="text-xs text-muted-foreground">{calculateAge(mother.birthDate)}</p>
                                           </div>
                                         </div>
@@ -604,7 +581,6 @@ export default function CattleDetailsPage() {
                                           <img src={descendantImage} alt={descendant.name} className="h-full w-full object-cover" />
                                         </div>
                                         <div className="space-y-1">
-                                          {descendant.category && <Badge className={getCategoryColor(descendant.category.name)}>{descendant.category.name}</Badge>}
                                           <p className="text-xs text-muted-foreground">{calculateAge(descendant.birthDate)}</p>
                                         </div>
                                       </div>

@@ -10,7 +10,6 @@ import { Cattle } from '@/features/cattle/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCattle, useCreateCattle } from '@/features/cattle/hooks';
 import { AddPurchaseModal } from '@/features/cattle/components/AddPurchaseModal';
-import { useCategories } from '@/features/common/hooks/useReferences';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useOwnerSelection } from '@/contexts/OwnerSelectionContext';
 import { useHerdBookSelection } from '@/contexts/HerdBookSelectionContext';
@@ -26,7 +25,6 @@ export default function CattlePage() {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [genderFilter, setGenderFilter] = useState<string>('all');
   const [sourceFilter, setSourceFilter] = useState<string>('all');
-  const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
@@ -34,19 +32,14 @@ export default function CattlePage() {
   const isSuperAdmin = user?.role === 'SUPER_ADMIN';
   const canAddCattle = !isSuperAdmin || selectedOwnerId !== null;
 
-  // Load categories with React Query
-  const { data: categoriesData } = useCategories();
-  const categories = categoriesData?.data || [];
-
   // Memoize filters object to prevent unnecessary re-renders
   const filters = useMemo(() => ({
     q: searchTerm || undefined,
     gender: genderFilter !== 'all' ? (genderFilter as 'M' | 'F') : undefined,
-    category: categoryFilter !== 'all' ? categoryFilter : undefined,
     source_type: sourceFilter !== 'all' ? sourceFilter : undefined,
     page: currentPage,
     per_page: itemsPerPage,
-  }), [searchTerm, genderFilter, categoryFilter, sourceFilter, currentPage]);
+  }), [searchTerm, genderFilter, sourceFilter, currentPage]);
 
   // Get selected HerdBook from context
   const { selectedHerdBookId, selectedHerdBook, isLoading: herdBookLoading } = useHerdBookSelection();
@@ -63,7 +56,6 @@ export default function CattlePage() {
     setSearchTerm('');
     setGenderFilter('all');
     setSourceFilter('all');
-    setCategoryFilter('all');
     setCurrentPage(1);
   }, []);
 
@@ -73,7 +65,7 @@ export default function CattlePage() {
   // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, genderFilter, sourceFilter, categoryFilter]);
+  }, [searchTerm, genderFilter, sourceFilter]);
 
   // Memoize add cattle handler
   const handleAddCattle = useCallback(async (
@@ -180,21 +172,6 @@ export default function CattlePage() {
                   <SelectItem value="all">Tous les genres</SelectItem>
                   <SelectItem value="M">Mâle</SelectItem>
                   <SelectItem value="F">Femelle</SelectItem>
-                </SelectContent>
-              </Select>
-
-              {/* Category Filter */}
-              <Select value={categoryFilter} onValueChange={setCategoryFilter} disabled={isResultsLoading}>
-                <SelectTrigger className="bg-white/80 border-primary/10">
-                  <SelectValue placeholder="Catégorie" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Toutes les catégories</SelectItem>
-                  {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
                 </SelectContent>
               </Select>
 

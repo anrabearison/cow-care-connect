@@ -12,10 +12,6 @@ export interface Cattle {
   distinctiveSign?: string;
   photo?: string;
   photos?: CattlePhoto[];
-  category?: {
-    id: string;
-    name: string;
-  };
   status?: {
     id: string;
     name: string;

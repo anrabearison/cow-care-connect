@@ -20,7 +20,6 @@ interface AddCattleModalProps {
 export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChange, onAdd }) => {
     const { toast } = useToast();
     const { selectedHerdBook } = useHerdBookSelection();
-    const [categories, setCategories] = useState<{ id: string, name: string }[]>([]);
     const [characters, setCharacters] = useState<{ id: string, name: string }[]>([]);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -30,7 +29,6 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
         gender: '' as 'M' | 'F' | '',
         birthDate: '',
         character: 1,
-        category: '',
         brand: '',
         distinctiveSign: '',
         nCarnet: '',
@@ -46,19 +44,6 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
     });
 
     useEffect(() => {
-        const fetchCategories = async () => {
-            const response = await referenceService.getCategories();
-            if (response.success) {
-                setCategories(response.data);
-            } else {
-                toast({
-                    variant: "destructive",
-                    title: "Erreur",
-                    description: "Impossible de charger les catégories"
-                });
-            }
-        };
-
         const fetchCharacters = async () => {
             const response = await cattleService.getCharacters();
             if (response.success) {
@@ -73,7 +58,6 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
         };
 
         if (open) {
-            fetchCategories();
             fetchCharacters();
         }
     }, [open, toast]);
@@ -84,7 +68,6 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
         if (!formData.name) newErrors.name = "Le nom est obligatoire";
         if (!formData.gender) newErrors.gender = "Le sexe est obligatoire";
         if (!formData.birthDate) newErrors.birthDate = "La date de naissance est obligatoire";
-        if (!formData.category) newErrors.category = "La catégorie est obligatoire";
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -105,10 +88,6 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
             character: {
                 id: formData.character.toString(),
                 name: characters.find(c => c.id === formData.character.toString())?.name || 'Docile'
-            },
-            category: {
-                id: formData.category,
-                name: categories.find(c => c.id === formData.category)?.name || ''
             },
             brand: formData.brand || undefined,
             distinctiveSign: formData.distinctiveSign || undefined,
@@ -139,7 +118,6 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
             gender: '',
             birthDate: '',
             character: 1,
-            category: '',
             brand: '',
             distinctiveSign: '',
             nCarnet: '',
@@ -210,28 +188,6 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                         </SelectContent>
                                     </Select>
                                     {errors.gender && <p className="text-sm text-red-500">{errors.gender}</p>}
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="category">Catégorie *</Label>
-                                    <Select
-                                        value={formData.category}
-                                        onValueChange={(value) => {
-                                            setFormData({ ...formData, category: value });
-                                            if (errors.category) setErrors({ ...errors, category: '' });
-                                        }}
-                                    >
-                                        <SelectTrigger id="category" className={errors.category ? 'border-red-500' : ''}>
-                                            <SelectValue placeholder="Sélectionner" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {categories.map((cat) => (
-                                                <SelectItem key={cat.id} value={cat.id.toString()}>
-                                                    {cat.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    {errors.category && <p className="text-sm text-red-500">{errors.category}</p>}
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="birthDate">Date de naissance *</Label>
