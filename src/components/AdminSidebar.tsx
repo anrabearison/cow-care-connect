@@ -280,7 +280,7 @@ export function AdminSidebar() {
               </SidebarGroupLabel>
               {!collapsed && !isGroupCollapsed && (
                 <SidebarGroupContent>
-                  <SidebarMenu>
+                  <SidebarMenu className="border-l border-border ml-5 pl-1">
                     {group.items.map((item) => (
                       <NavItem
                         key={item.title}
@@ -330,7 +330,7 @@ export function AdminSidebar() {
               </SidebarGroupLabel>
               {!collapsed && !isGroupCollapsed && (
                 <SidebarGroupContent>
-                  <SidebarMenu>
+                  <SidebarMenu className="border-l border-border ml-5 pl-1">
                     {group.items.map((item) => (
                       <NavItem
                         key={item.title}
