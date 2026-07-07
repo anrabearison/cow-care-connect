@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Stethoscope, Send, AlertTriangle } from 'lucide-react';
+import { Stethoscope, Send, AlertTriangle, ShieldAlert } from 'lucide-react';
 import { ChatMessage, Message } from './ChatMessage';
 import { healthService, ChatMessage as ApiChatMessage } from '../services/health.service';
 import { Cattle } from '../types';
@@ -22,6 +22,8 @@ export const HealthChatbot: React.FC<HealthChatbotProps> = ({ cattleId, cattle }
       timestamp: new Date(),
     },
   ]);
+  const [severity, setSeverity] = useState<'critical' | 'high' | 'medium' | 'low'>('low');
+  const [confidence, setConfidence] = useState<number | null>(null);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [apiHistory, setApiHistory] = useState<ApiChatMessage[]>([]);
@@ -66,8 +68,11 @@ export const HealthChatbot: React.FC<HealthChatbotProps> = ({ cattleId, cattle }
         role: 'model',
         content: response.response,
         timestamp: new Date(),
+        severity: response.severity ?? 'low',
       };
 
+      setSeverity(response.severity ?? 'low');
+      setConfidence(response.confidence ?? null);
       setMessages((prev) => [...prev, botMessage]);
       setApiHistory([
         ...updatedHistory,
@@ -152,6 +157,14 @@ export const HealthChatbot: React.FC<HealthChatbotProps> = ({ cattleId, cattle }
           >
             <Send className="h-4 w-4" />
           </Button>
+        </div>
+
+        <div className="flex items-center justify-between rounded border border-border/60 bg-white/70 px-3 py-2 text-xs text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <ShieldAlert className="h-4 w-4 text-amber-600" />
+            <span>Gravité estimée : {severity === 'critical' ? 'critique' : severity === 'high' ? 'élevée' : severity === 'medium' ? 'moyenne' : 'faible'}</span>
+          </div>
+          {confidence !== null && <span>Confiance : {(confidence * 100).toFixed(0)}%</span>}
         </div>
 
         {/* Warning */}
