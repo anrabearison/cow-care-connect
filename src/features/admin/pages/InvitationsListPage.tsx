@@ -123,7 +123,12 @@ const InvitationsListPage = () => {
     {
       key: 'ownerId',
       header: 'Propriétaire',
-      render: (item) => item.ownerId || '-',
+      render: (item) => {
+        if (!item.ownerId) return '-';
+        const owner = ownersData?.data?.find((o) => o.id === item.ownerId);
+        if (!owner) return item.ownerId;
+        return owner.city ? `${owner.name} (${owner.city})` : owner.name;
+      },
     },
     {
       key: 'expiresAt',
