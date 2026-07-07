@@ -19,6 +19,11 @@ import {
   Truck,
   ChevronDown,
   ChevronRight,
+  Folder,
+  Heart,
+  Bookmark,
+  ShoppingBag,
+  Crown,
 } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
@@ -50,7 +55,7 @@ const NAVIGATION_GROUPS = [
   },
   {
     label: 'Gestion du troupeau',
-    icon: Beef,
+    icon: Heart,
     items: [
       { title: 'Bovins', url: '/admin/cattle', icon: Beef },
       { title: 'Inscriptions bovins', url: '/admin/herd-book-cattle', icon: FileText },
@@ -66,7 +71,7 @@ const NAVIGATION_GROUPS = [
   },
   {
     label: 'Médical',
-    icon: Stethoscope,
+    icon: Activity,
     items: [
       { title: 'Médicaments', url: '/admin/medicaments', icon: Pill },
       { title: 'Traitements', url: '/admin/treatments', icon: Activity },
@@ -75,7 +80,7 @@ const NAVIGATION_GROUPS = [
   },
   {
     label: 'Référence',
-    icon: Tag,
+    icon: Bookmark,
     items: [
       { title: 'Catégories', url: '/admin/categories', icon: Tag },
       { title: 'Statuts', url: '/admin/status', icon: Flag },
@@ -85,14 +90,14 @@ const NAVIGATION_GROUPS = [
   },
   {
     label: 'Administration',
-    icon: Book,
+    icon: Folder,
     items: [
       { title: 'Livres de troupeau', url: '/admin/herd-books', icon: Book },
     ],
   },
   {
     label: 'Achats',
-    icon: ShoppingCart,
+    icon: ShoppingBag,
     items: [
       { title: 'Historique achats', url: '/admin/purchases', icon: ShoppingCart },
       { title: 'Fournisseurs', url: '/admin/suppliers', icon: Truck },
@@ -103,7 +108,7 @@ const NAVIGATION_GROUPS = [
 const SUPER_ADMIN_GROUPS = [
   {
     label: 'Super Admin',
-    icon: Building2,
+    icon: Crown,
     items: [
       { title: 'Propriétaires', url: '/admin/owners', icon: Building2 },
       { title: 'Invitations', url: '/admin/invitations', icon: Mail },
