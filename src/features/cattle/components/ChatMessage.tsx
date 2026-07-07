@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bot, User } from 'lucide-react';
+import { AlertTriangle, Bot, Eye, ShieldCheck, Stethoscope, User } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 export interface Message {
@@ -24,10 +24,9 @@ const parseStructuredSections = (content: string) => {
       if (!match) return null;
 
       const [, rawTitle, body] = match;
-      const title = rawTitle.replace(/^🚨\s*/, '').replace(/^🔍\s*/, '').replace(/^📋\s*/, '').replace(/^👨‍⚕️\s*/, '');
-      return { title, body, rawTitle };
+      return { body, rawTitle };
     })
-    .filter(Boolean) as Array<{ title: string; body: string; rawTitle: string }>;
+    .filter(Boolean) as Array<{ body: string; rawTitle: string }>;
 
   return sections;
 };
@@ -75,10 +74,49 @@ const getSectionClasses = (rawTitle: string, severity?: 'critical' | 'high' | 'm
   return `${tone.section} border-l-4 border-slate-400`;
 };
 
+const getSectionMeta = (rawTitle: string, severity?: 'critical' | 'high' | 'medium' | 'low') => {
+  const tone = getToneClasses(severity);
+
+  if (rawTitle.includes('URGENCE')) {
+    return {
+      icon: AlertTriangle,
+      cardClass: `border-rose-200 bg-rose-50/90 ${tone.section}`,
+      iconClass: 'border-rose-200 bg-rose-100 text-rose-700',
+      titleClass: 'text-rose-700',
+    };
+  }
+
+  if (rawTitle.includes('OBSERVATION')) {
+    return {
+      icon: Eye,
+      cardClass: `border-amber-200 bg-amber-50/90 ${tone.section}`,
+      iconClass: 'border-amber-200 bg-amber-100 text-amber-700',
+      titleClass: 'text-amber-700',
+    };
+  }
+
+  if (rawTitle.includes('CONSULTATION')) {
+    return {
+      icon: ShieldCheck,
+      cardClass: `border-sky-200 bg-sky-50/90 ${tone.section}`,
+      iconClass: 'border-sky-200 bg-sky-100 text-sky-700',
+      titleClass: 'text-sky-700',
+    };
+  }
+
+  return {
+    icon: Stethoscope,
+    cardClass: `border-slate-200 bg-white/90 ${tone.section}`,
+    iconClass: 'border-slate-200 bg-slate-100 text-slate-700',
+    titleClass: 'text-slate-700',
+  };
+};
+
 export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   const isUser = message.role === 'user';
   const sections = !isUser ? parseStructuredSections(message.content) : [];
   const tone = getToneClasses(message.severity);
+  const isPriority = message.severity === 'critical' || message.severity === 'high';
 
   return (
     <div className={`flex gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}>
@@ -97,25 +135,54 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
           }`}
         >
           {!isUser && sections.length > 0 ? (
-            <div className="space-y-2">
-              <div className="mb-2 flex items-center justify-between">
-                <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${tone.badge}`}>
-                  Analyse santé
-                </span>
-                {message.severity && (
-                  <span className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${tone.badge}`}>
-                    {message.severity === 'critical' ? 'Critique' : message.severity === 'high' ? 'Élevée' : message.severity === 'medium' ? 'Moyenne' : 'Faible'}
-                  </span>
-                )}
-              </div>
-              {sections.map((section) => (
-                <div key={section.rawTitle} className={`rounded-md border px-3 py-2 ${getSectionClasses(section.rawTitle, message.severity)}`}>
-                  <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-foreground/80">
-                    {section.rawTitle}
+            <div className={`space-y-3 rounded-2xl border p-4 shadow-sm ${isPriority ? 'border-rose-200 bg-gradient-to-br from-rose-50 via-white to-orange-50 shadow-[0_10px_30px_-12px_rgba(244,63,94,0.35)]' : 'border-slate-200/80 bg-gradient-to-br from-white via-slate-50 to-blue-50 shadow-sm'}`}>
+              <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <div className={`flex h-9 w-9 items-center justify-center rounded-full border ${tone.badge}`}>
+                    <Stethoscope className="h-4 w-4" />
                   </div>
-                  <div className="text-sm whitespace-pre-wrap leading-relaxed">{section.body}</div>
+                  <div>
+                    <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-500">
+                      Analyse santé
+                    </div>
+                    <div className="text-sm font-semibold text-slate-800">Recommandation vétérinaire</div>
+                  </div>
                 </div>
-              ))}
+                <div className="flex items-center gap-2">
+                  {isPriority && (
+                    <Badge className="border-rose-200 bg-rose-100 text-rose-700">
+                      Urgence prioritaire
+                    </Badge>
+                  )}
+                  {message.severity && (
+                    <span className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide ${tone.badge}`}>
+                      {message.severity === 'critical' ? 'Critique' : message.severity === 'high' ? 'Élevée' : message.severity === 'medium' ? 'Moyenne' : 'Faible'}
+                    </span>
+                  )}
+                </div>
+              </div>
+              {sections.map((section) => {
+                const sectionMeta = getSectionMeta(section.rawTitle, message.severity);
+                const Icon = sectionMeta.icon;
+
+                return (
+                  <div key={section.rawTitle} className={`rounded-xl border bg-white/85 p-3 shadow-sm ${sectionMeta.cardClass}`}>
+                    <div className="flex items-start gap-2">
+                      <div className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border ${sectionMeta.iconClass}`}>
+                        <Icon className="h-4 w-4" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className={`text-[11px] font-semibold uppercase tracking-[0.2em] ${sectionMeta.titleClass}`}>
+                          {section.rawTitle}
+                        </div>
+                        <div className="mt-1 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap">
+                          {section.body}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           ) : (
             <div className="text-sm whitespace-pre-wrap">{message.content}</div>
