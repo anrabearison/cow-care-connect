@@ -5,7 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Stethoscope, Send, AlertTriangle } from 'lucide-react';
 import { ChatMessage, Message } from './ChatMessage';
-import { santeAnimaleService, ChatMessage as ApiChatMessage } from '../services/sante-animale.service';
+import { healthService, ChatMessage as ApiChatMessage } from '../services/health.service';
 import { Cattle } from '../types';
 
 interface HealthChatbotProps {
@@ -55,7 +55,7 @@ export const HealthChatbot: React.FC<HealthChatbotProps> = ({ cattleId, cattle }
         { role: 'user', parts: [{ text: input }] },
       ];
 
-      const response = await santeAnimaleService.chat({
+      const response = await healthService.chat({
         question: input,
         animalId: cattleId,
         history: updatedHistory,

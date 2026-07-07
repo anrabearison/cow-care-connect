@@ -61,9 +61,9 @@ export const API_ENDPOINTS = {
     BASE: `${API_PREFIX}/dashboard`,
     STATS: `${API_PREFIX}/dashboard/stats`,
   },
-  SANTE_ANIMALE: {
-    BASE: `${API_PREFIX}/sante-animale`,
-    CHAT: `${API_PREFIX}/sante-animale/chat`,
+  HEALTH: {
+    BASE: `${API_PREFIX}/health`,
+    CHAT: `${API_PREFIX}/health/chat`,
   },
 } as const;
 

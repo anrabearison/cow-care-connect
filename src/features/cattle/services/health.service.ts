@@ -17,10 +17,10 @@ export interface ChatResponse {
   source?: 'rag' | 'fallback' | 'error';
 }
 
-export class SanteAnimaleService {
+export class HealthService {
   async chat(request: ChatRequest): Promise<ChatResponse> {
     try {
-      const response = await axios.post(API_ENDPOINTS.SANTE_ANIMALE.CHAT, request);
+      const response = await axios.post(API_ENDPOINTS.HEALTH.CHAT, request);
       return response.data;
     } catch (error) {
       console.error('Error calling health chatbot:', error);
@@ -32,4 +32,4 @@ export class SanteAnimaleService {
   }
 }
 
-export const santeAnimaleService = new SanteAnimaleService();
+export const healthService = new HealthService();
