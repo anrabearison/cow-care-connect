@@ -27,7 +27,7 @@ export const AdminLayout = () => (
                 asChild
                 className="gap-2"
               >
-                <a href={FRONT_OFFICE_URL} target="_blank" rel="noopener noreferrer">
+                <a href={FRONT_OFFICE_URL} rel="noopener noreferrer">
                   <ExternalLink className="h-4 w-4" />
                   <span className="hidden sm:inline">Front Office</span>
                 </a>
