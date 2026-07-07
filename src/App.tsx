@@ -9,6 +9,7 @@ import { AdminLayout } from "@/layouts/AdminLayout";
 import { lazy, Suspense, useEffect } from "react";
 import { AppProviders } from "@/AppProviders";
 import { APP_ROUTE_PATHS } from "@/config/urls";
+import { PageLoader } from "@/components/PageLoader";
 
 const HomePage = lazy(() => import("./pages/HomePage"));
 const CattlePage = lazy(() => import("@/features/cattle/pages/CattlePage"));
@@ -57,7 +58,7 @@ const AppContent = () => {
         v7_relativeSplatPath: true,
       }}
     >
-      <Suspense fallback={null}>
+      <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path={APP_ROUTE_PATHS.GOOGLE_CALLBACK} element={<GoogleCallbackPage />} />

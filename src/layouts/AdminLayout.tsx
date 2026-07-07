@@ -1,21 +1,11 @@
 import { Suspense } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AdminSidebar } from "@/components/AdminSidebar";
-import { Skeleton } from "@/components/ui/skeleton";
+import { PageLoader } from "@/components/PageLoader";
 import { Outlet } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { FRONT_OFFICE_URL } from "@/config/urls";
 import { ExternalLink } from "lucide-react";
-
-const PageLoader = () => (
-  <div className="flex items-center justify-center min-h-screen">
-    <div className="space-y-4 w-full max-w-md p-6">
-      <Skeleton className="h-12 w-full" />
-      <Skeleton className="h-64 w-full" />
-      <Skeleton className="h-32 w-full" />
-    </div>
-  </div>
-);
 
 export const AdminLayout = () => (
   <SidebarProvider>
