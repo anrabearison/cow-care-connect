@@ -1,9 +1,9 @@
-import { Link, Navigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
+import { PageLoader } from '@/components/PageLoader';
 import { useHerdBookSelection } from '@/contexts/HerdBookSelectionContext';
 import {
   Activity,
@@ -250,66 +250,32 @@ export default function CattleDetailsPage() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-earth">
-        <div className="container mx-auto px-6 py-8">
-          {/* Header Skeleton */}
-          <div className="flex items-center space-x-4 mb-8">
-            <Skeleton className="h-10 w-10 rounded-md" />
-            <div>
-              <Skeleton className="h-10 w-48" />
-              <Skeleton className="h-4 w-24 mt-2" />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column Skeleton */}
-            <div className="lg:col-span-1 space-y-6">
-              <Card>
-                <Skeleton className="h-64 w-full" />
-              </Card>
-              <Card>
-                <CardHeader>
-                  <Skeleton className="h-6 w-48" />
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {Array.from({ length: 4 }).map((_, i) => (
-                    <div key={i} className="flex justify-between">
-                      <Skeleton className="h-4 w-20" />
-                      <Skeleton className="h-4 w-32" />
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Right Column Skeleton */}
-            <div className="lg:col-span-2 space-y-6">
-              {Array.from({ length: 2 }).map((_, i) => (
-                <Card key={i}>
-                  <CardHeader>
-                    <Skeleton className="h-6 w-48" />
-                    <Skeleton className="h-4 w-32" />
-                  </CardHeader>
-                  <CardContent>
-                    {Array.from({ length: 3 }).map((_, j) => (
-                      <div key={j} className="mb-4 p-4 rounded-lg bg-muted/30">
-                        <Skeleton className="h-6 w-full mb-2" />
-                        <Skeleton className="h-4 w-3/4" />
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <PageLoader message="Chargement des détails du bovin..." />;
   }
 
   if (!cattle || error) {
-    return <Navigate to="/cattle" replace />;
+    return (
+      <div className="min-h-screen bg-gradient-earth">
+        <div className="container mx-auto flex min-h-screen items-center justify-center px-6 py-8">
+          <Card className="w-full max-w-md border-destructive/20">
+            <CardHeader>
+              <CardTitle className="text-xl">Impossible de charger les détails</CardTitle>
+              <CardDescription>
+                Les informations du bovin n’ont pas pu être récupérées.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                {error || 'Veuillez réessayer dans quelques instants.'}
+              </p>
+              <Button asChild>
+                <Link to="/cattle">Retour à la liste</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
   }
 
   return (
