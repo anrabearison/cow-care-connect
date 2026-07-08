@@ -148,7 +148,7 @@ export const HealthChatbot: React.FC<HealthChatbotProps> = ({
 
       <CardContent className="space-y-4 px-3 pb-4 sm:px-6 sm:pb-6">
         {/* Message area */}
-        <div className="h-[55vh] min-h-[280px] max-h-[420px] overflow-y-auto space-y-3 rounded-xl border border-slate-200/80 bg-white/70 p-2 sm:h-80 sm:p-3">
+        <div className="max-h-[55vh] overflow-y-auto space-y-3 rounded-xl border border-slate-200/80 bg-white/70 p-2 sm:max-h-[420px] sm:p-3">
           {messages.map((msg) => (
             <ChatMessage key={msg.id} message={msg} />
           ))}
