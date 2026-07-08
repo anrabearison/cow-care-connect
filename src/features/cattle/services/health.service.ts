@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { apiClient } from '@/utils/apiClient';
 import { API_ENDPOINTS } from '@/config/api';
 
 export interface ChatMessage {
@@ -22,8 +22,8 @@ export interface ChatResponse {
 export class HealthService {
   async chat(request: ChatRequest): Promise<ChatResponse> {
     try {
-      const response = await axios.post(API_ENDPOINTS.HEALTH.CHAT, request);
-      return response.data;
+      const response = await apiClient.post<ChatResponse>(API_ENDPOINTS.HEALTH.CHAT, request);
+      return response;
     } catch (error) {
       console.error('Error calling health chatbot:', error);
       return {
