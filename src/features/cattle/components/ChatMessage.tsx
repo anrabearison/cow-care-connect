@@ -87,7 +87,7 @@ const renderMarkdown = (content: string, textClassName = 'text-slate-700') => {
   const flushList = () => {
     if (listItems.length > 0) {
       nodes.push(
-        <ul key={`list-${nodes.length}`} className={`ml-4 list-disc space-y-1 text-sm leading-relaxed ${textClassName}`}>
+        <ul key={`list-${nodes.length}`} className={`ml-3 list-disc space-y-1 text-sm leading-relaxed break-words ${textClassName}`}>
           {listItems}
         </ul>,
       );
@@ -116,7 +116,7 @@ const renderMarkdown = (content: string, textClassName = 'text-slate-700') => {
     }
 
     nodes.push(
-      <p key={`p-${index}`} className={`text-sm leading-relaxed ${textClassName}`}>
+      <p key={`p-${index}`} className={`text-sm leading-relaxed break-words ${textClassName}`}>
         {parseInlineMarkdown(line)}
       </p>,
     );
@@ -214,43 +214,43 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   const isPriority = message.severity === 'critical' || message.severity === 'high';
 
   return (
-    <div className={`flex gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}>
+    <div className={`flex items-start gap-2 sm:gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}>
       {!isUser && (
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
-          <Bot className="h-4 w-4 text-primary" />
+        <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 sm:h-8 sm:w-8">
+          <Bot className="h-3.5 w-3.5 text-primary sm:h-4 sm:w-4" />
         </div>
       )}
 
-      <div className={`max-w-[92%] sm:max-w-[80%] ${isUser ? 'order-2' : 'order-1'}`}>
+      <div className={`min-w-0 max-w-[94%] sm:max-w-[80%] ${isUser ? 'order-2' : 'order-1'}`}>
         <div
-          className={`rounded-2xl border p-3 text-sm leading-relaxed shadow-sm sm:p-4 ${
+          className={`w-full rounded-2xl border p-2.5 text-sm leading-relaxed shadow-sm sm:p-4 ${
             isUser
               ? 'border-primary/20 bg-gradient-to-br from-primary/95 via-primary to-primary/85 text-white shadow-[0_10px_24px_-12px_rgba(15,23,42,0.35)]'
               : 'border-slate-200/80 bg-gradient-to-br from-white via-slate-50 to-blue-50 text-slate-700'
           }`}
         >
           {!isUser && sections.length > 0 ? (
-            <div className={`space-y-3 rounded-2xl border p-3 shadow-sm sm:p-4 ${isPriority ? 'border-rose-200 bg-gradient-to-br from-rose-50 via-white to-orange-50 shadow-[0_10px_30px_-12px_rgba(244,63,94,0.35)]' : 'border-slate-200/80 bg-gradient-to-br from-white via-slate-50 to-blue-50 shadow-sm'}`}>
+            <div className="w-full space-y-3">
               <div className="mb-1 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-center gap-2">
-                  <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border ${tone.badge}`}>
-                    <Stethoscope className="h-4 w-4" />
+                <div className="flex items-start gap-2">
+                  <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border sm:h-9 sm:w-9 ${tone.badge}`}>
+                    <Stethoscope className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-500">
                       Analyse santé
                     </div>
-                    <div className="text-sm font-semibold text-slate-800">Recommandation vétérinaire</div>
+                    <div className="text-sm font-semibold leading-snug text-slate-800">Recommandation vétérinaire</div>
                   </div>
                 </div>
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                   {isPriority && (
-                    <Badge className="border-rose-200 bg-rose-100 text-rose-700">
+                    <Badge className="border-rose-200 bg-rose-100 text-[10px] text-rose-700 sm:text-xs">
                       Urgence prioritaire
                     </Badge>
                   )}
                   {message.severity && (
-                    <span className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide ${tone.badge}`}>
+                    <span className={`rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-wide ${tone.badge}`}>
                       {message.severity === 'critical' ? 'Critique' : message.severity === 'high' ? 'Élevée' : message.severity === 'medium' ? 'Moyenne' : 'Faible'}
                     </span>
                   )}
@@ -261,10 +261,10 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
                 const Icon = sectionMeta.icon;
 
                 return (
-                  <div key={section.rawTitle} className={`rounded-xl border bg-white/85 p-3 shadow-sm ${sectionMeta.cardClass}`}>
+                  <div key={section.rawTitle} className={`rounded-xl border bg-white/85 p-2.5 shadow-sm sm:p-3 ${sectionMeta.cardClass}`}>
                     <div className="flex items-start gap-2">
-                      <div className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border ${sectionMeta.iconClass}`}>
-                        <Icon className="h-4 w-4" />
+                      <div className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border sm:h-8 sm:w-8 ${sectionMeta.iconClass}`}>
+                        <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                       </div>
                       <div className="min-w-0">
                         <div className={`text-[11px] font-semibold uppercase tracking-[0.2em] ${sectionMeta.titleClass}`}>
@@ -280,7 +280,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
               })}
             </div>
           ) : (
-            <div className={`text-sm leading-relaxed ${isUser ? 'text-white/95' : 'text-slate-700'}`}>
+            <div className={`w-full text-sm leading-relaxed ${isUser ? 'text-white/95' : 'text-slate-700'}`}>
               {renderMarkdown(message.content, isUser ? 'text-white/95' : 'text-slate-700')}
             </div>
           )}
@@ -301,8 +301,8 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
       </div>
 
       {isUser && (
-        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center order-1">
-          <User className="w-4 h-4 text-primary-foreground" />
+        <div className="order-1 mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary sm:h-8 sm:w-8">
+          <User className="h-3.5 w-3.5 text-primary-foreground sm:h-4 sm:w-4" />
         </div>
       )}
     </div>
