@@ -350,12 +350,15 @@ export default function CattleDetailsPage() {
             )}
 
             {/* Basic Info */}
-            <Card className="shadow-card-soft">
+            <Card className="shadow-farm">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <User className="h-5 w-5 text-primary" />
                   <span>Informations générales</span>
                 </CardTitle>
+                <CardDescription>
+                  Informations de base sur l'animal
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex justify-between">
@@ -706,7 +709,7 @@ export default function CattleDetailsPage() {
                   {localTreatments
                     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                     .map((treatment) => (
-                      <div key={treatment.id} className="flex space-x-4 p-4 bg-accent/10 rounded-lg border border-accent/20">
+                      <div key={treatment.id} className="flex space-x-4 p-4 bg-muted/30 rounded-lg">
                         <div className="text-2xl">{getTreatmentIcon(treatment.type)}</div>
                         <div className="flex-1">
                           <div className="flex items-start justify-between">

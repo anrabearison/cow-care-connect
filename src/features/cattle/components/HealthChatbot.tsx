@@ -128,8 +128,8 @@ export const HealthChatbot: React.FC<HealthChatbotProps> = ({
   };
 
   return (
-    <Card className="overflow-hidden border-primary/20 bg-gradient-to-br from-blue-50 via-white to-blue-50/80 shadow-sm">
-      <CardHeader className="px-3 pb-4 sm:px-6">
+    <Card className="overflow-hidden shadow-farm border-primary/20 bg-gradient-to-br from-blue-50 via-white to-blue-50/80">
+      <CardHeader>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-start gap-2">
             <Stethoscope className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
@@ -146,7 +146,7 @@ export const HealthChatbot: React.FC<HealthChatbotProps> = ({
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4 px-3 pb-4 sm:px-6 sm:pb-6">
+      <CardContent className="space-y-4">
         {/* Message area */}
         <div className="max-h-[55vh] overflow-y-auto space-y-3 rounded-xl border border-slate-200/80 bg-white/70 p-2 sm:max-h-[420px] sm:p-3">
           {messages.map((msg) => (
