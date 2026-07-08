@@ -79,7 +79,7 @@ const parseInlineMarkdown = (text: string) => {
   return nodes.length > 0 ? nodes : [text];
 };
 
-const renderMarkdown = (content: string) => {
+const renderMarkdown = (content: string, textClassName = 'text-slate-700') => {
   const lines = content.split('\n');
   const nodes: React.ReactNode[] = [];
   let listItems: React.ReactNode[] = [];
@@ -87,7 +87,7 @@ const renderMarkdown = (content: string) => {
   const flushList = () => {
     if (listItems.length > 0) {
       nodes.push(
-        <ul key={`list-${nodes.length}`} className="ml-4 list-disc space-y-1 text-sm leading-relaxed text-slate-700">
+        <ul key={`list-${nodes.length}`} className={`ml-4 list-disc space-y-1 text-sm leading-relaxed ${textClassName}`}>
           {listItems}
         </ul>,
       );
@@ -116,7 +116,7 @@ const renderMarkdown = (content: string) => {
     }
 
     nodes.push(
-      <p key={`p-${index}`} className="text-sm leading-relaxed text-slate-700">
+      <p key={`p-${index}`} className={`text-sm leading-relaxed ${textClassName}`}>
         {parseInlineMarkdown(line)}
       </p>,
     );
@@ -216,24 +216,24 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   return (
     <div className={`flex gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}>
       {!isUser && (
-        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-          <Bot className="w-4 h-4 text-primary" />
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
+          <Bot className="h-4 w-4 text-primary" />
         </div>
       )}
-      
-      <div className={`max-w-[80%] ${isUser ? 'order-2' : 'order-1'}`}>
+
+      <div className={`max-w-[92%] sm:max-w-[80%] ${isUser ? 'order-2' : 'order-1'}`}>
         <div
-          className={`rounded-lg p-3 ${
+          className={`rounded-2xl border p-3 text-sm leading-relaxed shadow-sm sm:p-4 ${
             isUser
-              ? 'bg-primary text-white'
-              : 'bg-muted text-foreground'
+              ? 'border-primary/20 bg-gradient-to-br from-primary/95 via-primary to-primary/85 text-white shadow-[0_10px_24px_-12px_rgba(15,23,42,0.35)]'
+              : 'border-slate-200/80 bg-gradient-to-br from-white via-slate-50 to-blue-50 text-slate-700'
           }`}
         >
           {!isUser && sections.length > 0 ? (
-            <div className={`space-y-3 rounded-2xl border p-4 shadow-sm ${isPriority ? 'border-rose-200 bg-gradient-to-br from-rose-50 via-white to-orange-50 shadow-[0_10px_30px_-12px_rgba(244,63,94,0.35)]' : 'border-slate-200/80 bg-gradient-to-br from-white via-slate-50 to-blue-50 shadow-sm'}`}>
-              <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
+            <div className={`space-y-3 rounded-2xl border p-3 shadow-sm sm:p-4 ${isPriority ? 'border-rose-200 bg-gradient-to-br from-rose-50 via-white to-orange-50 shadow-[0_10px_30px_-12px_rgba(244,63,94,0.35)]' : 'border-slate-200/80 bg-gradient-to-br from-white via-slate-50 to-blue-50 shadow-sm'}`}>
+              <div className="mb-1 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-2">
-                  <div className={`flex h-9 w-9 items-center justify-center rounded-full border ${tone.badge}`}>
+                  <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border ${tone.badge}`}>
                     <Stethoscope className="h-4 w-4" />
                   </div>
                   <div>
@@ -243,7 +243,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
                     <div className="text-sm font-semibold text-slate-800">Recommandation vétérinaire</div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   {isPriority && (
                     <Badge className="border-rose-200 bg-rose-100 text-rose-700">
                       Urgence prioritaire
@@ -280,12 +280,12 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
               })}
             </div>
           ) : (
-            <div className="text-sm leading-relaxed text-slate-700">
-              {renderMarkdown(message.content)}
+            <div className={`text-sm leading-relaxed ${isUser ? 'text-white/95' : 'text-slate-700'}`}>
+              {renderMarkdown(message.content, isUser ? 'text-white/95' : 'text-slate-700')}
             </div>
           )}
         </div>
-        <div className="flex items-center gap-2 mt-1">
+        <div className="mt-1 flex flex-wrap items-center gap-2">
           <span className="text-xs text-muted-foreground">
             {message.timestamp.toLocaleTimeString('fr-FR', {
               hour: '2-digit',

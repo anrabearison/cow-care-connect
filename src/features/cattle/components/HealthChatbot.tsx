@@ -128,38 +128,40 @@ export const HealthChatbot: React.FC<HealthChatbotProps> = ({
   };
 
   return (
-    <Card className="border-primary/20 bg-gradient-to-br from-blue-50 to-white">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Stethoscope className="h-5 w-5 text-primary" />
-            <CardTitle className="text-lg">Assistant Santé</CardTitle>
+    <Card className="overflow-hidden border-primary/20 bg-gradient-to-br from-blue-50 via-white to-blue-50/80 shadow-sm">
+      <CardHeader className="px-3 pb-4 sm:px-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex items-start gap-2">
+            <Stethoscope className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+            <div>
+              <CardTitle className="text-base sm:text-lg">Assistant Santé</CardTitle>
+              <CardDescription className="mt-1 text-sm leading-relaxed">
+                Décrivez les symptômes observés. L'IA vous aidera à identifier les problèmes possibles.
+              </CardDescription>
+            </div>
           </div>
-          <Badge variant="outline" className="text-xs">
+          <Badge variant="outline" className="w-full text-[11px] sm:w-auto sm:text-xs">
             IA - Consultation vétérinaire recommandée
           </Badge>
         </div>
-        <CardDescription className="text-sm">
-          Décrivez les symptômes observés. L'IA vous aidera à identifier les problèmes possibles.
-        </CardDescription>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 px-3 pb-4 sm:px-6 sm:pb-6">
         {/* Message area */}
-        <div className="h-80 overflow-y-auto space-y-3 p-3 bg-white/50 rounded-lg border">
+        <div className="h-[55vh] min-h-[280px] max-h-[420px] overflow-y-auto space-y-3 rounded-xl border border-slate-200/80 bg-white/70 p-2 sm:h-80 sm:p-3">
           {messages.map((msg) => (
             <ChatMessage key={msg.id} message={msg} />
           ))}
           {isLoading && (
-            <div className="flex gap-3 justify-start">
-              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                <Stethoscope className="w-4 h-4 text-primary" />
+            <div className="flex justify-start gap-3">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                <Stethoscope className="h-4 w-4 text-primary" />
               </div>
-              <div className="bg-muted rounded-lg p-3">
+              <div className="rounded-lg bg-muted p-3">
                 <div className="flex gap-1">
-                  <div className="w-2 h-2 bg-primary rounded-full animate-bounce" />
-                  <div className="w-2 h-2 bg-primary rounded-full animate-bounce delay-100" />
-                  <div className="w-2 h-2 bg-primary rounded-full animate-bounce delay-200" />
+                  <div className="h-2 w-2 animate-bounce rounded-full bg-primary" />
+                  <div className="h-2 w-2 animate-bounce rounded-full bg-primary delay-100" />
+                  <div className="h-2 w-2 animate-bounce rounded-full bg-primary delay-200" />
                 </div>
               </div>
             </div>
@@ -168,36 +170,36 @@ export const HealthChatbot: React.FC<HealthChatbotProps> = ({
         </div>
 
         {/* Input area */}
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row">
           <Textarea
             placeholder="Ex: Ma vache a une diarrhée depuis hier..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="min-h-[60px] resize-none"
+            className="min-h-[56px] flex-1 resize-none"
             disabled={isLoading}
             maxLength={500}
           />
           <Button
             onClick={handleSubmit}
             disabled={isLoading || !input.trim()}
-            className="px-4 self-end"
+            className="w-full self-end px-4 sm:w-auto"
           >
             <Send className="h-4 w-4" />
           </Button>
         </div>
 
-        <div className="flex items-center justify-between rounded border border-border/60 bg-white/70 px-3 py-2 text-xs text-muted-foreground">
+        <div className="flex flex-col gap-2 rounded-lg border border-border/60 bg-white/70 px-3 py-2 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
-            <ShieldAlert className="h-4 w-4 text-amber-600" />
+            <ShieldAlert className="h-4 w-4 shrink-0 text-amber-600" />
             <span>Gravité estimée : {severity === 'critical' ? 'critique' : severity === 'high' ? 'élevée' : severity === 'medium' ? 'moyenne' : 'faible'}</span>
           </div>
           {confidence !== null && <span>Confiance : {(confidence * 100).toFixed(0)}%</span>}
         </div>
 
         {/* Warning */}
-        <div className="text-xs text-muted-foreground bg-yellow-50 p-2 rounded border border-yellow-200 flex items-start gap-2">
-          <AlertTriangle className="h-4 w-4 text-yellow-600 flex-shrink-0 mt-0.5" />
+        <div className="flex items-start gap-2 rounded-lg border border-yellow-200 bg-yellow-50 p-3 text-xs text-muted-foreground">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-yellow-600" />
           <span>
             Cet assistant ne remplace pas un vétérinaire. Consultez un professionnel pour tout traitement.
           </span>

@@ -771,7 +771,7 @@ export default function CattleDetailsPage() {
             </Card>
 
             {/* Health Chatbot Section */}
-            <Card className="shadow-card-soft border-primary/20 bg-gradient-to-br from-blue-50 to-white">
+            <Card className="overflow-hidden border-primary/20 bg-gradient-to-br from-blue-50 to-white shadow-card-soft">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Stethoscope className="h-5 w-5 text-primary" />

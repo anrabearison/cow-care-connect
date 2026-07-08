@@ -39,7 +39,7 @@ export const ChatbotFloatingButton: React.FC<ChatbotFloatingButtonProps> = ({
       {!isOpen && (
         <Button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground z-50 flex items-center justify-center"
+          className="fixed bottom-4 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 sm:bottom-6 sm:right-6"
           size="icon"
         >
           <MessageSquare className="h-6 w-6" />
@@ -48,10 +48,10 @@ export const ChatbotFloatingButton: React.FC<ChatbotFloatingButtonProps> = ({
 
       {/* Chat Panel */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 w-full max-w-md z-50 animate-in slide-in-from-bottom-4 duration-300">
-          <div className="bg-white rounded-lg shadow-2xl border overflow-hidden">
+        <div className="fixed bottom-4 left-3 right-3 z-50 animate-in slide-in-from-bottom-4 duration-300 sm:bottom-6 sm:right-6 sm:left-auto sm:w-full sm:max-w-md">
+          <div className="overflow-hidden rounded-lg border bg-white shadow-2xl">
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-primary/10 to-primary/5">
+            <div className="flex items-center justify-between border-b bg-gradient-to-r from-primary/10 to-primary/5 p-3 sm:p-4">
               <div className="flex items-center gap-2">
                 <Stethoscope className="h-5 w-5 text-primary" />
                 <div>
@@ -70,7 +70,7 @@ export const ChatbotFloatingButton: React.FC<ChatbotFloatingButtonProps> = ({
             </div>
 
             {/* Chat Content */}
-            <div className="p-4 max-h-[500px] overflow-y-auto">
+            <div className="max-h-[75vh] overflow-y-auto p-3 sm:max-h-[500px] sm:p-4">
               <HealthChatbot
                 cattleId={cattleId}
                 cattle={cattle}
