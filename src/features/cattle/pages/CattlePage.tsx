@@ -125,18 +125,18 @@ export default function CattlePage() {
         </div>
 
         {/* HerdBook Selector - NOUVEAU */}
-        <Card className="mb-6 shadow-card-soft border-none bg-white/50 backdrop-blur-sm">
+        <Card className="mb-6 shadow-farm border-none">
           <CardContent className="p-6">
             <HerdBookSelector />
           </CardContent>
         </Card>
 
         {/* Filters */}
-        <Card className="mb-8 shadow-card-soft border-none bg-white/50 backdrop-blur-sm">
+        <Card className="mb-8 shadow-farm border-none">
           <CardHeader className="pb-4">
             <div className="flex items-center justify-between cursor-pointer sm:cursor-default" onClick={() => setIsFiltersOpen(!isFiltersOpen)}>
               <div className="space-y-1">
-                <CardTitle className="flex items-center space-x-2 text-xl">
+                <CardTitle className="flex items-center space-x-2">
                   <Filter className="h-5 w-5 text-primary" />
                   <span>Filtres et recherche</span>
                 </CardTitle>
@@ -159,13 +159,13 @@ export default function CattlePage() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   disabled={isResultsLoading}
-                  className="pl-10 bg-white/80 border-primary/10 focus:border-primary/30 transition-all duration-300"
+                  className="pl-10"
                 />
               </div>
 
               {/* Gender Filter */}
               <Select value={genderFilter} onValueChange={setGenderFilter} disabled={isResultsLoading}>
-                <SelectTrigger className="bg-white/80 border-primary/10">
+                <SelectTrigger>
                   <SelectValue placeholder="Genre" />
                 </SelectTrigger>
                 <SelectContent>
@@ -177,7 +177,7 @@ export default function CattlePage() {
 
               {/* Source Filter */}
               <Select value={sourceFilter} onValueChange={setSourceFilter} disabled={isResultsLoading}>
-                <SelectTrigger className="bg-white/80 border-primary/10">
+                <SelectTrigger>
                   <SelectValue placeholder="Source" />
                 </SelectTrigger>
                 <SelectContent>
@@ -192,7 +192,6 @@ export default function CattlePage() {
                 variant="outline"
                 onClick={resetFilters}
                 disabled={isResultsLoading}
-                className="border-primary/20 text-primary hover:bg-primary/5 hover:text-primary transition-colors"
               >
                 Réinitialiser
               </Button>
@@ -222,7 +221,7 @@ export default function CattlePage() {
 
         {/* Cattle Grid - Conditional on HerdBook selection */}
         {!selectedHerdBookId ? (
-          <Card className="text-center py-12 bg-white/50 backdrop-blur-sm">
+          <Card className="text-center py-12 shadow-farm">
             <CardContent>
               <div className="flex flex-col items-center gap-4">
                 <BookOpen className="h-16 w-16 text-muted-foreground" />
@@ -240,7 +239,7 @@ export default function CattlePage() {
         ) : isLoading || herdBookLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {Array.from({ length: itemsPerPage }).map((_, index) => (
-              <Card key={index} className="overflow-hidden">
+              <Card key={index} className="overflow-hidden shadow-farm">
                 <Skeleton className="h-48 w-full" />
                 <div className="p-6 space-y-4">
                   <div className="flex justify-between items-start">
@@ -331,7 +330,7 @@ export default function CattlePage() {
             )}
           </>
         ) : (
-          <Card className="text-center py-12">
+          <Card className="text-center py-12 shadow-farm">
             <CardContent>
               <div className="text-6xl mb-4">🐄</div>
               <h3 className="text-xl font-semibold mb-2">Aucun animal trouvé</h3>

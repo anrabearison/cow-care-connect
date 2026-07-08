@@ -27,16 +27,16 @@ export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
           imageClassName="group-hover:scale-105 transition-transform duration-300"
         />
         <div className="absolute top-3 left-3">
-          <div className="text-2xl bg-white/90 rounded-full w-8 h-8 flex items-center justify-center">
+          <Badge className="bg-white/90 rounded-full w-8 h-8 flex items-center justify-center p-0 text-2xl">
             {getGenderIcon(cattle.gender)}
-          </div>
+          </Badge>
         </div>
       </Link>
 
       <CardContent className="p-6">
         <div className="flex items-start justify-between mb-3">
           <div>
-            <h3 className="text-xl font-bold text-foreground">
+            <h3 className="text-foreground">
               {cattle.name}{cattle.nickname && ` (${cattle.nickname})`}
             </h3>
             <div className="flex items-center space-x-2 text-sm text-muted-foreground mt-1">
