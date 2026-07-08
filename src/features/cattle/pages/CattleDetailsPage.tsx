@@ -770,32 +770,18 @@ export default function CattleDetailsPage() {
               </CardContent>
             </Card>
 
-            {/* Health Chatbot Section */}
-            <Card className="overflow-hidden border-primary/20 bg-gradient-to-br from-blue-50 to-white shadow-card-soft">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Stethoscope className="h-5 w-5 text-primary" />
-                  <span>Assistant Santé IA</span>
-                </CardTitle>
-                <CardDescription>
-                  Décrivez les symptômes pour obtenir des conseils d'IA
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <HealthChatbot
-                  cattleId={cattle.id}
-                  cattle={cattle}
-                  messages={chatMessages}
-                  setMessages={setChatMessages}
-                  apiHistory={chatApiHistory}
-                  setApiHistory={setChatApiHistory}
-                  severity={chatSeverity}
-                  setSeverity={setChatSeverity}
-                  confidence={chatConfidence}
-                  setConfidence={setChatConfidence}
-                />
-              </CardContent>
-            </Card>
+            <HealthChatbot
+              cattleId={cattle.id}
+              cattle={cattle}
+              messages={chatMessages}
+              setMessages={setChatMessages}
+              apiHistory={chatApiHistory}
+              setApiHistory={setChatApiHistory}
+              severity={chatSeverity}
+              setSeverity={setChatSeverity}
+              confidence={chatConfidence}
+              setConfidence={setChatConfidence}
+            />
           </div>
         </div>
       </div>
