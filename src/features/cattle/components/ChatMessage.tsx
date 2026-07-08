@@ -15,20 +15,115 @@ interface ChatMessageProps {
 }
 
 const parseStructuredSections = (content: string) => {
-  const sections = content
-    .split(/\n\s*\n/)
-    .map((part) => part.trim())
-    .filter(Boolean)
-    .map((part) => {
-      const match = part.match(/^(🚨 URGENCE|🔍 OBSERVATION|📋 DIAGNOSTIC POSSIBLE|👨‍⚕️ CONSULTATION):\s*(.*)$/s);
-      if (!match) return null;
+  const headerPattern = /^(🚨 URGENCE|🔍 OBSERVATION|📋 DIAGNOSTIC POSSIBLE|👨‍⚕️ CONSULTATION)\s*:?(?:\s*(.*))?$/;
+  const lines = content.split('\n');
+  const sections: Array<{ body: string; rawTitle: string }> = [];
+  let currentSection: { body: string; rawTitle: string } | null = null;
 
-      const [, rawTitle, body] = match;
-      return { body, rawTitle };
-    })
-    .filter(Boolean) as Array<{ body: string; rawTitle: string }>;
+  for (const line of lines) {
+    const trimmedLine = line.trim();
+    const match = trimmedLine.match(headerPattern);
 
-  return sections;
+    if (match) {
+      if (currentSection) {
+        sections.push(currentSection);
+      }
+
+      currentSection = {
+        rawTitle: match[1],
+        body: match[2]?.trim() || '',
+      };
+      continue;
+    }
+
+    if (currentSection) {
+      currentSection.body = `${currentSection.body}${currentSection.body ? '\n' : ''}${line}`.trim();
+    }
+  }
+
+  if (currentSection) {
+    sections.push(currentSection);
+  }
+
+  return sections.filter((section) => section.body);
+};
+
+const parseInlineMarkdown = (text: string) => {
+  const inlinePattern = /(\*\*|__)(.+?)\1|(\*|_)(.+?)\3/g;
+  const nodes: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null = null;
+
+  while ((match = inlinePattern.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      nodes.push(text.slice(lastIndex, match.index));
+    }
+
+    if (match[1]) {
+      nodes.push(
+        <strong key={`strong-${match.index}`}>{match[2]}</strong>,
+      );
+    } else if (match[3]) {
+      nodes.push(
+        <em key={`em-${match.index}`}>{match[4]}</em>,
+      );
+    }
+
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (lastIndex < text.length) {
+    nodes.push(text.slice(lastIndex));
+  }
+
+  return nodes.length > 0 ? nodes : [text];
+};
+
+const renderMarkdown = (content: string) => {
+  const lines = content.split('\n');
+  const nodes: React.ReactNode[] = [];
+  let listItems: React.ReactNode[] = [];
+
+  const flushList = () => {
+    if (listItems.length > 0) {
+      nodes.push(
+        <ul key={`list-${nodes.length}`} className="ml-4 list-disc space-y-1 text-sm leading-relaxed text-slate-700">
+          {listItems}
+        </ul>,
+      );
+      listItems = [];
+    }
+  };
+
+  lines.forEach((line, index) => {
+    const trimmedLine = line.trim();
+    const listMatch = trimmedLine.match(/^[*+-]\s+(.*)$/);
+
+    if (listMatch) {
+      listItems.push(
+        <li key={`li-${index}`}>
+          {parseInlineMarkdown(listMatch[1])}
+        </li>,
+      );
+      return;
+    }
+
+    flushList();
+
+    if (trimmedLine === '') {
+      nodes.push(<div key={`br-${index}`} className="h-2" />);
+      return;
+    }
+
+    nodes.push(
+      <p key={`p-${index}`} className="text-sm leading-relaxed text-slate-700">
+        {parseInlineMarkdown(line)}
+      </p>,
+    );
+  });
+
+  flushList();
+  return nodes;
 };
 
 const getToneClasses = (severity?: 'critical' | 'high' | 'medium' | 'low') => {
@@ -130,7 +225,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         <div
           className={`rounded-lg p-3 ${
             isUser
-              ? 'bg-primary text-primary-foreground'
+              ? 'bg-primary text-white'
               : 'bg-muted text-foreground'
           }`}
         >
@@ -175,8 +270,8 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
                         <div className={`text-[11px] font-semibold uppercase tracking-[0.2em] ${sectionMeta.titleClass}`}>
                           {section.rawTitle}
                         </div>
-                        <div className="mt-1 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap">
-                          {section.body}
+                        <div className="mt-1 text-sm leading-relaxed text-slate-700">
+                          {renderMarkdown(section.body)}
                         </div>
                       </div>
                     </div>
@@ -185,7 +280,9 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
               })}
             </div>
           ) : (
-            <div className="text-sm whitespace-pre-wrap">{message.content}</div>
+            <div className="text-sm leading-relaxed text-slate-700">
+              {renderMarkdown(message.content)}
+            </div>
           )}
         </div>
         <div className="flex items-center gap-2 mt-1">
