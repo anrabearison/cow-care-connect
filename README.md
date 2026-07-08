@@ -1,134 +1,56 @@
-# 🐮 Ombiko - Frontend (Cow Care Front)
+# 🐮 Ombiko - Frontend
 
-Application de gestion d'élevage bovin moderne, construite avec React, TypeScript et Vite.
+Application web React/TypeScript pour la gestion du troupeau bovin, avec suivi santé et assistant IA.
 
-## 📋 Table des Matières
+## Fonctionnalités
 
-- [Fonctionnalités](#-fonctionnalités)
-- [Technologies](#-technologies)
-- [Prérequis](#-prérequis)
-- [Installation](#-installation)
-- [Configuration](#-configuration)
-- [Démarrage](#-démarrage)
-- [Scripts](#-scripts)
-- [Architecture](#-architecture)
-- [Développement](#-développement)
-- [Dépannage](#-dépannage)
+- Tableau de bord du troupeau et statistiques
+- Gestion détaillée des bovins
+- Suivi des traitements, événements et naissances
+- Assistant santé IA intégré sur la fiche détaillée d’un animal
+- Bouton flottant d’accès rapide au chatbot
+- Interface responsive mobile/tablette/desktop
 
-## 🚀 Fonctionnalités
+## Prérequis
 
-- **Tableau de bord** : Vue d'ensemble du troupeau, statistiques de santé et événements récents
-- **Gestion du Troupeau** : 
-  - Suivi détaillé de chaque animal (santé, reproduction, généalogie)
-  - Numéros de livre de troupeau
-  - Gestion des achats et naissances
-- **Événements** :
-  - Enregistrement des traitements vétérinaires
-  - Suivi des événements (naissances, maladies, etc.)
-  - Historique complet par animal
-- **Données de Référence** :
-  - Catégories de bovins
-  - Caractères (races)
-  - Types d'événements
-  - Vétérinaires
-  - Produits/Médicaments
-- **Authentification** : Système de connexion sécurisé avec gestion des rôles (Admin/Utilisateur)
-- **Interface d'Administration** : Gestion complète des données de référence
-- **Export de Données** : Export PDF des informations du troupeau
-- **Interface Responsive** : Optimisée pour mobile, tablette et desktop
+- Node.js 18+
+- npm
+- Backend Ombiko en cours d’exécution
 
-## 🛠 Technologies
-
-- **Core** : React 18, TypeScript, Vite
-- **State Management** : React Query (TanStack Query)
-- **UI/UX** : Tailwind CSS, shadcn/ui, Lucide Icons
-- **Routing** : React Router DOM
-- **Feedback** : Sonner (Toasts)
-- **Forms** : React Hook Form
-- **Export** : jsPDF
-
-### Architecture et Optimisations
-
-Le projet suit une architecture modulaire avec des optimisations majeures :
-
-- **Performance** :
-  - Gestion optimisée du cache avec QueryClient
-  - Mémorisation des composants et fonctions critiques (useCallback, memo)
-  - Lazy loading des ressources
-- **Code Quality** :
-  - Typage strict TypeScript (pas de `any`)
-  - Hooks personnalisés (ex: `useRecentEvents`)
-  - Constantes centralisées pour la maintenance
-  - Services API modulaires
-
-## 🔧 Prérequis
-
-- **Node.js** 18 ou supérieur
-- **npm** ou **yarn**
-- **Backend API** en cours d'exécution (voir [cow-care-backend](../cow-care-backend/README.md))
-
-## 📦 Installation
-
-### 1. Naviguer vers le répertoire
-
-```bash
-cd cow-care-front
-```
-
-### 2. Installer les dépendances
+## Installation
 
 ```bash
 npm install
-```
-
-## ⚙️ Configuration
-
-### 1. Créer le fichier de configuration
-
-```bash
 cp .env.example .env
 ```
 
-### 2. Configurer les variables d'environnement
+## Configuration
 
-Éditez le fichier `.env` :
+Le frontend consomme l’API backend via l’URL suivante :
 
 ```env
-# URL de l'API Backend
-VITE_API_URL=http://localhost:8000
-
-# URL de l'API Admin (si différente)
-VITE_ADMIN_API_URL=http://localhost:8000/admin
-
-# Activer/Désactiver les données mockées
-VITE_USE_MOCK=false
+VITE_API_URL=http://localhost:3000
 ```
 
-> [!IMPORTANT]
-> **Configuration de l'URL de l'API** :
-> - L'URL doit correspondre au backend (par défaut `http://localhost:8000`)
-> - Ne pas inclure de slash final
-> - Mettre `VITE_USE_MOCK=false` pour utiliser la vraie API
-
-## 🚀 Démarrage
-
-### Mode Développement
+## Démarrage
 
 ```bash
 npm run dev
 ```
 
-L'application sera accessible sur **http://localhost:8080** (ou le port indiqué dans le terminal)
+L’application est disponible sur http://localhost:5173 par défaut.
 
-### Mode Production
+## Scripts utiles
 
 ```bash
-# Compiler l'application
 npm run build
-
-# Prévisualiser la version de production
-npm run preview
+npm run lint
+npm run type-check
 ```
+
+## Notes sur l’assistant santé
+
+L’interface du chatbot est visible depuis la fiche détaillée d’un bovin. Elle envoie les questions vers l’endpoint `/api/health/chat` et affiche les réponses avec une mise en forme claire, y compris gravité et confiance estimées.
 
 ## 🧪 Scripts
 
