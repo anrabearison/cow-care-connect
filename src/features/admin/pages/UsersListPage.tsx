@@ -4,7 +4,7 @@ import { DataTable, Column } from "@/components/admin/DataTable";
 import { FormDialog } from "@/components/admin/FormDialog";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { useAuth } from "@/features/auth/AuthContext";
-import { usersService, User, CreateUserData } from "@/features/admin/services/usersService";
+import { usersService, User, CreateUserData, UpdateUserData } from "@/features/admin/services/usersService";
 import { ownersService, Owner } from "@/features/admin/services/ownersService";
 import { invitationsService, InvitationCreateData, InvitationResponse } from "@/features/admin/services/invitationsService";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
 import { getRoleLabel, getRoleColor, USER_ROLES } from "@/constants/roles";
+import { APP_URLS } from "@/config/urls";
 
 const UsersListPage = () => {
   const { user } = useAuth();
@@ -35,6 +36,13 @@ const UsersListPage = () => {
     password: '',
     role: 'OWNER_USER',
     ownerId: '',
+  });
+  const [editFormData, setEditFormData] = useState<UpdateUserData>({
+    name: '',
+    email: '',
+    role: 'OWNER_USER',
+    ownerId: '',
+    isActive: true,
   });
   const [invitationFormData, setInvitationFormData] = useState<InvitationCreateData>({
     email: '',
@@ -93,7 +101,7 @@ const UsersListPage = () => {
     onSuccess: () => {
       toast({
         title: "Succès",
-        description: "Utilisateur supprimé avec succès",
+        description: "Utilisateur désactivé avec succès",
       });
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
       setIsDeleteDialogOpen(false);
@@ -102,7 +110,29 @@ const UsersListPage = () => {
     onError: () => {
       toast({
         title: "Erreur",
-        description: "Erreur lors de la suppression",
+        description: "Erreur lors de la désactivation",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Update mutation
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: UpdateUserData }) => 
+      usersService.updateUser(id, data),
+    onSuccess: () => {
+      toast({
+        title: "Succès",
+        description: "Utilisateur mis à jour avec succès",
+      });
+      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+      setIsEditDialogOpen(false);
+      setSelectedUser(null);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Erreur",
+        description: error.response?.data?.message || "Erreur lors de la mise à jour",
         variant: "destructive",
       });
     },
@@ -130,6 +160,42 @@ const UsersListPage = () => {
     if (selectedUser) {
       deleteMutation.mutate(selectedUser.id);
     }
+  };
+
+  const handleUpdate = () => {
+    if (!selectedUser) return;
+
+    // Check if user can modify based on RBAC
+    const canModifyRole = user?.role === USER_ROLES.SUPER_ADMIN || 
+      (user?.role === USER_ROLES.OWNER_ADMIN && user?.ownerId === selectedUser.ownerId && selectedUser.role !== USER_ROLES.SUPER_ADMIN);
+    
+    const canModifyActive = user?.role === USER_ROLES.SUPER_ADMIN ||
+      (user?.role === USER_ROLES.OWNER_ADMIN && user?.ownerId === selectedUser.ownerId && selectedUser.role !== USER_ROLES.SUPER_ADMIN);
+
+    // Prepare data based on permissions
+    const dataToSend: UpdateUserData = {};
+    
+    if (canModifyRole && editFormData.role) {
+      dataToSend.role = editFormData.role;
+    }
+    
+    if (canModifyActive && editFormData.isActive !== undefined) {
+      dataToSend.isActive = editFormData.isActive;
+    }
+
+    updateMutation.mutate({ id: selectedUser.id, data: dataToSend });
+  };
+
+  const handleEditOpen = (userToEdit: User) => {
+    setSelectedUser(userToEdit);
+    setEditFormData({
+      name: userToEdit.name,
+      email: userToEdit.email,
+      role: userToEdit.role,
+      ownerId: userToEdit.ownerId || '',
+      isActive: userToEdit.isActive,
+    });
+    setIsEditDialogOpen(true);
   };
 
   const handleCreate = () => {
@@ -243,8 +309,7 @@ const UsersListPage = () => {
         columns={columns}
         loading={isLoading}
         onEdit={(item) => {
-          setSelectedUser(item);
-          setIsEditDialogOpen(true);
+          handleEditOpen(item);
         }}
         onView={(item) => {
           setSelectedUser(item);
@@ -332,10 +397,10 @@ const UsersListPage = () => {
       <ConfirmDialog
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
-        title="Supprimer l'utilisateur"
-        description={`Êtes-vous sûr de vouloir supprimer l'utilisateur "${selectedUser?.name}" ? Cette action est irréversible.`}
+        title="Désactiver l'utilisateur"
+        description={`Êtes-vous sûr de vouloir désactiver l'utilisateur "${selectedUser?.name}" ? L'utilisateur ne pourra plus se connecter mais ses données seront conservées.`}
         onConfirm={handleDelete}
-        confirmText="Supprimer"
+        confirmText="Désactiver"
         cancelText="Annuler"
         variant="destructive"
         loading={deleteMutation.isPending}
@@ -573,9 +638,8 @@ const UsersListPage = () => {
         title="Modifier l'utilisateur"
         submitText="Enregistrer"
         cancelText="Annuler"
-        onSubmit={() => {
-          setIsEditDialogOpen(false);
-        }}
+        onSubmit={handleUpdate}
+        loading={updateMutation.isPending}
       >
         <div className="space-y-4">
           <div>
@@ -598,8 +662,13 @@ const UsersListPage = () => {
           <div>
             <Label>Rôle</Label>
             <Select
-              defaultValue={selectedUser?.role}
-              disabled
+              value={editFormData.role}
+              onValueChange={(value) => setEditFormData({ ...editFormData, role: value as any })}
+              disabled={
+                !selectedUser || 
+                !(user?.role === USER_ROLES.SUPER_ADMIN || 
+                  (user?.role === USER_ROLES.OWNER_ADMIN && user?.ownerId === selectedUser.ownerId && selectedUser.role !== USER_ROLES.SUPER_ADMIN))
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Rôle" />
@@ -607,16 +676,44 @@ const UsersListPage = () => {
               <SelectContent>
                 <SelectItem value={USER_ROLES.OWNER_USER}>Utilisateur</SelectItem>
                 <SelectItem value={USER_ROLES.OWNER_ADMIN}>Admin Propriétaire</SelectItem>
-                <SelectItem value={USER_ROLES.SUPER_ADMIN}>Super Admin</SelectItem>
+                {user?.role === USER_ROLES.SUPER_ADMIN && (
+                  <SelectItem value={USER_ROLES.SUPER_ADMIN}>Super Admin</SelectItem>
+                )}
               </SelectContent>
             </Select>
+            {!(user?.role === USER_ROLES.SUPER_ADMIN || 
+              (user?.role === USER_ROLES.OWNER_ADMIN && user?.ownerId === selectedUser?.ownerId && selectedUser?.role !== USER_ROLES.SUPER_ADMIN)) && (
+              <p className="text-xs text-muted-foreground mt-1">
+                Vous n'avez pas les permissions pour modifier le rôle
+              </p>
+            )}
           </div>
           <div>
             <Label>Actif</Label>
-            <Switch
-              checked={selectedUser?.isActive || false}
-              disabled
-            />
+            <div className="flex items-center space-x-2">
+              <Switch
+                checked={editFormData.isActive}
+                onCheckedChange={(checked) => setEditFormData({ ...editFormData, isActive: checked })}
+                disabled={
+                  !selectedUser || 
+                  !(user?.role === USER_ROLES.SUPER_ADMIN || 
+                    (user?.role === USER_ROLES.OWNER_ADMIN && user?.ownerId === selectedUser.ownerId && selectedUser.role !== USER_ROLES.SUPER_ADMIN)) ||
+                  (selectedUser.id === user?.id && !editFormData.isActive)
+                }
+              />
+              <span className="text-sm">{editFormData.isActive ? "Actif" : "Désactivé"}</span>
+            </div>
+            {!(user?.role === USER_ROLES.SUPER_ADMIN || 
+              (user?.role === USER_ROLES.OWNER_ADMIN && user?.ownerId === selectedUser?.ownerId && selectedUser?.role !== USER_ROLES.SUPER_ADMIN)) && (
+              <p className="text-xs text-muted-foreground mt-1">
+                Vous n'avez pas les permissions pour modifier le statut
+              </p>
+            )}
+            {selectedUser?.id === user?.id && !editFormData.isActive && (
+              <p className="text-xs text-destructive mt-1">
+                Vous ne pouvez pas désactiver votre propre compte
+              </p>
+            )}
           </div>
         </div>
       </FormDialog>

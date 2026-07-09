@@ -106,10 +106,10 @@ class UsersService {
       return {
         data: true,
         success: true,
-        message: 'Utilisateur supprimé avec succès',
+        message: 'Utilisateur désactivé avec succès',
       };
     } catch (error: any) {
-      console.error('Error deleting user:', error);
+      console.error('Error deactivating user:', error);
       throw error;
     }
   }
