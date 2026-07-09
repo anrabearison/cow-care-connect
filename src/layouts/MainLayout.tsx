@@ -12,12 +12,14 @@ export const MainLayout = () => (
       <div className="flex flex-1 overflow-hidden">
         <AppSidebar />
         <main className="flex-1 overflow-y-auto w-full">
-          <header className="sticky top-0 z-10 h-12 flex items-center border-b bg-background/80 backdrop-blur-lg supports-[backdrop-filter]:bg-background/60 shadow-sm shrink-0">
-            <SidebarTrigger className="ml-4" />
-            <div className="flex-1 px-4 flex items-center justify-between min-w-0">
-              <h2 className="text-sm font-medium text-muted-foreground truncate">
+          <header className="sticky top-0 z-10 h-auto sm:h-12 flex flex-col sm:flex-row sm:items-center border-b bg-background/80 backdrop-blur-lg supports-[backdrop-filter]:bg-background/60 shadow-sm shrink-0">
+            <div className="flex items-center h-12 sm:h-auto px-4">
+              <SidebarTrigger className="mr-2" />
+              <h2 className="text-sm font-medium text-muted-foreground">
                 Système de Gestion d'Élevage
               </h2>
+            </div>
+            <div className="flex-1 px-4 flex items-center justify-between min-w-0 py-2 sm:py-0">
               <OwnerSelector />
             </div>
           </header>

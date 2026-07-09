@@ -11,7 +11,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Building2, X } from 'lucide-react';
+import { Building2 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 
 interface Owner {
@@ -73,13 +73,6 @@ export const OwnerSelector = () => {
         await refreshOwnerScopedQueries(queryClient);
     };
 
-    const handleClearSelection = async () => {
-        setOwnerIdGetter(() => null);
-        setSelectedOwnerId(null);
-        setSelectedOwnerName(null);
-        await refreshOwnerScopedQueries(queryClient);
-    };
-
     if (user?.role === 'OWNER_ADMIN' || user?.role === 'OWNER_USER') {
         return (
             <div className="flex items-center gap-2">
@@ -96,14 +89,14 @@ export const OwnerSelector = () => {
     }
 
     return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
             <Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
             <Select value={selectedOwnerId || '__all__'} onValueChange={handleOwnerChange} disabled={loading}>
-                <SelectTrigger className="w-[150px] sm:w-[200px] h-9">
-                    <SelectValue placeholder="Tous les propriétaires" />
+                <SelectTrigger className="w-full sm:w-[200px] h-9">
+                    <SelectValue placeholder="Sélectionner une ferme" />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="__all__">Tous les propriétaires</SelectItem>
+                    <SelectItem value="__all__">Toutes les fermes</SelectItem>
                     {owners.map((owner) => (
                         <SelectItem key={owner.id} value={owner.id}>
                             {owner.name}
@@ -111,16 +104,6 @@ export const OwnerSelector = () => {
                     ))}
                 </SelectContent>
             </Select>
-            {selectedOwnerId && selectedOwnerName && (
-                <Badge
-                    variant="secondary"
-                    className="cursor-pointer hover:bg-secondary/80 transition-colors shrink-0"
-                    onClick={handleClearSelection}
-                >
-                    <span className="hidden sm:inline">Vue: </span>{selectedOwnerName}
-                    <X className="ml-1 h-3 w-3" />
-                </Badge>
-            )}
         </div>
     );
 };
