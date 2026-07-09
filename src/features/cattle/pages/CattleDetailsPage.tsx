@@ -618,8 +618,8 @@ export default function CattleDetailsPage() {
             {/* Event Timeline */}
             <Card className="shadow-farm">
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div className="flex-1">
                     <CardTitle className="flex items-center space-x-2">
                       <Activity className="h-5 w-5 text-primary" />
                       <span>Événements</span>
@@ -628,7 +628,7 @@ export default function CattleDetailsPage() {
                       Chronologie des événements importants
                     </CardDescription>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-row items-center gap-2 sm:justify-end">
                     {cattle.gender === 'F' && (
                       <Button
                         onClick={() => setShowAddBirth(true)}
@@ -685,8 +685,8 @@ export default function CattleDetailsPage() {
             {/* Treatment History */}
             <Card className="shadow-farm">
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div className="flex-1">
                     <CardTitle className="flex items-center space-x-2">
                       <Stethoscope className="h-5 w-5 text-primary" />
                       <span>Historique des traitements</span>
@@ -698,7 +698,7 @@ export default function CattleDetailsPage() {
                   <Button
                     onClick={() => setShowAddTreatment(true)}
                     size="sm"
-                    className="gap-2"
+                    className="gap-2 sm:self-end"
                   >
                     <Plus className="h-4 w-4" />
                   </Button>
