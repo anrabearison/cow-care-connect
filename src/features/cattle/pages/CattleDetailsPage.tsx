@@ -695,13 +695,15 @@ export default function CattleDetailsPage() {
                       Suivi médical et traitements
                     </CardDescription>
                   </div>
-                  <Button
-                    onClick={() => setShowAddTreatment(true)}
-                    size="sm"
-                    className="gap-2 sm:self-end"
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
+                  <div className="flex flex-row items-center gap-2 sm:justify-end">
+                    <Button
+                      onClick={() => setShowAddTreatment(true)}
+                      size="sm"
+                      className="gap-2"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
