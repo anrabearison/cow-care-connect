@@ -20,18 +20,20 @@ interface CattleCardProps {
 export const CattleCard = React.memo(({ cattle }: CattleCardProps) => {
   return (
     <Card className="overflow-hidden hover:shadow-farm transition-all duration-300 group">
-      <Link to={`/cattle/${cattle.id}`} className="block relative h-48 overflow-hidden">
-        <CattlePhotoCarousel
-          cattle={cattle}
-          className="h-full w-full"
-          imageClassName="group-hover:scale-105 transition-transform duration-300"
-        />
-        <div className="absolute top-3 left-3">
-          <Badge className="bg-white/90 rounded-full w-8 h-8 flex items-center justify-center p-0 text-2xl">
+      <div className="relative h-48">
+        <Link to={`/cattle/${cattle.id}`} className="block h-full overflow-hidden">
+          <CattlePhotoCarousel
+            cattle={cattle}
+            className="h-full w-full"
+            imageClassName="group-hover:scale-105 transition-transform duration-300"
+          />
+        </Link>
+        <div className="absolute top-3 left-3 z-10 pointer-events-none">
+          <Badge className="bg-white/95 rounded-full w-8 h-8 flex items-center justify-center p-0 text-2xl shadow-sm text-current">
             {getGenderIcon(cattle.gender)}
           </Badge>
         </div>
-      </Link>
+      </div>
 
       <CardContent className="p-6">
         <div className="flex items-start justify-between mb-3">

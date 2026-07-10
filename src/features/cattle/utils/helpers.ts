@@ -42,7 +42,7 @@ export const getCharacterColor = (character: string): string => {
  * Get gender icon
  */
 export const getGenderIcon = (gender: string): string => {
-    return gender === 'M' ? '♂️' : '♀️';
+    return gender === 'M' ? '♂' : '♀';
 };
 
 /**
