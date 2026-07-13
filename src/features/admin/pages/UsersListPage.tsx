@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { DataTable, Column } from "@/components/admin/DataTable";
 import { FormDialog } from "@/components/admin/FormDialog";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
@@ -13,13 +13,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { useToast } from "@/components/ui/use-toast";
-import { getRoleLabel, getRoleColor, USER_ROLES } from "@/constants/roles";
+import { USER_ROLES, type UserRole, getRoleLabel, getRoleColor } from "@/constants/roles";
 import { APP_URLS } from "@/config/urls";
+import { useCreateUser, useUpdateUser, useDeleteUser } from "../hooks/usersHooks";
+import { useCreateInvitation } from "../hooks/invitationsHooks";
 
 const UsersListPage = () => {
   const { user } = useAuth();
-  const queryClient = useQueryClient();
   const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -51,9 +51,15 @@ const UsersListPage = () => {
   });
   const [createdInvitation, setCreatedInvitation] = useState<InvitationResponse | null>(null);
 
+  // Use dedicated mutation hooks
+  const createUserMutation = useCreateUser();
+  const updateUserMutation = useUpdateUser();
+  const deleteUserMutation = useDeleteUser();
+  const createInvitationMutation = useCreateInvitation();
+
   // Fetch users list
   const { data: usersData, isLoading } = useQuery({
-    queryKey: ["admin-users", page, search],
+    queryKey: queryKeys.users.list({ page, q: search }),
     queryFn: () =>
       usersService.getUsersList({
         page,
@@ -64,101 +70,15 @@ const UsersListPage = () => {
 
   // Fetch owners list for dropdown
   const { data: ownersData } = useQuery({
-    queryKey: ["admin-owners", 1, 50],
+    queryKey: queryKeys.owners.list({ page: 1, per_page: 50 }),
     queryFn: () => ownersService.getOwnersList({ page: 1, per_page: 50 }),
-  });
-
-  // Create mutation
-  const createMutation = useMutation({
-    mutationFn: (data: CreateUserData) => usersService.createUser(data),
-    onSuccess: () => {
-      toast({
-        title: "Succès",
-        description: "Utilisateur créé avec succès",
-      });
-      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-      setIsCreateDialogOpen(false);
-      setFormData({
-        name: '',
-        email: '',
-        password: '',
-        role: 'OWNER_USER',
-        ownerId: '',
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Erreur",
-        description: "Erreur lors de la création",
-        variant: "destructive",
-      });
-    },
-  });
-
-  // Delete mutation
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => usersService.deleteUser(id),
-    onSuccess: () => {
-      toast({
-        title: "Succès",
-        description: "Utilisateur désactivé avec succès",
-      });
-      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-      setIsDeleteDialogOpen(false);
-      setSelectedUser(null);
-    },
-    onError: () => {
-      toast({
-        title: "Erreur",
-        description: "Erreur lors de la désactivation",
-        variant: "destructive",
-      });
-    },
-  });
-
-  // Update mutation
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateUserData }) => 
-      usersService.updateUser(id, data),
-    onSuccess: () => {
-      toast({
-        title: "Succès",
-        description: "Utilisateur mis à jour avec succès",
-      });
-      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-      setIsEditDialogOpen(false);
-      setSelectedUser(null);
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Erreur",
-        description: error.response?.data?.message || "Erreur lors de la mise à jour",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const createInvitationMutation = useMutation({
-    mutationFn: (data: InvitationCreateData) => invitationsService.createInvitation(data),
-    onSuccess: (invitation) => {
-      toast({
-        title: "Succès",
-        description: "Invitation créée avec succès",
-      });
-      setCreatedInvitation(invitation);
-    },
-    onError: () => {
-      toast({
-        title: "Erreur",
-        description: "Erreur lors de la création de l'invitation",
-        variant: "destructive",
-      });
-    },
   });
 
   const handleDelete = () => {
     if (selectedUser) {
-      deleteMutation.mutate(selectedUser.id);
+      deleteUserMutation.mutate(selectedUser.id);
+      setIsDeleteDialogOpen(false);
+      setSelectedUser(null);
     }
   };
 
@@ -183,7 +103,9 @@ const UsersListPage = () => {
       dataToSend.isActive = editFormData.isActive;
     }
 
-    updateMutation.mutate({ id: selectedUser.id, data: dataToSend });
+    updateUserMutation.mutate({ id: selectedUser.id, data: dataToSend });
+    setIsEditDialogOpen(false);
+    setSelectedUser(null);
   };
 
   const handleEditOpen = (userToEdit: User) => {
@@ -213,7 +135,15 @@ const UsersListPage = () => {
       ...formData,
       ownerId: formData.role === USER_ROLES.SUPER_ADMIN || !formData.ownerId ? undefined : formData.ownerId,
     };
-    createMutation.mutate(dataToSend);
+    createUserMutation.mutate(dataToSend);
+    setIsCreateDialogOpen(false);
+    setFormData({
+      name: '',
+      email: '',
+      password: '',
+      role: 'OWNER_USER',
+      ownerId: '',
+    });
   };
 
   const handleCreateInvitation = () => {
@@ -435,7 +365,7 @@ const UsersListPage = () => {
             <Label>Rôle</Label>
             <Select
               value={invitationFormData.role}
-              onValueChange={(value) => setInvitationFormData({ ...invitationFormData, role: value as any, ownerId: '' })}
+              onValueChange={(value) => setInvitationFormData({ ...invitationFormData, role: value as UserRole, ownerId: '' })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionner un rôle" />
@@ -554,7 +484,7 @@ const UsersListPage = () => {
             <Label>Rôle</Label>
             <Select
               value={formData.role}
-              onValueChange={(value) => setFormData({ ...formData, role: value as any, ownerId: '' })}
+              onValueChange={(value) => setFormData({ ...formData, role: value as UserRole, ownerId: '' })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionner un rôle" />
@@ -663,7 +593,7 @@ const UsersListPage = () => {
             <Label>Rôle</Label>
             <Select
               value={editFormData.role}
-              onValueChange={(value) => setEditFormData({ ...editFormData, role: value as any })}
+              onValueChange={(value) => setEditFormData({ ...editFormData, role: value as UserRole })}
               disabled={
                 !selectedUser || 
                 !(user?.role === USER_ROLES.SUPER_ADMIN || 

@@ -35,7 +35,7 @@ class CategoriesService {
         total: result.total,
         success: true,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching categories list:', error);
       throw error;
     }
@@ -49,7 +49,7 @@ class CategoriesService {
         data: result,
         success: true,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching category:', error);
       throw error;
     }
@@ -64,7 +64,7 @@ class CategoriesService {
         success: true,
         message: 'Catégorie créée avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating category:', error);
       throw error;
     }
@@ -79,7 +79,7 @@ class CategoriesService {
         success: true,
         message: 'Catégorie mise à jour avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating category:', error);
       throw error;
     }
@@ -94,7 +94,7 @@ class CategoriesService {
         success: true,
         message: 'Catégorie supprimée avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error deleting category:', error);
       throw error;
     }

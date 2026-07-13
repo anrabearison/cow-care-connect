@@ -24,7 +24,7 @@ class InvitationsService {
   async createInvitation(data: InvitationCreateData): Promise<InvitationResponse> {
     try {
       return await apiClient.post<InvitationResponse>(this.endpoint, data);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating invitation:', error);
       throw error;
     }
@@ -38,7 +38,7 @@ class InvitationsService {
         data: result || [],
         total: result?.length || 0,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching invitations:', error);
       throw error;
     }
@@ -47,7 +47,7 @@ class InvitationsService {
   async deleteInvitation(id: string): Promise<void> {
     try {
       await apiClient.delete(`${this.endpoint}/${id}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error deleting invitation:', error);
       throw error;
     }

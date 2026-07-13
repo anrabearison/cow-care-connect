@@ -18,7 +18,7 @@ class DashboardService {
         try {
             const stats = await apiClient.get<DashboardStats>(API_ENDPOINTS.DASHBOARD.STATS);
             return stats;
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('❌ Error fetching dashboard statistics:', error);
             throw error;
         }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { DataTable, Column } from "@/components/admin/DataTable";
 import { FormDialog } from "@/components/admin/FormDialog";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
@@ -10,9 +10,9 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useCreateEvent, useUpdateEvent, useDeleteEvent } from "../hooks/eventsHooks";
 
 const EventsListPage = () => {
-  const queryClient = useQueryClient();
   const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -24,8 +24,12 @@ const EventsListPage = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [formData, setFormData] = useState<CreateEventData>({ cattleId: "", eventTypeId: "", type: "", date: "", description: "", details: "" });
 
+  const createEventMutation = useCreateEvent();
+  const updateEventMutation = useUpdateEvent();
+  const deleteEventMutation = useDeleteEvent();
+
   const { data: data, isLoading } = useQuery({
-    queryKey: ["admin-events", page, search],
+    queryKey: queryKeys.events.list({ page, q: search }),
     queryFn: () =>
       eventsService.getEventsList({
         page,
@@ -34,53 +38,25 @@ const EventsListPage = () => {
       }),
   });
 
-  const createMutation = useMutation({
-    mutationFn: (data: CreateEventData) => eventsService.createEvent(data),
-    onSuccess: () => {
-      toast({ title: "Succès", description: "Événement créé avec succès" });
-      queryClient.invalidateQueries({ queryKey: ["admin-events"] });
-      setIsCreateDialogOpen(false);
-      setFormData({ cattleId: "", eventTypeId: "", type: "", date: "", description: "", details: "" });
-    },
-    onError: () => {
-      toast({ title: "Erreur", description: "Erreur lors de la création", variant: "destructive" });
-    },
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateEventData }) =>
-      eventsService.updateEvent(id, data),
-    onSuccess: () => {
-      toast({ title: "Succès", description: "Événement mis à jour avec succès" });
-      queryClient.invalidateQueries({ queryKey: ["admin-events"] });
-      setIsEditDialogOpen(false);
-      setSelectedItem(null);
-    },
-    onError: () => {
-      toast({ title: "Erreur", description: "Erreur lors de la mise à jour", variant: "destructive" });
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => eventsService.deleteEvent(id),
-    onSuccess: () => {
-      toast({ title: "Succès", description: "Événement supprimé avec succès" });
-      queryClient.invalidateQueries({ queryKey: ["admin-events"] });
-      setIsDeleteDialogOpen(false);
-      setSelectedItem(null);
-    },
-    onError: () => {
-      toast({ title: "Erreur", description: "Erreur lors de la suppression", variant: "destructive" });
-    },
-  });
-
   const handleCreate = () => {
-    createMutation.mutate(formData);
+    createEventMutation.mutate(formData);
+    setIsCreateDialogOpen(false);
+    setFormData({ cattleId: "", eventTypeId: "", type: "", date: "", description: "", details: "" });
   };
 
   const handleUpdate = () => {
     if (selectedItem) {
-      updateMutation.mutate({ id: selectedItem.id, data: formData });
+      updateEventMutation.mutate({ id: selectedItem.id, data: formData });
+      setIsEditDialogOpen(false);
+      setSelectedItem(null);
+    }
+  };
+
+  const handleDelete = () => {
+    if (selectedItem) {
+      deleteEventMutation.mutate(selectedItem.id);
+      setIsDeleteDialogOpen(false);
+      setSelectedItem(null);
     }
   };
 
@@ -160,7 +136,7 @@ const EventsListPage = () => {
         )}
       </FormDialog>
 
-      <FormDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} title="Créer un événement" submitText="Créer" cancelText="Annuler" onSubmit={handleCreate} loading={createMutation.isPending}>
+      <FormDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} title="Créer un événement" submitText="Créer" cancelText="Annuler" onSubmit={handleCreate} loading={createEventMutation.isPending}>
         <div className="space-y-4">
           <div>
             <Label>ID Bovin *</Label>
@@ -189,7 +165,7 @@ const EventsListPage = () => {
         </div>
       </FormDialog>
 
-      <FormDialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} title="Modifier l'événement" submitText="Enregistrer" cancelText="Annuler" onSubmit={handleUpdate} loading={updateMutation.isPending}>
+      <FormDialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} title="Modifier l'événement" submitText="Enregistrer" cancelText="Annuler" onSubmit={handleUpdate} loading={updateEventMutation.isPending}>
         <div className="space-y-4">
           <div>
             <Label>ID Bovin *</Label>
@@ -218,7 +194,7 @@ const EventsListPage = () => {
         </div>
       </FormDialog>
 
-      <ConfirmDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} title="Supprimer l'événement" description={`Êtes-vous sûr de vouloir supprimer cet événement ?`} onConfirm={() => deleteMutation.mutate(selectedItem!.id)} confirmText="Supprimer" cancelText="Annuler" variant="destructive" loading={deleteMutation.isPending} />
+      <ConfirmDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} title="Supprimer l'événement" description={`Êtes-vous sûr de vouloir supprimer cet événement ?`} onConfirm={() => deleteEventMutation.mutate(selectedItem!.id)} confirmText="Supprimer" cancelText="Annuler" variant="destructive" loading={deleteEventMutation.isPending} />
     </div>
   );
 };

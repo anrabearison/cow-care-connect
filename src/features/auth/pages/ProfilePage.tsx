@@ -49,9 +49,11 @@ const ProfilePage = () => {
       const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
       const redirectUri = APP_URLS.GOOGLE_CALLBACK;
       const scope = 'email profile';
-      
+
       const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}&response_type=code&state=link`;
-      
+
+      // Note: window.location est utilisé ici car c'est une redirection vers un domaine externe (Google OAuth)
+      // React Router ne peut pas naviguer vers des URLs externes
       window.location.href = googleAuthUrl;
     } catch (error) {
       console.error('Error linking Google:', error);

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
 import { HerdBook } from '@/types/herdbook';
 import { useHerdBooks } from '@/features/herdbook/hooks';
 import { useAuth } from '@/features/auth/AuthContext';
@@ -28,7 +28,7 @@ export const HerdBookSelectionProvider: React.FC<{ children: ReactNode }> = ({ c
 
     // Charger les HerdBooks pour le propriétaire - SEULEMENT si l'utilisateur est connecté
     const { data: herdBooksData, isLoading, error } = useHerdBooks(effectiveOwnerId || undefined);
-    const availableHerdBooks = herdBooksData?.data || [];
+    const availableHerdBooks = useMemo(() => herdBooksData?.data || [], [herdBooksData?.data]);
 
     // Sélectionner automatiquement le HerdBook le plus récent
     useEffect(() => {

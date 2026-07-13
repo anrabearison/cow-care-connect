@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { DataTable, Column } from "@/components/admin/DataTable";
 import { FormDialog } from "@/components/admin/FormDialog";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
@@ -13,11 +13,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, Plus, Trash2, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useCreatePurchase, useDeletePurchase } from "../hooks/purchasesHooks";
 
 const emptyItem = () => ({ cattleId: "", price: 0, weightAtPurchase: undefined as number | undefined, healthStatus: "" });
 
 const PurchasesListPage = () => {
-    const queryClient = useQueryClient();
     const { toast } = useToast();
     const [page, setPage] = useState(1);
     const pageSize = 10;
@@ -36,13 +36,16 @@ const PurchasesListPage = () => {
         items: [emptyItem()],
     });
 
+    const createPurchaseMutation = useCreatePurchase();
+    const deletePurchaseMutation = useDeletePurchase();
+
     const { data, isLoading } = useQuery({
-        queryKey: ["admin-purchases", page],
+        queryKey: queryKeys.purchases.list({ page }),
         queryFn: () => purchasesService.getPurchasesList({ page, per_page: pageSize }),
     });
 
     const { data: suppliersData } = useQuery({
-        queryKey: ["admin-suppliers-all", 1, 50],
+        queryKey: queryKeys.suppliers.list({ page: 1, per_page: 50 }),
         queryFn: () => purchasesService.getSuppliersList({ page: 1, per_page: 50 }),
     });
 
@@ -61,28 +64,6 @@ const PurchasesListPage = () => {
         loadOwners();
     }, []);
 
-    const createMutation = useMutation({
-        mutationFn: (d: CreatePurchaseData) => purchasesService.createPurchase(d),
-        onSuccess: () => {
-            toast({ title: "Succès", description: "Achat créé avec succès" });
-            queryClient.invalidateQueries({ queryKey: ["admin-purchases"] });
-            setIsCreateDialogOpen(false);
-            resetForm();
-        },
-        onError: () => toast({ title: "Erreur", description: "Erreur lors de la création", variant: "destructive" }),
-    });
-
-    const deleteMutation = useMutation({
-        mutationFn: (id: string) => purchasesService.deletePurchase(id),
-        onSuccess: () => {
-            toast({ title: "Succès", description: "Achat supprimé" });
-            queryClient.invalidateQueries({ queryKey: ["admin-purchases"] });
-            setIsDeleteDialogOpen(false);
-            setSelectedItem(null);
-        },
-        onError: () => toast({ title: "Erreur", description: "Erreur lors de la suppression", variant: "destructive" }),
-    });
-
     const resetForm = () => setFormData({
         ownerId: "",
         purchaseDate: new Date().toISOString().split("T")[0],
@@ -93,7 +74,26 @@ const PurchasesListPage = () => {
         items: [emptyItem()],
     });
 
-    const updateItem = (index: number, field: string, value: any) => {
+    const handleCreate = () => {
+        if (!formData.ownerId) {
+            toast({ title: "Erreur", description: "Veuillez sélectionner un propriétaire", variant: "destructive" });
+            return;
+        }
+
+        createPurchaseMutation.mutate(formData);
+        setIsCreateDialogOpen(false);
+        resetForm();
+    };
+
+    const handleDelete = () => {
+        if (selectedItem) {
+            deletePurchaseMutation.mutate(selectedItem.id);
+            setIsDeleteDialogOpen(false);
+            setSelectedItem(null);
+        }
+    };
+
+    const updateItem = (index: number, field: string, value: unknown) => {
         const newItems = [...formData.items];
         newItems[index] = { ...newItems[index], [field]: value };
         setFormData({ ...formData, items: newItems });
@@ -103,15 +103,6 @@ const PurchasesListPage = () => {
     const removeItem = (index: number) => setFormData({ ...formData, items: formData.items.filter((_, i) => i !== index) });
 
     const totalAmount = formData.items.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
-
-    const handleCreate = () => {
-        if (!formData.ownerId) {
-            toast({ title: "Erreur", description: "Veuillez sélectionner un propriétaire", variant: "destructive" });
-            return;
-        }
-
-        createMutation.mutate(formData);
-    };
 
     const columns: Column<Purchase>[] = [
         {
@@ -196,7 +187,7 @@ const PurchasesListPage = () => {
                 submitText="Créer l'achat"
                 cancelText="Annuler"
                 onSubmit={handleCreate}
-                loading={createMutation.isPending}
+                loading={createPurchaseMutation.isPending}
             >
                 <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
@@ -323,11 +314,11 @@ const PurchasesListPage = () => {
                 onOpenChange={setIsDeleteDialogOpen}
                 title="Supprimer l'achat"
                 description={`Êtes-vous sûr de vouloir supprimer cet achat du ${selectedItem ? new Date(selectedItem.purchaseDate).toLocaleDateString("fr-FR") : ""} ?`}
-                onConfirm={() => deleteMutation.mutate(selectedItem!.id)}
+                onConfirm={() => deletePurchaseMutation.mutate(selectedItem!.id)}
                 confirmText="Supprimer"
                 cancelText="Annuler"
                 variant="destructive"
-                loading={deleteMutation.isPending}
+                loading={deletePurchaseMutation.isPending}
             />
         </div>
     );

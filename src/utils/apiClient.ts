@@ -8,6 +8,7 @@ import {
     createErrorFromStatus,
     ErrorMessages
 } from './errors';
+import { refreshManager } from './refreshManager';
 
 // Global getter for selected owner ID (will be set by App)
 let getSelectedOwnerIdFn: (() => string | null) | null = null;
@@ -26,6 +27,7 @@ export interface ApiResponse<T> {
 export interface RequestConfig extends RequestInit {
     skipAuth?: boolean;
     timeout?: number;
+    _retry?: boolean; // Marqueur interne pour éviter les boucles infinies
 }
 
 type QueryValue = string | number | boolean | null | undefined;
@@ -40,23 +42,18 @@ class ApiClient {
     }
 
     /**
-     * Get authentication token
-     */
-    private getToken(): string | null {
-        return localStorage.getItem('auth_token');
-    }
-
-    /**
      * Handle authentication errors
+     * Note: Redirection will be handled by React Router via callback
      */
     private handleAuthError(): void {
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('user_data');
-        window.location.href = '/login';
+        // Cookies HttpOnly are managed by the browser
+        // No localStorage cleanup needed
+        // Navigation will be handled by AuthContext
+        throw new AuthenticationError();
     }
 
     /**
-     * Build headers with authentication
+     * Build headers (no Authorization header - cookies handle auth)
      */
     private buildHeaders(config: RequestConfig = {}): HeadersInit {
         const hasFormDataBody = config.body instanceof FormData;
@@ -65,13 +62,7 @@ class ApiClient {
             ...config.headers,
         };
 
-        if (!config.skipAuth) {
-            const token = this.getToken();
-            if (token) {
-                headers['Authorization'] = `Bearer ${token}`;
-            }
-        }
-
+        // No Authorization header - cookies HttpOnly handle authentication
         return headers;
     }
 
@@ -91,6 +82,7 @@ class ApiClient {
                 ...config,
                 signal: controller.signal,
                 headers: this.buildHeaders(config),
+                credentials: 'include', // CRITICAL: Include HttpOnly cookies
             });
 
             clearTimeout(timeoutId);
@@ -109,10 +101,24 @@ class ApiClient {
     /**
      * Parse response and handle errors
      */
-    private async handleResponse<T>(response: Response, asBlob: boolean = false): Promise<T> {
-        // Handle authentication errors
+    private async handleResponse<T>(
+        response: Response,
+        asBlob: boolean = false,
+        originalRequestFn?: () => Promise<T>,
+        endpoint: string = '',
+        config: RequestConfig = {}
+    ): Promise<T> {
+        // Handle authentication errors with refresh token
         if (response.status === 401) {
-            this.handleAuthError();
+            // Skip auth refresh for refresh endpoint itself to avoid infinite loop
+            const isRefreshEndpoint = response.url.includes('/auth/refresh');
+
+            if (!isRefreshEndpoint && originalRequestFn) {
+                // Use RefreshManager to handle 401 and retry
+                return refreshManager.handle401Error(originalRequestFn, endpoint, config);
+            }
+
+            // For refresh endpoint or if no retry function, throw error
             throw new AuthenticationError();
         }
 
@@ -144,7 +150,7 @@ class ApiClient {
             throw createErrorFromStatus(response.status, message);
         }
 
-        return data;
+        return data as T;
     }
 
     private getSelectedOwnerId(): string | null {
@@ -176,11 +182,9 @@ class ApiClient {
      */
     async get<T>(endpoint: string, params?: QueryParams, config?: RequestConfig, asBlob: boolean = false): Promise<T> {
         const url = this.buildUrl(endpoint, params);
-        const response = await this.fetchWithTimeout(url, {
-            ...config,
-            method: 'GET',
-        });
-        return this.handleResponse<T>(response, asBlob);
+        const requestFn = () => this.fetchWithTimeout(url, { ...config, method: 'GET' });
+        const response = await requestFn();
+        return this.handleResponse<T>(response, asBlob, () => this.get<T>(endpoint, params, config, asBlob), endpoint, config);
     }
 
     async getText(endpoint: string, params?: QueryParams, config?: RequestConfig): Promise<string> {
@@ -203,12 +207,13 @@ class ApiClient {
     async post<T>(endpoint: string, data?: unknown, config?: RequestConfig): Promise<T> {
         const url = this.buildUrl(endpoint);
         const isFormData = data instanceof FormData;
-        const response = await this.fetchWithTimeout(url, {
+        const requestFn = () => this.fetchWithTimeout(url, {
             ...config,
             method: 'POST',
             body: data ? (isFormData ? data : JSON.stringify(data)) : undefined,
         });
-        return this.handleResponse<T>(response);
+        const response = await requestFn();
+        return this.handleResponse<T>(response, false, () => this.post<T>(endpoint, data, config), endpoint, config);
     }
 
     /**
@@ -216,12 +221,13 @@ class ApiClient {
      */
     async put<T>(endpoint: string, data?: unknown, config?: RequestConfig): Promise<T> {
         const url = this.buildUrl(endpoint);
-        const response = await this.fetchWithTimeout(url, {
+        const requestFn = () => this.fetchWithTimeout(url, {
             ...config,
             method: 'PUT',
             body: data ? JSON.stringify(data) : undefined,
         });
-        return this.handleResponse<T>(response);
+        const response = await requestFn();
+        return this.handleResponse<T>(response, false, () => this.put<T>(endpoint, data, config), endpoint, config);
     }
 
     /**
@@ -229,12 +235,13 @@ class ApiClient {
      */
     async patch<T>(endpoint: string, data?: unknown, config?: RequestConfig): Promise<T> {
         const url = this.buildUrl(endpoint);
-        const response = await this.fetchWithTimeout(url, {
+        const requestFn = () => this.fetchWithTimeout(url, {
             ...config,
             method: 'PATCH',
             body: data ? JSON.stringify(data) : undefined,
         });
-        return this.handleResponse<T>(response);
+        const response = await requestFn();
+        return this.handleResponse<T>(response, false, () => this.patch<T>(endpoint, data, config), endpoint, config);
     }
 
     /**
@@ -242,11 +249,12 @@ class ApiClient {
      */
     async delete<T>(endpoint: string, config?: RequestConfig): Promise<T> {
         const url = this.buildUrl(endpoint);
-        const response = await this.fetchWithTimeout(url, {
+        const requestFn = () => this.fetchWithTimeout(url, {
             ...config,
             method: 'DELETE',
         });
-        return this.handleResponse<T>(response);
+        const response = await requestFn();
+        return this.handleResponse<T>(response, false, () => this.delete<T>(endpoint, config), endpoint, config);
     }
 
     /**

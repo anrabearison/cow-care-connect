@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { DataTable, Column } from "@/components/admin/DataTable";
 import { FormDialog } from "@/components/admin/FormDialog";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
@@ -10,9 +10,9 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { Textarea } from "@/components/ui/textarea";
+import { useCreateHerdBook, useUpdateHerdBook, useDeleteHerdBook } from "../hooks/herdBooksHooks";
 
 const HerdBooksListPage = () => {
-  const queryClient = useQueryClient();
   const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -25,8 +25,12 @@ const HerdBooksListPage = () => {
   const [owners, setOwners] = useState<Owner[]>([]);
   const [formData, setFormData] = useState<CreateHerdBookData>({ reference: "", year: new Date().getFullYear(), description: "", ownerId: "" });
 
+  const createHerdBookMutation = useCreateHerdBook();
+  const updateHerdBookMutation = useUpdateHerdBook();
+  const deleteHerdBookMutation = useDeleteHerdBook();
+
   const { data: data, isLoading } = useQuery({
-    queryKey: ["admin-herd-books", page, search],
+    queryKey: queryKeys.herdBooks.list({ page, q: search }),
     queryFn: () =>
       herdBooksService.getHerdBooksList({
         page,
@@ -50,46 +54,6 @@ const HerdBooksListPage = () => {
     loadOwners();
   }, []);
 
-  const createMutation = useMutation({
-    mutationFn: (data: CreateHerdBookData) => herdBooksService.createHerdBook(data),
-    onSuccess: () => {
-      toast({ title: "Succès", description: "Livre de troupeau créé avec succès" });
-      queryClient.invalidateQueries({ queryKey: ["admin-herd-books"] });
-      setIsCreateDialogOpen(false);
-      setFormData({ reference: "", year: new Date().getFullYear(), description: "", ownerId: "" });
-    },
-    onError: () => {
-      toast({ title: "Erreur", description: "Erreur lors de la création", variant: "destructive" });
-    },
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateHerdBookData }) =>
-      herdBooksService.updateHerdBook(id, data),
-    onSuccess: () => {
-      toast({ title: "Succès", description: "Livre de troupeau mis à jour avec succès" });
-      queryClient.invalidateQueries({ queryKey: ["admin-herd-books"] });
-      setIsEditDialogOpen(false);
-      setSelectedItem(null);
-    },
-    onError: () => {
-      toast({ title: "Erreur", description: "Erreur lors de la mise à jour", variant: "destructive" });
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => herdBooksService.deleteHerdBook(id),
-    onSuccess: () => {
-      toast({ title: "Succès", description: "Livre de troupeau supprimé avec succès" });
-      queryClient.invalidateQueries({ queryKey: ["admin-herd-books"] });
-      setIsDeleteDialogOpen(false);
-      setSelectedItem(null);
-    },
-    onError: () => {
-      toast({ title: "Erreur", description: "Erreur lors de la suppression", variant: "destructive" });
-    },
-  });
-
   const handleCreate = () => {
     if (!formData.reference?.trim()) {
       toast({ title: "Erreur", description: "Veuillez saisir une référence", variant: "destructive" });
@@ -106,12 +70,24 @@ const HerdBooksListPage = () => {
       return;
     }
 
-    createMutation.mutate(formData);
+    createHerdBookMutation.mutate(formData);
+    setIsCreateDialogOpen(false);
+    setFormData({ reference: "", year: new Date().getFullYear(), description: "", ownerId: "" });
   };
 
   const handleUpdate = () => {
     if (selectedItem) {
-      updateMutation.mutate({ id: selectedItem.id, data: formData });
+      updateHerdBookMutation.mutate({ id: selectedItem.id, data: formData });
+      setIsEditDialogOpen(false);
+      setSelectedItem(null);
+    }
+  };
+
+  const handleDelete = () => {
+    if (selectedItem) {
+      deleteHerdBookMutation.mutate(selectedItem.id);
+      setIsDeleteDialogOpen(false);
+      setSelectedItem(null);
     }
   };
 
@@ -174,7 +150,7 @@ const HerdBooksListPage = () => {
         )}
       </FormDialog>
 
-      <FormDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} title="Créer un livre de troupeau" submitText="Créer" cancelText="Annuler" onSubmit={handleCreate} loading={createMutation.isPending}>
+      <FormDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} title="Créer un livre de troupeau" submitText="Créer" cancelText="Annuler" onSubmit={handleCreate} loading={createHerdBookMutation.isPending}>
         <div className="space-y-4">
           <div>
             <Label>Référence *</Label>
@@ -206,7 +182,7 @@ const HerdBooksListPage = () => {
         </div>
       </FormDialog>
 
-      <FormDialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} title="Modifier le livre de troupeau" submitText="Enregistrer" cancelText="Annuler" onSubmit={handleUpdate} loading={updateMutation.isPending}>
+      <FormDialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} title="Modifier le livre de troupeau" submitText="Enregistrer" cancelText="Annuler" onSubmit={handleUpdate} loading={updateHerdBookMutation.isPending}>
         <div className="space-y-4">
           <div>
             <Label>Référence *</Label>
@@ -238,7 +214,7 @@ const HerdBooksListPage = () => {
         </div>
       </FormDialog>
 
-      <ConfirmDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} title="Supprimer le livre de troupeau" description={`Êtes-vous sûr de vouloir supprimer "${selectedItem?.reference}" ?`} onConfirm={() => deleteMutation.mutate(selectedItem!.id)} confirmText="Supprimer" cancelText="Annuler" variant="destructive" loading={deleteMutation.isPending} />
+      <ConfirmDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} title="Supprimer le livre de troupeau" description={`Êtes-vous sûr de vouloir supprimer "${selectedItem?.reference}" ?`} onConfirm={() => deleteHerdBookMutation.mutate(selectedItem!.id)} confirmText="Supprimer" cancelText="Annuler" variant="destructive" loading={deleteHerdBookMutation.isPending} />
     </div>
   );
 };

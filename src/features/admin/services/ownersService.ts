@@ -50,7 +50,7 @@ class OwnersService {
         total: result.total,
         success: true,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching owners list:', error);
       throw error;
     }
@@ -64,7 +64,7 @@ class OwnersService {
         data: result,
         success: true,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching owner:', error);
       throw error;
     }
@@ -79,7 +79,7 @@ class OwnersService {
         success: true,
         message: 'Propriétaire créé avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating owner:', error);
       throw error;
     }
@@ -94,7 +94,7 @@ class OwnersService {
         success: true,
         message: 'Propriétaire mis à jour avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating owner:', error);
       throw error;
     }
@@ -109,7 +109,7 @@ class OwnersService {
         success: true,
         message: 'Propriétaire supprimé avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error deleting owner:', error);
       throw error;
     }

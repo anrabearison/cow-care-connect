@@ -49,7 +49,7 @@ class UsersService {
         total: result.total,
         success: true,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching users list:', error);
       throw error;
     }
@@ -63,7 +63,7 @@ class UsersService {
         data: result,
         success: true,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching user:', error);
       throw error;
     }
@@ -78,7 +78,7 @@ class UsersService {
         success: true,
         message: 'Utilisateur créé avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating user:', error);
       throw error;
     }
@@ -93,7 +93,7 @@ class UsersService {
         success: true,
         message: 'Utilisateur mis à jour avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating user:', error);
       throw error;
     }
@@ -108,7 +108,7 @@ class UsersService {
         success: true,
         message: 'Utilisateur désactivé avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error deactivating user:', error);
       throw error;
     }

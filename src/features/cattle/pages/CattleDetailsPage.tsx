@@ -30,7 +30,8 @@ import { calculateAge as commonCalculateAge } from '../utils/helpers';
 import { AddTreatmentModal } from '@/features/cattle/components/AddTreatmentModal';
 import { AddEventModal } from '@/features/cattle/components/AddEventModal';
 import { AddBirthModal } from '@/features/cattle/components/AddBirthModal';
-import { CattlePhotoCarousel, getCattlePrimaryImage } from '@/features/cattle/components/CattlePhotoCarousel';
+import { CattlePhotoCarousel } from '@/features/cattle/components/CattlePhotoCarousel';
+import { getCattlePrimaryImage } from '@/features/cattle/components/cattlePhotoUtils';
 import { HealthChatbot } from '@/features/cattle/components/HealthChatbot';
 import { ChatbotFloatingButton } from '@/features/cattle/components/ChatbotFloatingButton';
 import { Message } from '@/features/cattle/components/ChatMessage';
@@ -129,19 +130,19 @@ export default function CattleDetailsPage() {
   }, [cattle?.id, cattle?.name]);
 
   // Helper functions using fetched data
-  const getVeterinarianName = (vet: string | any) => {
+  const getVeterinarianName = (vet: string | { name: string }) => {
     if (typeof vet === 'object' && vet?.name) {
       return vet.name;
     }
-    const vetData = (veterinariansData?.data as any[])?.find(v => v.id === vet);
+    const vetData = (veterinariansData?.data as { id: string; name: string }[])?.find(v => v.id === vet);
     return vetData ? vetData.name : 'Vétérinaire inconnu';
   };
 
-  const getMedicamentName = (med: string | any) => {
+  const getMedicamentName = (med: string | { name: string }) => {
     if (typeof med === 'object' && med?.name) {
       return med.name;
     }
-    const medData = (medicamentsData?.data as any[])?.find(m => m.id === med);
+    const medData = (medicamentsData?.data as { id: string; name: string }[])?.find(m => m.id === med);
     return medData ? medData.name : 'Médicament inconnu';
   };
 
@@ -151,7 +152,7 @@ export default function CattleDetailsPage() {
   };
 
   const getTypeEvenementIcon = (id: string) => {
-    const type = eventTypesData?.data?.find((t: any) => t.id === id);
+    const type = eventTypesData?.data?.find((t: { id: string; icone?: string }) => t.id === id);
     return resolveIconEmoji(type?.icone, '📝');
   };
 
@@ -230,8 +231,9 @@ export default function CattleDetailsPage() {
           title: "Succès",
           description: `Naissance enregistrée avec succès pour ${calfData.name} !`,
         });
-        // Refresh cattle data to show new descendant/event
-        window.location.reload();
+        // Refresh cattle data to show new descendant/event via TanStack Query invalidation
+        queryClient.invalidateQueries({ queryKey: queryKeys.cattle.details(cattle.id) });
+        queryClient.invalidateQueries({ queryKey: queryKeys.cattle.all });
       } else {
         toast({
           variant: "destructive",

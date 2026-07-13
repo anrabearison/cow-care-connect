@@ -28,7 +28,7 @@ const passportSchema = z.object({
   passportNumber: z
     .string()
     .min(1, 'Le numéro de passeport est requis')
-    .regex(/^[A-Z0-9\-]+$/, 'Format invalide (ex: PASS-2024-0001)'),
+    .regex(/^[A-Z0-9-]+$/, 'Format invalide (ex: PASS-2024-0001)'),
   location: z.string().min(1, "Le lieu d'émission est requis"),
   issueDate: z.string().min(1, "La date d'émission est requise"),
   district: z.string().min(1, "L'arrondissement est requis"),
@@ -144,6 +144,7 @@ const PassportFormContent = memo(function PassportFormContent({
         herdBookId,
         totalCattle: cattleIds.length,
         cattleIds,
+        passportNumber: data.passportNumber,
       });
     },
     [cattleIds, herdBookId, onGenerate]

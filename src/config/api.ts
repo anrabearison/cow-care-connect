@@ -25,6 +25,8 @@ export const API_ENDPOINTS = {
     BASE: `${API_PREFIX}/auth`,
     LOGIN: `${API_PREFIX}/auth/login`,
     REFRESH: `${API_PREFIX}/auth/refresh`,
+    ME: `${API_PREFIX}/auth/me`,
+    LOGOUT: `${API_PREFIX}/auth/logout`,
   },
   EVENTS: createResourceEndpoints('events'),
   TREATMENTS: createResourceEndpoints('treatments'),

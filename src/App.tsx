@@ -52,87 +52,87 @@ const AppContent = () => {
   }, [selectedOwnerId]);
 
   return (
-    <BrowserRouter
-      future={{
-        v7_startTransition: true,
-        v7_relativeSplatPath: true,
-      }}
-    >
-      <Suspense fallback={<PageLoader />}>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path={APP_ROUTE_PATHS.GOOGLE_CALLBACK} element={<GoogleCallbackPage />} />
-          <Route path={APP_ROUTE_PATHS.INVITATION} element={<InvitationPage />} />
-          
-          {/* Admin routes */}
+    <Suspense fallback={<PageLoader />}>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path={APP_ROUTE_PATHS.GOOGLE_CALLBACK} element={<GoogleCallbackPage />} />
+        <Route path={APP_ROUTE_PATHS.INVITATION} element={<InvitationPage />} />
+        
+        {/* Admin routes */}
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <AdminLayout />
+            </AdminRoute>
+          }
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="cattle" element={<CattleListPage />} />
+          <Route path="users" element={<UsersListPage />} />
+          <Route path="veterinarians" element={<VeterinariansListPage />} />
+          <Route path="medicaments" element={<MedicamentsListPage />} />
+          <Route path="event-types" element={<EventTypesListPage />} />
+          <Route path="events" element={<EventsListPage />} />
+          <Route path="treatments" element={<TreatmentsListPage />} />
+          <Route path="categories" element={<CategoriesListPage />} />
+          <Route path="status" element={<StatusListPage />} />
+          <Route path="characters" element={<CharactersListPage />} />
+          <Route path="herd-books" element={<HerdBooksListPage />} />
+          <Route path="herd-book-cattle" element={<HerdBookCattleListPage />} />
+          <Route path="purchases" element={<PurchasesListPage />} />
+          <Route path="suppliers" element={<SuppliersListPage />} />
           <Route
-            path="/admin"
+            path="owners"
             element={
-              <AdminRoute>
-                <AdminLayout />
-              </AdminRoute>
+              <SuperAdminRoute>
+                <OwnersListPage />
+              </SuperAdminRoute>
             }
-          >
-            <Route index element={<AdminDashboard />} />
-            <Route path="cattle" element={<CattleListPage />} />
-            <Route path="users" element={<UsersListPage />} />
-            <Route path="veterinarians" element={<VeterinariansListPage />} />
-            <Route path="medicaments" element={<MedicamentsListPage />} />
-            <Route path="event-types" element={<EventTypesListPage />} />
-            <Route path="events" element={<EventsListPage />} />
-            <Route path="treatments" element={<TreatmentsListPage />} />
-            <Route path="categories" element={<CategoriesListPage />} />
-            <Route path="status" element={<StatusListPage />} />
-            <Route path="characters" element={<CharactersListPage />} />
-            <Route path="herd-books" element={<HerdBooksListPage />} />
-            <Route path="herd-book-cattle" element={<HerdBookCattleListPage />} />
-            <Route path="purchases" element={<PurchasesListPage />} />
-            <Route path="suppliers" element={<SuppliersListPage />} />
-            <Route
-              path="owners"
-              element={
-                <SuperAdminRoute>
-                  <OwnersListPage />
-                </SuperAdminRoute>
-              }
-            />
-            <Route
-              path="invitations"
-              element={
-                <SuperAdminRoute>
-                  <InvitationsListPage />
-                </SuperAdminRoute>
-              }
-            />
-          </Route>
-          
-          {/* Frontoffice routes */}
+          />
           <Route
-            path="/"
+            path="invitations"
             element={
-              <PrivateRoute>
-                <MainLayout />
-              </PrivateRoute>
+              <SuperAdminRoute>
+                <InvitationsListPage />
+              </SuperAdminRoute>
             }
-          >
-            <Route index element={<HomePage />} />
-            <Route path="cattle" element={<CattlePage />} />
-            <Route path="cattle/:id" element={<CattleDetailsPage />} />
-            <Route path="reports" element={<ReportsPage />} />
-            <Route path="reports/passport" element={<PassportReportPage />} />
-            <Route path="profile" element={<ProfilePage />} />
-            <Route path="*" element={<NotFound />} />
-          </Route>
-        </Routes>
-      </Suspense>
-    </BrowserRouter>
+          />
+        </Route>
+        
+        {/* Frontoffice routes */}
+        <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              <MainLayout />
+            </PrivateRoute>
+          }
+        >
+          <Route index element={<HomePage />} />
+          <Route path="cattle" element={<CattlePage />} />
+          <Route path="cattle/:id" element={<CattleDetailsPage />} />
+          <Route path="reports" element={<ReportsPage />} />
+          <Route path="reports/passport" element={<PassportReportPage />} />
+          <Route path="profile" element={<ProfilePage />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
+      </Routes>
+    </Suspense>
   );
 };
 
 const App = () => (
-  <AppProviders>
-    <AppContent />
-  </AppProviders>
+  <BrowserRouter
+    future={{
+      v7_startTransition: true,
+      v7_relativeSplatPath: true,
+    }}
+  >
+    <AppProviders>
+      <AppContent />
+    </AppProviders>
+  </BrowserRouter>
 );
 
 export default App;

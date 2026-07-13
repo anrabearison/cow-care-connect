@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { DataTable, Column } from "@/components/admin/DataTable";
 import { FormDialog } from "@/components/admin/FormDialog";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
@@ -9,9 +9,9 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 import { Building2 } from "lucide-react";
+import { useCreateSupplier, useUpdateSupplier, useDeleteSupplier } from "../hooks/purchasesHooks";
 
 const SuppliersListPage = () => {
-    const queryClient = useQueryClient();
     const { toast } = useToast();
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
@@ -23,45 +23,38 @@ const SuppliersListPage = () => {
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [formData, setFormData] = useState<CreateSupplierData>({ name: "", contactInfo: "", phone: "", email: "", address: "" });
 
+    const createSupplierMutation = useCreateSupplier();
+    const updateSupplierMutation = useUpdateSupplier();
+    const deleteSupplierMutation = useDeleteSupplier();
+
     const { data, isLoading } = useQuery({
-        queryKey: ["admin-suppliers", page, search],
+        queryKey: queryKeys.suppliers.list({ page, q: search }),
         queryFn: () => purchasesService.getSuppliersList({ q: search || undefined, page, per_page: pageSize }),
     });
 
-    const createMutation = useMutation({
-        mutationFn: (d: CreateSupplierData) => purchasesService.createSupplier(d),
-        onSuccess: () => {
-            toast({ title: "Succès", description: "Fournisseur créé avec succès" });
-            queryClient.invalidateQueries({ queryKey: ["admin-suppliers"] });
-            setIsCreateDialogOpen(false);
-            resetForm();
-        },
-        onError: () => toast({ title: "Erreur", description: "Erreur lors de la création", variant: "destructive" }),
-    });
+    const resetForm = () => setFormData({ name: "", contactInfo: "", phone: "", email: "", address: "" });
 
-    const updateMutation = useMutation({
-        mutationFn: ({ id, data }: { id: string; data: UpdateSupplierData }) => purchasesService.updateSupplier(id, data),
-        onSuccess: () => {
-            toast({ title: "Succès", description: "Fournisseur mis à jour avec succès" });
-            queryClient.invalidateQueries({ queryKey: ["admin-suppliers"] });
+    const handleCreate = () => {
+        createSupplierMutation.mutate(formData);
+        setIsCreateDialogOpen(false);
+        resetForm();
+    };
+
+    const handleUpdate = () => {
+        if (selectedItem) {
+            updateSupplierMutation.mutate({ id: selectedItem.id, data: formData });
             setIsEditDialogOpen(false);
             setSelectedItem(null);
-        },
-        onError: () => toast({ title: "Erreur", description: "Erreur lors de la mise à jour", variant: "destructive" }),
-    });
+        }
+    };
 
-    const deleteMutation = useMutation({
-        mutationFn: (id: string) => purchasesService.deleteSupplier(id),
-        onSuccess: () => {
-            toast({ title: "Succès", description: "Fournisseur supprimé" });
-            queryClient.invalidateQueries({ queryKey: ["admin-suppliers"] });
+    const handleDelete = () => {
+        if (selectedItem) {
+            deleteSupplierMutation.mutate(selectedItem.id);
             setIsDeleteDialogOpen(false);
             setSelectedItem(null);
-        },
-        onError: () => toast({ title: "Erreur", description: "Erreur lors de la suppression", variant: "destructive" }),
-    });
-
-    const resetForm = () => setFormData({ name: "", contactInfo: "", phone: "", email: "", address: "" });
+        }
+    };
 
     const openEditDialog = (item: Supplier) => {
         setSelectedItem(item);
@@ -140,11 +133,11 @@ const SuppliersListPage = () => {
                 )}
             </FormDialog>
 
-            <FormDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} title="Nouveau fournisseur" submitText="Créer" cancelText="Annuler" onSubmit={() => createMutation.mutate(formData)} loading={createMutation.isPending}>
+            <FormDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} title="Nouveau fournisseur" submitText="Créer" cancelText="Annuler" onSubmit={handleCreate} loading={createSupplierMutation.isPending}>
                 <SupplierForm />
             </FormDialog>
 
-            <FormDialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} title="Modifier le fournisseur" submitText="Enregistrer" cancelText="Annuler" onSubmit={() => selectedItem && updateMutation.mutate({ id: selectedItem.id, data: formData })} loading={updateMutation.isPending}>
+            <FormDialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} title="Modifier le fournisseur" submitText="Enregistrer" cancelText="Annuler" onSubmit={handleUpdate} loading={updateSupplierMutation.isPending}>
                 <SupplierForm />
             </FormDialog>
 
@@ -153,11 +146,11 @@ const SuppliersListPage = () => {
                 onOpenChange={setIsDeleteDialogOpen}
                 title="Supprimer le fournisseur"
                 description={`Êtes-vous sûr de vouloir supprimer "${selectedItem?.name}" ?`}
-                onConfirm={() => deleteMutation.mutate(selectedItem!.id)}
+                onConfirm={handleDelete}
                 confirmText="Supprimer"
                 cancelText="Annuler"
                 variant="destructive"
-                loading={deleteMutation.isPending}
+                loading={deleteSupplierMutation.isPending}
             />
         </div>
     );

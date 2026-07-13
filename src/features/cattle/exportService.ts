@@ -86,7 +86,7 @@ export class CattleExportService {
         styles: { fontSize: 9 }
       });
 
-      yPos = (doc as any).lastAutoTable?.finalY + 10 || yPos;
+      yPos = (doc as { lastAutoTable?: { finalY?: number } }).lastAutoTable?.finalY + 10 || yPos;
     }
 
     // Historique des traitements

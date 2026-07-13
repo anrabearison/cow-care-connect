@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { DataTable, Column } from "@/components/admin/DataTable";
 import { FormDialog } from "@/components/admin/FormDialog";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
@@ -8,9 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Textarea } from "@/components/ui/textarea";
+import { useCreateMedicament, useUpdateMedicament, useDeleteMedicament } from "../hooks/medicamentsHooks";
 
 const MedicamentsListPage = () => {
-  const queryClient = useQueryClient();
   const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -22,8 +22,12 @@ const MedicamentsListPage = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [formData, setFormData] = useState<CreateMedicamentData>({ name: "", type: "", dosageQuantity: undefined, dosageUnit: "", dosageWeight: undefined, dosageWeightUnit: "", dosageNotes: "", defaultRoute: "", withdrawalPeriodMeat: undefined, withdrawalPeriodMilk: undefined, manufacturer: "", notes: "" });
 
+  const createMedicamentMutation = useCreateMedicament();
+  const updateMedicamentMutation = useUpdateMedicament();
+  const deleteMedicamentMutation = useDeleteMedicament();
+
   const { data: data, isLoading } = useQuery({
-    queryKey: ["admin-medicaments", page, search],
+    queryKey: queryKeys.medicaments.list({ page, q: search }),
     queryFn: () =>
       medicamentsService.getMedicamentsList({
         page,
@@ -32,53 +36,25 @@ const MedicamentsListPage = () => {
       }),
   });
 
-  const createMutation = useMutation({
-    mutationFn: (data: CreateMedicamentData) => medicamentsService.createMedicament(data),
-    onSuccess: () => {
-      toast({ title: "Succès", description: "Médicament créé avec succès" });
-      queryClient.invalidateQueries({ queryKey: ["admin-medicaments"] });
-      setIsCreateDialogOpen(false);
-      setFormData({ name: "", type: "", dosageQuantity: undefined, dosageUnit: "", dosageWeight: undefined, dosageWeightUnit: "", dosageNotes: "", defaultRoute: "", withdrawalPeriodMeat: undefined, withdrawalPeriodMilk: undefined, manufacturer: "", notes: "" });
-    },
-    onError: () => {
-      toast({ title: "Erreur", description: "Erreur lors de la création", variant: "destructive" });
-    },
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateMedicamentData }) =>
-      medicamentsService.updateMedicament(id, data),
-    onSuccess: () => {
-      toast({ title: "Succès", description: "Médicament mis à jour avec succès" });
-      queryClient.invalidateQueries({ queryKey: ["admin-medicaments"] });
-      setIsEditDialogOpen(false);
-      setSelectedItem(null);
-    },
-    onError: () => {
-      toast({ title: "Erreur", description: "Erreur lors de la mise à jour", variant: "destructive" });
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => medicamentsService.deleteMedicament(id),
-    onSuccess: () => {
-      toast({ title: "Succès", description: "Médicament supprimé avec succès" });
-      queryClient.invalidateQueries({ queryKey: ["admin-medicaments"] });
-      setIsDeleteDialogOpen(false);
-      setSelectedItem(null);
-    },
-    onError: () => {
-      toast({ title: "Erreur", description: "Erreur lors de la suppression", variant: "destructive" });
-    },
-  });
-
   const handleCreate = () => {
-    createMutation.mutate(formData);
+    createMedicamentMutation.mutate(formData);
+    setIsCreateDialogOpen(false);
+    setFormData({ name: "", type: "", dosageQuantity: undefined, dosageUnit: "", dosageWeight: undefined, dosageWeightUnit: "", dosageNotes: "", defaultRoute: "", withdrawalPeriodMeat: undefined, withdrawalPeriodMilk: undefined, manufacturer: "", notes: "" });
   };
 
   const handleUpdate = () => {
     if (selectedItem) {
-      updateMutation.mutate({ id: selectedItem.id, data: formData });
+      updateMedicamentMutation.mutate({ id: selectedItem.id, data: formData });
+      setIsEditDialogOpen(false);
+      setSelectedItem(null);
+    }
+  };
+
+  const handleDelete = () => {
+    if (selectedItem) {
+      deleteMedicamentMutation.mutate(selectedItem.id);
+      setIsDeleteDialogOpen(false);
+      setSelectedItem(null);
     }
   };
 
@@ -136,7 +112,7 @@ const MedicamentsListPage = () => {
         )}
       </FormDialog>
 
-      <FormDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} title="Créer un médicament" submitText="Créer" cancelText="Annuler" onSubmit={handleCreate} loading={createMutation.isPending}>
+      <FormDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} title="Créer un médicament" submitText="Créer" cancelText="Annuler" onSubmit={handleCreate} loading={createMedicamentMutation.isPending}>
         <div className="space-y-4">
           <div>
             <Label>Nom *</Label>
@@ -157,7 +133,7 @@ const MedicamentsListPage = () => {
         </div>
       </FormDialog>
 
-      <FormDialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} title="Modifier le médicament" submitText="Enregistrer" cancelText="Annuler" onSubmit={handleUpdate} loading={updateMutation.isPending}>
+      <FormDialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} title="Modifier le médicament" submitText="Enregistrer" cancelText="Annuler" onSubmit={handleUpdate} loading={updateMedicamentMutation.isPending}>
         <div className="space-y-4">
           <div>
             <Label>Nom *</Label>
@@ -178,7 +154,7 @@ const MedicamentsListPage = () => {
         </div>
       </FormDialog>
 
-      <ConfirmDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} title="Supprimer le médicament" description={`Êtes-vous sûr de vouloir supprimer "${selectedItem?.name}" ?`} onConfirm={() => deleteMutation.mutate(selectedItem!.id)} confirmText="Supprimer" cancelText="Annuler" variant="destructive" loading={deleteMutation.isPending} />
+      <ConfirmDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} title="Supprimer le médicament" description={`Êtes-vous sûr de vouloir supprimer "${selectedItem?.name}" ?`} onConfirm={() => deleteMedicamentMutation.mutate(selectedItem!.id)} confirmText="Supprimer" cancelText="Annuler" variant="destructive" loading={deleteMedicamentMutation.isPending} />
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { DataTable, Column } from "@/components/admin/DataTable";
 import { FormDialog } from "@/components/admin/FormDialog";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
@@ -8,9 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Textarea } from "@/components/ui/textarea";
+import { useCreateOwner, useUpdateOwner, useDeleteOwner } from "../hooks/ownersHooks";
+import { queryKeys } from "@/lib/queryKeys";
 
 const OwnersListPage = () => {
-  const queryClient = useQueryClient();
   const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -22,8 +23,12 @@ const OwnersListPage = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [formData, setFormData] = useState<CreateOwnerData>({ name: "", email: "", contactInfo: "", phone: "", address: "", city: "" });
 
+  const createOwnerMutation = useCreateOwner();
+  const updateOwnerMutation = useUpdateOwner();
+  const deleteOwnerMutation = useDeleteOwner();
+
   const { data: data, isLoading } = useQuery({
-    queryKey: ["admin-owners", page, search],
+    queryKey: queryKeys.owners.list({ page, q: search }),
     queryFn: () =>
       ownersService.getOwnersList({
         page,
@@ -32,53 +37,25 @@ const OwnersListPage = () => {
       }),
   });
 
-  const createMutation = useMutation({
-    mutationFn: (data: CreateOwnerData) => ownersService.createOwner(data),
-    onSuccess: () => {
-      toast({ title: "Succès", description: "Propriétaire créé avec succès" });
-      queryClient.invalidateQueries({ queryKey: ["admin-owners"] });
-      setIsCreateDialogOpen(false);
-      setFormData({ name: "", email: "", contactInfo: "", phone: "", address: "", city: "" });
-    },
-    onError: () => {
-      toast({ title: "Erreur", description: "Erreur lors de la création", variant: "destructive" });
-    },
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateOwnerData }) =>
-      ownersService.updateOwner(id, data),
-    onSuccess: () => {
-      toast({ title: "Succès", description: "Propriétaire mis à jour avec succès" });
-      queryClient.invalidateQueries({ queryKey: ["admin-owners"] });
-      setIsEditDialogOpen(false);
-      setSelectedItem(null);
-    },
-    onError: () => {
-      toast({ title: "Erreur", description: "Erreur lors de la mise à jour", variant: "destructive" });
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => ownersService.deleteOwner(id),
-    onSuccess: () => {
-      toast({ title: "Succès", description: "Propriétaire supprimé avec succès" });
-      queryClient.invalidateQueries({ queryKey: ["admin-owners"] });
-      setIsDeleteDialogOpen(false);
-      setSelectedItem(null);
-    },
-    onError: () => {
-      toast({ title: "Erreur", description: "Erreur lors de la suppression", variant: "destructive" });
-    },
-  });
-
   const handleCreate = () => {
-    createMutation.mutate(formData);
+    createOwnerMutation.mutate(formData);
+    setIsCreateDialogOpen(false);
+    setFormData({ name: "", email: "", contactInfo: "", phone: "", address: "", city: "" });
   };
 
   const handleUpdate = () => {
     if (selectedItem) {
-      updateMutation.mutate({ id: selectedItem.id, data: formData });
+      updateOwnerMutation.mutate({ id: selectedItem.id, data: formData });
+      setIsEditDialogOpen(false);
+      setSelectedItem(null);
+    }
+  };
+
+  const handleDelete = () => {
+    if (selectedItem) {
+      deleteOwnerMutation.mutate(selectedItem.id);
+      setIsDeleteDialogOpen(false);
+      setSelectedItem(null);
     }
   };
 
@@ -139,7 +116,7 @@ const OwnersListPage = () => {
         )}
       </FormDialog>
 
-      <FormDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} title="Créer un propriétaire" submitText="Créer" cancelText="Annuler" onSubmit={handleCreate} loading={createMutation.isPending}>
+      <FormDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} title="Créer un propriétaire" submitText="Créer" cancelText="Annuler" onSubmit={handleCreate} loading={createOwnerMutation.isPending}>
         <div className="space-y-4">
           <div>
             <Label>Nom *</Label>
@@ -168,7 +145,7 @@ const OwnersListPage = () => {
         </div>
       </FormDialog>
 
-      <FormDialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} title="Modifier le propriétaire" submitText="Enregistrer" cancelText="Annuler" onSubmit={handleUpdate} loading={updateMutation.isPending}>
+      <FormDialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} title="Modifier le propriétaire" submitText="Enregistrer" cancelText="Annuler" onSubmit={handleUpdate} loading={updateOwnerMutation.isPending}>
         <div className="space-y-4">
           <div>
             <Label>Nom *</Label>
@@ -197,7 +174,7 @@ const OwnersListPage = () => {
         </div>
       </FormDialog>
 
-      <ConfirmDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} title="Supprimer le propriétaire" description={`Êtes-vous sûr de vouloir supprimer "${selectedItem?.name}" ?`} onConfirm={() => deleteMutation.mutate(selectedItem!.id)} confirmText="Supprimer" cancelText="Annuler" variant="destructive" loading={deleteMutation.isPending} />
+      <ConfirmDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} title="Supprimer le propriétaire" description={`Êtes-vous sûr de vouloir supprimer "${selectedItem?.name}" ?`} onConfirm={() => deleteOwnerMutation.mutate(selectedItem!.id)} confirmText="Supprimer" cancelText="Annuler" variant="destructive" loading={deleteOwnerMutation.isPending} />
     </div>
   );
 };

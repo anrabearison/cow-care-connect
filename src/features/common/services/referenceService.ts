@@ -1,23 +1,19 @@
-import { API_ENDPOINTS, buildApiUrl } from '@/config/api';
-import { ApiResponse } from '@/utils/apiClient';
+import { API_ENDPOINTS } from '@/config/api';
+import { ApiResponse, apiClient } from '@/utils/apiClient';
 import { TypeEvenement } from '@/features/events/types';
-import { fetchWithAuth } from '@/utils/fetchUtils';
 import { Medicament, Veterinarian, ReferenceItem } from '../types/references';
 
 class ReferenceService {
     private async fetchData<T>(endpoint: string, errorMessage: string): Promise<ApiResponse<T>> {
         try {
-            const url = buildApiUrl(endpoint);
-            const response = await fetchWithAuth(url);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            const result = await response.json();
+            const result = await apiClient.get<T>(endpoint);
             return {
-                data: result.data || result,
+                data: result as T,
                 success: true
             };
         } catch (error) {
             console.error(errorMessage, error);
-            return { data: [] as any, success: false, message: errorMessage };
+            return { data: [] as T, success: false, message: errorMessage };
         }
     }
 

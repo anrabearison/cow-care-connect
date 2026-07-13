@@ -38,7 +38,7 @@ class CharactersService {
         total: result.total,
         success: true,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching characters list:', error);
       throw error;
     }
@@ -52,7 +52,7 @@ class CharactersService {
         data: result,
         success: true,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching character:', error);
       throw error;
     }
@@ -67,7 +67,7 @@ class CharactersService {
         success: true,
         message: 'Caractère créé avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating character:', error);
       throw error;
     }
@@ -82,7 +82,7 @@ class CharactersService {
         success: true,
         message: 'Caractère mis à jour avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating character:', error);
       throw error;
     }
@@ -97,7 +97,7 @@ class CharactersService {
         success: true,
         message: 'Caractère supprimé avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error deleting character:', error);
       throw error;
     }

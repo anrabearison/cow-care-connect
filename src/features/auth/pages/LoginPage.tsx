@@ -38,15 +38,17 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     setError('');
-    
-    // Rediriger vers Google OAuth2
+
+    // Rediriger vers Google OAuth2 (redirection externe - window.location est nécessaire)
     const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
     const redirectUri = APP_URLS.GOOGLE_CALLBACK;
     const scope = 'email profile';
     const state = invitationToken || '';
-    
+
     const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}&response_type=code&state=${state}`;
-    
+
+    // Note: window.location est utilisé ici car c'est une redirection vers un domaine externe (Google OAuth)
+    // React Router ne peut pas naviguer vers des URLs externes
     window.location.href = googleAuthUrl;
   };
 

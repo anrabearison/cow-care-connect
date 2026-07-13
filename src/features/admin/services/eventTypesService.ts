@@ -41,7 +41,7 @@ class EventTypesService {
         total: result.total,
         success: true,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching event types list:', error);
       throw error;
     }
@@ -55,7 +55,7 @@ class EventTypesService {
         data: result,
         success: true,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching event type:', error);
       throw error;
     }
@@ -70,7 +70,7 @@ class EventTypesService {
         success: true,
         message: "Type d'événement créé avec succès",
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating event type:', error);
       throw error;
     }
@@ -85,7 +85,7 @@ class EventTypesService {
         success: true,
         message: "Type d'événement mis à jour avec succès",
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating event type:', error);
       throw error;
     }
@@ -100,7 +100,7 @@ class EventTypesService {
         success: true,
         message: "Type d'événement supprimé avec succès",
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error deleting event type:', error);
       throw error;
     }

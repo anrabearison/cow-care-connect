@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { DataTable, Column } from '@/components/admin/DataTable';
 import { ConfirmDialog } from '@/components/admin/ConfirmDialog';
 import { FormDialog } from '@/components/admin/FormDialog';
@@ -12,11 +12,11 @@ import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@/features/auth/AuthContext';
 import { ownersService } from '@/features/admin/services/ownersService';
 import { invitationsService, InvitationCreateData, InvitationResponse } from '@/features/admin/services/invitationsService';
-import { getRoleLabel, USER_ROLES } from '@/constants/roles';
+import { getRoleLabel, USER_ROLES, type UserRole } from '@/constants/roles';
+import { useCreateInvitation, useDeleteInvitation } from '../hooks/invitationsHooks';
 
 const InvitationsListPage = () => {
   const { user } = useAuth();
-  const queryClient = useQueryClient();
   const { toast } = useToast();
   const [page, setPage] = useState(1);
   const pageSize = 10;
@@ -31,54 +31,17 @@ const InvitationsListPage = () => {
   });
   const [createdInvitation, setCreatedInvitation] = useState<InvitationResponse | null>(null);
 
+  const createInvitationMutation = useCreateInvitation();
+  const deleteInvitationMutation = useDeleteInvitation();
+
   const { data: ownersData } = useQuery({
-    queryKey: ['admin-owners', 1, 50],
+    queryKey: queryKeys.owners.list({ page: 1, per_page: 50 }),
     queryFn: () => ownersService.getOwnersList({ page: 1, per_page: 50 }),
   });
 
   const { data: invitationsData, isLoading } = useQuery({
-    queryKey: ['admin-invitations', page, search],
+    queryKey: queryKeys.users.list({ page, email: search }),
     queryFn: () => invitationsService.getInvitations({ email: search }),
-  });
-
-  const createInvitationMutation = useMutation({
-    mutationFn: (data: InvitationCreateData) => invitationsService.createInvitation(data),
-    onSuccess: (invitation) => {
-      toast({
-        title: 'Succès',
-        description: 'Invitation créée avec succès',
-      });
-      setCreatedInvitation(invitation);
-      queryClient.invalidateQueries({ queryKey: ['admin-invitations'] });
-      setIsCreateDialogOpen(false);
-    },
-    onError: (error: any) => {
-      toast({
-        title: 'Erreur',
-        description: error instanceof Error ? error.message : "Erreur lors de la création de l'invitation",
-        variant: 'destructive',
-      });
-    },
-  });
-
-  const deleteInvitationMutation = useMutation({
-    mutationFn: (id: string) => invitationsService.deleteInvitation(id),
-    onSuccess: () => {
-      toast({
-        title: 'Succès',
-        description: 'Invitation supprimée avec succès',
-      });
-      queryClient.invalidateQueries({ queryKey: ['admin-invitations'] });
-      setIsDeleteDialogOpen(false);
-      setSelectedInvitation(null);
-    },
-    onError: (error: any) => {
-      toast({
-        title: 'Erreur',
-        description: error instanceof Error ? error.message : "Erreur lors de la suppression de l'invitation",
-        variant: 'destructive',
-      });
-    },
   });
 
   const handleCreateInvitation = () => {
@@ -104,12 +67,19 @@ const InvitationsListPage = () => {
       email: invitationFormData.email,
       role: invitationFormData.role,
       ownerId: invitationFormData.role === USER_ROLES.SUPER_ADMIN ? undefined : invitationFormData.ownerId || undefined,
+    }, {
+      onSuccess: (invitation) => {
+        setCreatedInvitation(invitation);
+        setIsCreateDialogOpen(false);
+      },
     });
   };
 
   const handleDeleteInvitation = () => {
     if (selectedInvitation) {
       deleteInvitationMutation.mutate(selectedInvitation.id);
+      setIsDeleteDialogOpen(false);
+      setSelectedInvitation(null);
     }
   };
 
@@ -210,7 +180,7 @@ const InvitationsListPage = () => {
             <Label>Rôle</Label>
             <Select
               value={invitationFormData.role}
-              onValueChange={(value) => setInvitationFormData({ ...invitationFormData, role: value as any, ownerId: '' })}
+              onValueChange={(value) => setInvitationFormData({ ...invitationFormData, role: value as UserRole, ownerId: '' })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionner un rôle" />

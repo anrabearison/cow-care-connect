@@ -31,7 +31,7 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
         brand: '',
         distinctiveSign: '',
         nCarnet: '',
-        sourceType: 'Acheté' as 'Acheté' | 'Né dans le troupeau',
+        sourceType: 'ACHETE' as 'ACHETE' | 'NE_DANS_TROUPEAU',
         motherId: '',
         fatherId: '',
         purchaseSupplier: '',
@@ -92,16 +92,16 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
             distinctiveSign: formData.distinctiveSign || undefined,
             photo: undefined,
             // status removed as not supported by backend on create
-            motherId: formData.sourceType === 'Né dans le troupeau' && formData.motherId ? formData.motherId : undefined,
-            fatherId: formData.sourceType === 'Né dans le troupeau' && formData.fatherId ? formData.fatherId : undefined,
+            motherId: formData.sourceType === 'NE_DANS_TROUPEAU' && formData.motherId ? formData.motherId : undefined,
+            fatherId: formData.sourceType === 'NE_DANS_TROUPEAU' && formData.fatherId ? formData.fatherId : undefined,
             source: {
-                type: formData.sourceType === 'Acheté' ? 'ACHETE' : 'NE_DANS_TROUPEAU',
-                supplier: formData.sourceType === 'Acheté' ? formData.purchaseSupplier : undefined,
-                purchaseDate: formData.sourceType === 'Acheté' && formData.purchaseDate ? formData.purchaseDate : undefined,
-                purchasePrice: formData.sourceType === 'Acheté' && formData.purchasePrice ? parseFloat(formData.purchasePrice) : undefined,
-                purchaseWeight: formData.sourceType === 'Acheté' && formData.purchaseWeight ? parseFloat(formData.purchaseWeight) : undefined,
-                purchaseHealthStatus: formData.sourceType === 'Acheté' ? formData.purchaseHealthStatus : undefined,
-                purchaseNotes: formData.sourceType === 'Acheté' ? formData.purchaseNotes : undefined,
+                type: formData.sourceType,
+                supplier: formData.sourceType === 'ACHETE' ? formData.purchaseSupplier : undefined,
+                purchaseDate: formData.sourceType === 'ACHETE' && formData.purchaseDate ? formData.purchaseDate : undefined,
+                purchasePrice: formData.sourceType === 'ACHETE' && formData.purchasePrice ? parseFloat(formData.purchasePrice) : undefined,
+                purchaseWeight: formData.sourceType === 'ACHETE' && formData.purchaseWeight ? parseFloat(formData.purchaseWeight) : undefined,
+                purchaseHealthStatus: formData.sourceType === 'ACHETE' ? formData.purchaseHealthStatus : undefined,
+                purchaseNotes: formData.sourceType === 'ACHETE' ? formData.purchaseNotes : undefined,
             }
         };
 
@@ -120,7 +120,7 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
             brand: '',
             distinctiveSign: '',
             nCarnet: '',
-            sourceType: 'Acheté',
+            sourceType: 'ACHETE',
             motherId: '',
             fatherId: '',
             purchaseSupplier: '',
@@ -248,19 +248,19 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                     <Label htmlFor="sourceType">Type d'origine</Label>
                                     <Select
                                         value={formData.sourceType}
-                                        onValueChange={(value) => setFormData({ ...formData, sourceType: value as any })}
+                                        onValueChange={(value) => setFormData({ ...formData, sourceType: value as 'ACHETE' | 'NE_DANS_TROUPEAU' })}
                                     >
                                         <SelectTrigger id="sourceType">
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="Acheté">Acheté</SelectItem>
-                                            <SelectItem value="Né dans le troupeau">Né dans le troupeau</SelectItem>
+                                            <SelectItem value="ACHETE">Acheté</SelectItem>
+                                            <SelectItem value="NE_DANS_TROUPEAU">Né dans le troupeau</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
 
-                                {formData.sourceType === 'Acheté' && (
+                                {formData.sourceType === 'ACHETE' && (
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border p-4 rounded-md bg-muted/20">
                                         <div className="grid gap-2">
                                             <Label htmlFor="purchaseSupplier">Fournisseur</Label>
@@ -322,7 +322,7 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                     </div>
                                 )}
 
-                                {formData.sourceType === 'Né dans le troupeau' && (
+                                {formData.sourceType === 'NE_DANS_TROUPEAU' && (
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border p-4 rounded-md bg-muted/20">
                                         <div className="grid gap-2">
                                             <Label htmlFor="motherId">ID de la mère</Label>

@@ -1,5 +1,5 @@
 import { User } from '@/features/cattle/types';
-import { API_CONFIG } from '@/config/api';
+import { API_CONFIG, API_ENDPOINTS } from '@/config/api';
 import { apiClient } from '@/utils/apiClient';
 import { AuthenticationError, ErrorMessages } from '@/utils/errors';
 
@@ -40,9 +40,8 @@ class AuthService {
       );
 
       if (result.access_token && result.user) {
-        localStorage.setItem('auth_token', result.access_token);
-        localStorage.setItem('user_data', JSON.stringify(result.user));
-
+        // Cookies HttpOnly are set by the backend via Set-Cookie header
+        // No localStorage storage - security improvement
         return {
           user: result.user,
           token: result.access_token,
@@ -52,7 +51,7 @@ class AuthService {
       }
 
       throw new AuthenticationError(ErrorMessages.LOGIN_ERROR);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error during login:', error);
       throw error;
     }
@@ -67,9 +66,8 @@ class AuthService {
       );
 
       if (result.access_token && result.user) {
-        localStorage.setItem('auth_token', result.access_token);
-        localStorage.setItem('user_data', JSON.stringify(result.user));
-
+        // Cookies HttpOnly are set by the backend via Set-Cookie header
+        // No localStorage storage - security improvement
         return {
           user: result.user,
           token: result.access_token,
@@ -79,7 +77,7 @@ class AuthService {
       }
 
       throw new AuthenticationError(ErrorMessages.LOGIN_ERROR);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error during Google login:', error);
       throw error;
     }
@@ -92,7 +90,7 @@ class AuthService {
         { code, provider: 'GOOGLE' }
       );
       return result;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error linking Google account:', error);
       throw error;
     }
@@ -101,7 +99,7 @@ class AuthService {
   async unlinkProvider(provider: string): Promise<void> {
     try {
       await apiClient.delete(`${this.endpoint}/providers/${provider}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error unlinking provider:', error);
       throw error;
     }
@@ -111,15 +109,24 @@ class AuthService {
     try {
       const result = await apiClient.get<ProviderInfo[]>(`${this.endpoint}/providers`);
       return result;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error getting user providers:', error);
       throw error;
     }
   }
 
   async logout(): Promise<void> {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('user_data');
+    try {
+      // Call server logout endpoint to clear HttpOnly cookie
+      await apiClient.post(API_ENDPOINTS.AUTH.LOGOUT);
+    } catch (error) {
+      console.error('Error during server logout:', error);
+      // Continue with client-side cleanup even if server call fails
+    } finally {
+      // Clean up any legacy localStorage data (migration cleanup)
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_data');
+    }
   }
 
   async refreshToken(): Promise<string | null> {
@@ -127,7 +134,8 @@ class AuthService {
       const result = await apiClient.post<{ token: string }>(`${this.endpoint}/refresh`);
 
       if (result.token) {
-        localStorage.setItem('auth_token', result.token);
+        // Backend sets new HttpOnly cookie via Set-Cookie header
+        // No localStorage storage
         return result.token;
       }
 
@@ -139,24 +147,22 @@ class AuthService {
   }
 
   getToken(): string | null {
-    return localStorage.getItem('auth_token');
+    // No longer using localStorage - tokens are in HttpOnly cookies
+    // This method is kept for backward compatibility but returns null
+    return null;
   }
 
   getUser(): User | null {
-    const userData = localStorage.getItem('user_data');
-    if (userData) {
-      try {
-        return JSON.parse(userData);
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-        return null;
-      }
-    }
+    // No longer using localStorage - user data fetched from API
+    // This method is kept for backward compatibility but returns null
     return null;
   }
 
   isAuthenticated(): boolean {
-    return this.getToken() !== null && this.getUser() !== null;
+    // No longer using localStorage - authentication checked via API
+    // This method is kept for backward compatibility but returns false
+    // Use API call /me or check session via AuthContext instead
+    return false;
   }
 }
 

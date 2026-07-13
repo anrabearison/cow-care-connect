@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { DataTable, Column } from "@/components/admin/DataTable";
 import { FormDialog } from "@/components/admin/FormDialog";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
@@ -12,10 +12,10 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import { isSuperAdmin } from "@/constants/roles";
 import { CattlePhotosInput, CattlePhotoInputValue } from "@/features/cattle/components/CattlePhotosInput";
+import { useDeleteCattle, useUpdateCattle } from "@/features/cattle/hooks";
 
 const CattleListPage = () => {
   const { user } = useAuth();
-  const queryClient = useQueryClient();
   const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -26,9 +26,12 @@ const CattleListPage = () => {
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [photos, setPhotos] = useState<CattlePhotoInputValue[]>([]);
 
+  const deleteCattleMutation = useDeleteCattle();
+  const updateCattleMutation = useUpdateCattle();
+
   // Fetch cattle list
   const { data: cattleData, isLoading } = useQuery({
-    queryKey: ["admin-cattle", page, search],
+    queryKey: queryKeys.cattle.list({ page, q: search }),
     queryFn: () =>
       cattleService.getCattleList({
         page,
@@ -37,55 +40,13 @@ const CattleListPage = () => {
       }),
   });
 
-  // Delete mutation
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => cattleService.deleteCattle(id),
-    onSuccess: () => {
-      toast({
-        title: "Succès",
-        description: "Bovin supprimé avec succès",
-      });
-      queryClient.invalidateQueries({ queryKey: ["admin-cattle"] });
-      setIsDeleteDialogOpen(false);
-      setSelectedCattle(null);
-    },
-    onError: () => {
-      toast({
-        title: "Erreur",
-        description: "Erreur lors de la suppression",
-        variant: "destructive",
-      });
-    },
-  });
-
   const handleDelete = () => {
     if (selectedCattle) {
-      deleteMutation.mutate(selectedCattle.id);
+      deleteCattleMutation.mutate(selectedCattle.id);
+      setIsDeleteDialogOpen(false);
+      setSelectedCattle(null);
     }
   };
-
-  const updatePhotosMutation = useMutation({
-    mutationFn: ({ id, photos }: { id: string; photos: CattlePhotoInputValue[] }) =>
-      cattleService.updateCattle(id, { photos }),
-    onSuccess: () => {
-      toast({
-        title: "Succès",
-        description: "Photos du bovin mises à jour",
-      });
-      queryClient.invalidateQueries({ queryKey: ["admin-cattle"] });
-      queryClient.invalidateQueries({ queryKey: ["cattle"] });
-      setIsEditDialogOpen(false);
-      setSelectedCattle(null);
-      setPhotos([]);
-    },
-    onError: () => {
-      toast({
-        title: "Erreur",
-        description: "Erreur lors de la mise à jour des photos",
-        variant: "destructive",
-      });
-    },
-  });
 
   const openPhotosDialog = (cattle: Cattle) => {
     setSelectedCattle(cattle);
@@ -107,7 +68,7 @@ const CattleListPage = () => {
 
   const handleUpdatePhotos = () => {
     if (!selectedCattle) return;
-    updatePhotosMutation.mutate({ id: selectedCattle.id, photos });
+    updateCattleMutation.mutate({ id: selectedCattle.id, data: { photos } });
   };
 
   const columns: Column<Cattle>[] = [
@@ -275,12 +236,12 @@ const CattleListPage = () => {
         submitText="Enregistrer"
         cancelText="Annuler"
         onSubmit={handleUpdatePhotos}
-        loading={updatePhotosMutation.isPending}
+        loading={updateCattleMutation.isPending}
       >
         <CattlePhotosInput
           value={photos}
           onChange={setPhotos}
-          disabled={updatePhotosMutation.isPending}
+          disabled={updateCattleMutation.isPending}
         />
       </FormDialog>
 
@@ -294,7 +255,7 @@ const CattleListPage = () => {
         confirmText="Supprimer"
         cancelText="Annuler"
         variant="destructive"
-        loading={deleteMutation.isPending}
+        loading={deleteCattleMutation.isPending}
       />
     </div>
   );

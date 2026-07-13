@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { DataTable, Column } from "@/components/admin/DataTable";
 import { FormDialog } from "@/components/admin/FormDialog";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
@@ -11,9 +11,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/components/ui/use-toast";
 import { referenceService } from "@/features/common/services/referenceService";
 import { CattlePhotosInput, CattlePhotoInputValue } from "@/features/cattle/components/CattlePhotosInput";
+import { useCreateHerdBookCattle, useUpdateHerdBookCattle, useDeleteHerdBookCattle } from "../hooks/herdBookCattleHooks";
 
 const HerdBookCattleListPage = () => {
-  const queryClient = useQueryClient();
   const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -23,6 +23,10 @@ const HerdBookCattleListPage = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  
+  const createHerdBookCattleMutation = useCreateHerdBookCattle();
+  const updateHerdBookCattleMutation = useUpdateHerdBookCattle();
+  const deleteHerdBookCattleMutation = useDeleteHerdBookCattle();
   
   // New state for reference data
   const [herdBooks, setHerdBooks] = useState<{ id: string; reference?: string; name?: string; year?: number }[]>([]);
@@ -54,7 +58,7 @@ const HerdBookCattleListPage = () => {
   });
 
   const { data: data, isLoading } = useQuery({
-    queryKey: ["admin-herd-book-cattle", page, search],
+    queryKey: queryKeys.herdBookCattle.list({ page, q: search }),
     queryFn: () =>
       herdBookCattleService.getHerdBookCattleList({
         page,
@@ -71,7 +75,7 @@ const HerdBookCattleListPage = () => {
         const hbResponse = await referenceService.getHerdBooks();
         if (hbResponse.success) {
           const sorted = (hbResponse.data || [])
-            .map((item: any) => ({
+            .map((item: { id: string; reference?: string; name?: string; year?: number }) => ({
               id: item.id,
               reference: item.reference || item.name || '',
               name: item.name || item.reference || '',
@@ -115,7 +119,7 @@ const HerdBookCattleListPage = () => {
         });
 
         if (response.success && response.data) {
-          const options = (response.data as any[]).map(c => ({
+          const options = (response.data as Array<{ id: string; name: string }>).map(c => ({
             id: c.id,
             name: c.name || 'Bovin sans nom',
           }));
@@ -135,46 +139,6 @@ const HerdBookCattleListPage = () => {
       loadUnregisteredCattle();
     }
   }, [formData.herdBookId, isCreateDialogOpen, isEditDialogOpen]);
-
-  const createMutation = useMutation({
-    mutationFn: (data: CreateHerdBookCattleData) => herdBookCattleService.createHerdBookCattle(data),
-    onSuccess: () => {
-      toast({ title: "Succès", description: "Inscription créée avec succès" });
-      queryClient.invalidateQueries({ queryKey: ["admin-herd-book-cattle"] });
-      setIsCreateDialogOpen(false);
-      setFormData({ herdBookId: "", cattleId: "", nCarnet: "", categoryId: "", statusId: "" });
-    },
-    onError: () => {
-      toast({ title: "Erreur", description: "Erreur lors de la création", variant: "destructive" });
-    },
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateHerdBookCattleData }) =>
-      herdBookCattleService.updateHerdBookCattle(id, data),
-    onSuccess: () => {
-      toast({ title: "Succès", description: "Inscription mise à jour avec succès" });
-      queryClient.invalidateQueries({ queryKey: ["admin-herd-book-cattle"] });
-      setIsEditDialogOpen(false);
-      setSelectedItem(null);
-    },
-    onError: () => {
-      toast({ title: "Erreur", description: "Erreur lors de la mise à jour", variant: "destructive" });
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => herdBookCattleService.deleteHerdBookCattle(id),
-    onSuccess: () => {
-      toast({ title: "Succès", description: "Inscription supprimée avec succès" });
-      queryClient.invalidateQueries({ queryKey: ["admin-herd-book-cattle"] });
-      setIsDeleteDialogOpen(false);
-      setSelectedItem(null);
-    },
-    onError: () => {
-      toast({ title: "Erreur", description: "Erreur lors de la suppression", variant: "destructive" });
-    },
-  });
 
   const handleCreate = () => {
     // Validation
@@ -223,13 +187,24 @@ const HerdBookCattleListPage = () => {
       }
     }
 
-    console.log('Submitting:', submitData);
-    createMutation.mutate(submitData);
+    createHerdBookCattleMutation.mutate(submitData);
+    setIsCreateDialogOpen(false);
+    setFormData({ herdBookId: "", cattleId: "", nCarnet: "", categoryId: "", statusId: "" });
   };
 
   const handleUpdate = () => {
     if (selectedItem) {
-      updateMutation.mutate({ id: selectedItem.id, data: formData });
+      updateHerdBookCattleMutation.mutate({ id: selectedItem.id, data: formData });
+      setIsEditDialogOpen(false);
+      setSelectedItem(null);
+    }
+  };
+
+  const handleDelete = () => {
+    if (selectedItem) {
+      deleteHerdBookCattleMutation.mutate(selectedItem.id);
+      setIsDeleteDialogOpen(false);
+      setSelectedItem(null);
     }
   };
 
@@ -273,7 +248,7 @@ const HerdBookCattleListPage = () => {
     { key: "herdBook", header: "Livre de troupeau", render: (item) => {
       if (!item.herdBook) return "-";
       if (typeof item.herdBook === 'string') return item.herdBook;
-      const hb = item.herdBook as any;
+      const hb = item.herdBook as { name?: string; reference?: string; year?: number };
       const name = hb.name || hb.reference || '-';
       const year = hb.year ? ` (${hb.year})` : '';
       return `${name}${year}`;
@@ -329,7 +304,7 @@ const HerdBookCattleListPage = () => {
               <div><Label>Livre de troupeau</Label><p className="text-sm font-medium">{(() => {
                 if (!selectedItem.herdBook) return "-";
                 if (typeof selectedItem.herdBook === 'string') return selectedItem.herdBook;
-                const hb = selectedItem.herdBook as any;
+                const hb = selectedItem.herdBook as { name?: string; reference?: string; year?: number };
                 const name = hb.name || hb.reference || '-';
                 const year = hb.year ? ` (${hb.year})` : '';
                 return `${name}${year}`;
@@ -358,7 +333,7 @@ const HerdBookCattleListPage = () => {
         )}
       </FormDialog>
 
-      <FormDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} title="Créer une inscription bovine" submitText="Créer" cancelText="Annuler" onSubmit={handleCreate} loading={createMutation.isPending}>
+      <FormDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} title="Créer une inscription bovine" submitText="Créer" cancelText="Annuler" onSubmit={handleCreate} loading={createHerdBookCattleMutation.isPending}>
         <div className="space-y-6">
           {/* Herd Book Selection */}
           <div>
@@ -476,7 +451,7 @@ const HerdBookCattleListPage = () => {
               <CattlePhotosInput
                 value={newCattlePhotos}
                 onChange={setNewCattlePhotos}
-                disabled={createMutation.isPending}
+                disabled={createHerdBookCattleMutation.isPending}
               />
             </div>
           )}
@@ -528,7 +503,7 @@ const HerdBookCattleListPage = () => {
         </div>
       </FormDialog>
 
-      <FormDialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} title="Modifier l'inscription" submitText="Enregistrer" cancelText="Annuler" onSubmit={handleUpdate} loading={updateMutation.isPending}>
+      <FormDialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} title="Modifier l'inscription" submitText="Enregistrer" cancelText="Annuler" onSubmit={handleUpdate} loading={updateHerdBookCattleMutation.isPending}>
         <div className="space-y-4">
           <div>
             <Label htmlFor="editHerdBook">Livre de troupeau *</Label>
@@ -602,7 +577,7 @@ const HerdBookCattleListPage = () => {
         </div>
       </FormDialog>
 
-      <ConfirmDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} title="Supprimer l'inscription" description={`Êtes-vous sûr de vouloir supprimer cette inscription ?`} onConfirm={() => deleteMutation.mutate(selectedItem!.id)} confirmText="Supprimer" cancelText="Annuler" variant="destructive" loading={deleteMutation.isPending} />
+      <ConfirmDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} title="Supprimer l'inscription" description={`Êtes-vous sûr de vouloir supprimer cette inscription ?`} onConfirm={() => deleteHerdBookCattleMutation.mutate(selectedItem!.id)} confirmText="Supprimer" cancelText="Annuler" variant="destructive" loading={deleteHerdBookCattleMutation.isPending} />
     </div>
   );
 };

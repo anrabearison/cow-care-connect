@@ -54,7 +54,7 @@ class EventsService {
         total: result.total,
         success: true,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching events list:', error);
       throw error;
     }
@@ -68,7 +68,7 @@ class EventsService {
         data: result,
         success: true,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching event:', error);
       throw error;
     }
@@ -83,7 +83,7 @@ class EventsService {
         success: true,
         message: 'Événement créé avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating event:', error);
       throw error;
     }
@@ -98,7 +98,7 @@ class EventsService {
         success: true,
         message: 'Événement mis à jour avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating event:', error);
       throw error;
     }
@@ -113,7 +113,7 @@ class EventsService {
         success: true,
         message: 'Événement supprimé avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error deleting event:', error);
       throw error;
     }

@@ -47,7 +47,7 @@ class VeterinariansService {
         total: result.total,
         success: true,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching veterinarians list:', error);
       throw error;
     }
@@ -61,7 +61,7 @@ class VeterinariansService {
         data: result,
         success: true,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching veterinarian:', error);
       throw error;
     }
@@ -76,7 +76,7 @@ class VeterinariansService {
         success: true,
         message: 'Vétérinaire créé avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating veterinarian:', error);
       throw error;
     }
@@ -91,7 +91,7 @@ class VeterinariansService {
         success: true,
         message: 'Vétérinaire mis à jour avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating veterinarian:', error);
       throw error;
     }
@@ -106,7 +106,7 @@ class VeterinariansService {
         success: true,
         message: 'Vétérinaire supprimé avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error deleting veterinarian:', error);
       throw error;
     }

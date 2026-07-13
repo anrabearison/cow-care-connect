@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { DataTable, Column } from "@/components/admin/DataTable";
 import { FormDialog } from "@/components/admin/FormDialog";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
@@ -9,9 +9,9 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import { Textarea } from "@/components/ui/textarea";
+import { useCreateStatus, useUpdateStatus, useDeleteStatus } from "../hooks/statusHooks";
 
 const StatusListPage = () => {
-  const queryClient = useQueryClient();
   const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -23,8 +23,12 @@ const StatusListPage = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [formData, setFormData] = useState<CreateStatusData>({ name: "", description: "" });
 
+  const createStatusMutation = useCreateStatus();
+  const updateStatusMutation = useUpdateStatus();
+  const deleteStatusMutation = useDeleteStatus();
+
   const { data: data, isLoading } = useQuery({
-    queryKey: ["admin-status", page, search],
+    queryKey: queryKeys.status.list({ page, q: search }),
     queryFn: () =>
       statusService.getStatusList({
         page,
@@ -33,53 +37,25 @@ const StatusListPage = () => {
       }),
   });
 
-  const createMutation = useMutation({
-    mutationFn: (data: CreateStatusData) => statusService.createStatus(data),
-    onSuccess: () => {
-      toast({ title: "Succès", description: "Statut créé avec succès" });
-      queryClient.invalidateQueries({ queryKey: ["admin-status"] });
-      setIsCreateDialogOpen(false);
-      setFormData({ name: "", description: "" });
-    },
-    onError: () => {
-      toast({ title: "Erreur", description: "Erreur lors de la création", variant: "destructive" });
-    },
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateStatusData }) =>
-      statusService.updateStatus(id, data),
-    onSuccess: () => {
-      toast({ title: "Succès", description: "Statut mis à jour avec succès" });
-      queryClient.invalidateQueries({ queryKey: ["admin-status"] });
-      setIsEditDialogOpen(false);
-      setSelectedItem(null);
-    },
-    onError: () => {
-      toast({ title: "Erreur", description: "Erreur lors de la mise à jour", variant: "destructive" });
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => statusService.deleteStatus(id),
-    onSuccess: () => {
-      toast({ title: "Succès", description: "Statut supprimé avec succès" });
-      queryClient.invalidateQueries({ queryKey: ["admin-status"] });
-      setIsDeleteDialogOpen(false);
-      setSelectedItem(null);
-    },
-    onError: () => {
-      toast({ title: "Erreur", description: "Erreur lors de la suppression", variant: "destructive" });
-    },
-  });
-
   const handleCreate = () => {
-    createMutation.mutate(formData);
+    createStatusMutation.mutate(formData);
+    setIsCreateDialogOpen(false);
+    setFormData({ name: "", description: "" });
   };
 
   const handleUpdate = () => {
     if (selectedItem) {
-      updateMutation.mutate({ id: selectedItem.id, data: formData });
+      updateStatusMutation.mutate({ id: selectedItem.id, data: formData });
+      setIsEditDialogOpen(false);
+      setSelectedItem(null);
+    }
+  };
+
+  const handleDelete = () => {
+    if (selectedItem) {
+      deleteStatusMutation.mutate(selectedItem.id);
+      setIsDeleteDialogOpen(false);
+      setSelectedItem(null);
     }
   };
 
@@ -133,7 +109,7 @@ const StatusListPage = () => {
         )}
       </FormDialog>
 
-      <FormDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} title="Créer un statut" submitText="Créer" cancelText="Annuler" onSubmit={handleCreate} loading={createMutation.isPending}>
+      <FormDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} title="Créer un statut" submitText="Créer" cancelText="Annuler" onSubmit={handleCreate} loading={createStatusMutation.isPending}>
         <div className="space-y-4">
           <div>
             <Label>Nom *</Label>
@@ -146,7 +122,7 @@ const StatusListPage = () => {
         </div>
       </FormDialog>
 
-      <FormDialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} title="Modifier le statut" submitText="Enregistrer" cancelText="Annuler" onSubmit={handleUpdate} loading={updateMutation.isPending}>
+      <FormDialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} title="Modifier le statut" submitText="Enregistrer" cancelText="Annuler" onSubmit={handleUpdate} loading={updateStatusMutation.isPending}>
         <div className="space-y-4">
           <div>
             <Label>Nom *</Label>
@@ -159,7 +135,7 @@ const StatusListPage = () => {
         </div>
       </FormDialog>
 
-      <ConfirmDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} title="Supprimer le statut" description={`Êtes-vous sûr de vouloir supprimer "${selectedItem?.name}" ?`} onConfirm={() => deleteMutation.mutate(selectedItem!.id)} confirmText="Supprimer" cancelText="Annuler" variant="destructive" loading={deleteMutation.isPending} />
+      <ConfirmDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} title="Supprimer le statut" description={`Êtes-vous sûr de vouloir supprimer "${selectedItem?.name}" ?`} onConfirm={() => deleteStatusMutation.mutate(selectedItem!.id)} confirmText="Supprimer" cancelText="Annuler" variant="destructive" loading={deleteStatusMutation.isPending} />
     </div>
   );
 };

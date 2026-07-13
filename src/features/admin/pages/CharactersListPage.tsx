@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { DataTable, Column } from "@/components/admin/DataTable";
 import { FormDialog } from "@/components/admin/FormDialog";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
@@ -8,9 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Textarea } from "@/components/ui/textarea";
+import { useCreateCharacter, useUpdateCharacter, useDeleteCharacter } from "../hooks/charactersHooks";
 
 const CharactersListPage = () => {
-  const queryClient = useQueryClient();
   const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -22,8 +22,12 @@ const CharactersListPage = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [formData, setFormData] = useState<CreateCharacterData>({ name: "", description: "" });
 
+  const createCharacterMutation = useCreateCharacter();
+  const updateCharacterMutation = useUpdateCharacter();
+  const deleteCharacterMutation = useDeleteCharacter();
+
   const { data: data, isLoading } = useQuery({
-    queryKey: ["admin-characters", page, search],
+    queryKey: queryKeys.characters.list({ page, q: search }),
     queryFn: () =>
       charactersService.getCharactersList({
         page,
@@ -32,53 +36,25 @@ const CharactersListPage = () => {
       }),
   });
 
-  const createMutation = useMutation({
-    mutationFn: (data: CreateCharacterData) => charactersService.createCharacter(data),
-    onSuccess: () => {
-      toast({ title: "Succès", description: "Caractère créé avec succès" });
-      queryClient.invalidateQueries({ queryKey: ["admin-characters"] });
-      setIsCreateDialogOpen(false);
-      setFormData({ name: "", description: "" });
-    },
-    onError: () => {
-      toast({ title: "Erreur", description: "Erreur lors de la création", variant: "destructive" });
-    },
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateCharacterData }) =>
-      charactersService.updateCharacter(id, data),
-    onSuccess: () => {
-      toast({ title: "Succès", description: "Caractère mis à jour avec succès" });
-      queryClient.invalidateQueries({ queryKey: ["admin-characters"] });
-      setIsEditDialogOpen(false);
-      setSelectedItem(null);
-    },
-    onError: () => {
-      toast({ title: "Erreur", description: "Erreur lors de la mise à jour", variant: "destructive" });
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => charactersService.deleteCharacter(id),
-    onSuccess: () => {
-      toast({ title: "Succès", description: "Caractère supprimé avec succès" });
-      queryClient.invalidateQueries({ queryKey: ["admin-characters"] });
-      setIsDeleteDialogOpen(false);
-      setSelectedItem(null);
-    },
-    onError: () => {
-      toast({ title: "Erreur", description: "Erreur lors de la suppression", variant: "destructive" });
-    },
-  });
-
   const handleCreate = () => {
-    createMutation.mutate(formData);
+    createCharacterMutation.mutate(formData);
+    setIsCreateDialogOpen(false);
+    setFormData({ name: "", description: "" });
   };
 
   const handleUpdate = () => {
     if (selectedItem) {
-      updateMutation.mutate({ id: selectedItem.id, data: formData });
+      updateCharacterMutation.mutate({ id: selectedItem.id, data: formData });
+      setIsEditDialogOpen(false);
+      setSelectedItem(null);
+    }
+  };
+
+  const handleDelete = () => {
+    if (selectedItem) {
+      deleteCharacterMutation.mutate(selectedItem.id);
+      setIsDeleteDialogOpen(false);
+      setSelectedItem(null);
     }
   };
 
@@ -132,7 +108,7 @@ const CharactersListPage = () => {
         )}
       </FormDialog>
 
-      <FormDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} title="Créer un caractère" submitText="Créer" cancelText="Annuler" onSubmit={handleCreate} loading={createMutation.isPending}>
+      <FormDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} title="Créer un caractère" submitText="Créer" cancelText="Annuler" onSubmit={handleCreate} loading={createCharacterMutation.isPending}>
         <div className="space-y-4">
           <div>
             <Label>Nom *</Label>
@@ -145,7 +121,7 @@ const CharactersListPage = () => {
         </div>
       </FormDialog>
 
-      <FormDialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} title="Modifier le caractère" submitText="Enregistrer" cancelText="Annuler" onSubmit={handleUpdate} loading={updateMutation.isPending}>
+      <FormDialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} title="Modifier le caractère" submitText="Enregistrer" cancelText="Annuler" onSubmit={handleUpdate} loading={updateCharacterMutation.isPending}>
         <div className="space-y-4">
           <div>
             <Label>Nom *</Label>
@@ -158,7 +134,7 @@ const CharactersListPage = () => {
         </div>
       </FormDialog>
 
-      <ConfirmDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} title="Supprimer le caractère" description={`Êtes-vous sûr de vouloir supprimer "${selectedItem?.name}" ?`} onConfirm={() => deleteMutation.mutate(selectedItem!.id)} confirmText="Supprimer" cancelText="Annuler" variant="destructive" loading={deleteMutation.isPending} />
+      <ConfirmDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} title="Supprimer le caractère" description={`Êtes-vous sûr de vouloir supprimer "${selectedItem?.name}" ?`} onConfirm={() => deleteCharacterMutation.mutate(selectedItem!.id)} confirmText="Supprimer" cancelText="Annuler" variant="destructive" loading={deleteCharacterMutation.isPending} />
     </div>
   );
 };

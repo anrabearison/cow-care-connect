@@ -1,13 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { herdBookService } from './services';
 import { useToast } from '@/hooks/use-toast';
+import { queryKeys } from '@/lib/queryKeys';
 
 /**
  * Hook to fetch herd books with optional filters
  */
 export const useHerdBooks = (ownerId?: string) => {
     return useQuery({
-        queryKey: ['herdBooks', ownerId],
+        queryKey: queryKeys.herdBooks.byOwner(ownerId),
         queryFn: async () => {
             const response = await herdBookService.getHerdBooksByOwner(ownerId);
             return response;
@@ -22,7 +23,7 @@ export const useHerdBooks = (ownerId?: string) => {
  */
 export const useHerdBookById = (id: string) => {
     return useQuery({
-        queryKey: ['herdBook', id],
+        queryKey: queryKeys.herdBooks.details(id),
         queryFn: () => herdBookService.getHerdBookById(id),
         enabled: !!id,
     });
@@ -33,7 +34,7 @@ export const useHerdBookById = (id: string) => {
  */
 export const useHerdBookCattle = (herdBookId: string, page = 1, perPage = 10) => {
     return useQuery({
-        queryKey: ['herdBookCattle', herdBookId, page, perPage],
+        queryKey: queryKeys.herdBooks.cattle(herdBookId),
         queryFn: () => herdBookService.getCattleInHerdBook(herdBookId, page, perPage),
         enabled: !!herdBookId,
     });
@@ -44,7 +45,7 @@ export const useHerdBookCattle = (herdBookId: string, page = 1, perPage = 10) =>
  */
 export const useCattleHistory = (cattleId: string) => {
     return useQuery({
-        queryKey: ['cattleHistory', cattleId],
+        queryKey: queryKeys.cattleHistory.byCattleId(cattleId),
         queryFn: async () => {
             const response = await herdBookService.getCattleHistory(cattleId);
             return response.data;
@@ -68,17 +69,18 @@ export const useCreateHerdBook = () => {
             description?: string;
         }) => herdBookService.createHerdBook(data),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['herdBooks'] });
+            queryClient.invalidateQueries({ queryKey: queryKeys.herdBooks.all });
             toast({
                 title: "Succès",
                 description: "Le livre de troupeau a été créé avec succès",
             });
         },
-        onError: (error: any) => {
+        onError: (error: unknown) => {
+            const errorMessage = error instanceof Error ? error.message : "Erreur lors de la création du livre de troupeau";
             toast({
                 variant: "destructive",
                 title: "Erreur",
-                description: error.message || "Erreur lors de la création du livre de troupeau",
+                description: errorMessage,
             });
         },
     });
@@ -102,18 +104,19 @@ export const useRegisterCattle = () => {
             };
         }) => herdBookService.registerCattle(herdBookId, data),
         onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({ queryKey: ['herdBookCattle', variables.herdBookId] });
-            queryClient.invalidateQueries({ queryKey: ['cattle'] });
+            queryClient.invalidateQueries({ queryKey: queryKeys.herdBooks.cattle(variables.herdBookId) });
+            queryClient.invalidateQueries({ queryKey: queryKeys.cattle.all });
             toast({
                 title: "Succès",
                 description: "Le bœuf a été inscrit dans le livre de troupeau",
             });
         },
-        onError: (error: any) => {
+        onError: (error: unknown) => {
+            const errorMessage = error instanceof Error ? error.message : "Erreur lors de l'inscription";
             toast({
                 variant: "destructive",
                 title: "Erreur",
-                description: error.message || "Erreur lors de l'inscription",
+                description: errorMessage,
             });
         },
     });
@@ -136,18 +139,19 @@ export const useUpdateRegistration = () => {
             };
         }) => herdBookService.updateRegistration(registrationId, data),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['herdBookCattle'] });
-            queryClient.invalidateQueries({ queryKey: ['cattleHistory'] });
+            queryClient.invalidateQueries({ queryKey: queryKeys.herdBookCattle.all });
+            queryClient.invalidateQueries({ queryKey: queryKeys.cattleHistory.byCattleId('*') });
             toast({
                 title: "Succès",
                 description: "L'inscription a été mise à jour",
             });
         },
-        onError: (error: any) => {
+        onError: (error: unknown) => {
+            const errorMessage = error instanceof Error ? error.message : "Erreur lors de la mise à jour";
             toast({
                 variant: "destructive",
                 title: "Erreur",
-                description: error.message || "Erreur lors de la mise à jour",
+                description: errorMessage,
             });
         },
     });

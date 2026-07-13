@@ -2,12 +2,19 @@ import { API_ENDPOINTS } from '@/config/api';
 import { apiClient } from '@/utils/apiClient';
 import { Passport, CreatePassportDto } from '../types/passport.types';
 
+export interface PassportMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
 export const passportService = {
   async create(data: CreatePassportDto): Promise<Passport> {
     return await apiClient.post<Passport>(API_ENDPOINTS.PASSPORT.BASE, data);
   },
 
-  async findAll(herdBookId?: string, page: number = 1, limit: number = 10): Promise<{ data: Passport[], meta: any }> {
+  async findAll(herdBookId?: string, page: number = 1, limit: number = 10): Promise<{ data: Passport[], meta: PassportMeta }> {
     const params: Record<string, string> = {
       page: page.toString(),
       limit: limit.toString(),
@@ -15,7 +22,7 @@ export const passportService = {
     if (herdBookId) {
       params.herdBookId = herdBookId;
     }
-    return await apiClient.get<{ data: Passport[], meta: any }>(API_ENDPOINTS.PASSPORT.BASE, params);
+    return await apiClient.get<{ data: Passport[], meta: PassportMeta }>(API_ENDPOINTS.PASSPORT.BASE, params);
   },
 
   async findOne(id: string): Promise<Passport> {

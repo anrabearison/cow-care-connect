@@ -68,7 +68,7 @@ class MedicamentsService {
         total: result.total,
         success: true,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching medicaments list:', error);
       throw error;
     }
@@ -82,7 +82,7 @@ class MedicamentsService {
         data: result,
         success: true,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching medicament:', error);
       throw error;
     }
@@ -97,7 +97,7 @@ class MedicamentsService {
         success: true,
         message: 'Médicament créé avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating medicament:', error);
       throw error;
     }
@@ -112,7 +112,7 @@ class MedicamentsService {
         success: true,
         message: 'Médicament mis à jour avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating medicament:', error);
       throw error;
     }
@@ -127,7 +127,7 @@ class MedicamentsService {
         success: true,
         message: 'Médicament supprimé avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error deleting medicament:', error);
       throw error;
     }

@@ -68,7 +68,7 @@ class TreatmentsService {
         total: result.total,
         success: true,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching treatments list:', error);
       throw error;
     }
@@ -82,7 +82,7 @@ class TreatmentsService {
         data: result,
         success: true,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching treatment:', error);
       throw error;
     }
@@ -97,7 +97,7 @@ class TreatmentsService {
         success: true,
         message: 'Traitement créé avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating treatment:', error);
       throw error;
     }
@@ -112,7 +112,7 @@ class TreatmentsService {
         success: true,
         message: 'Traitement mis à jour avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating treatment:', error);
       throw error;
     }
@@ -127,7 +127,7 @@ class TreatmentsService {
         success: true,
         message: 'Traitement supprimé avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error deleting treatment:', error);
       throw error;
     }

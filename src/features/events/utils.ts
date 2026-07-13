@@ -34,6 +34,7 @@ const ICON_NAME_TO_EMOJI: Record<string, string> = {
 export const resolveIconEmoji = (icone: string | null | undefined, defaultEmoji = '📝'): string => {
   if (!icone) return defaultEmoji;
   // Si la chaîne contient au moins un caractère non-ASCII, c'est déjà un emoji
+  // eslint-disable-next-line no-control-regex
   if (/[^\x00-\x7F]/.test(icone)) return icone;
   return ICON_NAME_TO_EMOJI[icone.toLowerCase()] ?? defaultEmoji;
 };

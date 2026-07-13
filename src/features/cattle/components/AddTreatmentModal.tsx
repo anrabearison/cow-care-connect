@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,9 +24,9 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
         date: getTodayDate(),
         product: '',
         dosage: {
-            quantite: 0,
-            unite: 'ML',
-            animal_poids: 0,
+            quantity: 0,
+            unit: 'ml',
+            weight: 0,
             notes: ''
         },
         veterinarian: '',
@@ -39,8 +39,8 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
     const { data: medicamentsData, isLoading: medicamentsLoading } = useMedicaments();
     const { data: veterinariansData, isLoading: veterinariansLoading } = useVeterinarians();
 
-    const medicaments = medicamentsData?.data || [];
-    const veterinarians = veterinariansData?.data || [];
+    const medicaments = useMemo(() => medicamentsData?.data || [], [medicamentsData?.data]);
+    const veterinarians = useMemo(() => veterinariansData?.data || [], [veterinariansData?.data]);
     const loading = medicamentsLoading || veterinariansLoading;
 
 
@@ -51,10 +51,10 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
             setSelectedMedicament(med || null);
 
             // Set default unit if available
-            if (med?.dosage?.unite) {
+            if (med?.dosage?.unit) {
                 setFormData(prev => ({
                     ...prev,
-                    dosage: { ...prev.dosage, unite: med.dosage!.unite }
+                    dosage: { ...prev.dosage, unit: med.dosage!.unit }
                 }));
             }
         } else {
@@ -64,14 +64,14 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
 
     // Calculate dose when weight or medicament changes
     useEffect(() => {
-        if (selectedMedicament?.dosage?.poids && selectedMedicament.dosage.quantite && animalWeight > 0) {
-            const dose = (animalWeight / selectedMedicament.dosage.poids) * selectedMedicament.dosage.quantite;
+        if (selectedMedicament?.dosage?.weight && selectedMedicament.dosage.quantity && animalWeight > 0) {
+            const dose = (animalWeight / selectedMedicament.dosage.weight) * selectedMedicament.dosage.quantity;
             setFormData(prev => ({
                 ...prev,
                 dosage: {
                     ...prev.dosage,
-                    quantite: parseFloat(dose.toFixed(2)),
-                    animal_poids: animalWeight
+                    quantity: parseFloat(dose.toFixed(2)),
+                    weight: animalWeight
                 }
             }));
         }
@@ -83,7 +83,7 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
         if (!formData.type) newErrors.type = "Le type de traitement est obligatoire";
         if (!formData.date) newErrors.date = "La date est obligatoire";
         if (!formData.product) newErrors.product = "Le médicament est obligatoire";
-        if (!formData.dosage.quantite) newErrors.dosage = "La dose est obligatoire";
+        if (!formData.dosage.quantity) newErrors.dosage = "La dose est obligatoire";
         if (!formData.veterinarian) newErrors.veterinarian = "L'intervenant est obligatoire";
 
         setErrors(newErrors);
@@ -93,16 +93,15 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (validateForm()) {
-            // @ts-ignore - dosage structure matches the updated type but TS might complain due to union type
             onAdd(formData);
             setFormData({
                 type: '' as Treatment['type'],
                 date: getTodayDate(),
                 product: '',
                 dosage: {
-                    quantite: 0,
-                    unite: 'ml',
-                    animal_poids: 0,
+                    quantity: 0,
+                    unit: 'ml',
+                    weight: 0,
                     notes: ''
                 },
                 veterinarian: '',
@@ -169,7 +168,6 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                             <Select
                                 value={formData.product}
                                 onValueChange={(value) => {
-                                    console.log('Selected medicament ID:', value);
                                     setFormData({ ...formData, product: value });
                                     if (errors.product) setErrors({ ...errors, product: '' });
                                 }}
@@ -207,10 +205,10 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                         {selectedMedicament?.dosage && (
                             <div className="p-3 bg-blue-50 rounded-md text-sm">
                                 <p className="font-medium text-blue-900">
-                                    Dosage recommandé: {selectedMedicament.dosage.quantite}
-                                    {selectedMedicament.dosage.unite}
-                                    {selectedMedicament.dosage.poids &&
-                                        ` / ${selectedMedicament.dosage.poids}${selectedMedicament.dosage.unite_poids || 'kg'}`
+                                    Dosage recommandé: {selectedMedicament.dosage.quantity}
+                                    {selectedMedicament.dosage.unit}
+                                    {selectedMedicament.dosage.weight &&
+                                        ` / ${selectedMedicament.dosage.weight}${selectedMedicament.dosage.weightUnit || 'kg'}`
                                     }
                                 </p>
                                 {selectedMedicament.dosage.notes && (
@@ -226,11 +224,11 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                                     id="dosage-quantite"
                                     type="number"
                                     step="0.01"
-                                    value={formData.dosage.quantite || ''}
+                                    value={formData.dosage.quantity || ''}
                                     onChange={(e) => {
                                         setFormData({
                                             ...formData,
-                                            dosage: { ...formData.dosage, quantite: parseFloat(e.target.value) }
+                                            dosage: { ...formData.dosage, quantity: parseFloat(e.target.value) }
                                         });
                                         if (errors.dosage) setErrors({ ...errors, dosage: '' });
                                     }}
@@ -241,10 +239,10 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                             <div className="grid gap-2">
                                 <Label htmlFor="dosage-unite">Unité *</Label>
                                 <Select
-                                    value={formData.dosage.unite}
+                                    value={formData.dosage.unit}
                                     onValueChange={(value) => setFormData({
                                         ...formData,
-                                        dosage: { ...formData.dosage, unite: value }
+                                        dosage: { ...formData.dosage, unit: value }
                                     })}
                                 >
                                     <SelectTrigger id="dosage-unite">
@@ -265,7 +263,6 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                             <Select
                                 value={formData.veterinarian}
                                 onValueChange={(value) => {
-                                    console.log('Selected veterinarian ID:', value);
                                     setFormData({ ...formData, veterinarian: value });
                                     if (errors.veterinarian) setErrors({ ...errors, veterinarian: '' });
                                 }}

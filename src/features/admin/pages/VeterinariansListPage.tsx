@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { DataTable, Column } from "@/components/admin/DataTable";
 import { FormDialog } from "@/components/admin/FormDialog";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
@@ -8,9 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Textarea } from "@/components/ui/textarea";
+import { useCreateVeterinarian, useUpdateVeterinarian, useDeleteVeterinarian } from "../hooks/veterinariansHooks";
 
 const VeterinariansListPage = () => {
-  const queryClient = useQueryClient();
   const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -22,8 +22,12 @@ const VeterinariansListPage = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [formData, setFormData] = useState<CreateVeterinarianData>({ name: "", phone: "", email: "", address: "", specialty: "" });
 
+  const createVeterinarianMutation = useCreateVeterinarian();
+  const updateVeterinarianMutation = useUpdateVeterinarian();
+  const deleteVeterinarianMutation = useDeleteVeterinarian();
+
   const { data: data, isLoading } = useQuery({
-    queryKey: ["admin-veterinarians", page, search],
+    queryKey: queryKeys.veterinarians.list({ page, q: search }),
     queryFn: () =>
       veterinariansService.getVeterinariansList({
         page,
@@ -32,53 +36,25 @@ const VeterinariansListPage = () => {
       }),
   });
 
-  const createMutation = useMutation({
-    mutationFn: (data: CreateVeterinarianData) => veterinariansService.createVeterinarian(data),
-    onSuccess: () => {
-      toast({ title: "Succès", description: "Vétérinaire créé avec succès" });
-      queryClient.invalidateQueries({ queryKey: ["admin-veterinarians"] });
-      setIsCreateDialogOpen(false);
-      setFormData({ name: "", phone: "", email: "", address: "", specialty: "" });
-    },
-    onError: () => {
-      toast({ title: "Erreur", description: "Erreur lors de la création", variant: "destructive" });
-    },
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateVeterinarianData }) =>
-      veterinariansService.updateVeterinarian(id, data),
-    onSuccess: () => {
-      toast({ title: "Succès", description: "Vétérinaire mis à jour avec succès" });
-      queryClient.invalidateQueries({ queryKey: ["admin-veterinarians"] });
-      setIsEditDialogOpen(false);
-      setSelectedItem(null);
-    },
-    onError: () => {
-      toast({ title: "Erreur", description: "Erreur lors de la mise à jour", variant: "destructive" });
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => veterinariansService.deleteVeterinarian(id),
-    onSuccess: () => {
-      toast({ title: "Succès", description: "Vétérinaire supprimé avec succès" });
-      queryClient.invalidateQueries({ queryKey: ["admin-veterinarians"] });
-      setIsDeleteDialogOpen(false);
-      setSelectedItem(null);
-    },
-    onError: () => {
-      toast({ title: "Erreur", description: "Erreur lors de la suppression", variant: "destructive" });
-    },
-  });
-
   const handleCreate = () => {
-    createMutation.mutate(formData);
+    createVeterinarianMutation.mutate(formData);
+    setIsCreateDialogOpen(false);
+    setFormData({ name: "", phone: "", email: "", address: "", specialty: "" });
   };
 
   const handleUpdate = () => {
     if (selectedItem) {
-      updateMutation.mutate({ id: selectedItem.id, data: formData });
+      updateVeterinarianMutation.mutate({ id: selectedItem.id, data: formData });
+      setIsEditDialogOpen(false);
+      setSelectedItem(null);
+    }
+  };
+
+  const handleDelete = () => {
+    if (selectedItem) {
+      deleteVeterinarianMutation.mutate(selectedItem.id);
+      setIsDeleteDialogOpen(false);
+      setSelectedItem(null);
     }
   };
 
@@ -137,7 +113,7 @@ const VeterinariansListPage = () => {
         )}
       </FormDialog>
 
-      <FormDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} title="Créer un intervenant" submitText="Créer" cancelText="Annuler" onSubmit={handleCreate} loading={createMutation.isPending}>
+      <FormDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} title="Créer un intervenant" submitText="Créer" cancelText="Annuler" onSubmit={handleCreate} loading={createVeterinarianMutation.isPending}>
         <div className="space-y-4">
           <div>
             <Label>Nom *</Label>
@@ -162,7 +138,7 @@ const VeterinariansListPage = () => {
         </div>
       </FormDialog>
 
-      <FormDialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} title="Modifier l'intervenant" submitText="Enregistrer" cancelText="Annuler" onSubmit={handleUpdate} loading={updateMutation.isPending}>
+      <FormDialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} title="Modifier l'intervenant" submitText="Enregistrer" cancelText="Annuler" onSubmit={handleUpdate} loading={updateVeterinarianMutation.isPending}>
         <div className="space-y-4">
           <div>
             <Label>Nom *</Label>
@@ -187,7 +163,7 @@ const VeterinariansListPage = () => {
         </div>
       </FormDialog>
 
-      <ConfirmDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} title="Supprimer l'intervenant" description={`Êtes-vous sûr de vouloir supprimer "${selectedItem?.name}" ?`} onConfirm={() => deleteMutation.mutate(selectedItem!.id)} confirmText="Supprimer" cancelText="Annuler" variant="destructive" loading={deleteMutation.isPending} />
+      <ConfirmDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} title="Supprimer l'intervenant" description={`Êtes-vous sûr de vouloir supprimer "${selectedItem?.name}" ?`} onConfirm={() => deleteVeterinarianMutation.mutate(selectedItem!.id)} confirmText="Supprimer" cancelText="Annuler" variant="destructive" loading={deleteVeterinarianMutation.isPending} />
     </div>
   );
 };

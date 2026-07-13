@@ -1,16 +1,16 @@
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { DataTable, Column } from "@/components/admin/DataTable";
 import { FormDialog } from "@/components/admin/FormDialog";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
-import { treatmentsService, Treatment, CreateTreatmentData, UpdateTreatmentData, TreatmentDosageData } from "@/features/admin/services/treatmentsService";
+import { treatmentsService, Treatment, CreateTreatmentData, UpdateTreatmentData, TreatmentDosage } from "@/features/admin/services/treatmentsService";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Textarea } from "@/components/ui/textarea";
+import { useCreateTreatment, useUpdateTreatment, useDeleteTreatment } from "../hooks/treatmentsHooks";
 
 const TreatmentsListPage = () => {
-  const queryClient = useQueryClient();
   const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -30,14 +30,18 @@ const TreatmentsListPage = () => {
       unit: "",
       animalWeight: undefined,
       notes: ""
-    },
+    } as TreatmentDosage,
     administrationRoute: "",
     veterinarian: "",
     notes: ""
   });
 
+  const createTreatmentMutation = useCreateTreatment();
+  const updateTreatmentMutation = useUpdateTreatment();
+  const deleteTreatmentMutation = useDeleteTreatment();
+
   const { data: data, isLoading } = useQuery({
-    queryKey: ["admin-treatments", page, search],
+    queryKey: queryKeys.treatments.list({ page, q: search }),
     queryFn: () =>
       treatmentsService.getTreatmentsList({
         page,
@@ -46,67 +50,39 @@ const TreatmentsListPage = () => {
       }),
   });
 
-  const createMutation = useMutation({
-    mutationFn: (data: CreateTreatmentData) => treatmentsService.createTreatment(data),
-    onSuccess: () => {
-      toast({ title: "Succès", description: "Traitement créé avec succès" });
-      queryClient.invalidateQueries({ queryKey: ["admin-treatments"] });
-      setIsCreateDialogOpen(false);
-      setFormData({
-        cattleId: "",
-        type: "",
-        date: "",
-        product: "",
-        dosage: {
-          quantity: 0,
-          unit: "",
-          animalWeight: undefined,
-          notes: ""
-        },
-        administrationRoute: "",
-        veterinarian: "",
-        notes: ""
-      });
-    },
-    onError: () => {
-      toast({ title: "Erreur", description: "Erreur lors de la création", variant: "destructive" });
-    },
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateTreatmentData }) =>
-      treatmentsService.updateTreatment(id, data),
-    onSuccess: () => {
-      toast({ title: "Succès", description: "Traitement mis à jour avec succès" });
-      queryClient.invalidateQueries({ queryKey: ["admin-treatments"] });
-      setIsEditDialogOpen(false);
-      setSelectedItem(null);
-    },
-    onError: () => {
-      toast({ title: "Erreur", description: "Erreur lors de la mise à jour", variant: "destructive" });
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => treatmentsService.deleteTreatment(id),
-    onSuccess: () => {
-      toast({ title: "Succès", description: "Traitement supprimé avec succès" });
-      queryClient.invalidateQueries({ queryKey: ["admin-treatments"] });
-      setIsDeleteDialogOpen(false);
-      setSelectedItem(null);
-    },
-    onError: () => {
-      toast({ title: "Erreur", description: "Erreur lors de la suppression", variant: "destructive" });
-    },
-  });
-
   const handleCreate = () => {
-    createMutation.mutate(formData);
+    createTreatmentMutation.mutate(formData);
+    setIsCreateDialogOpen(false);
+    setFormData({
+      cattleId: "",
+      type: "",
+      date: "",
+      product: "",
+      dosage: {
+        quantity: 0,
+        unit: "",
+        animalWeight: undefined,
+        notes: ""
+      },
+      administrationRoute: "",
+      veterinarian: "",
+      notes: ""
+    });
   };
 
   const handleUpdate = () => {
     if (selectedItem) {
-      updateMutation.mutate({ id: selectedItem.id, data: formData });
+      updateTreatmentMutation.mutate({ id: selectedItem.id, data: formData });
+      setIsEditDialogOpen(false);
+      setSelectedItem(null);
+    }
+  };
+
+  const handleDelete = () => {
+    if (selectedItem) {
+      deleteTreatmentMutation.mutate(selectedItem.id);
+      setIsDeleteDialogOpen(false);
+      setSelectedItem(null);
     }
   };
 
@@ -150,7 +126,7 @@ const TreatmentsListPage = () => {
     setIsCreateDialogOpen(true);
   };
 
-  const formatDosage = (dosage?: TreatmentDosageData) => {
+  const formatDosage = (dosage?: TreatmentDosage) => {
     if (!dosage?.quantity || !dosage.unit) return "-";
     return `${dosage.quantity} ${dosage.unit}`;
   };
@@ -224,7 +200,7 @@ const TreatmentsListPage = () => {
         )}
       </FormDialog>
 
-      <FormDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} title="Créer un traitement" submitText="Créer" cancelText="Annuler" onSubmit={handleCreate} loading={createMutation.isPending}>
+      <FormDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} title="Créer un traitement" submitText="Créer" cancelText="Annuler" onSubmit={handleCreate} loading={createTreatmentMutation.isPending}>
         <div className="space-y-4">
           <div>
             <Label>ID Bovin *</Label>
@@ -273,7 +249,7 @@ const TreatmentsListPage = () => {
         </div>
       </FormDialog>
 
-      <FormDialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} title="Modifier le traitement" submitText="Enregistrer" cancelText="Annuler" onSubmit={handleUpdate} loading={updateMutation.isPending}>
+      <FormDialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} title="Modifier le traitement" submitText="Enregistrer" cancelText="Annuler" onSubmit={handleUpdate} loading={updateTreatmentMutation.isPending}>
         <div className="space-y-4">
           <div>
             <Label>ID Bovin *</Label>
@@ -322,7 +298,7 @@ const TreatmentsListPage = () => {
         </div>
       </FormDialog>
 
-      <ConfirmDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} title="Supprimer le traitement" description={`Êtes-vous sûr de vouloir supprimer ce traitement ?`} onConfirm={() => deleteMutation.mutate(selectedItem!.id)} confirmText="Supprimer" cancelText="Annuler" variant="destructive" loading={deleteMutation.isPending} />
+      <ConfirmDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} title="Supprimer le traitement" description={`Êtes-vous sûr de vouloir supprimer ce traitement ?`} onConfirm={() => deleteTreatmentMutation.mutate(selectedItem!.id)} confirmText="Supprimer" cancelText="Annuler" variant="destructive" loading={deleteTreatmentMutation.isPending} />
     </div>
   );
 };

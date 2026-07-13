@@ -36,9 +36,9 @@ export default function InvitationPage() {
         const data = await apiClient.get<InvitationData>(`${API_ENDPOINTS.INVITATIONS.BASE}/validate/${token}`, undefined, { skipAuth: true });
         setInvitation(data);
         setLoading(false);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Invitation validation error:', err);
-        const message = err instanceof Error ? err.message : err?.response?.data?.message || 'Invitation invalide ou expirée';
+        const message = err instanceof Error ? err.message : (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Invitation invalide ou expirée';
         setError(message);
         setLoading(false);
       }
@@ -49,14 +49,16 @@ export default function InvitationPage() {
 
   const handleGoogleLogin = () => {
     if (!token) return;
-    
+
     const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
     const redirectUri = APP_URLS.GOOGLE_CALLBACK;
     const scope = 'email profile';
     const state = token;
-    
+
     const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}&response_type=code&state=${state}`;
-    
+
+    // Note: window.location est utilisé ici car c'est une redirection vers un domaine externe (Google OAuth)
+    // React Router ne peut pas naviguer vers des URLs externes
     window.location.href = googleAuthUrl;
   };
 

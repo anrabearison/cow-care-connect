@@ -39,7 +39,7 @@ class StatusService {
         total: result.total,
         success: true,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching status list:', error);
       throw error;
     }
@@ -53,7 +53,7 @@ class StatusService {
         data: result,
         success: true,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching status:', error);
       throw error;
     }
@@ -68,7 +68,7 @@ class StatusService {
         success: true,
         message: 'Statut créé avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating status:', error);
       throw error;
     }
@@ -83,7 +83,7 @@ class StatusService {
         success: true,
         message: 'Statut mis à jour avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating status:', error);
       throw error;
     }
@@ -98,7 +98,7 @@ class StatusService {
         success: true,
         message: 'Statut supprimé avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error deleting status:', error);
       throw error;
     }

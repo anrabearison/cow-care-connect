@@ -16,6 +16,7 @@ export interface CattleFilters {
   page?: number;
   per_page?: number;
   perPage?: number;
+  [key: string]: string | number | undefined;
 }
 
 class CattleService {
@@ -24,12 +25,15 @@ class CattleService {
   /**
    * Transform cattle data before sending to API
    */
-  private transformCattleData(data: any): any {
+  private transformCattleData(data: Record<string, unknown>): Record<string, unknown> {
     const transformed = { ...data };
 
     // Transform objects {id, name} to simple ID
-    if (transformed.character && typeof transformed.character === 'object') {
-      transformed.character = transformed.character.id;
+    if (transformed.character && typeof transformed.character === 'object' && transformed.character !== null) {
+      const charObj = transformed.character as { id?: string };
+      if (charObj.id) {
+        transformed.character = charObj.id;
+      }
     }
 
     // Remove status from payload as it is not accepted by backend on create/update
@@ -62,7 +66,7 @@ class CattleService {
         total: result.total,
         success: true,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching cattle list:', error);
       throw error;
     }
@@ -76,7 +80,7 @@ class CattleService {
         data: result,
         success: true,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching cattle:', error);
       throw error;
     }
@@ -106,7 +110,7 @@ class CattleService {
         success: true,
         message: 'Bovin créé avec succès et inscrit dans le livre de troupeau',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating cattle:', error);
       throw error;
     }
@@ -122,7 +126,7 @@ class CattleService {
         success: true,
         message: 'Bovin mis à jour avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating cattle:', error);
       throw error;
     }
@@ -137,7 +141,7 @@ class CattleService {
         success: true,
         message: 'Bovin supprimé avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error deleting cattle:', error);
       throw error;
     }
@@ -159,7 +163,7 @@ class CattleService {
         success: true,
         message: 'Naissance enregistrée avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error registering birth:', error);
       throw error;
     }
@@ -177,7 +181,7 @@ class CattleService {
         success: true,
         message: 'Événement créé avec succès'
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating event:', error);
       throw error;
     }
@@ -195,7 +199,7 @@ class CattleService {
         success: true,
         message: 'Traitement créé avec succès'
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating treatment:', error);
       throw error;
     }
@@ -209,7 +213,7 @@ class CattleService {
         data: result,
         success: true,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching characters:', error);
       throw error;
     }

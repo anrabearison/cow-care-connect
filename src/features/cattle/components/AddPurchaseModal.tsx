@@ -76,6 +76,7 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
         if (open) {
             fetchReferenceData();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open, toast]);
 
 

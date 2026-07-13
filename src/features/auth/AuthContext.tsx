@@ -27,22 +27,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 
   useEffect(() => {
-    // Check for stored token on app load
-    const token = localStorage.getItem('auth_token');
-    const userData = localStorage.getItem('user_data');
-
-    if (token && userData) {
+    // Check session via API call using HttpOnly cookies
+    const checkSession = async () => {
       try {
-        const parsedUser = JSON.parse(userData);
-        setUser(parsedUser);
+        const { apiClient } = await import('@/utils/apiClient');
+        const { API_ENDPOINTS } = await import('@/config/api');
+        
+        // Call /me endpoint to verify session via cookies
+        const userData = await apiClient.get<User>(API_ENDPOINTS.AUTH.ME);
+        setUser(userData);
       } catch (error) {
-        console.error('Failed to parse user data:', error);
-        toast.error('Session invalide, veuillez vous reconnecter');
+        // Session not valid or expired - user is not logged in
+        // Clean up any legacy localStorage data
         localStorage.removeItem('auth_token');
         localStorage.removeItem('user_data');
+      } finally {
+        setIsLoading(false);
       }
-    }
-    setIsLoading(false);
+    };
+
+    checkSession();
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
@@ -99,7 +103,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Logout error:', error);
       toast.error('Erreur lors de la déconnexion');
     } finally {
-      // Toujours nettoyer localement
+      // Clean up legacy localStorage data (migration cleanup)
       localStorage.removeItem('auth_token');
       localStorage.removeItem('user_data');
       clearOwnerSelection();

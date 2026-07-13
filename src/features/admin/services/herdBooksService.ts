@@ -46,7 +46,7 @@ class HerdBooksService {
         total: result.total,
         success: true,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching herd books list:', error);
       throw error;
     }
@@ -60,7 +60,7 @@ class HerdBooksService {
         data: result,
         success: true,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching herd book:', error);
       throw error;
     }
@@ -75,7 +75,7 @@ class HerdBooksService {
         success: true,
         message: 'Livre de troupeau créé avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating herd book:', error);
       throw error;
     }
@@ -90,7 +90,7 @@ class HerdBooksService {
         success: true,
         message: 'Livre de troupeau mis à jour avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating herd book:', error);
       throw error;
     }
@@ -105,7 +105,7 @@ class HerdBooksService {
         success: true,
         message: 'Livre de troupeau supprimé avec succès',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error deleting herd book:', error);
       throw error;
     }

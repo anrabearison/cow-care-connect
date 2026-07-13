@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Cattle } from './types';
 import { cattleService, CattleFilters } from './services';
 import { useToast } from '@/hooks/use-toast';
+import { queryKeys } from '@/lib/queryKeys';
 
 /**
  * Hook to fetch list of cattle with filters
@@ -18,7 +19,7 @@ export const useCattle = (herdBookId: string, filters?: Omit<CattleFilters, 'her
   };
 
   const query = useQuery({
-    queryKey: ['cattle', herdBookId, filters],
+    queryKey: queryKeys.cattle.list(allFilters as Record<string, unknown>),
     queryFn: async () => {
       if (!herdBookId) {
         throw new Error('HerdBook ID requis');
@@ -61,7 +62,7 @@ export const useCattleById = (id: string) => {
   const { toast } = useToast();
 
   const query = useQuery({
-    queryKey: ['cattle', id],
+    queryKey: queryKeys.cattle.details(id),
     queryFn: async () => {
       if (!id) {
         throw new Error('ID invalide');
@@ -106,17 +107,18 @@ export const useCreateCattle = () => {
     }) =>
       cattleService.createCattle(cattle, herdBookId, nCarnet),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cattle'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.cattle.all });
       toast({
         title: "Succès",
         description: "L'animal a été ajouté avec succès et inscrit dans le livre de troupeau",
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
+      const errorMessage = error instanceof Error ? error.message : "Erreur lors de l'ajout de l'animal";
       toast({
         variant: "destructive",
         title: "Erreur",
-        description: error.message || "Erreur lors de l'ajout de l'animal",
+        description: errorMessage,
       });
     },
   });
@@ -133,18 +135,19 @@ export const useUpdateCattle = () => {
     mutationFn: ({ id, data }: { id: string; data: Partial<Cattle> }) =>
       cattleService.updateCattle(id, data),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['cattle'] });
-      queryClient.invalidateQueries({ queryKey: ['cattle', variables.id] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.cattle.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.cattle.details(variables.id) });
       toast({
         title: "Succès",
         description: "L'animal a été mis à jour avec succès",
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
+      const errorMessage = error instanceof Error ? error.message : "Erreur lors de la mise à jour";
       toast({
         variant: "destructive",
         title: "Erreur",
-        description: error.message || "Erreur lors de la mise à jour",
+        description: errorMessage,
       });
     },
   });
@@ -160,17 +163,18 @@ export const useDeleteCattle = () => {
   return useMutation({
     mutationFn: (id: string) => cattleService.deleteCattle(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cattle'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.cattle.all });
       toast({
         title: "Succès",
         description: "L'animal a été supprimé avec succès",
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
+      const errorMessage = error instanceof Error ? error.message : "Erreur lors de la suppression";
       toast({
         variant: "destructive",
         title: "Erreur",
-        description: error.message || "Erreur lors de la suppression",
+        description: errorMessage,
       });
     },
   });
