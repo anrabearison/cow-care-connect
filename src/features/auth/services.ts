@@ -15,12 +15,6 @@ export interface AuthResponse {
   message?: string;
 }
 
-export interface GoogleOAuthResponse {
-  access_token: string;
-  token_type: string;
-  user: User;
-}
-
 export interface ProviderInfo {
   provider: string;
   linked: boolean;
@@ -59,18 +53,19 @@ class AuthService {
 
   async loginWithGoogle(code: string, invitationToken?: string): Promise<AuthResponse> {
     try {
-      const result = await apiClient.post<GoogleOAuthResponse>(
+      const result = await apiClient.post<{ user: User }>(
         `${this.endpoint}/google`,
         { code, state: invitationToken },
         { skipAuth: true }
       );
 
-      if (result.access_token && result.user) {
+      if (result.user) {
         // Cookies HttpOnly are set by the backend via Set-Cookie header
         // No localStorage storage - security improvement
+        // The access_token in response body is deprecated and will be removed
         return {
           user: result.user,
-          token: result.access_token,
+          token: '', // Empty - tokens are now in HttpOnly cookies only
           success: true,
           message: 'Connexion avec Google réussie',
         };
