@@ -30,7 +30,7 @@ export default function LoginPage() {
 
     const success = await login(email, password);
     if (success) {
-      navigate('/');
+      navigate('/', { replace: true });
     } else {
       setError('Email ou mot de passe incorrect');
     }

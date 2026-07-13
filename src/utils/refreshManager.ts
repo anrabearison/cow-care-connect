@@ -39,6 +39,7 @@ class RefreshManager {
   private navigateCallback: NavigateCallback | null = null;
   private clearCacheCallback: ClearCacheCallback | null = null;
   private queryClient: QueryClient | null = null;
+  private hasSession: boolean = false; // Track if a session was previously valid
 
   // Endpoints qui ne doivent jamais déclencher un refresh
   private readonly EXCLUDED_ENDPOINTS = [
@@ -46,6 +47,7 @@ class RefreshManager {
     '/auth/refresh',
     '/auth/logout',
     '/auth/google',
+    '/auth/me', // Exclude /auth/me to prevent refresh on initial load without session
   ];
 
   /**
@@ -67,6 +69,20 @@ class RefreshManager {
    */
   setQueryClient(queryClient: QueryClient): void {
     this.queryClient = queryClient;
+  }
+
+  /**
+   * Marque qu'une session existe (appelé après login réussi)
+   */
+  markSessionAsActive(): void {
+    this.hasSession = true;
+  }
+
+  /**
+   * Marque qu'aucune session n'existe (appelé après logout)
+   */
+  markSessionAsInactive(): void {
+    this.hasSession = false;
   }
 
   /**
@@ -101,6 +117,12 @@ class RefreshManager {
     // Vérifier si l'endpoint est exclu du refresh
     if (this.isEndpointExcluded(endpoint)) {
       throw new AuthenticationError('Endpoint excluded from automatic refresh');
+    }
+
+    // Vérifier si une session existait précédemment
+    // Si aucune session n'existait, ne pas tenter de refresh (cas du premier chargement)
+    if (!this.hasSession) {
+      throw new AuthenticationError('No previous session - skipping refresh');
     }
 
     // Vérifier si la requête a déjà été tentée (prévention boucle infinie)
@@ -244,6 +266,7 @@ class RefreshManager {
     this.navigateCallback = null;
     this.clearCacheCallback = null;
     this.queryClient = null;
+    this.hasSession = false;
   }
 
   /**

@@ -10,6 +10,7 @@ import { lazy, Suspense, useEffect } from "react";
 import { AppProviders } from "@/AppProviders";
 import { APP_ROUTE_PATHS } from "@/config/urls";
 import { PageLoader } from "@/components/PageLoader";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const HomePage = lazy(() => import("./pages/HomePage"));
 const CattlePage = lazy(() => import("@/features/cattle/pages/CattlePage"));
@@ -52,8 +53,9 @@ const AppContent = () => {
   }, [selectedOwnerId]);
 
   return (
-    <Suspense fallback={<PageLoader />}>
-      <Routes>
+    <ErrorBoundary>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path={APP_ROUTE_PATHS.GOOGLE_CALLBACK} element={<GoogleCallbackPage />} />
         <Route path={APP_ROUTE_PATHS.INVITATION} element={<InvitationPage />} />
@@ -119,6 +121,7 @@ const AppContent = () => {
         </Route>
       </Routes>
     </Suspense>
+    </ErrorBoundary>
   );
 };
 

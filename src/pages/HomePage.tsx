@@ -154,7 +154,7 @@ export default function HomePage() {
                   </div>
                 ))
               ) : (
-                recentEvents.map((event) => (
+                (recentEvents ?? []).map((event) => (
                   <div key={event.id} className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 p-3 sm:p-4 bg-muted/30 rounded-lg hover:bg-muted/50 hover:scale-[1.02] transition-all duration-300 cursor-pointer">
                     <div className="flex items-center space-x-3 sm:space-x-4">
                       <div className="text-xl sm:text-2xl">{getTypeEvenementIcon(event.type)}</div>

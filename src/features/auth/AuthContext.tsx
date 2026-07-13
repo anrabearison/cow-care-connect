@@ -2,6 +2,8 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { User } from '@/features/cattle/types';
 import { toast } from 'sonner';
 import { clearOwnerSelection } from '@/contexts/OwnerSelectionContext';
+import { useQueryClient } from '@tanstack/react-query';
+import { refreshManager } from '@/utils/refreshManager';
 
 interface AuthContextType {
   user: User | null;
@@ -24,30 +26,34 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
 
+  // Unique function to check session via GET /auth/me
+  const checkSession = useCallback(async (): Promise<User | null> => {
+    try {
+      const { apiClient } = await import('@/utils/apiClient');
+      const { API_ENDPOINTS } = await import('@/config/api');
+      
+      // Call /me endpoint to verify session via cookies
+      const userData = await apiClient.get<User>(API_ENDPOINTS.AUTH.ME);
+      setUser(userData);
+      return userData;
+    } catch (error) {
+      // Session not valid or expired - user is not logged in
+      // Clean up any legacy localStorage data
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_data');
+      setUser(null);
+      return null;
+    }
+  }, []);
 
   useEffect(() => {
-    // Check session via API call using HttpOnly cookies
-    const checkSession = async () => {
-      try {
-        const { apiClient } = await import('@/utils/apiClient');
-        const { API_ENDPOINTS } = await import('@/config/api');
-        
-        // Call /me endpoint to verify session via cookies
-        const userData = await apiClient.get<User>(API_ENDPOINTS.AUTH.ME);
-        setUser(userData);
-      } catch (error) {
-        // Session not valid or expired - user is not logged in
-        // Clean up any legacy localStorage data
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('user_data');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkSession();
-  }, []);
+    // Check session on mount
+    checkSession().finally(() => {
+      setIsLoading(false);
+    });
+  }, [checkSession]);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
@@ -57,9 +63,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const response = await authService.login({ email, password });
 
       if (response.success) {
-        setUser(response.user);
+        // Verify session via GET /auth/me instead of using response.user directly
+        const userData = await checkSession();
+        
+        // Invalidate user-specific queries after successful login
+        if (userData) {
+          queryClient.invalidateQueries({ queryKey: ['user', userData.id] });
+          queryClient.invalidateQueries({ queryKey: ['user'] });
+          // Mark session as active for refreshManager
+          refreshManager.markSessionAsActive();
+        }
+        
         setIsLoading(false);
-        return true;
+        return userData !== null;
       } else {
         setIsLoading(false);
         return false;
@@ -80,9 +96,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const response = await authService.loginWithGoogle(code, invitationToken);
 
       if (response.success) {
-        setUser(response.user);
+        // Verify session via GET /auth/me instead of using response.user directly
+        const userData = await checkSession();
+        
+        // Invalidate user-specific queries after successful login
+        if (userData) {
+          queryClient.invalidateQueries({ queryKey: ['user', userData.id] });
+          queryClient.invalidateQueries({ queryKey: ['user'] });
+        }
+        
         setIsLoading(false);
-        return true;
+        return userData !== null;
       } else {
         setIsLoading(false);
         return false;
@@ -108,8 +132,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.removeItem('user_data');
       clearOwnerSelection();
       setUser(null);
+      // Clear all queries on logout
+      queryClient.clear();
+      // Mark session as inactive for refreshManager
+      refreshManager.markSessionAsInactive();
     }
-  }, []);
+  }, [queryClient]);
 
   return (
     <AuthContext.Provider value={{ user, login, loginWithGoogle, logout, isLoading }}>
