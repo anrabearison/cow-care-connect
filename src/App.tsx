@@ -30,6 +30,9 @@ const CattleCreatePage = lazy(() => import("@/features/admin/pages/CattleCreateP
 const CattleEditPage = lazy(() => import("@/features/admin/pages/CattleEditPage"));
 const CattleDetailPage = lazy(() => import("@/features/admin/pages/CattleDetailPage"));
 const UsersListPage = lazy(() => import("@/features/admin/pages/UsersListPage"));
+const UsersCreatePage = lazy(() => import("@/features/admin/pages/UsersCreatePage"));
+const UsersEditPage = lazy(() => import("@/features/admin/pages/UsersEditPage"));
+const UsersDetailPage = lazy(() => import("@/features/admin/pages/UsersDetailPage"));
 const VeterinariansListPage = lazy(() => import("@/features/admin/pages/VeterinariansListPage"));
 const MedicamentsListPage = lazy(() => import("@/features/admin/pages/MedicamentsListPage"));
 const MedicamentsCreatePage = lazy(() => import("@/features/admin/pages/MedicamentsCreatePage"));
@@ -98,6 +101,9 @@ const AppContent = () => {
           <Route path="cattle/:id" element={<CattleDetailPage />} />
           <Route path="cattle/:id/edit" element={<CattleEditPage />} />
           <Route path="users" element={<UsersListPage />} />
+          <Route path="users/new" element={<UsersCreatePage />} />
+          <Route path="users/:id" element={<UsersDetailPage />} />
+          <Route path="users/:id/edit" element={<UsersEditPage />} />
           <Route path="veterinarians" element={<VeterinariansListPage />} />
           <Route path="medicaments" element={<MedicamentsListPage />} />
           <Route path="medicaments/new" element={<MedicamentsCreatePage />} />
