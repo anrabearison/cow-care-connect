@@ -36,6 +36,7 @@ describe('RefreshManager Tests', () => {
 
   describe('Scénario 1: Une requête 401 est correctement rejouée après un refresh réussi', () => {
     it('doit détecter une erreur 401 et lancer un refresh', async () => {
+      refreshManager.markSessionAsActive();
       const mockPost = vi.spyOn(apiClient, 'post').mockResolvedValue({} as any);
 
       const requestFn = vi.fn().mockResolvedValue({ data: 'success' });
@@ -52,6 +53,7 @@ describe('RefreshManager Tests', () => {
     });
 
     it('doit retourner le résultat correct après refresh', async () => {
+      refreshManager.markSessionAsActive();
       const mockPost = vi.spyOn(apiClient, 'post').mockResolvedValue({} as any);
 
       const requestFn = vi.fn().mockResolvedValue({ data: 'success' });
@@ -66,6 +68,7 @@ describe('RefreshManager Tests', () => {
 
   describe('Scénario 2: Plusieurs requêtes simultanées ne déclenchent qu\'un seul refresh', () => {
     it('doit mettre les requêtes en attente et les rejouer après refresh', async () => {
+      refreshManager.markSessionAsActive();
       const mockPost = vi.spyOn(apiClient, 'post').mockResolvedValue({} as any);
 
       const requestFn1 = vi.fn().mockResolvedValue({ data: 'success1' });
@@ -96,6 +99,7 @@ describe('RefreshManager Tests', () => {
     });
 
     it('ne doit jamais lancer plusieurs refresh simultanés', async () => {
+      refreshManager.markSessionAsActive();
       const mockPost = vi.spyOn(apiClient, 'post').mockImplementation(
         () => new Promise(resolve => setTimeout(() => resolve({} as any), 100))
       );
@@ -120,6 +124,7 @@ describe('RefreshManager Tests', () => {
 
   describe('Scénario 3: Les requêtes en attente sont correctement rejouées après le refresh', () => {
     it('doit rejouer toutes les requêtes en attente après refresh réussi', async () => {
+      refreshManager.markSessionAsActive();
       const mockPost = vi.spyOn(apiClient, 'post').mockResolvedValue({} as any);
 
       const requestFn1 = vi.fn().mockResolvedValue({ data: 'success1' });
@@ -138,6 +143,7 @@ describe('RefreshManager Tests', () => {
 
   describe('Scénario 4: En cas d\'échec du refresh, toutes les requêtes en attente sont rejetées', () => {
     it('doit rejeter toutes les requêtes si le refresh échoue', async () => {
+      refreshManager.markSessionAsActive();
       // Mock spécifique pour l'endpoint de refresh
       const mockRefreshPost = vi.spyOn(apiClient, 'post').mockImplementation(
         (endpoint) => {
@@ -165,6 +171,7 @@ describe('RefreshManager Tests', () => {
     });
 
     it('doit nettoyer le cache TanStack Query après échec du refresh', async () => {
+      refreshManager.markSessionAsActive();
       const mockRefreshPost = vi.spyOn(apiClient, 'post').mockImplementation(
         (endpoint) => {
           if (endpoint === '/api/v1/auth/refresh') {
@@ -191,6 +198,7 @@ describe('RefreshManager Tests', () => {
     });
 
     it('doit rediriger vers login via React Router après échec du refresh', async () => {
+      refreshManager.markSessionAsActive();
       const mockRefreshPost = vi.spyOn(apiClient, 'post').mockImplementation(
         (endpoint) => {
           if (endpoint === '/api/v1/auth/refresh') {
@@ -216,6 +224,7 @@ describe('RefreshManager Tests', () => {
 
   describe('Scénario 5: Aucune boucle infinie n\'est possible', () => {
     it('doit rejeter si la requête a déjà le marqueur _retry', async () => {
+      refreshManager.markSessionAsActive();
       const mockPost = vi.spyOn(apiClient, 'post').mockResolvedValue({} as any);
 
       const requestFn = vi.fn().mockResolvedValue({ data: 'success' });
@@ -232,6 +241,7 @@ describe('RefreshManager Tests', () => {
     });
 
     it('doit marquer la requête comme _retry lors du retry', async () => {
+      refreshManager.markSessionAsActive();
       const mockPost = vi.spyOn(apiClient, 'post').mockResolvedValue({} as any);
 
       const requestFn = vi.fn().mockResolvedValue({ data: 'success' });
@@ -249,6 +259,7 @@ describe('RefreshManager Tests', () => {
 
   describe('Scénario 6: Les endpoints exclus ne déclenchent jamais un refresh', () => {
     it('doit rejeter pour /login endpoint', async () => {
+      refreshManager.markSessionAsActive();
       const mockPost = vi.spyOn(apiClient, 'post').mockResolvedValue({} as any);
 
       const requestFn = vi.fn().mockResolvedValue({ data: 'success' });
@@ -351,6 +362,7 @@ describe('RefreshManager Tests', () => {
 
   describe('Scénario 8: Nettoyage localStorage', () => {
     it('doit nettoyer le localStorage lors du logout automatique', async () => {
+      refreshManager.markSessionAsActive();
       const mockRefreshPost = vi.spyOn(apiClient, 'post').mockImplementation(
         (endpoint) => {
           if (endpoint === '/api/v1/auth/refresh') {

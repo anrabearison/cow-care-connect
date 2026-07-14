@@ -42,6 +42,7 @@ describe('ApiClient Integration Tests with RefreshManager', () => {
 
   describe('Scénario 1: Requête 401 avec refresh réussi', () => {
     it('doit rejouer automatiquement la requête après un refresh réussi', async () => {
+      refreshManager.markSessionAsActive();
       // Premier appel: 401
       mockFetch.mockResolvedValueOnce({
         ok: false,
@@ -75,6 +76,7 @@ describe('ApiClient Integration Tests with RefreshManager', () => {
 
   describe('Scénario 2: Plusieurs requêtes 401 simultanées', () => {
     it('doit déclencher un seul refresh pour plusieurs requêtes 401', async () => {
+      refreshManager.markSessionAsActive();
       let callCount = 0;
       let refreshCallCount = 0;
 
@@ -126,6 +128,7 @@ describe('ApiClient Integration Tests with RefreshManager', () => {
 
   describe('Scénario 3: Endpoint refresh exclu du refresh automatique', () => {
     it('ne doit pas tenter de refresh pour l\'endpoint /auth/refresh', async () => {
+      refreshManager.markSessionAsActive();
       mockFetch.mockResolvedValue({
         ok: false,
         status: 401,
@@ -142,6 +145,7 @@ describe('ApiClient Integration Tests with RefreshManager', () => {
     });
 
     it('ne doit pas tenter de refresh pour l\'endpoint /auth/login', async () => {
+      refreshManager.markSessionAsActive();
       mockFetch.mockResolvedValue({
         ok: false,
         status: 401,
@@ -158,6 +162,7 @@ describe('ApiClient Integration Tests with RefreshManager', () => {
     });
 
     it('ne doit pas tenter de refresh pour l\'endpoint /auth/logout', async () => {
+      refreshManager.markSessionAsActive();
       mockFetch.mockResolvedValue({
         ok: false,
         status: 401,
@@ -176,6 +181,7 @@ describe('ApiClient Integration Tests with RefreshManager', () => {
 
   describe('Scénario 4: Échec du refresh', () => {
     it('doit rejouer la requête et nettoyer l\'état si le refresh échoue', async () => {
+      refreshManager.markSessionAsActive();
       // Premier appel: 401
       mockFetch.mockResolvedValueOnce({
         ok: false,
@@ -212,6 +218,7 @@ describe('ApiClient Integration Tests with RefreshManager', () => {
 
   describe('Scénario 5: Méthodes HTTP différentes', () => {
     it('doit gérer le refresh pour les requêtes GET', async () => {
+      refreshManager.markSessionAsActive();
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 401,
@@ -238,6 +245,7 @@ describe('ApiClient Integration Tests with RefreshManager', () => {
     });
 
     it('doit gérer le refresh pour les requêtes POST', async () => {
+      refreshManager.markSessionAsActive();
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 401,
@@ -264,6 +272,7 @@ describe('ApiClient Integration Tests with RefreshManager', () => {
     });
 
     it('doit gérer le refresh pour les requêtes PUT', async () => {
+      refreshManager.markSessionAsActive();
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 401,
@@ -290,6 +299,7 @@ describe('ApiClient Integration Tests with RefreshManager', () => {
     });
 
     it('doit gérer le refresh pour les requêtes DELETE', async () => {
+      refreshManager.markSessionAsActive();
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 401,

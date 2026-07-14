@@ -15,15 +15,16 @@
 
 import { QueryClient } from '@tanstack/react-query';
 import { API_ENDPOINTS } from '@/config/api';
-import { apiClient } from './apiClient';
+import { apiClient, RequestConfig } from './apiClient';
 import { AuthenticationError } from './errors';
 
 // Type pour les requêtes en attente
 type PendingRequest<T = unknown> = {
   resolve: (value: T) => void;
   reject: (reason: unknown) => void;
-  requestFn: () => Promise<T>;
+  requestFn: (overrideConfig?: RequestConfig) => Promise<T>;
   endpoint: string;
+  config: RequestConfig;
 };
 
 // Type pour le callback de navigation
@@ -110,7 +111,7 @@ class RefreshManager {
    * Gère une erreur 401 en lançant le refresh token si nécessaire
    */
   async handle401Error<T>(
-    requestFn: () => Promise<T>,
+    requestFn: (overrideConfig?: RequestConfig) => Promise<T>,
     endpoint: string,
     config: RequestConfig = {}
   ): Promise<T> {
@@ -133,7 +134,7 @@ class RefreshManager {
     // Si un refresh est déjà en cours, ajouter la requête à la file d'attente
     if (this.isRefreshing) {
       return new Promise<T>((resolve, reject) => {
-        this.pendingRequests.push({ resolve, reject, requestFn, endpoint });
+        this.pendingRequests.push({ resolve, reject, requestFn, endpoint, config });
       });
     }
 
@@ -149,8 +150,8 @@ class RefreshManager {
       if (refreshSuccess) {
         // Marquer la requête comme ayant été tentée
         const markedConfig = this.markRequestAsRetried(config);
-        // Rejouer la requête originale avec le nouveau config
-        return await requestFn();
+        // Rejouer la requête originale avec le nouveau config marqué
+        return await requestFn(markedConfig);
       } else {
         // Refresh échoué - déconnecter
         throw new AuthenticationError('Refresh failed - session expired');
@@ -199,10 +200,11 @@ class RefreshManager {
     const requests = [...this.pendingRequests];
     this.pendingRequests = [];
 
-    // Rejouer toutes les requêtes en parallèle
-    const replayPromises = requests.map(async ({ resolve, reject, requestFn }) => {
+    // Rejouer toutes les requêtes en parallèle avec leur config marqué
+    const replayPromises = requests.map(async ({ resolve, reject, requestFn, config }) => {
       try {
-        const result = await requestFn();
+        const markedConfig = this.markRequestAsRetried(config);
+        const result = await requestFn(markedConfig);
         resolve(result);
       } catch (error) {
         reject(error);
@@ -220,7 +222,7 @@ class RefreshManager {
     this.pendingRequests = [];
 
     for (const { reject } of requests) {
-      reject(new AuthenticationError('Refresh failed - session expired', error as Error));
+      reject(new AuthenticationError('Refresh failed - session expired'));
     }
   }
 

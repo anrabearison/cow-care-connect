@@ -104,7 +104,7 @@ class ApiClient {
     private async handleResponse<T>(
         response: Response,
         asBlob: boolean = false,
-        originalRequestFn?: () => Promise<T>,
+        originalRequestFn?: (overrideConfig?: RequestConfig) => Promise<T>,
         endpoint: string = '',
         config: RequestConfig = {}
     ): Promise<T> {
@@ -182,9 +182,9 @@ class ApiClient {
      */
     async get<T>(endpoint: string, params?: QueryParams, config?: RequestConfig, asBlob: boolean = false): Promise<T> {
         const url = this.buildUrl(endpoint, params);
-        const requestFn = () => this.fetchWithTimeout(url, { ...config, method: 'GET' });
+        const requestFn = (overrideConfig?: RequestConfig) => this.fetchWithTimeout(url, { ...config, ...overrideConfig, method: 'GET' });
         const response = await requestFn();
-        return this.handleResponse<T>(response, asBlob, () => this.get<T>(endpoint, params, config, asBlob), endpoint, config);
+        return this.handleResponse<T>(response, asBlob, (overrideConfig?: RequestConfig) => this.get<T>(endpoint, params, { ...config, ...overrideConfig }, asBlob), endpoint, config);
     }
 
     async getText(endpoint: string, params?: QueryParams, config?: RequestConfig): Promise<string> {
@@ -207,13 +207,14 @@ class ApiClient {
     async post<T>(endpoint: string, data?: unknown, config?: RequestConfig): Promise<T> {
         const url = this.buildUrl(endpoint);
         const isFormData = data instanceof FormData;
-        const requestFn = () => this.fetchWithTimeout(url, {
+        const requestFn = (overrideConfig?: RequestConfig) => this.fetchWithTimeout(url, {
             ...config,
+            ...overrideConfig,
             method: 'POST',
             body: data ? (isFormData ? data : JSON.stringify(data)) : undefined,
         });
         const response = await requestFn();
-        return this.handleResponse<T>(response, false, () => this.post<T>(endpoint, data, config), endpoint, config);
+        return this.handleResponse<T>(response, false, (overrideConfig?: RequestConfig) => this.post<T>(endpoint, data, { ...config, ...overrideConfig }), endpoint, config);
     }
 
     /**
@@ -221,13 +222,14 @@ class ApiClient {
      */
     async put<T>(endpoint: string, data?: unknown, config?: RequestConfig): Promise<T> {
         const url = this.buildUrl(endpoint);
-        const requestFn = () => this.fetchWithTimeout(url, {
+        const requestFn = (overrideConfig?: RequestConfig) => this.fetchWithTimeout(url, {
             ...config,
+            ...overrideConfig,
             method: 'PUT',
             body: data ? JSON.stringify(data) : undefined,
         });
         const response = await requestFn();
-        return this.handleResponse<T>(response, false, () => this.put<T>(endpoint, data, config), endpoint, config);
+        return this.handleResponse<T>(response, false, (overrideConfig?: RequestConfig) => this.put<T>(endpoint, data, { ...config, ...overrideConfig }), endpoint, config);
     }
 
     /**
@@ -235,13 +237,14 @@ class ApiClient {
      */
     async patch<T>(endpoint: string, data?: unknown, config?: RequestConfig): Promise<T> {
         const url = this.buildUrl(endpoint);
-        const requestFn = () => this.fetchWithTimeout(url, {
+        const requestFn = (overrideConfig?: RequestConfig) => this.fetchWithTimeout(url, {
             ...config,
+            ...overrideConfig,
             method: 'PATCH',
             body: data ? JSON.stringify(data) : undefined,
         });
         const response = await requestFn();
-        return this.handleResponse<T>(response, false, () => this.patch<T>(endpoint, data, config), endpoint, config);
+        return this.handleResponse<T>(response, false, (overrideConfig?: RequestConfig) => this.patch<T>(endpoint, data, { ...config, ...overrideConfig }), endpoint, config);
     }
 
     /**
@@ -249,12 +252,13 @@ class ApiClient {
      */
     async delete<T>(endpoint: string, config?: RequestConfig): Promise<T> {
         const url = this.buildUrl(endpoint);
-        const requestFn = () => this.fetchWithTimeout(url, {
+        const requestFn = (overrideConfig?: RequestConfig) => this.fetchWithTimeout(url, {
             ...config,
+            ...overrideConfig,
             method: 'DELETE',
         });
         const response = await requestFn();
-        return this.handleResponse<T>(response, false, () => this.delete<T>(endpoint, config), endpoint, config);
+        return this.handleResponse<T>(response, false, (overrideConfig?: RequestConfig) => this.delete<T>(endpoint, { ...config, ...overrideConfig }), endpoint, config);
     }
 
     /**
