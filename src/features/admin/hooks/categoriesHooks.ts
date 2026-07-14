@@ -1,7 +1,34 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { categoriesService, Category, CreateCategoryData, UpdateCategoryData } from '../services/categoriesService';
 import { useToast } from '@/hooks/use-toast';
 import { queryKeys } from '@/lib/queryKeys';
+
+/**
+ * Hook to fetch a single category by ID
+ */
+export const useCategory = (id: string) => {
+  return useQuery({
+    queryKey: queryKeys.categories.details(id),
+    queryFn: () => categoriesService.getCategoryById(id),
+    enabled: !!id,
+  });
+};
+
+/**
+ * Hook to fetch categories list with pagination and search
+ */
+export const useCategories = (params: { page: number; q?: string }) => {
+  const pageSize = 10;
+  return useQuery({
+    queryKey: queryKeys.categories.list(params),
+    queryFn: () =>
+      categoriesService.getCategoriesList({
+        page: params.page,
+        per_page: pageSize,
+        q: params.q || undefined,
+      }),
+  });
+};
 
 /**
  * Hook to create a new category

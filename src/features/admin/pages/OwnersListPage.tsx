@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useDeleteOwner } from "../hooks/ownersHooks";
 import { queryKeys } from "@/lib/queryKeys";
 
+const OwnersListPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [search, setSearch] = useState("");

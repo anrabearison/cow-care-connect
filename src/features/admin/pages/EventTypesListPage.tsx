@@ -1,21 +1,19 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { DataTable, Column } from "@/components/admin/DataTable";
 import { FormDialog } from "@/components/admin/FormDialog";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
-import { eventTypesService, EventType, CreateEventTypeData, UpdateEventTypeData } from "@/features/admin/services/eventTypesService";
+import { EventType, CreateEventTypeData, UpdateEventTypeData } from "@/features/admin/services/eventTypesService";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
-import { useCreateEventType, useUpdateEventType, useDeleteEventType } from "../hooks/eventTypesHooks";
+import { useEventTypes, useCreateEventType, useUpdateEventType, useDeleteEventType } from "../hooks/eventTypesHooks";
 
 const EventTypesListPage = () => {
   const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const pageSize = 10;
   const [selectedItem, setSelectedItem] = useState<EventType | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -27,15 +25,7 @@ const EventTypesListPage = () => {
   const updateEventTypeMutation = useUpdateEventType();
   const deleteEventTypeMutation = useDeleteEventType();
 
-  const { data: data, isLoading } = useQuery({
-    queryKey: queryKeys.eventTypes.list({ page, q: search }),
-    queryFn: () =>
-      eventTypesService.getEventTypesList({
-        page,
-        per_page: pageSize,
-        q: search || undefined,
-      }),
-  });
+  const { data, isLoading } = useEventTypes({ page, q: search });
 
   const handleCreate = () => {
     createEventTypeMutation.mutate(formData);
@@ -94,7 +84,7 @@ const EventTypesListPage = () => {
         onDelete={(item) => { setSelectedItem(item); setIsDeleteDialogOpen(true); }}
         onAdd={openCreateDialog}
         canEdit canDelete canView canAdd
-        pagination={{ page, pageSize, total: data?.total || 0, onPageChange: setPage }}
+        pagination={{ page, pageSize: 10, total: data?.total || 0, onPageChange: setPage }}
         search={{ value: search, onChange: setSearch }}
       />
 

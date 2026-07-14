@@ -124,6 +124,7 @@ export const queryKeys = {
   categories: {
     all: ['categories'] as const,
     lists: () => ['categories', 'list'] as const,
+    list: (filters: Record<string, unknown>) => ['categories', 'list', filters] as const,
     details: (id: string | number) => ['categories', 'details', id] as const,
     reference: () => ['categories', 'reference'] as const,
   },
@@ -132,6 +133,7 @@ export const queryKeys = {
   eventTypes: {
     all: ['eventTypes'] as const,
     lists: () => ['eventTypes', 'list'] as const,
+    list: (filters: Record<string, unknown>) => ['eventTypes', 'list', filters] as const,
     details: (id: string | number) => ['eventTypes', 'details', id] as const,
   },
 
@@ -139,6 +141,7 @@ export const queryKeys = {
   characters: {
     all: ['characters'] as const,
     lists: () => ['characters', 'list'] as const,
+    list: (filters: Record<string, unknown>) => ['characters', 'list', filters] as const,
     details: (id: string | number) => ['characters', 'details', id] as const,
     reference: () => ['characters', 'reference'] as const,
   },

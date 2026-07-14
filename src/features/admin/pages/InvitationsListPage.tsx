@@ -8,12 +8,13 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/features/auth/AuthContext';
 import { ownersService } from '@/features/admin/services/ownersService';
 import { invitationsService, InvitationCreateData, InvitationResponse } from '@/features/admin/services/invitationsService';
 import { getRoleLabel, USER_ROLES, type UserRole } from '@/constants/roles';
-import { useCreateInvitation, useDeleteInvitation } from '../hooks/invitationsHooks';
+import { useCreateInvitation, useDeleteInvitation, useInvitations } from '../hooks/invitationsHooks';
+import { queryKeys } from '@/lib/queryKeys';
 
 const InvitationsListPage = () => {
   const { user } = useAuth();
@@ -39,10 +40,7 @@ const InvitationsListPage = () => {
     queryFn: () => ownersService.getOwnersList({ page: 1, per_page: 50 }),
   });
 
-  const { data: invitationsData, isLoading } = useQuery({
-    queryKey: queryKeys.users.list({ page, email: search }),
-    queryFn: () => invitationsService.getInvitations({ email: search }),
-  });
+  const { data: invitationsData, isLoading } = useInvitations({ email: search });
 
   const handleCreateInvitation = () => {
     if (!invitationFormData.email) {

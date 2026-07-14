@@ -1,7 +1,34 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { eventTypesService, EventType, CreateEventTypeData, UpdateEventTypeData } from '../services/eventTypesService';
 import { useToast } from '@/hooks/use-toast';
 import { queryKeys } from '@/lib/queryKeys';
+
+/**
+ * Hook to fetch a single event type by ID
+ */
+export const useEventType = (id: string) => {
+  return useQuery({
+    queryKey: queryKeys.eventTypes.details(id),
+    queryFn: () => eventTypesService.getEventTypeById(id),
+    enabled: !!id,
+  });
+};
+
+/**
+ * Hook to fetch event types list with pagination and search
+ */
+export const useEventTypes = (params: { page: number; q?: string }) => {
+  const pageSize = 10;
+  return useQuery({
+    queryKey: queryKeys.eventTypes.list(params),
+    queryFn: () =>
+      eventTypesService.getEventTypesList({
+        page: params.page,
+        per_page: pageSize,
+        q: params.q || undefined,
+      }),
+  });
+};
 
 /**
  * Hook to create a new event type
