@@ -53,6 +53,9 @@ const OwnersListPage = lazy(() => import("@/features/admin/pages/OwnersListPage"
 const InvitationsListPage = lazy(() => import("@/features/admin/pages/InvitationsListPage"));
 const PurchasesListPage = lazy(() => import("@/features/admin/pages/PurchasesListPage"));
 const SuppliersListPage = lazy(() => import("@/features/admin/pages/SuppliersListPage"));
+const SuppliersCreatePage = lazy(() => import("@/features/admin/pages/SuppliersCreatePage"));
+const SuppliersEditPage = lazy(() => import("@/features/admin/pages/SuppliersEditPage"));
+const SuppliersDetailPage = lazy(() => import("@/features/admin/pages/SuppliersDetailPage"));
 
 // Passport pages
 const PassportCreatePage = lazy(() => import("@/features/passport/pages/PassportCreatePage"));
@@ -116,6 +119,9 @@ const AppContent = () => {
           <Route path="passports/:id/edit" element={<PassportEditPage />} />
           <Route path="purchases" element={<PurchasesListPage />} />
           <Route path="suppliers" element={<SuppliersListPage />} />
+          <Route path="suppliers/new" element={<SuppliersCreatePage />} />
+          <Route path="suppliers/:id" element={<SuppliersDetailPage />} />
+          <Route path="suppliers/:id/edit" element={<SuppliersEditPage />} />
           <Route
             path="owners"
             element={
