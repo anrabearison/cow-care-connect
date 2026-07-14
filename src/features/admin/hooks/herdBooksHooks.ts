@@ -1,31 +1,36 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient, UseMutationOptions } from '@tanstack/react-query';
 import { herdBooksService, HerdBook, CreateHerdBookData, UpdateHerdBookData } from '../services/herdBooksService';
-import { useToast } from '@/hooks/use-toast';
 import { queryKeys } from '@/lib/queryKeys';
+
+/**
+ * Hook to fetch a single herd book by ID
+ */
+export const useHerdBook = (id: string) => {
+  return useQuery({
+    queryKey: queryKeys.herdBooks.details(id),
+    queryFn: async () => {
+      const response = await herdBooksService.getHerdBookById(id);
+      if (!response.success || !response.data) {
+        throw new Error(response.message || "Failed to fetch herd book");
+      }
+      return response.data;
+    },
+    enabled: !!id,
+  });
+};
 
 /**
  * Hook to create a new herd book
  */
-export const useCreateHerdBook = () => {
+export const useCreateHerdBook = (options?: Omit<UseMutationOptions<any, Error, CreateHerdBookData>, 'mutationFn'>) => {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   return useMutation({
     mutationFn: (data: CreateHerdBookData) => herdBooksService.createHerdBook(data),
-    onSuccess: () => {
+    ...options,
+    onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.herdBooks.all });
-      toast({
-        title: "Succès",
-        description: "Livre de troupeau créé avec succès",
-      });
-    },
-    onError: (error: unknown) => {
-      const errorMessage = error instanceof Error ? error.message : "Erreur lors de la création";
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: errorMessage,
-      });
+      options?.onSuccess?.(data, variables, context);
     },
   });
 };
@@ -33,28 +38,17 @@ export const useCreateHerdBook = () => {
 /**
  * Hook to update a herd book
  */
-export const useUpdateHerdBook = () => {
+export const useUpdateHerdBook = (options?: Omit<UseMutationOptions<any, Error, { id: string; data: UpdateHerdBookData }>, 'mutationFn'>) => {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateHerdBookData }) =>
       herdBooksService.updateHerdBook(id, data),
-    onSuccess: (_, variables) => {
+    ...options,
+    onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.herdBooks.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.herdBooks.details(variables.id) });
-      toast({
-        title: "Succès",
-        description: "Livre de troupeau mis à jour avec succès",
-      });
-    },
-    onError: (error: unknown) => {
-      const errorMessage = error instanceof Error ? error.message : "Erreur lors de la mise à jour";
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: errorMessage,
-      });
+      options?.onSuccess?.(data, variables, context);
     },
   });
 };
@@ -62,26 +56,15 @@ export const useUpdateHerdBook = () => {
 /**
  * Hook to delete a herd book
  */
-export const useDeleteHerdBook = () => {
+export const useDeleteHerdBook = (options?: Omit<UseMutationOptions<any, Error, string>, 'mutationFn'>) => {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   return useMutation({
     mutationFn: (id: string) => herdBooksService.deleteHerdBook(id),
-    onSuccess: () => {
+    ...options,
+    onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.herdBooks.all });
-      toast({
-        title: "Succès",
-        description: "Livre de troupeau supprimé avec succès",
-      });
-    },
-    onError: (error: unknown) => {
-      const errorMessage = error instanceof Error ? error.message : "Erreur lors de la suppression";
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: errorMessage,
-      });
+      options?.onSuccess?.(data, variables, context);
     },
   });
 };
