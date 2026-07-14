@@ -140,6 +140,7 @@ export const queryKeys = {
     all: ['characters'] as const,
     lists: () => ['characters', 'list'] as const,
     details: (id: string | number) => ['characters', 'details', id] as const,
+    reference: () => ['characters', 'reference'] as const,
   },
 
   // Veterinarians

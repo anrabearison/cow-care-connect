@@ -26,6 +26,9 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 // Admin pages
 const AdminDashboard = lazy(() => import("@/features/admin/pages/AdminDashboard"));
 const CattleListPage = lazy(() => import("@/features/admin/pages/CattleListPage"));
+const CattleCreatePage = lazy(() => import("@/features/admin/pages/CattleCreatePage"));
+const CattleEditPage = lazy(() => import("@/features/admin/pages/CattleEditPage"));
+const CattleDetailPage = lazy(() => import("@/features/admin/pages/CattleDetailPage"));
 const UsersListPage = lazy(() => import("@/features/admin/pages/UsersListPage"));
 const VeterinariansListPage = lazy(() => import("@/features/admin/pages/VeterinariansListPage"));
 const MedicamentsListPage = lazy(() => import("@/features/admin/pages/MedicamentsListPage"));
@@ -44,6 +47,11 @@ const OwnersListPage = lazy(() => import("@/features/admin/pages/OwnersListPage"
 const InvitationsListPage = lazy(() => import("@/features/admin/pages/InvitationsListPage"));
 const PurchasesListPage = lazy(() => import("@/features/admin/pages/PurchasesListPage"));
 const SuppliersListPage = lazy(() => import("@/features/admin/pages/SuppliersListPage"));
+
+// Passport pages
+const PassportCreatePage = lazy(() => import("@/features/passport/pages/PassportCreatePage"));
+const PassportEditPage = lazy(() => import("@/features/passport/pages/PassportEditPage"));
+const PassportDetailPage = lazy(() => import("@/features/passport/pages/PassportDetailPage"));
 
 
 // Internal component that has access to the context
@@ -74,6 +82,9 @@ const AppContent = () => {
         >
           <Route index element={<AdminDashboard />} />
           <Route path="cattle" element={<CattleListPage />} />
+          <Route path="cattle/new" element={<CattleCreatePage />} />
+          <Route path="cattle/:id" element={<CattleDetailPage />} />
+          <Route path="cattle/:id/edit" element={<CattleEditPage />} />
           <Route path="users" element={<UsersListPage />} />
           <Route path="veterinarians" element={<VeterinariansListPage />} />
           <Route path="medicaments" element={<MedicamentsListPage />} />
@@ -88,6 +99,9 @@ const AppContent = () => {
           <Route path="herd-book-cattle/new" element={<HerdBookCattleCreatePage />} />
           <Route path="herd-book-cattle/:id" element={<HerdBookCattleDetailPage />} />
           <Route path="herd-book-cattle/:id/edit" element={<HerdBookCattleEditPage />} />
+          <Route path="passports/new" element={<PassportCreatePage />} />
+          <Route path="passports/:id" element={<PassportDetailPage />} />
+          <Route path="passports/:id/edit" element={<PassportEditPage />} />
           <Route path="purchases" element={<PurchasesListPage />} />
           <Route path="suppliers" element={<SuppliersListPage />} />
           <Route
