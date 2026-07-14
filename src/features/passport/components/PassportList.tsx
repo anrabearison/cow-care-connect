@@ -1,22 +1,18 @@
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { FileText, Download, Eye, Loader2, RefreshCw } from 'lucide-react';
+import { FileText, Download, Eye, Loader2, RefreshCw, Plus } from 'lucide-react';
 import { usePassports } from '../hooks';
 import { useHerdBookSelection } from '@/contexts/HerdBookSelectionContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { passportService } from '../services/passportService';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { passportKeys } from '../hooks';
-import { useAuth } from '@/features/auth/AuthContext';
-import { isAdmin } from '@/constants/roles';
-import { ConfirmDialog } from '@/components/admin/ConfirmDialog';
-import { Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const STATUS_BADGES: Record<string, { label: string; className: string }> = {
   DRAFT: { label: 'Brouillon', className: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100' },
@@ -27,6 +23,7 @@ const STATUS_BADGES: Record<string, { label: string; className: string }> = {
 
 export function PassportList() {
   const { selectedHerdBookId } = useHerdBookSelection();
+  const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;
   const { data: paginatedData, isLoading, error } = usePassports(selectedHerdBookId || undefined, page, itemsPerPage);
@@ -34,15 +31,7 @@ export function PassportList() {
   const meta = paginatedData?.meta;
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [generatingId, setGeneratingId] = useState<string | null>(null);
-  const [previewingId, setPreviewingId] = useState<string | null>(null);
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [previewHtml, setPreviewHtml] = useState('');
-  const [previewPassportNumber, setPreviewPassportNumber] = useState('');
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [passportToDelete, setPassportToDelete] = useState<{id: string, number: string} | null>(null);
   const queryClient = useQueryClient();
-  const { user } = useAuth();
 
   const handleGenerate = async (passportId: string) => {
     setGeneratingId(passportId);
@@ -81,47 +70,6 @@ export function PassportList() {
     }
   };
 
-  const handlePreview = async (passportId: string, passportNumber: string) => {
-    setPreviewPassportNumber(passportNumber);
-    setPreviewHtml('');
-    setIsPreviewOpen(true);
-    setPreviewingId(passportId);
-
-    try {
-      const html = await passportService.previewHtml(passportId);
-      setPreviewHtml(html);
-    } catch (error) {
-      console.error('Error previewing passport:', error);
-      toast.error('Erreur lors de la prévisualisation du passeport');
-      setIsPreviewOpen(false);
-    } finally {
-      setPreviewingId(null);
-    }
-  };
-
-  const confirmDelete = (passportId: string, passportNumber: string) => {
-    setPassportToDelete({ id: passportId, number: passportNumber });
-    setIsDeleteDialogOpen(true);
-  };
-
-  const handleDelete = async () => {
-    if (!passportToDelete) return;
-    
-    setDeletingId(passportToDelete.id);
-    try {
-      toast.loading('Suppression en cours...', { id: 'passport-delete' });
-      await passportService.delete(passportToDelete.id);
-      toast.success('Passeport supprimé avec succès', { id: 'passport-delete' });
-      queryClient.invalidateQueries({ queryKey: passportKeys.all });
-    } catch (error) {
-      console.error('Error deleting passport:', error);
-      toast.error('Erreur lors de la suppression du passeport', { id: 'passport-delete' });
-    } finally {
-      setDeletingId(null);
-      setIsDeleteDialogOpen(false);
-      setPassportToDelete(null);
-    }
-  };
 
   if (!selectedHerdBookId) {
     return null;
@@ -130,13 +78,21 @@ export function PassportList() {
   return (
     <Card className="mt-8 shadow-card-soft border-none bg-white/50 backdrop-blur-sm">
       <CardHeader>
-        <CardTitle className="text-xl flex items-center gap-2">
-          <FileText className="h-5 w-5 text-primary" />
-          Derniers Passeports Générés
-        </CardTitle>
-        <CardDescription>
-          Historique des passeports pour le livre de troupeau sélectionné
-        </CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="text-xl flex items-center gap-2">
+              <FileText className="h-5 w-5 text-primary" />
+              Derniers Passeports Générés
+            </CardTitle>
+            <CardDescription>
+              Historique des passeports pour le livre de troupeau sélectionné
+            </CardDescription>
+          </div>
+          <Button onClick={() => navigate('/admin/passports/new')}>
+            <Plus className="h-4 w-4 mr-2" />
+            Nouveau Passeport
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         {isLoading ? (
@@ -163,7 +119,15 @@ export function PassportList() {
               <TableBody>
                 {passports.map((passport) => (
                   <TableRow key={passport.id}>
-                    <TableCell className="font-medium">{passport.passportNumber}</TableCell>
+                    <TableCell className="font-medium">
+                      <Button
+                        variant="link"
+                        className="p-0 h-auto font-medium"
+                        onClick={() => navigate(`/admin/passports/${passport.id}`)}
+                      >
+                        {passport.passportNumber}
+                      </Button>
+                    </TableCell>
                     <TableCell>{passport.applicantName || 'N/A'}</TableCell>
                     <TableCell>
                       {passport.issueDate 
@@ -199,15 +163,10 @@ export function PassportList() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handlePreview(passport.id, passport.passportNumber)}
-                          disabled={previewingId === passport.id}
+                          onClick={() => navigate(`/admin/passports/${passport.id}`)}
                         >
-                          {previewingId === passport.id ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Eye className="h-4 w-4" />
-                          )}
-                          <span className="sr-only">Prévisualiser</span>
+                          <Eye className="h-4 w-4" />
+                          <span className="sr-only">Voir détails</span>
                         </Button>
                         <Button
                           variant="ghost"
@@ -223,22 +182,6 @@ export function PassportList() {
                           <span className="sr-only">Télécharger</span>
                         </Button>
                         
-                        {isAdmin(user?.role) && (passport.status === 'DRAFT' || passport.status === 'GENERATED') && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                            onClick={() => confirmDelete(passport.id, passport.passportNumber)}
-                            disabled={deletingId === passport.id}
-                          >
-                            {deletingId === passport.id ? (
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                              <Trash2 className="h-4 w-4" />
-                            )}
-                            <span className="sr-only">Supprimer</span>
-                          </Button>
-                        )}
                       </div>
                     </TableCell>
                   </TableRow>
@@ -262,8 +205,8 @@ export function PassportList() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setPage((p) => Math.min(meta.last_page, p + 1))}
-                    disabled={page >= meta.last_page}
+                    onClick={() => setPage((p) => Math.min(meta.totalPages, p + 1))}
+                    disabled={page >= meta.totalPages}
                   >
                     Suivant
                   </Button>
@@ -277,41 +220,6 @@ export function PassportList() {
           </div>
         )}
       </CardContent>
-
-      <ConfirmDialog
-        open={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-        onConfirm={handleDelete}
-        title="Supprimer le passeport"
-        description={`Êtes-vous sûr de vouloir supprimer le passeport n° ${passportToDelete?.number} ? Cette action est irréversible.`}
-        confirmText="Supprimer"
-        cancelText="Annuler"
-        variant="destructive"
-      />
-
-      <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-        <DialogContent className="h-[92vh] max-w-[96vw] gap-3 p-4 sm:max-w-[1120px]">
-          <DialogHeader>
-            <DialogTitle>Prévisualisation du passeport</DialogTitle>
-            <DialogDescription>
-              Passeport n° {previewPassportNumber}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="min-h-0 flex-1 overflow-hidden rounded-md border bg-muted/20">
-            {previewHtml ? (
-              <iframe
-                title={`Prévisualisation passeport ${previewPassportNumber}`}
-                srcDoc={previewHtml}
-                className="h-full w-full bg-white"
-              />
-            ) : (
-              <div className="flex h-full min-h-[480px] items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              </div>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
     </Card>
   );
 }
