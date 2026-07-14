@@ -1,7 +1,34 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { eventsService, Event, CreateEventData, UpdateEventData } from '../services/eventsService';
 import { useToast } from '@/hooks/use-toast';
 import { queryKeys } from '@/lib/queryKeys';
+
+/**
+ * Hook to fetch a single event by ID
+ */
+export const useEvent = (id: string) => {
+  return useQuery({
+    queryKey: queryKeys.events.details(id),
+    queryFn: () => eventsService.getEventById(id),
+    enabled: !!id,
+  });
+};
+
+/**
+ * Hook to fetch events list with pagination and search
+ */
+export const useEvents = (params: { page: number; q?: string }) => {
+  const pageSize = 10;
+  return useQuery({
+    queryKey: queryKeys.events.list(params),
+    queryFn: () =>
+      eventsService.getEventsList({
+        page: params.page,
+        per_page: pageSize,
+        q: params.q || undefined,
+      }),
+  });
+};
 
 /**
  * Hook to create a new event

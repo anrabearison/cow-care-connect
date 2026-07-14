@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import { useUpdateEvent } from '../hooks/eventsHooks';
+import { useEvent, useUpdateEvent } from '../hooks/eventsHooks';
+import { Loader2 } from 'lucide-react';
 
 interface FormState {
   cattleId: string;
@@ -30,8 +31,42 @@ const EventsEditPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const updateEventMutation = useUpdateEvent();
-  const [formData, setFormData] = useState<FormState>(initialFormState);
+  const { data: event, isLoading, error } = useEvent(id!);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const initialData = useMemo(() => {
+    if (!event || !event.data) return initialFormState;
+    return {
+      cattleId: event.data.cattleId || '',
+      eventTypeId: event.data.eventTypeId || '',
+      type: event.data.type || '',
+      date: event.data.date || '',
+      description: event.data.description || '',
+      details: event.data.details || '',
+    };
+  }, [event]);
+
+  const [formData, setFormData] = useState<FormState>(initialData);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (error || !event) {
+    return (
+      <div className="space-y-6 p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold">Erreur</h1>
+          <p className="text-muted-foreground mt-2">Événement introuvable</p>
+        </div>
+        <Button onClick={() => navigate('/admin/events')}>Retour à la liste</Button>
+      </div>
+    );
+  }
 
   const validate = () => {
     const nextErrors: Record<string, string> = {};

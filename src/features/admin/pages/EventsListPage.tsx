@@ -1,26 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import { DataTable, Column } from "@/components/admin/DataTable";
-import { eventsService, Event } from "@/features/admin/services/eventsService";
+import { useEvents } from "@/features/admin/hooks/eventsHooks";
+import { Event } from "@/features/admin/services/eventsService";
 import { Button } from "@/components/ui/button";
-import { queryKeys } from "@/lib/queryKeys";
 
 const EventsListPage = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const pageSize = 10;
 
-  const { data: data, isLoading } = useQuery({
-    queryKey: queryKeys.events.list({ page, q: search }),
-    queryFn: () =>
-      eventsService.getEventsList({
-        page,
-        per_page: pageSize,
-        q: search || undefined,
-      }),
-  });
+  const { data, isLoading } = useEvents({ page, q: search });
 
   const columns: Column<Event>[] = [
     { key: "cattle", header: "Bovin", render: (item) => {
@@ -56,7 +46,7 @@ const EventsListPage = () => {
         onEdit={(item) => navigate(`/admin/events/${item.id}/edit`)}
         onView={(item) => navigate(`/admin/events/${item.id}`)}
         canEdit canView
-        pagination={{ page, pageSize, total: data?.total || 0, onPageChange: setPage }}
+        pagination={{ page, pageSize: 10, total: data?.total || 0, onPageChange: setPage }}
         search={{ value: search, onChange: setSearch }}
       />
     </div>

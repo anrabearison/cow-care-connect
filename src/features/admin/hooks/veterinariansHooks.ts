@@ -1,7 +1,34 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { veterinariansService, Veterinarian, CreateVeterinarianData, UpdateVeterinarianData } from '../services/veterinariansService';
 import { useToast } from '@/hooks/use-toast';
 import { queryKeys } from '@/lib/queryKeys';
+
+/**
+ * Hook to fetch a single veterinarian by ID
+ */
+export const useVeterinarian = (id: string) => {
+  return useQuery({
+    queryKey: queryKeys.veterinarians.details(id),
+    queryFn: () => veterinariansService.getVeterinarianById(id),
+    enabled: !!id,
+  });
+};
+
+/**
+ * Hook to fetch veterinarians list with pagination and search
+ */
+export const useVeterinarians = (params: { page: number; q?: string }) => {
+  const pageSize = 10;
+  return useQuery({
+    queryKey: queryKeys.veterinarians.list(params),
+    queryFn: () =>
+      veterinariansService.getVeterinariansList({
+        page: params.page,
+        per_page: pageSize,
+        q: params.q || undefined,
+      }),
+  });
+};
 
 /**
  * Hook to create a new veterinarian

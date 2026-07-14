@@ -1,28 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import { DataTable, Column } from "@/components/admin/DataTable";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { usersService, User } from "@/features/admin/services/usersService";
-import { queryKeys } from "@/lib/queryKeys";
+import { useUsers } from "@/features/admin/hooks/usersHooks";
+import { User } from "@/features/admin/services/usersService";
 import { USER_ROLES, type UserRole, getRoleLabel, getRoleColor } from "@/constants/roles";
 
 const UsersListPage = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const pageSize = 10;
 
-  const { data: data, isLoading } = useQuery({
-    queryKey: queryKeys.users.list({ page, q: search }),
-    queryFn: () =>
-      usersService.getUsersList({
-        page,
-        per_page: pageSize,
-        q: search || undefined,
-      }),
-  });
+  const { data, isLoading } = useUsers({ page, q: search });
 
   const columns: Column<User>[] = [
     { key: "name", header: "Nom" },
@@ -48,7 +38,7 @@ const UsersListPage = () => {
         onEdit={(item) => navigate(`/admin/users/${item.id}/edit`)}
         onView={(item) => navigate(`/admin/users/${item.id}`)}
         canEdit canView
-        pagination={{ page, pageSize, total: data?.total || 0, onPageChange: setPage }}
+        pagination={{ page, pageSize: 10, total: data?.total || 0, onPageChange: setPage }}
         search={{ value: search, onChange: setSearch }}
       />
     </div>

@@ -1,26 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import { DataTable, Column } from "@/components/admin/DataTable";
-import { treatmentsService, Treatment, TreatmentDosage } from "@/features/admin/services/treatmentsService";
+import { useTreatments } from "@/features/admin/hooks/treatmentsHooks";
+import { Treatment, TreatmentDosage } from "@/features/admin/services/treatmentsService";
 import { Button } from "@/components/ui/button";
-import { queryKeys } from "@/lib/queryKeys";
 
 const TreatmentsListPage = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const pageSize = 10;
 
-  const { data: data, isLoading } = useQuery({
-    queryKey: queryKeys.treatments.list({ page, q: search }),
-    queryFn: () =>
-      treatmentsService.getTreatmentsList({
-        page,
-        per_page: pageSize,
-        q: search || undefined,
-      }),
-  });
+  const { data, isLoading } = useTreatments({ page, q: search });
 
   const formatDosage = (dosage?: TreatmentDosage) => {
     if (!dosage?.quantity || !dosage.unit) return "-";
@@ -75,7 +65,7 @@ const TreatmentsListPage = () => {
         onEdit={(item) => navigate(`/admin/treatments/${item.id}/edit`)}
         onView={(item) => navigate(`/admin/treatments/${item.id}`)}
         canEdit canView
-        pagination={{ page, pageSize, total: data?.total || 0, onPageChange: setPage }}
+        pagination={{ page, pageSize: 10, total: data?.total || 0, onPageChange: setPage }}
         search={{ value: search, onChange: setSearch }}
       />
     </div>

@@ -147,6 +147,7 @@ export const queryKeys = {
   veterinarians: {
     all: ['veterinarians'] as const,
     lists: () => ['veterinarians', 'list'] as const,
+    list: (filters: Record<string, unknown>) => ['veterinarians', 'list', filters] as const,
     details: (id: string | number) => ['veterinarians', 'details', id] as const,
   },
 } as const;

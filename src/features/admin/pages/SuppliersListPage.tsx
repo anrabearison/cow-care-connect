@@ -1,22 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import { DataTable, Column } from "@/components/admin/DataTable";
-import { purchasesService, Supplier } from "@/features/admin/services/purchasesService";
+import { useSuppliers } from "@/features/admin/hooks/purchasesHooks";
+import { Supplier } from "@/features/admin/services/purchasesService";
 import { Button } from "@/components/ui/button";
 import { Building2 } from "lucide-react";
-import { queryKeys } from "@/lib/queryKeys";
 
 const SuppliersListPage = () => {
     const navigate = useNavigate();
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
-    const pageSize = 10;
 
-    const { data, isLoading } = useQuery({
-        queryKey: queryKeys.suppliers.list({ page, q: search }),
-        queryFn: () => purchasesService.getSuppliersList({ q: search || undefined, page, per_page: pageSize }),
-    });
+    const { data, isLoading } = useSuppliers({ page, q: search });
 
     const columns: Column<Supplier>[] = [
         { key: "name", header: "Nom" },
@@ -45,7 +40,7 @@ const SuppliersListPage = () => {
                 onView={(item) => navigate(`/admin/suppliers/${item.id}`)}
                 onEdit={(item) => navigate(`/admin/suppliers/${item.id}/edit`)}
                 canView canEdit
-                pagination={{ page, pageSize, total: data?.total || 0, onPageChange: setPage }}
+                pagination={{ page, pageSize: 10, total: data?.total || 0, onPageChange: setPage }}
                 search={{ value: search, onChange: setSearch }}
             />
         </div>

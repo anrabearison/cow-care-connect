@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import { useUpdateSupplier } from '../hooks/purchasesHooks';
+import { useSupplier, useUpdateSupplier } from '../hooks/purchasesHooks';
+import { Loader2 } from 'lucide-react';
 
 interface FormState {
   name: string;
@@ -28,8 +29,41 @@ const SuppliersEditPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const updateSupplierMutation = useUpdateSupplier();
-  const [formData, setFormData] = useState<FormState>(initialFormState);
+  const { data: supplier, isLoading, error } = useSupplier(id!);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const initialData = useMemo(() => {
+    if (!supplier || !supplier.data) return initialFormState;
+    return {
+      name: supplier.data.name || '',
+      contactInfo: supplier.data.contactInfo || '',
+      phone: supplier.data.phone || '',
+      email: supplier.data.email || '',
+      address: supplier.data.address || '',
+    };
+  }, [supplier]);
+
+  const [formData, setFormData] = useState<FormState>(initialData);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (error || !supplier) {
+    return (
+      <div className="space-y-6 p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold">Erreur</h1>
+          <p className="text-muted-foreground mt-2">Fournisseur introuvable</p>
+        </div>
+        <Button onClick={() => navigate('/admin/suppliers')}>Retour à la liste</Button>
+      </div>
+    );
+  }
 
   const validate = () => {
     const nextErrors: Record<string, string> = {};

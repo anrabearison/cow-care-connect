@@ -1,31 +1,63 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { purchasesService, Purchase, CreatePurchaseData, UpdatePurchaseData, Supplier, CreateSupplierData, UpdateSupplierData } from '../services/purchasesService';
-import { useToast } from '@/hooks/use-toast';
+import { useMutation, useQuery, useQueryClient, UseMutationOptions } from '@tanstack/react-query';
+import { purchasesService, Purchase, CreatePurchaseData, UpdatePurchaseData, CreateSupplierData, UpdateSupplierData } from '../services/purchasesService';
 import { queryKeys } from '@/lib/queryKeys';
+
+/**
+ * Hook to fetch a single purchase by ID
+ */
+export const usePurchase = (id: string) => {
+  return useQuery({
+    queryKey: queryKeys.purchases.details(id),
+    queryFn: async () => {
+      const response = await purchasesService.getPurchaseById(id);
+      if (!response.success || !response.data) {
+        throw new Error(response.message || "Failed to fetch purchase");
+      }
+      return response.data;
+    },
+    enabled: !!id,
+  });
+};
+
+/**
+ * Hook to fetch a single supplier by ID
+ */
+export const useSupplier = (id: string) => {
+  return useQuery({
+    queryKey: queryKeys.suppliers.details(id),
+    queryFn: () => purchasesService.getSupplierById(id),
+    enabled: !!id,
+  });
+};
+
+/**
+ * Hook to fetch suppliers list with pagination and search
+ */
+export const useSuppliers = (params: { page: number; q?: string }) => {
+  const pageSize = 10;
+  return useQuery({
+    queryKey: queryKeys.suppliers.list(params),
+    queryFn: () =>
+      purchasesService.getSuppliersList({
+        page: params.page,
+        per_page: pageSize,
+        q: params.q || undefined,
+      }),
+  });
+};
 
 /**
  * Hook to create a new purchase
  */
-export const useCreatePurchase = () => {
+export const useCreatePurchase = (options?: Omit<UseMutationOptions<any, Error, CreatePurchaseData>, 'mutationFn'>) => {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   return useMutation({
     mutationFn: (data: CreatePurchaseData) => purchasesService.createPurchase(data),
-    onSuccess: () => {
+    ...options,
+    onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.purchases.all });
-      toast({
-        title: "Succès",
-        description: "Achat créé avec succès",
-      });
-    },
-    onError: (error: unknown) => {
-      const errorMessage = error instanceof Error ? error.message : "Erreur lors de la création";
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: errorMessage,
-      });
+      options?.onSuccess?.(data, variables, context);
     },
   });
 };
@@ -33,28 +65,17 @@ export const useCreatePurchase = () => {
 /**
  * Hook to update a purchase
  */
-export const useUpdatePurchase = () => {
+export const useUpdatePurchase = (options?: Omit<UseMutationOptions<any, Error, { id: string; data: UpdatePurchaseData }>, 'mutationFn'>) => {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdatePurchaseData }) =>
       purchasesService.updatePurchase(id, data),
-    onSuccess: (_, variables) => {
+    ...options,
+    onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.purchases.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.purchases.details(variables.id) });
-      toast({
-        title: "Succès",
-        description: "Achat mis à jour avec succès",
-      });
-    },
-    onError: (error: unknown) => {
-      const errorMessage = error instanceof Error ? error.message : "Erreur lors de la mise à jour";
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: errorMessage,
-      });
+      options?.onSuccess?.(data, variables, context);
     },
   });
 };
@@ -62,26 +83,15 @@ export const useUpdatePurchase = () => {
 /**
  * Hook to delete a purchase
  */
-export const useDeletePurchase = () => {
+export const useDeletePurchase = (options?: Omit<UseMutationOptions<any, Error, string>, 'mutationFn'>) => {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   return useMutation({
     mutationFn: (id: string) => purchasesService.deletePurchase(id),
-    onSuccess: () => {
+    ...options,
+    onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.purchases.all });
-      toast({
-        title: "Succès",
-        description: "Achat supprimé avec succès",
-      });
-    },
-    onError: (error: unknown) => {
-      const errorMessage = error instanceof Error ? error.message : "Erreur lors de la suppression";
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: errorMessage,
-      });
+      options?.onSuccess?.(data, variables, context);
     },
   });
 };
@@ -89,26 +99,15 @@ export const useDeletePurchase = () => {
 /**
  * Hook to create a new supplier
  */
-export const useCreateSupplier = () => {
+export const useCreateSupplier = (options?: Omit<UseMutationOptions<any, Error, CreateSupplierData>, 'mutationFn'>) => {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   return useMutation({
     mutationFn: (data: CreateSupplierData) => purchasesService.createSupplier(data),
-    onSuccess: () => {
+    ...options,
+    onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.suppliers.all });
-      toast({
-        title: "Succès",
-        description: "Fournisseur créé avec succès",
-      });
-    },
-    onError: (error: unknown) => {
-      const errorMessage = error instanceof Error ? error.message : "Erreur lors de la création";
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: errorMessage,
-      });
+      options?.onSuccess?.(data, variables, context);
     },
   });
 };
@@ -116,28 +115,17 @@ export const useCreateSupplier = () => {
 /**
  * Hook to update a supplier
  */
-export const useUpdateSupplier = () => {
+export const useUpdateSupplier = (options?: Omit<UseMutationOptions<any, Error, { id: string; data: UpdateSupplierData }>, 'mutationFn'>) => {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateSupplierData }) =>
       purchasesService.updateSupplier(id, data),
-    onSuccess: (_, variables) => {
+    ...options,
+    onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.suppliers.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.suppliers.details(variables.id) });
-      toast({
-        title: "Succès",
-        description: "Fournisseur mis à jour avec succès",
-      });
-    },
-    onError: (error: unknown) => {
-      const errorMessage = error instanceof Error ? error.message : "Erreur lors de la mise à jour";
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: errorMessage,
-      });
+      options?.onSuccess?.(data, variables, context);
     },
   });
 };
@@ -145,26 +133,15 @@ export const useUpdateSupplier = () => {
 /**
  * Hook to delete a supplier
  */
-export const useDeleteSupplier = () => {
+export const useDeleteSupplier = (options?: Omit<UseMutationOptions<any, Error, string>, 'mutationFn'>) => {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   return useMutation({
     mutationFn: (id: string) => purchasesService.deleteSupplier(id),
-    onSuccess: () => {
+    ...options,
+    onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.suppliers.all });
-      toast({
-        title: "Succès",
-        description: "Fournisseur supprimé avec succès",
-      });
-    },
-    onError: (error: unknown) => {
-      const errorMessage = error instanceof Error ? error.message : "Erreur lors de la suppression";
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: errorMessage,
-      });
+      options?.onSuccess?.(data, variables, context);
     },
   });
 };

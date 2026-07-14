@@ -1,7 +1,34 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { treatmentsService, Treatment, CreateTreatmentData, UpdateTreatmentData } from '../services/treatmentsService';
 import { useToast } from '@/hooks/use-toast';
 import { queryKeys } from '@/lib/queryKeys';
+
+/**
+ * Hook to fetch a single treatment by ID
+ */
+export const useTreatment = (id: string) => {
+  return useQuery({
+    queryKey: queryKeys.treatments.details(id),
+    queryFn: () => treatmentsService.getTreatmentById(id),
+    enabled: !!id,
+  });
+};
+
+/**
+ * Hook to fetch treatments list with pagination and search
+ */
+export const useTreatments = (params: { page: number; q?: string }) => {
+  const pageSize = 10;
+  return useQuery({
+    queryKey: queryKeys.treatments.list(params),
+    queryFn: () =>
+      treatmentsService.getTreatmentsList({
+        page: params.page,
+        per_page: pageSize,
+        q: params.q || undefined,
+      }),
+  });
+};
 
 /**
  * Hook to create a new treatment

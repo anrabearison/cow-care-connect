@@ -1,26 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import { DataTable, Column } from "@/components/admin/DataTable";
 import { Button } from "@/components/ui/button";
-import { veterinariansService, Veterinarian } from "@/features/admin/services/veterinariansService";
-import { queryKeys } from "@/lib/queryKeys";
+import { useVeterinarians } from "@/features/admin/hooks/veterinariansHooks";
+import { Veterinarian } from "@/features/admin/services/veterinariansService";
 
 const VeterinariansListPage = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const pageSize = 10;
 
-  const { data: data, isLoading } = useQuery({
-    queryKey: queryKeys.veterinarians.list({ page, q: search }),
-    queryFn: () =>
-      veterinariansService.getVeterinariansList({
-        page,
-        per_page: pageSize,
-        q: search || undefined,
-      }),
-  });
+  const { data, isLoading } = useVeterinarians({ page, q: search });
 
   const columns: Column<Veterinarian>[] = [
     { key: "name", header: "Nom" },
@@ -46,7 +36,7 @@ const VeterinariansListPage = () => {
         onEdit={(item) => navigate(`/admin/veterinarians/${item.id}/edit`)}
         onView={(item) => navigate(`/admin/veterinarians/${item.id}`)}
         canEdit canView
-        pagination={{ page, pageSize, total: data?.total || 0, onPageChange: setPage }}
+        pagination={{ page, pageSize: 10, total: data?.total || 0, onPageChange: setPage }}
         search={{ value: search, onChange: setSearch }}
       />
     </div>

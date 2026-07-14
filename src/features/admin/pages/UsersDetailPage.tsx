@@ -3,14 +3,36 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useToast } from '@/components/ui/use-toast';
-import { useDeleteUser } from '../hooks/usersHooks';
+import { useUser, useDeleteUser } from '../hooks/usersHooks';
+import { Loader2 } from 'lucide-react';
 
 const UsersDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
   const deleteUserMutation = useDeleteUser();
+  const { data: user, isLoading, error } = useUser(id!);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (error || !user || !user.data) {
+    return (
+      <div className="space-y-6 p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold">Erreur</h1>
+          <p className="text-muted-foreground mt-2">Utilisateur introuvable</p>
+        </div>
+        <Button onClick={() => navigate('/admin/users')}>Retour à la liste</Button>
+      </div>
+    );
+  }
 
   const handleDelete = () => {
     if (!id) return;

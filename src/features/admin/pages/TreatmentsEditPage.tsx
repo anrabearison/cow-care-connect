@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import { useUpdateTreatment } from '../hooks/treatmentsHooks';
+import { useTreatment, useUpdateTreatment } from '../hooks/treatmentsHooks';
+import { Loader2 } from 'lucide-react';
 
 interface FormState {
   cattleId: string;
@@ -40,8 +41,47 @@ const TreatmentsEditPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const updateTreatmentMutation = useUpdateTreatment();
-  const [formData, setFormData] = useState<FormState>(initialFormState);
+  const { data: treatment, isLoading, error } = useTreatment(id!);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const initialData = useMemo(() => {
+    if (!treatment || !treatment.data) return initialFormState;
+    return {
+      cattleId: treatment.data.cattleId || '',
+      type: typeof treatment.data.type === 'string' ? treatment.data.type : treatment.data.type?.name || '',
+      date: treatment.data.date || '',
+      product: typeof treatment.data.product === 'string' ? treatment.data.product : treatment.data.product?.name || '',
+      dosageQuantity: treatment.data.dosage?.quantity?.toString() || '',
+      dosageUnit: treatment.data.dosage?.unit || '',
+      dosageAnimalWeight: treatment.data.dosage?.animalWeight?.toString() || '',
+      dosageNotes: treatment.data.dosage?.notes || '',
+      administrationRoute: treatment.data.administrationRoute || '',
+      veterinarian: typeof treatment.data.veterinarian === 'string' ? treatment.data.veterinarian : treatment.data.veterinarian?.name || '',
+      notes: treatment.data.notes || '',
+    };
+  }, [treatment]);
+
+  const [formData, setFormData] = useState<FormState>(initialData);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (error || !treatment) {
+    return (
+      <div className="space-y-6 p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold">Erreur</h1>
+          <p className="text-muted-foreground mt-2">Traitement introuvable</p>
+        </div>
+        <Button onClick={() => navigate('/admin/treatments')}>Retour à la liste</Button>
+      </div>
+    );
+  }
 
   const validate = () => {
     const nextErrors: Record<string, string> = {};

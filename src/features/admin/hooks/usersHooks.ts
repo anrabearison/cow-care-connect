@@ -1,7 +1,34 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { usersService, User, CreateUserData, UpdateUserData } from '../services/usersService';
 import { useToast } from '@/hooks/use-toast';
 import { queryKeys } from '@/lib/queryKeys';
+
+/**
+ * Hook to fetch a single user by ID
+ */
+export const useUser = (id: string) => {
+  return useQuery({
+    queryKey: queryKeys.users.details(id),
+    queryFn: () => usersService.getUserById(id),
+    enabled: !!id,
+  });
+};
+
+/**
+ * Hook to fetch users list with pagination and search
+ */
+export const useUsers = (params: { page: number; q?: string }) => {
+  const pageSize = 10;
+  return useQuery({
+    queryKey: queryKeys.users.list(params),
+    queryFn: () =>
+      usersService.getUsersList({
+        page: params.page,
+        per_page: pageSize,
+        q: params.q || undefined,
+      }),
+  });
+};
 
 /**
  * Hook to create a new user

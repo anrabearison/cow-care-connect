@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
-import { useUpdateUser } from '../hooks/usersHooks';
+import { useUser, useUpdateUser } from '../hooks/usersHooks';
+import { Loader2 } from 'lucide-react';
 
 interface FormState {
   name: string;
@@ -28,8 +29,41 @@ const UsersEditPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const updateUserMutation = useUpdateUser();
-  const [formData, setFormData] = useState<FormState>(initialFormState);
+  const { data: user, isLoading, error } = useUser(id!);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const initialData = useMemo(() => {
+    if (!user || !user.data) return initialFormState;
+    return {
+      name: user.data.name || '',
+      email: user.data.email || '',
+      role: user.data.role || 'OWNER_USER',
+      ownerId: user.data.ownerId || '',
+      isActive: user.data.isActive ?? true,
+    };
+  }, [user]);
+
+  const [formData, setFormData] = useState<FormState>(initialData);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (error || !user || !user.data) {
+    return (
+      <div className="space-y-6 p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold">Erreur</h1>
+          <p className="text-muted-foreground mt-2">Utilisateur introuvable</p>
+        </div>
+        <Button onClick={() => navigate('/admin/users')}>Retour à la liste</Button>
+      </div>
+    );
+  }
 
   const validate = () => {
     const nextErrors: Record<string, string> = {};

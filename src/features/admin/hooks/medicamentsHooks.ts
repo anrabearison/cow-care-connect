@@ -1,7 +1,34 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { medicamentsService, Medicament, CreateMedicamentData, UpdateMedicamentData } from '../services/medicamentsService';
 import { useToast } from '@/hooks/use-toast';
 import { queryKeys } from '@/lib/queryKeys';
+
+/**
+ * Hook to fetch a single medicament by ID
+ */
+export const useMedicament = (id: string) => {
+  return useQuery({
+    queryKey: queryKeys.medicaments.details(id),
+    queryFn: () => medicamentsService.getMedicamentById(id),
+    enabled: !!id,
+  });
+};
+
+/**
+ * Hook to fetch medicaments list with pagination and search
+ */
+export const useMedicaments = (params: { page: number; q?: string }) => {
+  const pageSize = 10;
+  return useQuery({
+    queryKey: queryKeys.medicaments.list(params),
+    queryFn: () =>
+      medicamentsService.getMedicamentsList({
+        page: params.page,
+        per_page: pageSize,
+        q: params.q || undefined,
+      }),
+  });
+};
 
 /**
  * Hook to create a new medicament
