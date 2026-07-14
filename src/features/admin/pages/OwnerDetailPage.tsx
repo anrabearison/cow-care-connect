@@ -5,7 +5,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { ArrowLeft, Loader2, Edit, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { useOwner, useDeleteOwner } from "../hooks/ownersHooks";
 
 const OwnerDetailPage = () => {

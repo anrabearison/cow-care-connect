@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { DataTable, Column } from "@/components/admin/DataTable";
-import { FormDialog } from "@/components/admin/FormDialog";
-import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { DataTable, Column } from "@/components/shared/DataTable";
+import { FormDialog } from "@/components/shared/FormDialog";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { EventType, CreateEventTypeData, UpdateEventTypeData } from "@/features/admin/services/eventTypesService";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

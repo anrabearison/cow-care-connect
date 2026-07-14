@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { DataTable, Column } from "@/components/admin/DataTable";
+import { DataTable, Column } from "@/components/shared/DataTable";
 import { cattleService } from "@/features/cattle/services";
 import { Cattle } from "@/features/cattle/types";
 import { Badge } from "@/components/ui/badge";

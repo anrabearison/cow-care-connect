@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { DataTable, Column } from '@/components/admin/DataTable';
-import { ConfirmDialog } from '@/components/admin/ConfirmDialog';
-import { FormDialog } from '@/components/admin/FormDialog';
+import { DataTable, Column } from '@/components/shared/DataTable';
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
+import { FormDialog } from '@/components/shared/FormDialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';

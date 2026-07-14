@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useStatus, useDeleteStatus } from "@/features/admin/hooks/statusHooks";
 import { ArrowLeft, Loader2 } from "lucide-react";
-import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { useState } from "react";
 
 const StatusDetailPage = () => {

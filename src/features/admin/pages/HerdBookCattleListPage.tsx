@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { DataTable, Column } from "@/components/admin/DataTable";
-import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { DataTable, Column } from "@/components/shared/DataTable";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { herdBookCattleService, HerdBookCattle } from "@/features/admin/services/herdBookCattleService";
 import { useDeleteHerdBookCattle } from "../hooks/herdBookCattleHooks";
 import { queryKeys } from "@/lib/queryKeys";

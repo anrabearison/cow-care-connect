@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { DataTable, Column } from "@/components/admin/DataTable";
-import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { DataTable, Column } from "@/components/shared/DataTable";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { ownersService, Owner } from "@/features/admin/services/ownersService";
 import { useToast } from "@/components/ui/use-toast";
 import { useDeleteOwner } from "../hooks/ownersHooks";

@@ -2,7 +2,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { ConfirmDialog } from '@/components/admin/ConfirmDialog';
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import { ArrowLeft, Edit, Loader2, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useCattleById } from '@/features/cattle/hooks';

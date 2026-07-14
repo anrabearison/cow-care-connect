@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { DataTable, Column } from "@/components/admin/DataTable";
+import { DataTable, Column } from "@/components/shared/DataTable";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useUsers } from "@/features/admin/hooks/usersHooks";

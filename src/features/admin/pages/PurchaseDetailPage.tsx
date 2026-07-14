@@ -6,7 +6,7 @@ import { ArrowLeft, Loader2, Edit, Trash2, ShoppingCart } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { usePurchase, useDeletePurchase } from "../hooks/purchasesHooks";
 
 const PurchaseDetailPage = () => {

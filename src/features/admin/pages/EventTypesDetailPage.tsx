@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useEventType, useDeleteEventType } from "@/features/admin/hooks/eventTypesHooks";
 import { ArrowLeft, Loader2 } from "lucide-react";
-import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { useState } from "react";
 
 const EventTypesDetailPage = () => {

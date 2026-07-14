@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { DataTable, Column } from "@/components/admin/DataTable";
+import { DataTable, Column } from "@/components/shared/DataTable";
 import { useTreatments } from "@/features/admin/hooks/treatmentsHooks";
 import { Treatment, TreatmentDosage } from "@/features/admin/services/treatmentsService";
 import { Button } from "@/components/ui/button";

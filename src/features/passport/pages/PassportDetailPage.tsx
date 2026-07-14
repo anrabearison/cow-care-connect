@@ -9,7 +9,7 @@ import { passportKeys, usePassport, useDeletePassport } from "../hooks";
 import { Passport, PassportStatus } from "../types/passport.types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { toast } from "sonner";
 
 const STATUS_BADGES: Record<PassportStatus, { label: string; className: string }> = {
