@@ -39,8 +39,8 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
     const { data: medicamentsData, isLoading: medicamentsLoading } = useMedicaments();
     const { data: veterinariansData, isLoading: veterinariansLoading } = useVeterinarians();
 
-    const medicaments = useMemo(() => medicamentsData?.data || [], [medicamentsData?.data]);
-    const veterinarians = useMemo(() => veterinariansData?.data || [], [veterinariansData?.data]);
+    const medicaments = useMemo(() => Array.isArray(medicamentsData?.data) ? medicamentsData.data : [], [medicamentsData?.data]);
+    const veterinarians = useMemo(() => Array.isArray(veterinariansData?.data) ? veterinariansData.data : [], [veterinariansData?.data]);
     const loading = medicamentsLoading || veterinariansLoading;
 
 

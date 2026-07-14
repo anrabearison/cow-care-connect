@@ -27,7 +27,7 @@ export const AddEventModal: React.FC<AddEventModalProps> = ({ open, onOpenChange
     });
 
     const { data: eventTypesData, isLoading: loading } = useEventTypes();
-    const eventTypes = eventTypesData?.data ?? [];
+    const eventTypes = Array.isArray(eventTypesData?.data) ? eventTypesData.data : [];
 
     const validateForm = () => {
         const newErrors: Record<string, string> = {};

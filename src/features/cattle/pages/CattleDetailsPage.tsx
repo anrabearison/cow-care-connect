@@ -134,7 +134,8 @@ export default function CattleDetailsPage() {
     if (typeof vet === 'object' && vet?.name) {
       return vet.name;
     }
-    const vetData = (veterinariansData?.data as { id: string; name: string }[])?.find(v => v.id === vet);
+    const vets = Array.isArray(veterinariansData?.data) ? veterinariansData.data : [];
+    const vetData = vets.find(v => v.id === vet);
     return vetData ? vetData.name : 'Vétérinaire inconnu';
   };
 
@@ -142,17 +143,20 @@ export default function CattleDetailsPage() {
     if (typeof med === 'object' && med?.name) {
       return med.name;
     }
-    const medData = (medicamentsData?.data as { id: string; name: string }[])?.find(m => m.id === med);
+    const meds = Array.isArray(medicamentsData?.data) ? medicamentsData.data : [];
+    const medData = meds.find(m => m.id === med);
     return medData ? medData.name : 'Médicament inconnu';
   };
 
   const getTypeEvenementName = (id: string) => {
-    const type = eventTypesData?.data?.find((t) => t.id === id);
+    const types = Array.isArray(eventTypesData?.data) ? eventTypesData.data : [];
+    const type = types.find((t) => t.id === id);
     return type ? getEventTypeLabel(type) : 'Type inconnu';
   };
 
   const getTypeEvenementIcon = (id: string) => {
-    const type = eventTypesData?.data?.find((t: { id: string; icone?: string }) => t.id === id);
+    const types = Array.isArray(eventTypesData?.data) ? eventTypesData.data : [];
+    const type = types.find((t: { id: string; icone?: string }) => t.id === id);
     return resolveIconEmoji(type?.icone, '📝');
   };
 
