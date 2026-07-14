@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { DataTable, Column } from "@/components/shared/DataTable";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { herdBookCattleService, HerdBookCattle } from "@/features/admin/services/herdBookCattleService";
-import { useDeleteHerdBookCattle } from "../hooks/herdBookCattleHooks";
+import { useDeleteHerdBookCattle } from "../../hooks/herdBookCattleHooks";
 import { queryKeys } from "@/lib/queryKeys";
 
 const HerdBookCattleListPage = () => {

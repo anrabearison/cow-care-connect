@@ -14,7 +14,7 @@ vi.mock('@/components/ui/use-toast', () => ({
   useToast: () => ({ toast: mockToast }),
 }));
 
-vi.mock('../../services/herdBookCattleService', () => ({
+vi.mock('../../../services/herdBookCattleService', () => ({
   herdBookCattleService: {
     createHerdBookCattle: vi.fn(),
   },

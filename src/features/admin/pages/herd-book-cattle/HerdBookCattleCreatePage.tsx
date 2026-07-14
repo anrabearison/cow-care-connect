@@ -10,7 +10,7 @@ import { cattleService } from "@/features/cattle/services";
 import { ArrowLeft } from "lucide-react";
 import { queryKeys } from "@/lib/queryKeys";
 import HerdBookCattleForm from "./HerdBookCattleForm";
-import { useHerdBookCattleReferenceData } from "../hooks/useHerdBookCattleReferenceData";
+import { useHerdBookCattleReferenceData } from "../../hooks/useHerdBookCattleReferenceData";
 
 const HerdBookCattleCreatePage = () => {
   const navigate = useNavigate();

@@ -69,10 +69,10 @@ const HerdBooksListPage = lazy(() => import("@/features/admin/pages/HerdBooksLis
 const HerdBookCreatePage = lazy(() => import("@/features/admin/pages/HerdBookCreatePage"));
 const HerdBookEditPage = lazy(() => import("@/features/admin/pages/HerdBookEditPage"));
 const HerdBookDetailPage = lazy(() => import("@/features/admin/pages/HerdBookDetailPage"));
-const HerdBookCattleListPage = lazy(() => import("@/features/admin/pages/HerdBookCattleListPage"));
-const HerdBookCattleCreatePage = lazy(() => import("@/features/admin/pages/HerdBookCattleCreatePage"));
-const HerdBookCattleEditPage = lazy(() => import("@/features/admin/pages/HerdBookCattleEditPage"));
-const HerdBookCattleDetailPage = lazy(() => import("@/features/admin/pages/HerdBookCattleDetailPage"));
+const HerdBookCattleListPage = lazy(() => import("@/features/admin/pages/herd-book-cattle/HerdBookCattleListPage"));
+const HerdBookCattleCreatePage = lazy(() => import("@/features/admin/pages/herd-book-cattle/HerdBookCattleCreatePage"));
+const HerdBookCattleEditPage = lazy(() => import("@/features/admin/pages/herd-book-cattle/HerdBookCattleEditPage"));
+const HerdBookCattleDetailPage = lazy(() => import("@/features/admin/pages/herd-book-cattle/HerdBookCattleDetailPage"));
 const OwnersListPage = lazy(() => import("@/features/admin/pages/OwnersListPage"));
 const OwnerCreatePage = lazy(() => import("@/features/admin/pages/OwnerCreatePage"));
 const OwnerEditPage = lazy(() => import("@/features/admin/pages/OwnerEditPage"));
