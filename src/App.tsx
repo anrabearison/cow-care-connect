@@ -34,6 +34,9 @@ const VeterinariansListPage = lazy(() => import("@/features/admin/pages/Veterina
 const MedicamentsListPage = lazy(() => import("@/features/admin/pages/MedicamentsListPage"));
 const EventTypesListPage = lazy(() => import("@/features/admin/pages/EventTypesListPage"));
 const EventsListPage = lazy(() => import("@/features/admin/pages/EventsListPage"));
+const EventsCreatePage = lazy(() => import("@/features/admin/pages/EventsCreatePage"));
+const EventsEditPage = lazy(() => import("@/features/admin/pages/EventsEditPage"));
+const EventsDetailPage = lazy(() => import("@/features/admin/pages/EventsDetailPage"));
 const TreatmentsListPage = lazy(() => import("@/features/admin/pages/TreatmentsListPage"));
 const TreatmentsCreatePage = lazy(() => import("@/features/admin/pages/TreatmentsCreatePage"));
 const TreatmentsEditPage = lazy(() => import("@/features/admin/pages/TreatmentsEditPage"));
@@ -93,6 +96,9 @@ const AppContent = () => {
           <Route path="medicaments" element={<MedicamentsListPage />} />
           <Route path="event-types" element={<EventTypesListPage />} />
           <Route path="events" element={<EventsListPage />} />
+          <Route path="events/new" element={<EventsCreatePage />} />
+          <Route path="events/:id" element={<EventsDetailPage />} />
+          <Route path="events/:id/edit" element={<EventsEditPage />} />
           <Route path="treatments" element={<TreatmentsListPage />} />
           <Route path="treatments/new" element={<TreatmentsCreatePage />} />
           <Route path="treatments/:id" element={<TreatmentsDetailPage />} />
