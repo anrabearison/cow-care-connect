@@ -1,21 +1,19 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { DataTable, Column } from "@/components/admin/DataTable";
 import { FormDialog } from "@/components/admin/FormDialog";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
-import { statusService, Status, CreateStatusData, UpdateStatusData } from "@/features/admin/services/statusService";
+import { Status, CreateStatusData, UpdateStatusData } from "@/features/admin/services/statusService";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
-import { useCreateStatus, useUpdateStatus, useDeleteStatus } from "../hooks/statusHooks";
+import { useStatuses, useCreateStatus, useUpdateStatus, useDeleteStatus } from "../hooks/statusHooks";
 
 const StatusListPage = () => {
   const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const pageSize = 10;
   const [selectedItem, setSelectedItem] = useState<Status | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -27,15 +25,7 @@ const StatusListPage = () => {
   const updateStatusMutation = useUpdateStatus();
   const deleteStatusMutation = useDeleteStatus();
 
-  const { data: data, isLoading } = useQuery({
-    queryKey: queryKeys.status.list({ page, q: search }),
-    queryFn: () =>
-      statusService.getStatusList({
-        page,
-        per_page: pageSize,
-        q: search || undefined,
-      }),
-  });
+  const { data, isLoading } = useStatuses({ page, q: search });
 
   const handleCreate = () => {
     createStatusMutation.mutate(formData);
@@ -93,7 +83,7 @@ const StatusListPage = () => {
         onDelete={(item) => { setSelectedItem(item); setIsDeleteDialogOpen(true); }}
         onAdd={openCreateDialog}
         canEdit canDelete canView canAdd
-        pagination={{ page, pageSize, total: data?.total || 0, onPageChange: setPage }}
+        pagination={{ page, pageSize: 10, total: data?.total || 0, onPageChange: setPage }}
         search={{ value: search, onChange: setSearch }}
       />
 

@@ -1,7 +1,17 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { invitationsService, InvitationCreateData, InvitationResponse } from '../services/invitationsService';
 import { useToast } from '@/hooks/use-toast';
 import { queryKeys } from '@/lib/queryKeys';
+
+/**
+ * Hook to fetch invitations list with optional email filter
+ */
+export const useInvitations = (params?: { email?: string }) => {
+  return useQuery({
+    queryKey: queryKeys.users.list({ page: 1, email: params?.email }),
+    queryFn: () => invitationsService.getInvitations({ email: params?.email }),
+  });
+};
 
 /**
  * Hook to create a new invitation

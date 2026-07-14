@@ -13,6 +13,7 @@ vi.mock('@/components/ui/use-toast', () => ({
 
 vi.mock('@/features/admin/hooks/eventsHooks', () => ({
   useDeleteEvent: () => ({ mutate: mockDeleteMutate, isPending: false }),
+  useEvent: () => ({ data: { data: { id: '1', name: 'Test Event' } }, isLoading: false, error: null }),
 }));
 
 vi.mock('react-router-dom', () => ({

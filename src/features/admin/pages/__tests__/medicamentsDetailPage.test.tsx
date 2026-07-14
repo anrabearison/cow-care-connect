@@ -13,6 +13,7 @@ vi.mock('@/components/ui/use-toast', () => ({
 
 vi.mock('@/features/admin/hooks/medicamentsHooks', () => ({
   useDeleteMedicament: () => ({ mutate: mockDeleteMutate, isPending: false }),
+  useMedicament: () => ({ data: { data: { id: '1', name: 'Test Medicament' } }, isLoading: false, error: null }),
 }));
 
 vi.mock('react-router-dom', () => ({

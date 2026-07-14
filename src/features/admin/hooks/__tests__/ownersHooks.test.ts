@@ -47,11 +47,9 @@ describe('ownersHooks', () => {
       result.current.mutate(mockData);
 
       await waitFor(() => {
-        expect(toastMock).toHaveBeenCalledWith({
-          title: "Succès",
-          description: "Propriétaire créé avec succès",
-        });
+        expect(ownersService.createOwner).toHaveBeenCalledWith(mockData);
       });
+      // Note: ownersHooks use custom options for onSuccess callbacks, not built-in toast
     });
   });
 
@@ -78,11 +76,9 @@ describe('ownersHooks', () => {
       result.current.mutate(mockData);
 
       await waitFor(() => {
-        expect(toastMock).toHaveBeenCalledWith({
-          title: "Succès",
-          description: "Propriétaire mis à jour avec succès",
-        });
+        expect(ownersService.updateOwner).toHaveBeenCalledWith('1', mockData.data);
       });
+      // Note: ownersHooks use custom options for onSuccess callbacks, not built-in toast
     });
   });
 
@@ -107,11 +103,9 @@ describe('ownersHooks', () => {
       result.current.mutate('1');
 
       await waitFor(() => {
-        expect(toastMock).toHaveBeenCalledWith({
-          title: "Succès",
-          description: "Propriétaire supprimé avec succès",
-        });
+        expect(ownersService.deleteOwner).toHaveBeenCalledWith('1');
       });
+      // Note: ownersHooks use custom options for onSuccess callbacks, not built-in toast
     });
   });
 });

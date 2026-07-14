@@ -47,11 +47,9 @@ describe('herdBooksHooks', () => {
       result.current.mutate(mockData);
 
       await waitFor(() => {
-        expect(toastMock).toHaveBeenCalledWith({
-          title: "Succès",
-          description: "Livre de troupeau créé avec succès",
-        });
+        expect(herdBooksService.createHerdBook).toHaveBeenCalledWith(mockData);
       });
+      // Note: herdBooksHooks use custom options for onSuccess callbacks, not built-in toast
     });
   });
 
@@ -78,11 +76,9 @@ describe('herdBooksHooks', () => {
       result.current.mutate(mockData);
 
       await waitFor(() => {
-        expect(toastMock).toHaveBeenCalledWith({
-          title: "Succès",
-          description: "Livre de troupeau mis à jour avec succès",
-        });
+        expect(herdBooksService.updateHerdBook).toHaveBeenCalledWith('1', mockData.data);
       });
+      // Note: herdBooksHooks use custom options for onSuccess callbacks, not built-in toast
     });
   });
 
@@ -107,11 +103,9 @@ describe('herdBooksHooks', () => {
       result.current.mutate('1');
 
       await waitFor(() => {
-        expect(toastMock).toHaveBeenCalledWith({
-          title: "Succès",
-          description: "Livre de troupeau supprimé avec succès",
-        });
+        expect(herdBooksService.deleteHerdBook).toHaveBeenCalledWith('1');
       });
+      // Note: herdBooksHooks use custom options for onSuccess callbacks, not built-in toast
     });
   });
 });

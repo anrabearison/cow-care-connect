@@ -13,6 +13,7 @@ vi.mock('@/components/ui/use-toast', () => ({
 
 vi.mock('@/features/admin/hooks/veterinariansHooks', () => ({
   useDeleteVeterinarian: () => ({ mutate: mockDeleteMutate, isPending: false }),
+  useVeterinarian: () => ({ data: { data: { id: '1', name: 'Test Veterinarian' } }, isLoading: false, error: null }),
 }));
 
 vi.mock('react-router-dom', () => ({

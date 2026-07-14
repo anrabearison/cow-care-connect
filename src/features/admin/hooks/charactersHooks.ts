@@ -1,7 +1,34 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { charactersService, Character, CreateCharacterData, UpdateCharacterData } from '../services/charactersService';
 import { useToast } from '@/hooks/use-toast';
 import { queryKeys } from '@/lib/queryKeys';
+
+/**
+ * Hook to fetch a single character by ID
+ */
+export const useCharacter = (id: string) => {
+  return useQuery({
+    queryKey: queryKeys.characters.details(id),
+    queryFn: () => charactersService.getCharacterById(id),
+    enabled: !!id,
+  });
+};
+
+/**
+ * Hook to fetch characters list with pagination and search
+ */
+export const useCharacters = (params: { page: number; q?: string }) => {
+  const pageSize = 10;
+  return useQuery({
+    queryKey: queryKeys.characters.list(params),
+    queryFn: () =>
+      charactersService.getCharactersList({
+        page: params.page,
+        per_page: pageSize,
+        q: params.q || undefined,
+      }),
+  });
+};
 
 /**
  * Hook to create a new character

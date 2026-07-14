@@ -42,6 +42,9 @@ const MedicamentsCreatePage = lazy(() => import("@/features/admin/pages/Medicame
 const MedicamentsEditPage = lazy(() => import("@/features/admin/pages/MedicamentsEditPage"));
 const MedicamentsDetailPage = lazy(() => import("@/features/admin/pages/MedicamentsDetailPage"));
 const EventTypesListPage = lazy(() => import("@/features/admin/pages/EventTypesListPage"));
+const EventTypesCreatePage = lazy(() => import("@/features/admin/pages/EventTypesCreatePage"));
+const EventTypesEditPage = lazy(() => import("@/features/admin/pages/EventTypesEditPage"));
+const EventTypesDetailPage = lazy(() => import("@/features/admin/pages/EventTypesDetailPage"));
 const EventsListPage = lazy(() => import("@/features/admin/pages/EventsListPage"));
 const EventsCreatePage = lazy(() => import("@/features/admin/pages/EventsCreatePage"));
 const EventsEditPage = lazy(() => import("@/features/admin/pages/EventsEditPage"));
@@ -51,8 +54,17 @@ const TreatmentsCreatePage = lazy(() => import("@/features/admin/pages/Treatment
 const TreatmentsEditPage = lazy(() => import("@/features/admin/pages/TreatmentsEditPage"));
 const TreatmentsDetailPage = lazy(() => import("@/features/admin/pages/TreatmentsDetailPage"));
 const CategoriesListPage = lazy(() => import("@/features/admin/pages/CategoriesListPage"));
+const CategoriesCreatePage = lazy(() => import("@/features/admin/pages/CategoriesCreatePage"));
+const CategoriesEditPage = lazy(() => import("@/features/admin/pages/CategoriesEditPage"));
+const CategoriesDetailPage = lazy(() => import("@/features/admin/pages/CategoriesDetailPage"));
 const StatusListPage = lazy(() => import("@/features/admin/pages/StatusListPage"));
+const StatusCreatePage = lazy(() => import("@/features/admin/pages/StatusCreatePage"));
+const StatusEditPage = lazy(() => import("@/features/admin/pages/StatusEditPage"));
+const StatusDetailPage = lazy(() => import("@/features/admin/pages/StatusDetailPage"));
 const CharactersListPage = lazy(() => import("@/features/admin/pages/CharactersListPage"));
+const CharactersCreatePage = lazy(() => import("@/features/admin/pages/CharactersCreatePage"));
+const CharactersEditPage = lazy(() => import("@/features/admin/pages/CharactersEditPage"));
+const CharactersDetailPage = lazy(() => import("@/features/admin/pages/CharactersDetailPage"));
 const HerdBooksListPage = lazy(() => import("@/features/admin/pages/HerdBooksListPage"));
 const HerdBookCreatePage = lazy(() => import("@/features/admin/pages/HerdBookCreatePage"));
 const HerdBookEditPage = lazy(() => import("@/features/admin/pages/HerdBookEditPage"));
@@ -125,6 +137,9 @@ const AppContent = () => {
           <Route path="medicaments/:id" element={<MedicamentsDetailPage />} />
           <Route path="medicaments/:id/edit" element={<MedicamentsEditPage />} />
           <Route path="event-types" element={<EventTypesListPage />} />
+          <Route path="event-types/new" element={<EventTypesCreatePage />} />
+          <Route path="event-types/:id" element={<EventTypesDetailPage />} />
+          <Route path="event-types/:id/edit" element={<EventTypesEditPage />} />
           <Route path="events" element={<EventsListPage />} />
           <Route path="events/new" element={<EventsCreatePage />} />
           <Route path="events/:id" element={<EventsDetailPage />} />
@@ -134,8 +149,17 @@ const AppContent = () => {
           <Route path="treatments/:id" element={<TreatmentsDetailPage />} />
           <Route path="treatments/:id/edit" element={<TreatmentsEditPage />} />
           <Route path="categories" element={<CategoriesListPage />} />
+          <Route path="categories/new" element={<CategoriesCreatePage />} />
+          <Route path="categories/:id" element={<CategoriesDetailPage />} />
+          <Route path="categories/:id/edit" element={<CategoriesEditPage />} />
           <Route path="status" element={<StatusListPage />} />
+          <Route path="status/new" element={<StatusCreatePage />} />
+          <Route path="status/:id" element={<StatusDetailPage />} />
+          <Route path="status/:id/edit" element={<StatusEditPage />} />
           <Route path="characters" element={<CharactersListPage />} />
+          <Route path="characters/new" element={<CharactersCreatePage />} />
+          <Route path="characters/:id" element={<CharactersDetailPage />} />
+          <Route path="characters/:id/edit" element={<CharactersEditPage />} />
           <Route path="herd-books" element={<HerdBooksListPage />} />
           <Route path="herd-books/new" element={<HerdBookCreatePage />} />
           <Route path="herd-books/:id" element={<HerdBookDetailPage />} />

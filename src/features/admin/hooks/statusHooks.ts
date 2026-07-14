@@ -1,7 +1,34 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { statusService, Status, CreateStatusData, UpdateStatusData } from '../services/statusService';
 import { useToast } from '@/hooks/use-toast';
 import { queryKeys } from '@/lib/queryKeys';
+
+/**
+ * Hook to fetch a single status by ID
+ */
+export const useStatus = (id: string) => {
+  return useQuery({
+    queryKey: queryKeys.status.details(id),
+    queryFn: () => statusService.getStatusById(id),
+    enabled: !!id,
+  });
+};
+
+/**
+ * Hook to fetch status list with pagination and search
+ */
+export const useStatuses = (params: { page: number; q?: string }) => {
+  const pageSize = 10;
+  return useQuery({
+    queryKey: queryKeys.status.list(params),
+    queryFn: () =>
+      statusService.getStatusList({
+        page: params.page,
+        per_page: pageSize,
+        q: params.q || undefined,
+      }),
+  });
+};
 
 /**
  * Hook to create a new status

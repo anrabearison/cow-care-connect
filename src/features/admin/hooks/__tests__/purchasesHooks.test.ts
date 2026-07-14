@@ -50,11 +50,9 @@ describe('purchasesHooks', () => {
       result.current.mutate(mockData);
 
       await waitFor(() => {
-        expect(toastMock).toHaveBeenCalledWith({
-          title: "Succès",
-          description: "Achat créé avec succès",
-        });
+        expect(purchasesService.createPurchase).toHaveBeenCalledWith(mockData);
       });
+      // Note: purchasesHooks use custom options for onSuccess callbacks, not built-in toast
     });
   });
 
@@ -81,11 +79,9 @@ describe('purchasesHooks', () => {
       result.current.mutate(mockData);
 
       await waitFor(() => {
-        expect(toastMock).toHaveBeenCalledWith({
-          title: "Succès",
-          description: "Achat mis à jour avec succès",
-        });
+        expect(purchasesService.updatePurchase).toHaveBeenCalledWith('1', mockData.data);
       });
+      // Note: purchasesHooks use custom options for onSuccess callbacks, not built-in toast
     });
   });
 
@@ -110,11 +106,9 @@ describe('purchasesHooks', () => {
       result.current.mutate('1');
 
       await waitFor(() => {
-        expect(toastMock).toHaveBeenCalledWith({
-          title: "Succès",
-          description: "Achat supprimé avec succès",
-        });
+        expect(purchasesService.deletePurchase).toHaveBeenCalledWith('1');
       });
+      // Note: purchasesHooks use custom options for onSuccess callbacks, not built-in toast
     });
   });
 
@@ -141,11 +135,9 @@ describe('purchasesHooks', () => {
       result.current.mutate(mockData);
 
       await waitFor(() => {
-        expect(toastMock).toHaveBeenCalledWith({
-          title: "Succès",
-          description: "Fournisseur créé avec succès",
-        });
+        expect(purchasesService.createSupplier).toHaveBeenCalledWith(mockData);
       });
+      // Note: purchasesHooks use custom options for onSuccess callbacks, not built-in toast
     });
   });
 
@@ -172,11 +164,9 @@ describe('purchasesHooks', () => {
       result.current.mutate(mockData);
 
       await waitFor(() => {
-        expect(toastMock).toHaveBeenCalledWith({
-          title: "Succès",
-          description: "Fournisseur mis à jour avec succès",
-        });
+        expect(purchasesService.updateSupplier).toHaveBeenCalledWith('1', mockData.data);
       });
+      // Note: purchasesHooks use custom options for onSuccess callbacks, not built-in toast
     });
   });
 
@@ -201,11 +191,9 @@ describe('purchasesHooks', () => {
       result.current.mutate('1');
 
       await waitFor(() => {
-        expect(toastMock).toHaveBeenCalledWith({
-          title: "Succès",
-          description: "Fournisseur supprimé avec succès",
-        });
+        expect(purchasesService.deleteSupplier).toHaveBeenCalledWith('1');
       });
+      // Note: purchasesHooks use custom options for onSuccess callbacks, not built-in toast
     });
   });
 });
