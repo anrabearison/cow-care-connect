@@ -1,0 +1,147 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/components/ui/use-toast';
+import { useCreateMedicament } from '../../hooks/medicamentsHooks';
+
+interface FormState {
+  name: string;
+  type: string;
+  dosageQuantity: string;
+  dosageUnit: string;
+  dosageWeight: string;
+  dosageWeightUnit: string;
+  dosageNotes: string;
+  defaultRoute: string;
+  withdrawalPeriodMeat: string;
+  withdrawalPeriodMilk: string;
+  manufacturer: string;
+  notes: string;
+}
+
+const initialFormState: FormState = {
+  name: '',
+  type: '',
+  dosageQuantity: '',
+  dosageUnit: '',
+  dosageWeight: '',
+  dosageWeightUnit: '',
+  dosageNotes: '',
+  defaultRoute: '',
+  withdrawalPeriodMeat: '',
+  withdrawalPeriodMilk: '',
+  manufacturer: '',
+  notes: '',
+};
+
+const MedicamentsCreatePage = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const createMedicamentMutation = useCreateMedicament();
+  const [formData, setFormData] = useState<FormState>(initialFormState);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validate = () => {
+    const nextErrors: Record<string, string> = {};
+    if (!formData.name) nextErrors.name = 'Le nom est obligatoire';
+    if (!formData.type) nextErrors.type = 'Le type est obligatoire';
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    createMedicamentMutation.mutate({
+      name: formData.name,
+      type: formData.type,
+      dosageQuantity: formData.dosageQuantity ? Number(formData.dosageQuantity) : undefined,
+      dosageUnit: formData.dosageUnit || undefined,
+      dosageWeight: formData.dosageWeight ? Number(formData.dosageWeight) : undefined,
+      dosageWeightUnit: formData.dosageWeightUnit || undefined,
+      dosageNotes: formData.dosageNotes || undefined,
+      defaultRoute: formData.defaultRoute || undefined,
+      withdrawalPeriodMeat: formData.withdrawalPeriodMeat ? Number(formData.withdrawalPeriodMeat) : undefined,
+      withdrawalPeriodMilk: formData.withdrawalPeriodMilk ? Number(formData.withdrawalPeriodMilk) : undefined,
+      manufacturer: formData.manufacturer || undefined,
+      notes: formData.notes || undefined,
+    });
+    toast({ title: 'Succès', description: 'Médicament créé avec succès' });
+    navigate('/admin/medicaments');
+  };
+
+  return (
+    <div className="space-y-6 p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
+      <div>
+        <h1 className="text-2xl sm:text-3xl font-bold">Nouveau médicament</h1>
+        <p className="text-muted-foreground mt-2">Créer un médicament</p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6 rounded-lg border bg-background p-6 shadow-sm">
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-2">
+            <Label htmlFor="name">Nom *</Label>
+            <Input id="name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className={errors.name ? 'border-red-500' : ''} />
+            {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="type">Type *</Label>
+            <Input id="type" value={formData.type} onChange={(e) => setFormData({ ...formData, type: e.target.value })} className={errors.type ? 'border-red-500' : ''} />
+            {errors.type && <p className="text-sm text-red-500">{errors.type}</p>}
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="manufacturer">Fabricant</Label>
+            <Input id="manufacturer" value={formData.manufacturer} onChange={(e) => setFormData({ ...formData, manufacturer: e.target.value })} />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="defaultRoute">Route d'administration par défaut</Label>
+            <Input id="defaultRoute" value={formData.defaultRoute} onChange={(e) => setFormData({ ...formData, defaultRoute: e.target.value })} />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="dosageQuantity">Quantité dosage</Label>
+            <Input id="dosageQuantity" type="number" value={formData.dosageQuantity} onChange={(e) => setFormData({ ...formData, dosageQuantity: e.target.value })} />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="dosageUnit">Unité dosage</Label>
+            <Input id="dosageUnit" value={formData.dosageUnit} onChange={(e) => setFormData({ ...formData, dosageUnit: e.target.value })} />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="dosageWeight">Poids dosage</Label>
+            <Input id="dosageWeight" type="number" value={formData.dosageWeight} onChange={(e) => setFormData({ ...formData, dosageWeight: e.target.value })} />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="dosageWeightUnit">Unité poids dosage</Label>
+            <Input id="dosageWeightUnit" value={formData.dosageWeightUnit} onChange={(e) => setFormData({ ...formData, dosageWeightUnit: e.target.value })} />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="withdrawalPeriodMeat">Délai d'attente viande (jours)</Label>
+            <Input id="withdrawalPeriodMeat" type="number" value={formData.withdrawalPeriodMeat} onChange={(e) => setFormData({ ...formData, withdrawalPeriodMeat: e.target.value })} />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="withdrawalPeriodMilk">Délai d'attente lait (jours)</Label>
+            <Input id="withdrawalPeriodMilk" type="number" value={formData.withdrawalPeriodMilk} onChange={(e) => setFormData({ ...formData, withdrawalPeriodMilk: e.target.value })} />
+          </div>
+          <div className="grid gap-2 md:col-span-2">
+            <Label htmlFor="dosageNotes">Notes dosage</Label>
+            <Textarea id="dosageNotes" value={formData.dosageNotes} onChange={(e) => setFormData({ ...formData, dosageNotes: e.target.value })} rows={2} />
+          </div>
+          <div className="grid gap-2 md:col-span-2">
+            <Label htmlFor="notes">Notes</Label>
+            <Textarea id="notes" value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} rows={3} />
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-4">
+          <Button type="button" variant="outline" onClick={() => navigate('/admin/medicaments')}>Annuler</Button>
+          <Button type="submit">Créer</Button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default MedicamentsCreatePage;
