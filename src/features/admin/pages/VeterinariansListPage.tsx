@@ -1,30 +1,16 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { DataTable, Column } from "@/components/admin/DataTable";
-import { FormDialog } from "@/components/admin/FormDialog";
-import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
-import { veterinariansService, Veterinarian, CreateVeterinarianData, UpdateVeterinarianData } from "@/features/admin/services/veterinariansService";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
-import { Textarea } from "@/components/ui/textarea";
-import { useCreateVeterinarian, useUpdateVeterinarian, useDeleteVeterinarian } from "../hooks/veterinariansHooks";
+import { Button } from "@/components/ui/button";
+import { veterinariansService, Veterinarian } from "@/features/admin/services/veterinariansService";
+import { queryKeys } from "@/lib/queryKeys";
 
 const VeterinariansListPage = () => {
-  const { toast } = useToast();
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const pageSize = 10;
-  const [selectedItem, setSelectedItem] = useState<Veterinarian | null>(null);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [formData, setFormData] = useState<CreateVeterinarianData>({ name: "", phone: "", email: "", address: "", specialty: "" });
-
-  const createVeterinarianMutation = useCreateVeterinarian();
-  const updateVeterinarianMutation = useUpdateVeterinarian();
-  const deleteVeterinarianMutation = useDeleteVeterinarian();
 
   const { data: data, isLoading } = useQuery({
     queryKey: queryKeys.veterinarians.list({ page, q: search }),
@@ -36,134 +22,33 @@ const VeterinariansListPage = () => {
       }),
   });
 
-  const handleCreate = () => {
-    createVeterinarianMutation.mutate(formData);
-    setIsCreateDialogOpen(false);
-    setFormData({ name: "", phone: "", email: "", address: "", specialty: "" });
-  };
-
-  const handleUpdate = () => {
-    if (selectedItem) {
-      updateVeterinarianMutation.mutate({ id: selectedItem.id, data: formData });
-      setIsEditDialogOpen(false);
-      setSelectedItem(null);
-    }
-  };
-
-  const handleDelete = () => {
-    if (selectedItem) {
-      deleteVeterinarianMutation.mutate(selectedItem.id);
-      setIsDeleteDialogOpen(false);
-      setSelectedItem(null);
-    }
-  };
-
-  const openEditDialog = (item: Veterinarian) => {
-    setSelectedItem(item);
-    setFormData({ name: item.name, phone: item.phone || "", email: item.email || "", address: item.address || "", specialty: item.specialty || "" });
-    setIsEditDialogOpen(true);
-  };
-
-  const openCreateDialog = () => {
-    setSelectedItem(null);
-    setFormData({ name: "", phone: "", email: "", address: "", specialty: "" });
-    setIsCreateDialogOpen(true);
-  };
-
   const columns: Column<Veterinarian>[] = [
     { key: "name", header: "Nom" },
+    { key: "specialty", header: "Spécialité", render: (item) => item.specialty || "-" },
     { key: "phone", header: "Téléphone", render: (item) => item.phone || "-" },
     { key: "email", header: "Email", render: (item) => item.email || "-" },
-    { key: "specialty", header: "Spécialisation", render: (item) => item.specialty || "-" },
   ];
 
   return (
     <div className="space-y-6 p-4 sm:p-6 lg:p-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold">Intervenants</h1>
-          <p className="text-muted-foreground mt-2">Gestion des vétérinaires et intervenants</p>
+          <h1 className="text-2xl sm:text-3xl font-bold">Vétérinaires</h1>
+          <p className="text-muted-foreground mt-2">Gestion des vétérinaires</p>
         </div>
+        <Button onClick={() => navigate("/admin/veterinarians/new")}>Créer</Button>
       </div>
 
       <DataTable
         data={data?.data || []}
         columns={columns}
         loading={isLoading}
-        onEdit={openEditDialog}
-        onView={(item) => { setSelectedItem(item); setIsViewDialogOpen(true); }}
-        onDelete={(item) => { setSelectedItem(item); setIsDeleteDialogOpen(true); }}
-        onAdd={openCreateDialog}
-        canEdit canDelete canView canAdd
+        onEdit={(item) => navigate(`/admin/veterinarians/${item.id}/edit`)}
+        onView={(item) => navigate(`/admin/veterinarians/${item.id}`)}
+        canEdit canView
         pagination={{ page, pageSize, total: data?.total || 0, onPageChange: setPage }}
         search={{ value: search, onChange: setSearch }}
       />
-
-      <FormDialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen} title="Détails de l'intervenant" submitText="Fermer" cancelText="" onSubmit={() => setIsViewDialogOpen(false)}>
-        {selectedItem && (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div><Label>ID</Label><p className="text-sm font-medium font-mono">{selectedItem.id}</p></div>
-              <div><Label>Nom</Label><p className="text-sm font-medium">{selectedItem.name}</p></div>
-              <div><Label>Téléphone</Label><p className="text-sm font-medium">{selectedItem.phone || "-"}</p></div>
-              <div><Label>Email</Label><p className="text-sm font-medium">{selectedItem.email || "-"}</p></div>
-              <div><Label>Spécialisation</Label><p className="text-sm font-medium">{selectedItem.specialty || "-"}</p></div>
-            </div>
-          </div>
-        )}
-      </FormDialog>
-
-      <FormDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} title="Créer un intervenant" submitText="Créer" cancelText="Annuler" onSubmit={handleCreate} loading={createVeterinarianMutation.isPending}>
-        <div className="space-y-4">
-          <div>
-            <Label>Nom *</Label>
-            <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Nom de l'intervenant" />
-          </div>
-          <div>
-            <Label>Téléphone</Label>
-            <Input value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} placeholder="Téléphone" />
-          </div>
-          <div>
-            <Label>Email</Label>
-            <Input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="Email" />
-          </div>
-          <div>
-            <Label>Spécialisation</Label>
-            <Input value={formData.specialty} onChange={(e) => setFormData({ ...formData, specialty: e.target.value })} placeholder="Spécialisation" />
-          </div>
-          <div>
-            <Label>Adresse</Label>
-            <Textarea value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} placeholder="Adresse" rows={3} />
-          </div>
-        </div>
-      </FormDialog>
-
-      <FormDialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} title="Modifier l'intervenant" submitText="Enregistrer" cancelText="Annuler" onSubmit={handleUpdate} loading={updateVeterinarianMutation.isPending}>
-        <div className="space-y-4">
-          <div>
-            <Label>Nom *</Label>
-            <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Nom de l'intervenant" />
-          </div>
-          <div>
-            <Label>Téléphone</Label>
-            <Input value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} placeholder="Téléphone" />
-          </div>
-          <div>
-            <Label>Email</Label>
-            <Input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="Email" />
-          </div>
-          <div>
-            <Label>Spécialisation</Label>
-            <Input value={formData.specialty} onChange={(e) => setFormData({ ...formData, specialty: e.target.value })} placeholder="Spécialisation" />
-          </div>
-          <div>
-            <Label>Adresse</Label>
-            <Textarea value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} placeholder="Adresse" rows={3} />
-          </div>
-        </div>
-      </FormDialog>
-
-      <ConfirmDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} title="Supprimer l'intervenant" description={`Êtes-vous sûr de vouloir supprimer "${selectedItem?.name}" ?`} onConfirm={() => deleteVeterinarianMutation.mutate(selectedItem!.id)} confirmText="Supprimer" cancelText="Annuler" variant="destructive" loading={deleteVeterinarianMutation.isPending} />
     </div>
   );
 };
