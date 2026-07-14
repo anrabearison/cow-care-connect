@@ -37,6 +37,9 @@ const StatusListPage = lazy(() => import("@/features/admin/pages/StatusListPage"
 const CharactersListPage = lazy(() => import("@/features/admin/pages/CharactersListPage"));
 const HerdBooksListPage = lazy(() => import("@/features/admin/pages/HerdBooksListPage"));
 const HerdBookCattleListPage = lazy(() => import("@/features/admin/pages/HerdBookCattleListPage"));
+const HerdBookCattleCreatePage = lazy(() => import("@/features/admin/pages/HerdBookCattleCreatePage"));
+const HerdBookCattleEditPage = lazy(() => import("@/features/admin/pages/HerdBookCattleEditPage"));
+const HerdBookCattleDetailPage = lazy(() => import("@/features/admin/pages/HerdBookCattleDetailPage"));
 const OwnersListPage = lazy(() => import("@/features/admin/pages/OwnersListPage"));
 const InvitationsListPage = lazy(() => import("@/features/admin/pages/InvitationsListPage"));
 const PurchasesListPage = lazy(() => import("@/features/admin/pages/PurchasesListPage"));
@@ -82,6 +85,9 @@ const AppContent = () => {
           <Route path="characters" element={<CharactersListPage />} />
           <Route path="herd-books" element={<HerdBooksListPage />} />
           <Route path="herd-book-cattle" element={<HerdBookCattleListPage />} />
+          <Route path="herd-book-cattle/new" element={<HerdBookCattleCreatePage />} />
+          <Route path="herd-book-cattle/:id" element={<HerdBookCattleDetailPage />} />
+          <Route path="herd-book-cattle/:id/edit" element={<HerdBookCattleEditPage />} />
           <Route path="purchases" element={<PurchasesListPage />} />
           <Route path="suppliers" element={<SuppliersListPage />} />
           <Route

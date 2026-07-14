@@ -71,6 +71,7 @@ export const queryKeys = {
     details: (id: string | number) => ['herdBooks', 'details', id] as const,
     cattle: (herdBookId: string | number) => ['herdBooks', 'cattle', herdBookId] as const,
     byOwner: (ownerId?: string) => ['herdBooks', 'byOwner', ownerId] as const,
+    reference: () => ['herdBooks', 'reference'] as const,
   },
 
   // Cattle History
@@ -100,6 +101,7 @@ export const queryKeys = {
     lists: () => ['status', 'list'] as const,
     list: (filters: Record<string, unknown>) => ['status', 'list', filters] as const,
     details: (id: string | number) => ['status', 'details', id] as const,
+    reference: () => ['status', 'reference'] as const,
   },
 
   // Medicaments
@@ -123,6 +125,7 @@ export const queryKeys = {
     all: ['categories'] as const,
     lists: () => ['categories', 'list'] as const,
     details: (id: string | number) => ['categories', 'details', id] as const,
+    reference: () => ['categories', 'reference'] as const,
   },
 
   // Event Types
