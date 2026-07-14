@@ -59,6 +59,9 @@ const HerdBookCattleCreatePage = lazy(() => import("@/features/admin/pages/HerdB
 const HerdBookCattleEditPage = lazy(() => import("@/features/admin/pages/HerdBookCattleEditPage"));
 const HerdBookCattleDetailPage = lazy(() => import("@/features/admin/pages/HerdBookCattleDetailPage"));
 const OwnersListPage = lazy(() => import("@/features/admin/pages/OwnersListPage"));
+const OwnerCreatePage = lazy(() => import("@/features/admin/pages/OwnerCreatePage"));
+const OwnerEditPage = lazy(() => import("@/features/admin/pages/OwnerEditPage"));
+const OwnerDetailPage = lazy(() => import("@/features/admin/pages/OwnerDetailPage"));
 const InvitationsListPage = lazy(() => import("@/features/admin/pages/InvitationsListPage"));
 const PurchasesListPage = lazy(() => import("@/features/admin/pages/PurchasesListPage"));
 const SuppliersListPage = lazy(() => import("@/features/admin/pages/SuppliersListPage"));
@@ -145,6 +148,30 @@ const AppContent = () => {
             element={
               <SuperAdminRoute>
                 <OwnersListPage />
+              </SuperAdminRoute>
+            }
+          />
+          <Route
+            path="owners/new"
+            element={
+              <SuperAdminRoute>
+                <OwnerCreatePage />
+              </SuperAdminRoute>
+            }
+          />
+          <Route
+            path="owners/:id"
+            element={
+              <SuperAdminRoute>
+                <OwnerDetailPage />
+              </SuperAdminRoute>
+            }
+          />
+          <Route
+            path="owners/:id/edit"
+            element={
+              <SuperAdminRoute>
+                <OwnerEditPage />
               </SuperAdminRoute>
             }
           />
