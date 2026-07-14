@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { useCategory, useDeleteCategory } from "@/features/admin/hooks/categoriesHooks";
+import { useCategory, useDeleteCategory } from "../../hooks/categoriesHooks";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { useState } from "react";

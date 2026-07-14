@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
-import { useCategories, useCreateCategory, useUpdateCategory, useDeleteCategory } from "../hooks/categoriesHooks";
+import { useCategories, useCreateCategory, useUpdateCategory, useDeleteCategory } from "../../hooks/categoriesHooks";
 
 const CategoriesListPage = () => {
   const { toast } = useToast();

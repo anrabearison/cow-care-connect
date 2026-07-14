@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { useCategory, useUpdateCategory } from "@/features/admin/hooks/categoriesHooks";
+import { useCategory, useUpdateCategory } from "../../hooks/categoriesHooks";
 import { UpdateCategoryData } from "@/features/admin/services/categoriesService";
 import { ArrowLeft, Loader2 } from "lucide-react";
 

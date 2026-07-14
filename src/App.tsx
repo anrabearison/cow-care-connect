@@ -53,10 +53,10 @@ const TreatmentsListPage = lazy(() => import("@/features/admin/pages/TreatmentsL
 const TreatmentsCreatePage = lazy(() => import("@/features/admin/pages/TreatmentsCreatePage"));
 const TreatmentsEditPage = lazy(() => import("@/features/admin/pages/TreatmentsEditPage"));
 const TreatmentsDetailPage = lazy(() => import("@/features/admin/pages/TreatmentsDetailPage"));
-const CategoriesListPage = lazy(() => import("@/features/admin/pages/CategoriesListPage"));
-const CategoriesCreatePage = lazy(() => import("@/features/admin/pages/CategoriesCreatePage"));
-const CategoriesEditPage = lazy(() => import("@/features/admin/pages/CategoriesEditPage"));
-const CategoriesDetailPage = lazy(() => import("@/features/admin/pages/CategoriesDetailPage"));
+const CategoriesListPage = lazy(() => import("@/features/admin/pages/categories/CategoriesListPage"));
+const CategoriesCreatePage = lazy(() => import("@/features/admin/pages/categories/CategoriesCreatePage"));
+const CategoriesEditPage = lazy(() => import("@/features/admin/pages/categories/CategoriesEditPage"));
+const CategoriesDetailPage = lazy(() => import("@/features/admin/pages/categories/CategoriesDetailPage"));
 const StatusListPage = lazy(() => import("@/features/admin/pages/StatusListPage"));
 const StatusCreatePage = lazy(() => import("@/features/admin/pages/StatusCreatePage"));
 const StatusEditPage = lazy(() => import("@/features/admin/pages/StatusEditPage"));

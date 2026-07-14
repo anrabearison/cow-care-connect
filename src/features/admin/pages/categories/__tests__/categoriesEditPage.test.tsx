@@ -16,7 +16,7 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-vi.mock('@/features/admin/hooks/categoriesHooks', () => ({
+vi.mock('../../../hooks/categoriesHooks', () => ({
   useCategory: () => mockUseCategory(),
   useUpdateCategory: () => mockUseUpdateCategory(),
 }));

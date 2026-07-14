@@ -8,7 +8,7 @@ const { mockUseCreateCategory } = vi.hoisted(() => ({ mockUseCreateCategory: vi.
 const { mockUseUpdateCategory } = vi.hoisted(() => ({ mockUseUpdateCategory: vi.fn() }));
 const { mockUseDeleteCategory } = vi.hoisted(() => ({ mockUseDeleteCategory: vi.fn() }));
 
-vi.mock('@/features/admin/hooks/categoriesHooks', () => ({
+vi.mock('../../../hooks/categoriesHooks', () => ({
   useCategories: () => mockUseCategories(),
   useCreateCategory: () => mockUseCreateCategory(),
   useUpdateCategory: () => mockUseUpdateCategory(),
