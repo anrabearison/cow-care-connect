@@ -71,6 +71,32 @@ const UsersEditPage = () => {
     );
   }
 
+  // OWNER_ADMIN can only edit OWNER_USER users from their own owner
+  if (currentUser?.role === USER_ROLES.OWNER_ADMIN) {
+    if (user.data.role !== USER_ROLES.OWNER_USER) {
+      return (
+        <div className="space-y-6 p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold">Accès refusé</h1>
+            <p className="text-muted-foreground mt-2">Vous ne pouvez modifier que les utilisateurs de rôle Utilisateur Propriétaire.</p>
+          </div>
+          <Button onClick={() => navigate('/admin/users')}>Retour à la liste</Button>
+        </div>
+      );
+    }
+    if (user.data.ownerId !== currentUser.ownerId) {
+      return (
+        <div className="space-y-6 p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold">Accès refusé</h1>
+            <p className="text-muted-foreground mt-2">Vous ne pouvez modifier que les utilisateurs de votre propriétaire.</p>
+          </div>
+          <Button onClick={() => navigate('/admin/users')}>Retour à la liste</Button>
+        </div>
+      );
+    }
+  }
+
   const validate = () => {
     const nextErrors: Record<string, string> = {};
     if (!formData.name) nextErrors.name = 'Le nom est obligatoire';
