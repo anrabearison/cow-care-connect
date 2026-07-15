@@ -365,10 +365,38 @@ const AppContent = () => {
           }
         >
           <Route index element={<HomePage />} />
-          <Route path="cattle" element={<CattlePage />} />
-          <Route path="cattle/:id" element={<CattleDetailsPage />} />
-          <Route path="reports" element={<ReportsPage />} />
-          <Route path="reports/passport" element={<PassportReportPage />} />
+          <Route
+            path="cattle"
+            element={
+              <FarmRoute>
+                <CattlePage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="cattle/:id"
+            element={
+              <FarmRoute>
+                <CattleDetailsPage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="reports"
+            element={
+              <FarmRoute>
+                <ReportsPage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="reports/passport"
+            element={
+              <FarmRoute>
+                <PassportReportPage />
+              </FarmRoute>
+            }
+          />
           <Route path="profile" element={<ProfilePage />} />
           <Route path="*" element={<NotFound />} />
         </Route>

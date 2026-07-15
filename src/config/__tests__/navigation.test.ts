@@ -11,10 +11,10 @@ import {
 
 describe('Navigation Configuration', () => {
   describe('Frontoffice Navigation', () => {
-    it('SUPER_ADMIN should see all frontoffice items', () => {
+    it('SUPER_ADMIN should see only Accueil and Profil (not Troupeau)', () => {
       const filtered = filterNavItems(FRONT_OFFICE_ITEMS, USER_ROLES.SUPER_ADMIN);
-      expect(filtered.length).toBe(3);
-      expect(filtered.map(i => i.title)).toEqual(['Accueil', 'Troupeau', 'Profil']);
+      expect(filtered.length).toBe(2);
+      expect(filtered.map(i => i.title)).toEqual(['Accueil', 'Profil']);
     });
 
     it('OWNER_ADMIN should see all frontoffice items', () => {
@@ -29,9 +29,9 @@ describe('Navigation Configuration', () => {
       expect(filtered.map(i => i.title)).toEqual(['Accueil', 'Troupeau', 'Profil']);
     });
 
-    it('SUPER_ADMIN should see all report items', () => {
+    it('SUPER_ADMIN should not see any report items', () => {
       const filtered = filterNavItems(REPORT_ITEMS, USER_ROLES.SUPER_ADMIN);
-      expect(filtered.length).toBe(4);
+      expect(filtered.length).toBe(0);
     });
 
     it('OWNER_ADMIN should see all report items', () => {

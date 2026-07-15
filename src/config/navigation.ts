@@ -44,17 +44,20 @@ export const filterNavGroups = (groups: NavGroup[], userRole: UserRole | undefin
 
 // ─── Frontoffice Navigation (MainLayout) ───────────────────────────────────────
 
+// Note: Navigation filtering is a cosmetic layer. The real protection is the route guard (FarmRoute).
+// SUPER_ADMIN is redirected to /admin after login and blocked from farm business routes by FarmRoute.
+
 export const FRONT_OFFICE_ITEMS: NavItem[] = [
   { title: 'Accueil', url: '/', icon: Home, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN, USER_ROLES.OWNER_USER] },
-  { title: 'Troupeau', url: '/cattle', icon: Beef, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN, USER_ROLES.OWNER_USER] },
+  { title: 'Troupeau', url: '/cattle', icon: Beef, roles: [USER_ROLES.OWNER_ADMIN, USER_ROLES.OWNER_USER] },
   { title: 'Profil', url: '/profile', icon: User, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN, USER_ROLES.OWNER_USER] },
 ];
 
 export const REPORT_ITEMS: NavItem[] = [
-  { title: 'Passeports', url: '/reports/passport', icon: IdCard, exact: false, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN, USER_ROLES.OWNER_USER] },
-  { title: 'Rapport Sanitaire', url: '/reports/health', icon: ShieldCheck, exact: false, disabled: true, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN, USER_ROLES.OWNER_USER] },
-  { title: 'Inventaire', url: '/reports/inventory', icon: ClipboardList, exact: false, disabled: true, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN, USER_ROLES.OWNER_USER] },
-  { title: 'Transferts', url: '/reports/transfers', icon: ArrowRightLeft, exact: false, disabled: true, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN, USER_ROLES.OWNER_USER] },
+  { title: 'Passeports', url: '/reports/passport', icon: IdCard, exact: false, roles: [USER_ROLES.OWNER_ADMIN, USER_ROLES.OWNER_USER] },
+  { title: 'Rapport Sanitaire', url: '/reports/health', icon: ShieldCheck, exact: false, disabled: true, roles: [USER_ROLES.OWNER_ADMIN, USER_ROLES.OWNER_USER] },
+  { title: 'Inventaire', url: '/reports/inventory', icon: ClipboardList, exact: false, disabled: true, roles: [USER_ROLES.OWNER_ADMIN, USER_ROLES.OWNER_USER] },
+  { title: 'Transferts', url: '/reports/transfers', icon: ArrowRightLeft, exact: false, disabled: true, roles: [USER_ROLES.OWNER_ADMIN, USER_ROLES.OWNER_USER] },
 ];
 
 export const FRONT_OFFICE_ADMIN_ITEMS: NavItem[] = [

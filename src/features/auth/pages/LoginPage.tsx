@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Beef, Loader2, Eye, EyeOff } from 'lucide-react';
 import heroImage from '@/assets/hero-cattle.jpg';
 import { APP_URLS } from '@/config/urls';
+import { isSuperAdmin } from '@/constants/roles';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('admin@ombiko.mg');
@@ -30,7 +31,9 @@ export default function LoginPage() {
 
     const success = await login(email, password);
     if (success) {
-      navigate('/', { replace: true });
+      // Redirect SUPER_ADMIN to /admin, others to /
+      const redirectPath = isSuperAdmin(user?.role) ? '/admin' : '/';
+      navigate(redirectPath, { replace: true });
     } else {
       setError('Email ou mot de passe incorrect');
     }
