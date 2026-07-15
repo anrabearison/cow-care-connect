@@ -27,7 +27,7 @@ import {
 } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
-import { isSuperAdmin } from '@/constants/roles';
+import { isSuperAdmin, isFarmRole } from '@/constants/roles';
 import {
   Sidebar,
   SidebarContent,
@@ -57,8 +57,8 @@ const NAVIGATION_GROUPS = [
     label: 'Gestion du troupeau',
     icon: Heart,
     items: [
-      { title: 'Bovins', url: '/admin/cattle', icon: Beef },
-      { title: 'Inscriptions bovins', url: '/admin/herd-book-cattle', icon: FileText },
+      { title: 'Bovins', url: '/admin/cattle', icon: Beef, requiresFarmRole: true },
+      { title: 'Inscriptions bovins', url: '/admin/herd-book-cattle', icon: FileText, requiresFarmRole: true },
     ],
   },
   {
@@ -74,8 +74,8 @@ const NAVIGATION_GROUPS = [
     icon: Activity,
     items: [
       { title: 'Médicaments', url: '/admin/medicaments', icon: Pill },
-      { title: 'Traitements', url: '/admin/treatments', icon: Activity },
-      { title: 'Événements', url: '/admin/events', icon: Calendar },
+      { title: 'Traitements', url: '/admin/treatments', icon: Activity, requiresFarmRole: true },
+      { title: 'Événements', url: '/admin/events', icon: Calendar, requiresFarmRole: true },
     ],
   },
   {
@@ -122,26 +122,34 @@ const getNavCls = ({ isActive }: { isActive: boolean }) =>
     : "hover:bg-muted/50 text-muted-foreground hover:text-foreground";
 
 interface NavItemProps {
-  item: { title: string; url: string; icon: LucideIcon };
+  item: { title: string; url: string; icon: LucideIcon; requiresFarmRole?: boolean };
   collapsed: boolean;
   onNavClick: (e: React.MouseEvent, url: string) => void;
+  userRole?: string;
 }
 
-const NavItem = ({ item, collapsed, onNavClick }: NavItemProps) => (
-  <SidebarMenuItem key={item.title}>
-    <SidebarMenuButton asChild className={BUTTON_SCALE_CLASSES}>
-      <NavLink
-        to={item.url}
-        end
-        className={getNavCls}
-        onClick={(e) => onNavClick(e, item.url)}
-      >
-        <item.icon className="h-4 w-4 shrink-0" />
-        {!collapsed && <span className="text-sm">{item.title}</span>}
-      </NavLink>
-    </SidebarMenuButton>
-  </SidebarMenuItem>
-);
+const NavItem = ({ item, collapsed, onNavClick, userRole }: NavItemProps) => {
+  // Hide items that require farm role for SUPER_ADMIN
+  if (item.requiresFarmRole && !isFarmRole(userRole)) {
+    return null;
+  }
+
+  return (
+    <SidebarMenuItem key={item.title}>
+      <SidebarMenuButton asChild className={BUTTON_SCALE_CLASSES}>
+        <NavLink
+          to={item.url}
+          end
+          className={getNavCls}
+          onClick={(e) => onNavClick(e, item.url)}
+        >
+          <item.icon className="h-4 w-4 shrink-0" />
+          {!collapsed && <span className="text-sm">{item.title}</span>}
+        </NavLink>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  );
+};
 
 export function AdminSidebar() {
   const { state, setOpenMobile } = useSidebar();
@@ -292,6 +300,7 @@ export function AdminSidebar() {
                         item={item}
                         collapsed={collapsed}
                         onNavClick={handleNavClick}
+                        userRole={user?.role}
                       />
                     ))}
                   </SidebarMenu>
@@ -342,6 +351,7 @@ export function AdminSidebar() {
                         item={item}
                         collapsed={collapsed}
                         onNavClick={handleNavClick}
+                        userRole={user?.role}
                       />
                     ))}
                   </SidebarMenu>

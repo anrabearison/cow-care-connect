@@ -48,6 +48,12 @@ export class BusinessRuleError extends AppError {
     }
 }
 
+export class ForbiddenError extends AppError {
+    constructor(message: string = 'Accès non autorisé') {
+        super(message, 'FORBIDDEN', 403);
+    }
+}
+
 export class ServerError extends AppError {
     constructor(message: string = 'Erreur serveur, veuillez réessayer plus tard') {
         super(message, 'SERVER_ERROR', 500);
@@ -61,6 +67,8 @@ export function createErrorFromStatus(status: number, message?: string): AppErro
     switch (status) {
         case 401:
             return new AuthenticationError(message);
+        case 403:
+            return new ForbiddenError(message);
         case 404:
             return new NotFoundError(message || 'Ressource');
         case 422:

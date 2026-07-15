@@ -65,3 +65,12 @@ export const isSuperAdmin = (roleOrUser?: string | { role?: string }): boolean =
 export const isOwnerAdmin = (role?: string): boolean => {
     return role === USER_ROLES.OWNER_ADMIN;
 };
+
+/**
+ * Check if a user has farm management privileges (owner_admin or owner_user)
+ * Used for animal management modules: cattle, events, treatments, passport, herd-book-cattle
+ */
+export const isFarmRole = (role?: string): boolean => {
+    if (!role) return false;
+    return role === USER_ROLES.OWNER_ADMIN || role === USER_ROLES.OWNER_USER;
+};

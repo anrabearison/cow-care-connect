@@ -4,6 +4,7 @@ import { setOwnerIdGetter } from "@/utils/apiClient";
 import { PrivateRoute } from "@/components/PrivateRoute";
 import { AdminRoute } from "@/components/AdminRoute";
 import { SuperAdminRoute } from "@/components/SuperAdminRoute";
+import { FarmRoute } from "@/components/FarmRoute";
 import { MainLayout } from "@/layouts/MainLayout";
 import { AdminLayout } from "@/layouts/AdminLayout";
 import { lazy, Suspense, useEffect } from "react";
@@ -120,10 +121,38 @@ const AppContent = () => {
           }
         >
           <Route index element={<AdminDashboard />} />
-          <Route path="cattle" element={<CattleListPage />} />
-          <Route path="cattle/new" element={<CattleCreatePage />} />
-          <Route path="cattle/:id" element={<CattleDetailPage />} />
-          <Route path="cattle/:id/edit" element={<CattleEditPage />} />
+          <Route
+            path="cattle"
+            element={
+              <FarmRoute>
+                <CattleListPage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="cattle/new"
+            element={
+              <FarmRoute>
+                <CattleCreatePage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="cattle/:id"
+            element={
+              <FarmRoute>
+                <CattleDetailPage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="cattle/:id/edit"
+            element={
+              <FarmRoute>
+                <CattleEditPage />
+              </FarmRoute>
+            }
+          />
           <Route path="users" element={<UsersListPage />} />
           <Route path="users/new" element={<UsersCreatePage />} />
           <Route path="users/:id" element={<UsersDetailPage />} />
@@ -140,14 +169,70 @@ const AppContent = () => {
           <Route path="event-types/new" element={<EventTypesCreatePage />} />
           <Route path="event-types/:id" element={<EventTypesDetailPage />} />
           <Route path="event-types/:id/edit" element={<EventTypesEditPage />} />
-          <Route path="events" element={<EventsListPage />} />
-          <Route path="events/new" element={<EventsCreatePage />} />
-          <Route path="events/:id" element={<EventsDetailPage />} />
-          <Route path="events/:id/edit" element={<EventsEditPage />} />
-          <Route path="treatments" element={<TreatmentsListPage />} />
-          <Route path="treatments/new" element={<TreatmentsCreatePage />} />
-          <Route path="treatments/:id" element={<TreatmentsDetailPage />} />
-          <Route path="treatments/:id/edit" element={<TreatmentsEditPage />} />
+          <Route
+            path="events"
+            element={
+              <FarmRoute>
+                <EventsListPage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="events/new"
+            element={
+              <FarmRoute>
+                <EventsCreatePage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="events/:id"
+            element={
+              <FarmRoute>
+                <EventsDetailPage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="events/:id/edit"
+            element={
+              <FarmRoute>
+                <EventsEditPage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="treatments"
+            element={
+              <FarmRoute>
+                <TreatmentsListPage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="treatments/new"
+            element={
+              <FarmRoute>
+                <TreatmentsCreatePage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="treatments/:id"
+            element={
+              <FarmRoute>
+                <TreatmentsDetailPage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="treatments/:id/edit"
+            element={
+              <FarmRoute>
+                <TreatmentsEditPage />
+              </FarmRoute>
+            }
+          />
           <Route path="categories" element={<CategoriesListPage />} />
           <Route path="categories/new" element={<CategoriesCreatePage />} />
           <Route path="categories/:id" element={<CategoriesDetailPage />} />
@@ -164,13 +249,62 @@ const AppContent = () => {
           <Route path="herd-books/new" element={<HerdBookCreatePage />} />
           <Route path="herd-books/:id" element={<HerdBookDetailPage />} />
           <Route path="herd-books/:id/edit" element={<HerdBookEditPage />} />
-          <Route path="herd-book-cattle" element={<HerdBookCattleListPage />} />
-          <Route path="herd-book-cattle/new" element={<HerdBookCattleCreatePage />} />
-          <Route path="herd-book-cattle/:id" element={<HerdBookCattleDetailPage />} />
-          <Route path="herd-book-cattle/:id/edit" element={<HerdBookCattleEditPage />} />
-          <Route path="passports/new" element={<PassportCreatePage />} />
-          <Route path="passports/:id" element={<PassportDetailPage />} />
-          <Route path="passports/:id/edit" element={<PassportEditPage />} />
+          <Route
+            path="herd-book-cattle"
+            element={
+              <FarmRoute>
+                <HerdBookCattleListPage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="herd-book-cattle/new"
+            element={
+              <FarmRoute>
+                <HerdBookCattleCreatePage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="herd-book-cattle/:id"
+            element={
+              <FarmRoute>
+                <HerdBookCattleDetailPage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="herd-book-cattle/:id/edit"
+            element={
+              <FarmRoute>
+                <HerdBookCattleEditPage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="passports/new"
+            element={
+              <FarmRoute>
+                <PassportCreatePage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="passports/:id"
+            element={
+              <FarmRoute>
+                <PassportDetailPage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="passports/:id/edit"
+            element={
+              <FarmRoute>
+                <PassportEditPage />
+              </FarmRoute>
+            }
+          />
           <Route path="purchases" element={<PurchasesListPage />} />
           <Route path="purchases/new" element={<PurchaseCreatePage />} />
           <Route path="purchases/:id" element={<PurchaseDetailPage />} />

@@ -5,6 +5,7 @@ import {
     AppError,
     NetworkError,
     AuthenticationError,
+    ForbiddenError,
     createErrorFromStatus,
     ErrorMessages
 } from './errors';
@@ -120,6 +121,11 @@ class ApiClient {
 
             // For refresh endpoint or if no retry function, throw error
             throw new AuthenticationError();
+        }
+
+        // Handle forbidden errors (403) - RBAC restriction
+        if (response.status === 403) {
+            throw new ForbiddenError('Accès non autorisé pour ce rôle');
         }
 
         // Handle binary responses (like PDFs)
