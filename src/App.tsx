@@ -348,9 +348,9 @@ const AppContent = () => {
           <Route
             path="invitations"
             element={
-              <SuperAdminRoute>
+              <AdminRoute>
                 <InvitationsListPage />
-              </SuperAdminRoute>
+              </AdminRoute>
             }
           />
         </Route>

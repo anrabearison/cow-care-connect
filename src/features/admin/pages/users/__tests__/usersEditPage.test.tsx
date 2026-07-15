@@ -12,6 +12,16 @@ vi.mock('@/components/ui/use-toast', () => ({
   useToast: () => ({ toast: mockToast }),
 }));
 
+vi.mock('@/features/auth/AuthContext', () => ({
+  useAuth: () => ({ 
+    user: { id: '1', name: 'Admin', email: 'admin@example.com', role: 'SUPER_ADMIN', ownerId: 'owner-1' },
+    login: vi.fn(),
+    loginWithGoogle: vi.fn(),
+    logout: vi.fn(),
+    isLoading: false,
+  }),
+}));
+
 vi.mock('../../../hooks/usersHooks', () => ({
   useUpdateUser: () => ({ mutate: mockMutate, isPending: false }),
   useUser: () => mockUseUser(),

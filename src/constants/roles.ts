@@ -74,3 +74,31 @@ export const isFarmRole = (role?: string): boolean => {
     if (!role) return false;
     return role === USER_ROLES.OWNER_ADMIN || role === USER_ROLES.OWNER_USER;
 };
+
+/**
+ * Get creation constraints based on user role
+ * Used for invitations and users creation to enforce RBAC rules
+ */
+export interface RoleConstraints {
+    allowedRoles: UserRole[];
+    forcedRole?: UserRole;
+    forcedOwnerId?: string;
+    canSelectOwner: boolean;
+}
+
+export const getRoleConstraints = (userRole: UserRole, userOwnerId?: string): RoleConstraints => {
+    if (userRole === USER_ROLES.OWNER_ADMIN) {
+        return {
+            allowedRoles: [USER_ROLES.OWNER_USER],
+            forcedRole: USER_ROLES.OWNER_USER,
+            forcedOwnerId: userOwnerId,
+            canSelectOwner: false,
+        };
+    }
+    
+    // SUPER_ADMIN can create any role and select any owner
+    return {
+        allowedRoles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN, USER_ROLES.OWNER_USER],
+        canSelectOwner: true,
+    };
+};

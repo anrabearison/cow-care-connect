@@ -7,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/components/ui/use-toast';
 import { useUser, useUpdateUser } from '../../hooks/usersHooks';
 import { Loader2 } from 'lucide-react';
+import { useAuth } from '@/features/auth/AuthContext';
+import { USER_ROLES, getRoleConstraints, type UserRole } from '@/constants/roles';
 
 interface FormState {
   name: string;
@@ -28,9 +30,13 @@ const UsersEditPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user: currentUser } = useAuth();
   const updateUserMutation = useUpdateUser();
   const { data: user, isLoading, error } = useUser(id!);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Get role-based constraints
+  const roleConstraints = getRoleConstraints(currentUser?.role as UserRole, currentUser?.ownerId);
 
   const initialData = useMemo(() => {
     if (!user || !user.data) return initialFormState;
@@ -77,13 +83,17 @@ const UsersEditPage = () => {
     e.preventDefault();
     if (!validate() || !id) return;
 
+    // Use role constraints to determine effective values
+    const effectiveRole = roleConstraints.forcedRole || formData.role;
+    const effectiveOwnerId = roleConstraints.forcedOwnerId || (formData.ownerId || undefined);
+
     updateUserMutation.mutate({
       id,
       data: {
         name: formData.name,
         email: formData.email,
-        role: formData.role,
-        ownerId: formData.ownerId || undefined,
+        role: effectiveRole,
+        ownerId: effectiveOwnerId,
         isActive: formData.isActive,
       },
     });
@@ -112,21 +122,36 @@ const UsersEditPage = () => {
           </div>
           <div className="grid gap-2">
             <Label htmlFor="role">Rôle</Label>
-            <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value as any })}>
-              <SelectTrigger id="role">
-                <SelectValue placeholder="Sélectionner un rôle" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="SUPER_ADMIN">Super Administrateur</SelectItem>
-                <SelectItem value="OWNER_ADMIN">Admin Propriétaire</SelectItem>
-                <SelectItem value="OWNER_USER">Utilisateur Propriétaire</SelectItem>
-              </SelectContent>
-            </Select>
+            {!roleConstraints.canSelectOwner ? (
+              <div className="p-2 border rounded-md bg-muted">
+                Utilisateur Propriétaire
+              </div>
+            ) : (
+              <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value as FormState['role'] })}>
+                <SelectTrigger id="role">
+                  <SelectValue placeholder="Sélectionner un rôle" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="SUPER_ADMIN">Super Administrateur</SelectItem>
+                  <SelectItem value="OWNER_ADMIN">Admin Propriétaire</SelectItem>
+                  <SelectItem value="OWNER_USER">Utilisateur Propriétaire</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
           </div>
-          <div className="grid gap-2">
-            <Label htmlFor="ownerId">ID Propriétaire</Label>
-            <Input id="ownerId" value={formData.ownerId} onChange={(e) => setFormData({ ...formData, ownerId: e.target.value })} />
-          </div>
+          {!roleConstraints.canSelectOwner ? (
+            <div className="grid gap-2">
+              <Label htmlFor="ownerId">ID Propriétaire</Label>
+              <div className="p-2 border rounded-md bg-muted">
+                {roleConstraints.forcedOwnerId}
+              </div>
+            </div>
+          ) : (
+            <div className="grid gap-2">
+              <Label htmlFor="ownerId">ID Propriétaire</Label>
+              <Input id="ownerId" value={formData.ownerId} onChange={(e) => setFormData({ ...formData, ownerId: e.target.value })} />
+            </div>
+          )}
           <div className="grid gap-2">
             <Label htmlFor="isActive">Actif</Label>
             <Select value={formData.isActive ? 'true' : 'false'} onValueChange={(value) => setFormData({ ...formData, isActive: value === 'true' })}>
