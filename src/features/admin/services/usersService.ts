@@ -7,7 +7,7 @@ export interface User {
   email: string;
   role: 'SUPER_ADMIN' | 'OWNER_ADMIN' | 'OWNER_USER';
   ownerId?: string;
-  owner?: { id: string; name: string };
+  owner?: { id: string; name: string; contactInfo?: string; address?: string };
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

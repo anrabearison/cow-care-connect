@@ -5,6 +5,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useToast } from '@/components/ui/use-toast';
 import { useUser, useDeleteUser } from '../../hooks/usersHooks';
 import { Loader2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { USER_ROLES, type UserRole, getRoleLabel, getRoleColor } from '@/constants/roles';
 
 const UsersDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -67,8 +69,50 @@ const UsersDetailPage = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      <div className="rounded-lg border bg-background p-6 shadow-sm">
-        <p className="text-muted-foreground">Détail de l'utilisateur à afficher ici.</p>
+      <div className="rounded-lg border bg-background p-6 shadow-sm space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="text-sm font-medium text-muted-foreground">Nom</label>
+            <p className="text-lg font-semibold">{user.data.name}</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-muted-foreground">Email</label>
+            <p className="text-lg">{user.data.email}</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-muted-foreground">Rôle</label>
+            <div className="mt-1">
+              <Badge style={{ backgroundColor: getRoleColor(user.data.role as UserRole) }}>
+                {getRoleLabel(user.data.role as UserRole)}
+              </Badge>
+            </div>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-muted-foreground">État</label>
+            <div className="mt-1">
+              <Badge variant={user.data.isActive ? "default" : "outline"}>
+                {user.data.isActive ? "Actif" : "Inactif"}
+              </Badge>
+            </div>
+          </div>
+          {user.data.owner ? (
+            <div>
+              <label className="text-sm font-medium text-muted-foreground">Propriétaire</label>
+              <p className="text-lg">{user.data.owner.name}</p>
+              {user.data.owner.contactInfo && (
+                <p className="text-sm text-muted-foreground">{user.data.owner.contactInfo}</p>
+              )}
+              {user.data.owner.address && (
+                <p className="text-sm text-muted-foreground">{user.data.owner.address}</p>
+              )}
+            </div>
+          ) : (
+            <div>
+              <label className="text-sm font-medium text-muted-foreground">Propriétaire</label>
+              <p className="text-lg text-muted-foreground">Aucun — rôle plateforme</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

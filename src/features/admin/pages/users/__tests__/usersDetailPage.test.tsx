@@ -13,7 +13,7 @@ vi.mock('@/components/ui/use-toast', () => ({
 
 vi.mock('../../../hooks/usersHooks', () => ({
   useDeleteUser: () => ({ mutate: mockDeleteMutate, isPending: false }),
-  useUser: () => ({ data: { data: { id: '1', name: 'Test User' } }, isLoading: false, error: null }),
+  useUser: () => ({ data: { data: { id: '1', name: 'Test User', email: 'test@example.com', role: 'OWNER_USER', isActive: true, owner: { id: 'owner-1', name: 'Test Owner', contactInfo: 'test@owner.com', address: '123 Owner St' } } }, isLoading: false, error: null }),
 }));
 
 vi.mock('react-router-dom', () => ({
@@ -75,5 +75,32 @@ describe('UsersDetailPage', () => {
     await waitFor(() => {
       expect(mockDeleteMutate).toHaveBeenCalledWith('1');
     });
+  });
+
+  it('displays owner information when user has owner', async () => {
+    render(
+      <TestWrapper>
+        <UsersDetailPage />
+      </TestWrapper>
+    );
+
+    expect(screen.getByText('Test Owner')).toBeInTheDocument();
+    expect(screen.getByText('test@owner.com')).toBeInTheDocument();
+    expect(screen.getByText('123 Owner St')).toBeInTheDocument();
+  });
+
+  it('displays "Aucun — rôle plateforme" for SUPER_ADMIN without owner', async () => {
+    vi.mock('../../../hooks/usersHooks', () => ({
+      useDeleteUser: () => ({ mutate: mockDeleteMutate, isPending: false }),
+      useUser: () => ({ data: { data: { id: '1', name: 'Super Admin', email: 'super@example.com', role: 'SUPER_ADMIN', isActive: true, owner: null } }, isLoading: false, error: null }),
+    }));
+
+    render(
+      <TestWrapper>
+        <UsersDetailPage />
+      </TestWrapper>
+    );
+
+    expect(screen.getByText('Aucun — rôle plateforme')).toBeInTheDocument();
   });
 });

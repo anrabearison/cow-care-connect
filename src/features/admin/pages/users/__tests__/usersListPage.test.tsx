@@ -84,8 +84,8 @@ describe('UsersListPage', () => {
     mockUseUsers.mockReturnValue({
       data: {
         data: [
-          { id: '1', name: 'Test User', email: 'test@example.com', role: 'OWNER_USER', isActive: true },
-          { id: '2', name: 'Another User', email: 'another@example.com', role: 'SUPER_ADMIN', isActive: false },
+          { id: '1', name: 'Test User', email: 'test@example.com', role: 'OWNER_USER', isActive: true, owner: { id: 'owner-1', name: 'Test Owner' } },
+          { id: '2', name: 'Another User', email: 'another@example.com', role: 'SUPER_ADMIN', isActive: false, owner: null },
         ],
         total: 2,
       },
@@ -102,5 +102,30 @@ describe('UsersListPage', () => {
     expect(screen.getByText('Test User')).toBeInTheDocument();
     expect(screen.getByText('test@example.com')).toBeInTheDocument();
     expect(screen.getByText('Another User')).toBeInTheDocument();
+    expect(screen.getByText('Test Owner')).toBeInTheDocument();
+    expect(screen.getByText('—')).toBeInTheDocument(); // For SUPER_ADMIN without owner
+  });
+
+  it('displays owner column with owner name or dash for SUPER_ADMIN', () => {
+    mockUseUsers.mockReturnValue({
+      data: {
+        data: [
+          { id: '1', name: 'User With Owner', email: 'user@example.com', role: 'OWNER_USER', isActive: true, owner: { id: 'owner-1', name: 'Owner Name' } },
+          { id: '2', name: 'Super Admin', email: 'super@example.com', role: 'SUPER_ADMIN', isActive: true, owner: null },
+        ],
+        total: 2,
+      },
+      isLoading: false,
+      error: null,
+    });
+
+    render(
+      <TestWrapper>
+        <UsersListPage />
+      </TestWrapper>
+    );
+
+    expect(screen.getByText('Owner Name')).toBeInTheDocument();
+    expect(screen.getByText('—')).toBeInTheDocument();
   });
 });

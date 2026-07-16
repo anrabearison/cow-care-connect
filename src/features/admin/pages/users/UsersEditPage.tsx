@@ -8,6 +8,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { useUser, useUpdateUser } from '../../hooks/usersHooks';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/features/auth/AuthContext';
+import { useOwnersReferenceData } from '../../hooks/useOwnersReferenceData';
 import { USER_ROLES, getRoleConstraints, type UserRole } from '@/constants/roles';
 
 interface FormState {
@@ -33,10 +34,14 @@ const UsersEditPage = () => {
   const { user: currentUser } = useAuth();
   const updateUserMutation = useUpdateUser();
   const { data: user, isLoading, error } = useUser(id!);
+  const { owners, isLoading: isLoadingOwners, isError: isErrorOwners } = useOwnersReferenceData();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Get role-based constraints
   const roleConstraints = getRoleConstraints(currentUser?.role as UserRole, currentUser?.ownerId);
+
+  // Show owner selector only for SUPER_ADMIN
+  const showOwnerSelector = currentUser?.role === 'SUPER_ADMIN';
 
   const initialData = useMemo(() => {
     if (!user || !user.data) return initialFormState;
@@ -165,17 +170,39 @@ const UsersEditPage = () => {
               </Select>
             )}
           </div>
-          {!roleConstraints.canSelectOwner ? (
-            <div className="grid gap-2">
-              <Label htmlFor="ownerId">ID Propriétaire</Label>
-              <div className="p-2 border rounded-md bg-muted">
-                {roleConstraints.forcedOwnerId}
-              </div>
+          {showOwnerSelector ? (
+            <div className="grid gap-2 md:col-span-2">
+              <Label htmlFor="ownerId">Propriétaire</Label>
+              {isLoadingOwners ? (
+                <div className="flex items-center gap-2 p-2 border rounded-md">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span className="text-sm">Chargement des propriétaires...</span>
+                </div>
+              ) : isErrorOwners ? (
+                <div className="p-2 border rounded-md bg-destructive/10 text-destructive">
+                  Erreur lors du chargement des propriétaires
+                </div>
+              ) : (
+                <Select value={formData.ownerId} onValueChange={(value) => setFormData({ ...formData, ownerId: value })}>
+                  <SelectTrigger id="ownerId">
+                    <SelectValue placeholder="Sélectionner un propriétaire" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {owners.map((owner) => (
+                      <SelectItem key={owner.id} value={owner.id}>
+                        {owner.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
           ) : (
             <div className="grid gap-2">
-              <Label htmlFor="ownerId">ID Propriétaire</Label>
-              <Input id="ownerId" value={formData.ownerId} onChange={(e) => setFormData({ ...formData, ownerId: e.target.value })} />
+              <Label htmlFor="ownerId">Propriétaire</Label>
+              <div className="p-2 border rounded-md bg-muted">
+                {roleConstraints.forcedOwnerId ? 'Propriétaire de votre organisation' : 'Non applicable'}
+              </div>
             </div>
           )}
           <div className="grid gap-2">
