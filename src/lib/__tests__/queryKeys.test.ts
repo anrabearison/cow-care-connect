@@ -27,6 +27,7 @@ describe('queryKeys', () => {
     it('should have stable dashboard keys', () => {
       expect(queryKeys.dashboard.all).toEqual(['dashboard']);
       expect(queryKeys.dashboard.stats()).toEqual(['dashboard', 'stats']);
+      expect(queryKeys.dashboard.platformStats()).toEqual(['dashboard', 'platformStats']);
     });
   });
 

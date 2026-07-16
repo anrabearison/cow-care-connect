@@ -7,10 +7,14 @@ export interface DashboardStats {
     healthPercentage: number;
     totalEvents: number;
     totalTreatments: number;
-    totalUsers: number;
-    totalOwners: number;
     males: number;
     females: number;
+}
+
+export interface PlatformDashboardStats {
+    totalOwners: number;
+    totalUsers: number;
+    totalPendingInvitations: number;
 }
 
 class DashboardService {
@@ -20,6 +24,16 @@ class DashboardService {
             return stats;
         } catch (error: unknown) {
             console.error('❌ Error fetching dashboard statistics:', error);
+            throw error;
+        }
+    }
+
+    async getPlatformStatistics(): Promise<PlatformDashboardStats> {
+        try {
+            const stats = await apiClient.get<PlatformDashboardStats>(API_ENDPOINTS.DASHBOARD.STATS_PLATFORM);
+            return stats;
+        } catch (error: unknown) {
+            console.error('❌ Error fetching platform dashboard statistics:', error);
             throw error;
         }
     }

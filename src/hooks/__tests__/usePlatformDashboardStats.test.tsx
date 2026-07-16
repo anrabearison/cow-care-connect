@@ -1,14 +1,14 @@
 /**
- * Tests du hook useDashboardStats avec TanStack Query
+ * Tests du hook usePlatformDashboardStats avec TanStack Query
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
-import { useDashboardStats } from '../useDashboardStats';
+import { usePlatformDashboardStats } from '../usePlatformDashboardStats';
 import * as dashboardService from '@/features/dashboard/services';
 
-describe('useDashboardStats Tests', () => {
+describe('usePlatformDashboardStats Tests', () => {
   let queryClient: QueryClient;
 
   beforeEach(() => {
@@ -33,22 +33,18 @@ describe('useDashboardStats Tests', () => {
   };
 
   describe('Scénario 1: Récupération', () => {
-    it('doit récupérer les statistiques avec succès', async () => {
+    it('doit récupérer les statistiques plateforme avec succès', async () => {
       const mockStats = {
-        totalCattle: 100,
-        healthyCattle: 95,
-        healthPercentage: 95,
-        totalEvents: 50,
-        totalTreatments: 25,
-        males: 50,
-        females: 50,
+        totalOwners: 10,
+        totalUsers: 50,
+        totalPendingInvitations: 5,
       };
 
       vi.spyOn(dashboardService, 'dashboardService', 'get').mockReturnValue({
-        getStatistics: vi.fn().mockResolvedValue(mockStats),
+        getPlatformStatistics: vi.fn().mockResolvedValue(mockStats),
       } as any);
 
-      const { result } = renderHook(() => useDashboardStats(), { wrapper: createWrapper() });
+      const { result } = renderHook(() => usePlatformDashboardStats(), { wrapper: createWrapper() });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
@@ -59,10 +55,10 @@ describe('useDashboardStats Tests', () => {
   describe('Scénario 2: Loading', () => {
     it('doit être en état de loading initial', () => {
       vi.spyOn(dashboardService, 'dashboardService', 'get').mockReturnValue({
-        getStatistics: vi.fn().mockImplementation(() => new Promise(() => {})),
+        getPlatformStatistics: vi.fn().mockImplementation(() => new Promise(() => {})),
       } as any);
 
-      const { result } = renderHook(() => useDashboardStats(), { wrapper: createWrapper() });
+      const { result } = renderHook(() => usePlatformDashboardStats(), { wrapper: createWrapper() });
 
       expect(result.current.isLoading).toBe(true);
     });
@@ -73,10 +69,10 @@ describe('useDashboardStats Tests', () => {
       const mockError = new Error('Failed to fetch');
 
       vi.spyOn(dashboardService, 'dashboardService', 'get').mockReturnValue({
-        getStatistics: vi.fn().mockRejectedValue(mockError),
+        getPlatformStatistics: vi.fn().mockRejectedValue(mockError),
       } as any);
 
-      const { result } = renderHook(() => useDashboardStats(), { wrapper: createWrapper() });
+      const { result } = renderHook(() => usePlatformDashboardStats(), { wrapper: createWrapper() });
 
       await waitFor(() => expect(result.current.isError).toBe(true));
 
@@ -87,27 +83,23 @@ describe('useDashboardStats Tests', () => {
   describe('Scénario 4: Cache', () => {
     it('doit utiliser le cache pour les requêtes répétées', async () => {
       const mockStats = {
-        totalCattle: 100,
-        healthyCattle: 95,
-        healthPercentage: 95,
-        totalEvents: 50,
-        totalTreatments: 25,
-        males: 50,
-        females: 50,
+        totalOwners: 10,
+        totalUsers: 50,
+        totalPendingInvitations: 5,
       };
 
       const getStatsSpy = vi.fn().mockResolvedValue(mockStats);
 
       vi.spyOn(dashboardService, 'dashboardService', 'get').mockReturnValue({
-        getStatistics: getStatsSpy,
+        getPlatformStatistics: getStatsSpy,
       } as any);
 
-      const { result } = renderHook(() => useDashboardStats(), { wrapper: createWrapper() });
+      const { result } = renderHook(() => usePlatformDashboardStats(), { wrapper: createWrapper() });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
       // Re-render avec le même query key
-      renderHook(() => useDashboardStats(), { wrapper: createWrapper() });
+      renderHook(() => usePlatformDashboardStats(), { wrapper: createWrapper() });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
@@ -119,27 +111,23 @@ describe('useDashboardStats Tests', () => {
   describe('Scénario 5: Invalidation', () => {
     it('doit refetch après invalidation du cache', async () => {
       const mockStats = {
-        totalCattle: 100,
-        healthyCattle: 95,
-        healthPercentage: 95,
-        totalEvents: 50,
-        totalTreatments: 25,
-        males: 50,
-        females: 50,
+        totalOwners: 10,
+        totalUsers: 50,
+        totalPendingInvitations: 5,
       };
 
       const getStatsSpy = vi.fn().mockResolvedValue(mockStats);
 
       vi.spyOn(dashboardService, 'dashboardService', 'get').mockReturnValue({
-        getStatistics: getStatsSpy,
+        getPlatformStatistics: getStatsSpy,
       } as any);
 
-      const { result } = renderHook(() => useDashboardStats(), { wrapper: createWrapper() });
+      const { result } = renderHook(() => usePlatformDashboardStats(), { wrapper: createWrapper() });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
       // Invalider le cache
-      queryClient.invalidateQueries({ queryKey: ['dashboard', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'platformStats'] });
 
       await waitFor(() => expect(getStatsSpy).toHaveBeenCalledTimes(2));
     });

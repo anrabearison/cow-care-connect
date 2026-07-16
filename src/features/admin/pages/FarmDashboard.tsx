@@ -1,18 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Beef, Users, Building2, Activity, Loader2 } from "lucide-react";
+import { Beef, Activity, Loader2 } from "lucide-react";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
 
-const AdminDashboard = () => {
-  const { stats, isLoading, error } = useDashboardStats();
+const FarmDashboard = () => {
+  const { data: stats, isLoading, error } = useDashboardStats();
 
   return (
     <div className="space-y-6 p-4 sm:p-6 lg:p-8">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold">Tableau de bord Administration</h1>
-        <p className="text-muted-foreground mt-2">Vue d'ensemble de la gestion du bétail</p>
+        <h1 className="text-2xl sm:text-3xl font-bold">Tableau de bord Exploitation</h1>
+        <p className="text-muted-foreground mt-2">Vue d'ensemble de votre exploitation</p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Bovins</CardTitle>
@@ -27,40 +27,6 @@ const AdminDashboard = () => {
                 <p className="text-xs text-muted-foreground">
                   {stats?.males || 0} mâles, {stats?.females || 0} femelles
                 </p>
-              </>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Utilisateurs</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-            ) : (
-              <>
-                <div className="text-2xl font-bold">{stats?.totalUsers || 0}</div>
-                <p className="text-xs text-muted-foreground">Utilisateurs enregistrés</p>
-              </>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Propriétaires</CardTitle>
-            <Building2 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-            ) : (
-              <>
-                <div className="text-2xl font-bold">{stats?.totalOwners || 0}</div>
-                <p className="text-xs text-muted-foreground">Propriétaires actifs</p>
               </>
             )}
           </CardContent>
@@ -124,4 +90,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default FarmDashboard;

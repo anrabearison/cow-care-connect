@@ -23,7 +23,7 @@ const InvitationPage = lazy(() => import("@/features/auth/pages/InvitationPage")
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Admin pages
-const AdminDashboard = lazy(() => import("@/features/admin/pages/AdminDashboard"));
+const DashboardWrapper = lazy(() => import("@/features/admin/pages/DashboardWrapper"));
 const CattleListPage = lazy(() => import("@/features/admin/pages/cattle/CattleListPage"));
 const CattleCreatePage = lazy(() => import("@/features/admin/pages/cattle/CattleCreatePage"));
 const CattleEditPage = lazy(() => import("@/features/admin/pages/cattle/CattleEditPage"));
@@ -111,7 +111,7 @@ const AppContent = () => {
             </AdminRoute>
           }
         >
-          <Route index element={<AdminDashboard />} />
+          <Route index element={<DashboardWrapper />} />
           <Route
             path="cattle"
             element={

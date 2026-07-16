@@ -18,6 +18,7 @@ export const queryKeys = {
   dashboard: {
     all: ['dashboard'] as const,
     stats: () => ['dashboard', 'stats'] as const,
+    platformStats: () => ['dashboard', 'platformStats'] as const,
   },
 
   // Cattle
