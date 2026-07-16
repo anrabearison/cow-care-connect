@@ -7,8 +7,8 @@ import { refreshManager } from '@/utils/refreshManager';
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => Promise<boolean>;
-  loginWithGoogle: (code: string, invitationToken?: string) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<User | null>;
+  loginWithGoogle: (code: string, invitationToken?: string) => Promise<User | null>;
   logout: () => void;
   isLoading: boolean;
 }
@@ -55,7 +55,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   }, [checkSession]);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<User | null> => {
     setIsLoading(true);
 
     try {
@@ -75,20 +75,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
         
         setIsLoading(false);
-        return userData !== null;
+        return userData;
       } else {
         setIsLoading(false);
-        return false;
+        return null;
       }
     } catch (error) {
       console.error('Login error:', error);
       toast.error('Erreur lors de la connexion');
       setIsLoading(false);
-      return false;
+      return null;
     }
   };
 
-    const loginWithGoogle = async (code: string, invitationToken?: string): Promise<boolean> => {
+    const loginWithGoogle = async (code: string, invitationToken?: string): Promise<User | null> => {
     setIsLoading(true);
 
     try {
@@ -106,16 +106,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
         
         setIsLoading(false);
-        return userData !== null;
+        return userData;
       } else {
         setIsLoading(false);
-        return false;
+        return null;
       }
     } catch (error) {
       console.error('Google login error:', error);
       toast.error('Erreur lors de la connexion avec Google');
       setIsLoading(false);
-      return false;
+      return null;
     }
   };
 

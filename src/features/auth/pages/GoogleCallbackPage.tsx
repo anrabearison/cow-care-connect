@@ -7,7 +7,7 @@ import { isSuperAdmin } from '@/constants/roles';
 export default function GoogleCallbackPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { loginWithGoogle, user } = useAuth();
+  const { loginWithGoogle } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const handledRef = useRef(false);
 
@@ -26,10 +26,10 @@ export default function GoogleCallbackPage() {
 
       try {
         const invitationToken = state ?? undefined;
-        const success = await loginWithGoogle(code, invitationToken);
-        if (success) {
+        const loggedInUser = await loginWithGoogle(code, invitationToken);
+        if (loggedInUser) {
           // Redirect SUPER_ADMIN to /admin, others to /
-          const redirectPath = isSuperAdmin(user?.role) ? '/admin' : '/';
+          const redirectPath = isSuperAdmin(loggedInUser.role) ? '/admin' : '/';
           navigate(redirectPath);
         } else {
           setError('Échec de l\'authentification avec Google');

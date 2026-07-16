@@ -22,17 +22,17 @@ export default function LoginPage() {
   const invitationToken = searchParams.get('token');
 
   if (user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={isSuperAdmin(user.role) ? '/admin' : '/'} replace />;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    const success = await login(email, password);
-    if (success) {
+    const loggedInUser = await login(email, password);
+    if (loggedInUser) {
       // Redirect SUPER_ADMIN to /admin, others to /
-      const redirectPath = isSuperAdmin(user?.role) ? '/admin' : '/';
+      const redirectPath = isSuperAdmin(loggedInUser.role) ? '/admin' : '/';
       navigate(redirectPath, { replace: true });
     } else {
       setError('Email ou mot de passe incorrect');
