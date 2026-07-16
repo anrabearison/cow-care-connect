@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { UnifiedSidebar } from "@/components/UnifiedSidebar";
-import { OwnerSelector } from "@/components/OwnerSelector";
+import { OwnerBadge } from "@/components/OwnerBadge";
 import { Footer } from "@/components/Footer";
 import { PageLoader } from "@/components/PageLoader";
 import { Outlet } from "react-router-dom";
@@ -20,7 +20,7 @@ export const MainLayout = () => (
               </h2>
             </div>
             <div className="flex-1 px-4 flex items-center justify-between min-w-0 py-2 sm:py-0">
-              <OwnerSelector />
+              <OwnerBadge />
             </div>
           </header>
           <Suspense fallback={<PageLoader />}>
