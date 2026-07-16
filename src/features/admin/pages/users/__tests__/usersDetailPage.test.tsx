@@ -6,6 +6,7 @@ import { TestWrapper } from '@/test/test-utils';
 const { mockToast } = vi.hoisted(() => ({ mockToast: vi.fn() }));
 const { mockNavigate } = vi.hoisted(() => ({ mockNavigate: vi.fn() }));
 const { mockDeleteMutate } = vi.hoisted(() => ({ mockDeleteMutate: vi.fn() }));
+const { mockUseUser } = vi.hoisted(() => ({ mockUseUser: vi.fn() }));
 
 vi.mock('@/components/ui/use-toast', () => ({
   useToast: () => ({ toast: mockToast }),
@@ -13,7 +14,7 @@ vi.mock('@/components/ui/use-toast', () => ({
 
 vi.mock('../../../hooks/usersHooks', () => ({
   useDeleteUser: () => ({ mutate: mockDeleteMutate, isPending: false }),
-  useUser: () => ({ data: { data: { id: '1', name: 'Test User', email: 'test@example.com', role: 'OWNER_USER', isActive: true, owner: { id: 'owner-1', name: 'Test Owner', contactInfo: 'test@owner.com', address: '123 Owner St' } } }, isLoading: false, error: null }),
+  useUser: () => mockUseUser(),
 }));
 
 vi.mock('react-router-dom', () => ({
@@ -24,6 +25,11 @@ vi.mock('react-router-dom', () => ({
 describe('UsersDetailPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockUseUser.mockReturnValue({
+      data: { data: { id: '1', name: 'Test User', email: 'test@example.com', role: 'OWNER_USER', isActive: true, owner: { id: 'owner-1', name: 'Test Owner', contactInfo: 'test@owner.com', address: '123 Owner St' } } },
+      isLoading: false,
+      error: null,
+    });
   });
 
   it('renders the detail page and delete dialog', async () => {
@@ -90,10 +96,11 @@ describe('UsersDetailPage', () => {
   });
 
   it('displays "Aucun — rôle plateforme" for SUPER_ADMIN without owner', async () => {
-    vi.mock('../../../hooks/usersHooks', () => ({
-      useDeleteUser: () => ({ mutate: mockDeleteMutate, isPending: false }),
-      useUser: () => ({ data: { data: { id: '1', name: 'Super Admin', email: 'super@example.com', role: 'SUPER_ADMIN', isActive: true, owner: null } }, isLoading: false, error: null }),
-    }));
+    mockUseUser.mockReturnValue({
+      data: { data: { id: '1', name: 'Super Admin', email: 'super@example.com', role: 'SUPER_ADMIN', isActive: true, owner: null } },
+      isLoading: false,
+      error: null,
+    });
 
     render(
       <TestWrapper>
