@@ -1,10 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { referenceService } from '../services/referenceService';
-import { useOwnerSelection } from '@/contexts/OwnerSelectionContext';
 
 const useOwnerScopedQueryKey = (key: string) => {
-    const { selectedOwnerId } = useOwnerSelection();
-    return [key, selectedOwnerId] as const;
+    return [key, null] as const;
 };
 
 export const useEventTypes = () => {

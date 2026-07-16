@@ -8,11 +8,6 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { useDashboardStats } from '../useDashboardStats';
 import * as dashboardService from '@/features/dashboard/services';
 
-// Mock useOwnerSelection
-vi.mock('@/contexts/OwnerSelectionContext', () => ({
-  useOwnerSelection: () => ({ selectedOwnerId: null }),
-}));
-
 describe('useDashboardStats Tests', () => {
   let queryClient: QueryClient;
 

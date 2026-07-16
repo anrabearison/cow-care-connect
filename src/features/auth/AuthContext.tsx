@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { User } from '@/features/cattle/types';
 import { toast } from 'sonner';
-import { clearOwnerSelection } from '@/contexts/OwnerSelectionContext';
 import { useQueryClient } from '@tanstack/react-query';
 import { refreshManager } from '@/utils/refreshManager';
 
@@ -130,7 +129,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Clean up legacy localStorage data (migration cleanup)
       localStorage.removeItem('auth_token');
       localStorage.removeItem('user_data');
-      clearOwnerSelection();
       setUser(null);
       // Clear all queries on logout
       queryClient.clear();

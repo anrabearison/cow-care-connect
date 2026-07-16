@@ -1,13 +1,11 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useOwnerSelection } from "@/contexts/OwnerSelectionContext";
-import { setOwnerIdGetter } from "@/utils/apiClient";
 import { PrivateRoute } from "@/components/PrivateRoute";
 import { AdminRoute } from "@/components/AdminRoute";
 import { SuperAdminRoute } from "@/components/SuperAdminRoute";
 import { FarmRoute } from "@/components/FarmRoute";
 import { MainLayout } from "@/layouts/MainLayout";
 import { AdminLayout } from "@/layouts/AdminLayout";
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense } from "react";
 import { AppProviders } from "@/AppProviders";
 import { APP_ROUTE_PATHS } from "@/config/urls";
 import { PageLoader } from "@/components/PageLoader";
@@ -96,13 +94,6 @@ const PassportDetailPage = lazy(() => import("@/features/passport/pages/Passport
 
 // Internal component that has access to the context
 const AppContent = () => {
-  const { selectedOwnerId } = useOwnerSelection();
-
-  // Connect the context to the apiClient
-  useEffect(() => {
-    setOwnerIdGetter(() => selectedOwnerId);
-  }, [selectedOwnerId]);
-
   return (
     <ErrorBoundary>
       <Suspense fallback={<PageLoader />}>

@@ -11,7 +11,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useCattle, useCreateCattle } from '@/features/cattle/hooks';
 import { AddPurchaseModal } from '@/features/cattle/components/AddPurchaseModal';
 import { useAuth } from '@/features/auth/AuthContext';
-import { useOwnerSelection } from '@/contexts/OwnerSelectionContext';
 import { useHerdBookSelection } from '@/contexts/HerdBookSelectionContext';
 import { HerdBookSelector } from '@/components/HerdBookSelector';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -19,7 +18,6 @@ import { BookOpen } from 'lucide-react';
 
 export default function CattlePage() {
   const { user } = useAuth();
-  const { selectedOwnerId } = useOwnerSelection();
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
@@ -27,10 +25,6 @@ export default function CattlePage() {
   const [sourceFilter, setSourceFilter] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
-
-  // Check if Super Admin has selected an owner
-  const isSuperAdmin = user?.role === 'SUPER_ADMIN';
-  const canAddCattle = !isSuperAdmin || selectedOwnerId !== null;
 
   // Memoize filters object to prevent unnecessary re-renders
   const filters = useMemo(() => ({
@@ -75,7 +69,6 @@ export default function CattlePage() {
   ) => {
     const fullCattleData: Omit<Cattle, 'id'> = {
       ...cattleData,
-      owner_id: selectedOwnerId || undefined,
       events: [],
       treatments: []
     };
@@ -84,7 +77,7 @@ export default function CattlePage() {
       herdBookId: herdBookId || selectedHerdBookId || undefined,
       nCarnet
     });
-  }, [createCattleMutation, selectedOwnerId, selectedHerdBookId]);
+  }, [createCattleMutation, selectedHerdBookId]);
 
 
   return (
@@ -101,27 +94,13 @@ export default function CattlePage() {
               Gérez et surveillez vos {total} animaux
             </p>
           </div>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div>
-                  <Button
-                    onClick={() => setIsAddModalOpen(true)}
-                    className="w-full sm:w-auto flex items-center justify-center gap-2"
-                    disabled={!canAddCattle}
-                  >
-                    <Plus className="h-4 w-4" />
-                    Nouvel achat
-                  </Button>
-                </div>
-              </TooltipTrigger>
-              {!canAddCattle && (
-                <TooltipContent>
-                  <p>Veuillez sélectionner un propriétaire pour ajouter un animal</p>
-                </TooltipContent>
-              )}
-            </Tooltip>
-          </TooltipProvider>
+          <Button
+            onClick={() => setIsAddModalOpen(true)}
+            className="w-full sm:w-auto flex items-center justify-center gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Nouvel achat
+          </Button>
         </div>
 
         {/* HerdBook Selector - NOUVEAU */}

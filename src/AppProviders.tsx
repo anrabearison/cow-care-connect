@@ -4,7 +4,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/features/auth/AuthContext";
-import { OwnerSelectionProvider } from "@/contexts/OwnerSelectionContext";
 import { HerdBookSelectionProvider } from "@/contexts/HerdBookSelectionContext";
 import { QUERY_STALE_TIME_MS, QUERY_CACHE_TIME_MS } from "@/constants/ui";
 import { useRefreshManagerBootstrap } from "@/hooks/useRefreshManagerBootstrap";
@@ -29,11 +28,9 @@ const AppProvidersInner = ({ children }: AppProvidersProps) => {
 
   return (
     <AuthProvider>
-      <OwnerSelectionProvider>
-        <HerdBookSelectionProvider>
-          {children}
-        </HerdBookSelectionProvider>
-      </OwnerSelectionProvider>
+      <HerdBookSelectionProvider>
+        {children}
+      </HerdBookSelectionProvider>
     </AuthProvider>
   );
 };
