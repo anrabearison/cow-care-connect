@@ -7,7 +7,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/components/ui/use-toast';
 import { useCreateUser } from '../../hooks/usersHooks';
 import { useAuth } from '@/features/auth/AuthContext';
+import { useOwnersReferenceData } from '../../hooks/useOwnersReferenceData';
 import { USER_ROLES, getRoleConstraints, type UserRole } from '@/constants/roles';
+import { Loader2 } from 'lucide-react';
 
 interface FormState {
   name: string;
@@ -30,17 +32,22 @@ const UsersCreatePage = () => {
   const { toast } = useToast();
   const { user } = useAuth();
   const createUserMutation = useCreateUser();
+  const { owners, isLoading: isLoadingOwners, isError: isErrorOwners } = useOwnersReferenceData();
   const [formData, setFormData] = useState<FormState>(initialFormState);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Get role-based constraints
   const roleConstraints = getRoleConstraints(user?.role as UserRole, user?.ownerId);
 
+  // Show owner selector only for SUPER_ADMIN
+  const showOwnerSelector = user?.role === 'SUPER_ADMIN';
+
   const validate = () => {
     const nextErrors: Record<string, string> = {};
     if (!formData.name) nextErrors.name = 'Le nom est obligatoire';
     if (!formData.email) nextErrors.email = 'L\'email est obligatoire';
     if (!formData.password) nextErrors.password = 'Le mot de passe est obligatoire';
+    if (showOwnerSelector && !formData.ownerId) nextErrors.ownerId = 'Le propriétaire est obligatoire';
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   };
@@ -107,17 +114,40 @@ const UsersCreatePage = () => {
               </Select>
             )}
           </div>
-          {!roleConstraints.canSelectOwner ? (
+          {showOwnerSelector ? (
             <div className="grid gap-2 md:col-span-2">
-              <Label htmlFor="ownerId">ID Propriétaire</Label>
-              <div className="p-2 border rounded-md bg-muted">
-                {roleConstraints.forcedOwnerId}
-              </div>
+              <Label htmlFor="ownerId">Propriétaire *</Label>
+              {isLoadingOwners ? (
+                <div className="flex items-center gap-2 p-2 border rounded-md">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span className="text-sm">Chargement des propriétaires...</span>
+                </div>
+              ) : isErrorOwners ? (
+                <div className="p-2 border rounded-md bg-destructive/10 text-destructive">
+                  Erreur lors du chargement des propriétaires
+                </div>
+              ) : (
+                <Select value={formData.ownerId} onValueChange={(value) => setFormData({ ...formData, ownerId: value })}>
+                  <SelectTrigger id="ownerId" className={errors.ownerId ? 'border-red-500' : ''}>
+                    <SelectValue placeholder="Sélectionner un propriétaire" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {owners.map((owner) => (
+                      <SelectItem key={owner.id} value={owner.id}>
+                        {owner.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+              {errors.ownerId && <p className="text-sm text-red-500">{errors.ownerId}</p>}
             </div>
           ) : (
             <div className="grid gap-2 md:col-span-2">
-              <Label htmlFor="ownerId">ID Propriétaire</Label>
-              <Input id="ownerId" value={formData.ownerId} onChange={(e) => setFormData({ ...formData, ownerId: e.target.value })} />
+              <Label htmlFor="ownerId">Propriétaire</Label>
+              <div className="p-2 border rounded-md bg-muted">
+                {roleConstraints.forcedOwnerId ? 'Propriétaire de votre organisation' : 'Non applicable'}
+              </div>
             </div>
           )}
         </div>

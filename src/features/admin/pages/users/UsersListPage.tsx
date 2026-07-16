@@ -18,6 +18,7 @@ const UsersListPage = () => {
     { key: "name", header: "Nom" },
     { key: "email", header: "Email" },
     { key: "role", header: "Rôle", render: (item) => <Badge style={{ backgroundColor: getRoleColor(item.role as UserRole) }}>{getRoleLabel(item.role as UserRole)}</Badge> },
+    { key: "owner", header: "Propriétaire", render: (item) => item.owner?.name || "—" },
     { key: "isActive", header: "État", render: (item) => <Badge variant={item.isActive ? "default" : "outline"}>{item.isActive ? "Actif" : "Inactif"}</Badge> },
   ];
 

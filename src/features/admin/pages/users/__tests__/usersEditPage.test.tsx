@@ -9,6 +9,7 @@ const { mockToast } = vi.hoisted(() => ({ mockToast: vi.fn() }));
 const { mockNavigate } = vi.hoisted(() => ({ mockNavigate: vi.fn() }));
 const { mockMutate } = vi.hoisted(() => ({ mockMutate: vi.fn() }));
 const { mockUseUser } = vi.hoisted(() => ({ mockUseUser: vi.fn() }));
+const { mockUseOwnersReferenceData } = vi.hoisted(() => ({ mockUseOwnersReferenceData: vi.fn() }));
 
 vi.mock('@/components/ui/use-toast', () => ({
   useToast: () => ({ toast: mockToast }),
@@ -21,6 +22,10 @@ vi.mock('@/features/auth/AuthContext', () => ({
 vi.mock('../../../hooks/usersHooks', () => ({
   useUpdateUser: () => ({ mutate: mockMutate, isPending: false }),
   useUser: () => mockUseUser(),
+}));
+
+vi.mock('../../../hooks/useOwnersReferenceData', () => ({
+  useOwnersReferenceData: () => mockUseOwnersReferenceData(),
 }));
 
 vi.mock('react-router-dom', () => ({
@@ -43,6 +48,14 @@ describe('UsersEditPage', () => {
       data: { data: { id: '1', name: 'Test User', email: 'test@example.com', role: 'OWNER_USER', ownerId: '', isActive: true } },
       isLoading: false,
       error: null,
+    });
+    mockUseOwnersReferenceData.mockReturnValue({
+      owners: [
+        { id: 'owner-1', name: 'Owner 1' },
+        { id: 'owner-2', name: 'Owner 2' },
+      ],
+      isLoading: false,
+      isError: false,
     });
   });
 
@@ -208,7 +221,7 @@ describe('UsersEditPage', () => {
     expect(screen.getByText('Modifier l\'utilisateur')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Regular User')).toBeInTheDocument();
     expect(screen.getByText('Utilisateur Propriétaire')).toBeInTheDocument();
-    expect(screen.getByText('owner-1')).toBeInTheDocument();
+    expect(screen.getByText('Propriétaire de votre organisation')).toBeInTheDocument();
   });
 
   it('SUPER_ADMIN can edit any user', async () => {
@@ -234,5 +247,95 @@ describe('UsersEditPage', () => {
 
     expect(screen.getByText('Modifier l\'utilisateur')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Owner Admin')).toBeInTheDocument();
+  });
+
+  it('shows owner selector for SUPER_ADMIN', async () => {
+    mockUseOwnersReferenceData.mockReturnValue({
+      owners: [
+        { id: 'owner-1', name: 'Owner 1' },
+        { id: 'owner-2', name: 'Owner 2' },
+      ],
+      isLoading: false,
+      isError: false,
+    });
+
+    vi.mocked(useAuth).mockReturnValue({
+      user: { id: '1', name: 'Super Admin', email: 'super@example.com', role: USER_ROLES.SUPER_ADMIN, ownerId: null },
+      login: vi.fn(),
+      loginWithGoogle: vi.fn(),
+      logout: vi.fn(),
+      isLoading: false,
+    });
+
+    mockUseUser.mockReturnValue({
+      data: { data: { id: '2', name: 'Test User', email: 'test@example.com', role: USER_ROLES.OWNER_USER, ownerId: 'owner-1', isActive: true } },
+      isLoading: false,
+      error: null,
+    });
+
+    render(
+      <TestWrapper>
+        <UsersEditPage />
+      </TestWrapper>
+    );
+
+    expect(screen.getByText('Propriétaire')).toBeInTheDocument();
+    const ownerSelect = screen.getByRole('combobox', { name: /Propriétaire/i });
+    expect(ownerSelect).toBeInTheDocument();
+  });
+
+  it('hides owner selector for OWNER_ADMIN', async () => {
+    vi.mocked(useAuth).mockReturnValue({
+      user: { id: '1', name: 'Admin', email: 'admin@example.com', role: USER_ROLES.OWNER_ADMIN, ownerId: 'owner-1' },
+      login: vi.fn(),
+      loginWithGoogle: vi.fn(),
+      logout: vi.fn(),
+      isLoading: false,
+    });
+
+    mockUseUser.mockReturnValue({
+      data: { data: { id: '2', name: 'Regular User', email: 'user@example.com', role: USER_ROLES.OWNER_USER, ownerId: 'owner-1', isActive: true } },
+      isLoading: false,
+      error: null,
+    });
+
+    render(
+      <TestWrapper>
+        <UsersEditPage />
+      </TestWrapper>
+    );
+
+    expect(screen.getByText('Propriétaire de votre organisation')).toBeInTheDocument();
+    expect(screen.queryByText('Sélectionner un propriétaire')).not.toBeInTheDocument();
+  });
+
+  it('shows loading state for owners', async () => {
+    mockUseOwnersReferenceData.mockReturnValue({
+      owners: [],
+      isLoading: true,
+      isError: false,
+    });
+
+    vi.mocked(useAuth).mockReturnValue({
+      user: { id: '1', name: 'Super Admin', email: 'super@example.com', role: USER_ROLES.SUPER_ADMIN, ownerId: null },
+      login: vi.fn(),
+      loginWithGoogle: vi.fn(),
+      logout: vi.fn(),
+      isLoading: false,
+    });
+
+    mockUseUser.mockReturnValue({
+      data: { data: { id: '2', name: 'Test User', email: 'test@example.com', role: USER_ROLES.OWNER_USER, ownerId: 'owner-1', isActive: true } },
+      isLoading: false,
+      error: null,
+    });
+
+    render(
+      <TestWrapper>
+        <UsersEditPage />
+      </TestWrapper>
+    );
+
+    expect(screen.getByText('Chargement des propriétaires...')).toBeInTheDocument();
   });
 });
