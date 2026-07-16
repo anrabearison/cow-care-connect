@@ -4,7 +4,7 @@ import { queryKeys } from '@/lib/queryKeys';
 
 export const useDashboardStats = () => {
     return useQuery({
-        queryKey: queryKeys.dashboard.stats(null),
+        queryKey: queryKeys.dashboard.stats(),
         queryFn: () => dashboardService.getStatistics(),
         staleTime: 5 * 60 * 1000, // 5 minutes
     });

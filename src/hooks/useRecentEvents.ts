@@ -51,7 +51,7 @@ const fetchRecentEvents = async (): Promise<RecentEvent[]> => {
 
 export const useRecentEvents = () => {
     return useQuery({
-        queryKey: queryKeys.events.recent(null),
+        queryKey: queryKeys.events.recent(),
         queryFn: fetchRecentEvents,
         staleTime: 2 * 60 * 1000, // 2 minutes
     });

@@ -26,12 +26,7 @@ describe('queryKeys', () => {
   describe('Dashboard keys', () => {
     it('should have stable dashboard keys', () => {
       expect(queryKeys.dashboard.all).toEqual(['dashboard']);
-      expect(queryKeys.dashboard.stats()).toEqual(['dashboard', 'stats', undefined]);
-      expect(queryKeys.dashboard.stats('owner-123')).toEqual(['dashboard', 'stats', 'owner-123']);
-    });
-
-    it('should handle null ownerId', () => {
-      expect(queryKeys.dashboard.stats(null)).toEqual(['dashboard', 'stats', null]);
+      expect(queryKeys.dashboard.stats()).toEqual(['dashboard', 'stats']);
     });
   });
 
@@ -59,8 +54,7 @@ describe('queryKeys', () => {
       expect(queryKeys.events.all).toEqual(['events']);
       expect(queryKeys.events.lists()).toEqual(['events', 'list']);
       expect(queryKeys.events.details('123')).toEqual(['events', 'details', '123']);
-      expect(queryKeys.events.recent()).toEqual(['events', 'recent', undefined]);
-      expect(queryKeys.events.recent('owner-123')).toEqual(['events', 'recent', 'owner-123']);
+      expect(queryKeys.events.recent()).toEqual(['events', 'recent']);
     });
   });
 
