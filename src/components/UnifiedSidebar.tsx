@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect, useMemo } from 'react';
 import { MOBILE_SIDEBAR_CLOSE_DELAY_MS, BUTTON_SCALE_CLASSES } from '@/constants/ui';
 import {
   NavItem,
@@ -104,11 +104,24 @@ export function UnifiedSidebar({ mode }: UnifiedSidebarProps) {
   const collapsed = state === 'collapsed';
   const userRole = user?.role as UserRole | undefined;
 
-  // Filter navigation based on user role
-  const frontofficeItems = filterNavItems(FRONT_OFFICE_ITEMS, userRole);
-  const reportItems = filterNavItems(REPORT_ITEMS, userRole);
-  const frontofficeAdminItems = filterNavItems(FRONT_OFFICE_ADMIN_ITEMS, userRole);
-  const adminGroups = filterNavGroups(ADMIN_NAVIGATION_GROUPS, userRole);
+  // Filter navigation based on user role (memoized to prevent reference changes)
+  const frontofficeItems = useMemo(() => filterNavItems(FRONT_OFFICE_ITEMS, userRole), [userRole]);
+  const reportItems = useMemo(() => filterNavItems(REPORT_ITEMS, userRole), [userRole]);
+  const frontofficeAdminItems = useMemo(() => filterNavItems(FRONT_OFFICE_ADMIN_ITEMS, userRole), [userRole]);
+  const adminGroups = useMemo(() => filterNavGroups(ADMIN_NAVIGATION_GROUPS, userRole), [userRole]);
+
+  // Calculate the active group label based on current route (pure calculation, no state mutation)
+  const activeGroupLabel = useMemo(() => {
+    if (mode !== 'admin') return null;
+
+    const currentPath = location.pathname;
+    for (const group of adminGroups) {
+      if (group.items.some(item => currentPath.startsWith(item.url))) {
+        return group.label;
+      }
+    }
+    return null;
+  }, [location.pathname, adminGroups, mode]);
 
   // Rapports ouverts par défaut si on est sur une page rapport (frontoffice only)
   const isOnReports = location.pathname.startsWith('/reports');
@@ -120,29 +133,6 @@ export function UnifiedSidebar({ mode }: UnifiedSidebarProps) {
     adminGroups.forEach(g => allGroups.add(g.label));
     return allGroups;
   });
-
-  // Auto-expand the group containing the current URL (admin only)
-  useEffect(() => {
-    if (mode !== 'admin') return;
-
-    const currentPath = location.pathname;
-    let groupToExpand: string | null = null;
-
-    for (const group of adminGroups) {
-      if (group.items.some(item => currentPath.startsWith(item.url))) {
-        groupToExpand = group.label;
-        break;
-      }
-    }
-
-    if (groupToExpand) {
-      setCollapsedGroups(prev => {
-        const next = new Set(prev);
-        next.delete(groupToExpand!);
-        return next;
-      });
-    }
-  }, [location.pathname, adminGroups, mode]);
 
   const toggleGroup = useCallback((groupLabel: string) => {
     setCollapsedGroups((prev) => {
@@ -311,7 +301,8 @@ export function UnifiedSidebar({ mode }: UnifiedSidebarProps) {
           <>
             {/* Admin navigation with groups */}
             {adminGroups.map((group) => {
-              const isGroupCollapsed = collapsedGroups.has(group.label);
+              // Group is collapsed if user manually closed it AND it's not the active group
+              const isGroupCollapsed = collapsedGroups.has(group.label) && group.label !== activeGroupLabel;
               return (
                 <SidebarGroup key={group.label}>
                   <SidebarGroupLabel
