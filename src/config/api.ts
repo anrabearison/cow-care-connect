@@ -62,6 +62,7 @@ export const API_ENDPOINTS = {
   DASHBOARD: {
     BASE: `${API_PREFIX}/dashboard`,
     STATS: `${API_PREFIX}/dashboard/stats`,
+    STATS_PLATFORM: `${API_PREFIX}/dashboard/stats/platform`,
   },
   HEALTH: {
     BASE: `${API_PREFIX}/health`,

@@ -12,7 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/features/auth/AuthContext';
 import { ownersService } from '@/features/admin/services/ownersService';
 import { invitationsService, InvitationCreateData, InvitationResponse } from '@/features/admin/services/invitationsService';
-import { getRoleLabel, USER_ROLES, type UserRole } from '@/constants/roles';
+import { getRoleLabel, USER_ROLES, type UserRole, getRoleConstraints } from '@/constants/roles';
 import { useCreateInvitation, useDeleteInvitation, useInvitations } from '../../hooks/invitationsHooks';
 import { queryKeys } from '@/lib/queryKeys';
 
@@ -35,9 +35,14 @@ const InvitationsListPage = () => {
   const createInvitationMutation = useCreateInvitation();
   const deleteInvitationMutation = useDeleteInvitation();
 
+  // Get role-based constraints
+  const roleConstraints = getRoleConstraints(user?.role as UserRole, user?.ownerId);
+
+  // Only fetch owners list for SUPER_ADMIN
   const { data: ownersData } = useQuery({
     queryKey: queryKeys.owners.list({ page: 1, per_page: 50 }),
     queryFn: () => ownersService.getOwnersList({ page: 1, per_page: 50 }),
+    enabled: roleConstraints.canSelectOwner,
   });
 
   const { data: invitationsData, isLoading } = useInvitations({ email: search });
@@ -52,7 +57,12 @@ const InvitationsListPage = () => {
       return;
     }
 
-    if (invitationFormData.role !== USER_ROLES.SUPER_ADMIN && !invitationFormData.ownerId) {
+    // Use role constraints to determine effective values
+    const effectiveRole = roleConstraints.forcedRole || invitationFormData.role;
+    const effectiveOwnerId = roleConstraints.forcedOwnerId || 
+      (invitationFormData.role === USER_ROLES.SUPER_ADMIN ? undefined : invitationFormData.ownerId || undefined);
+
+    if (!roleConstraints.canSelectOwner && !effectiveOwnerId) {
       toast({
         title: 'Erreur',
         description: 'Veuillez sélectionner un propriétaire pour cette invitation',
@@ -63,8 +73,8 @@ const InvitationsListPage = () => {
 
     createInvitationMutation.mutate({
       email: invitationFormData.email,
-      role: invitationFormData.role,
-      ownerId: invitationFormData.role === USER_ROLES.SUPER_ADMIN ? undefined : invitationFormData.ownerId || undefined,
+      role: effectiveRole,
+      ownerId: effectiveOwnerId,
     }, {
       onSuccess: (invitation) => {
         setCreatedInvitation(invitation);
@@ -176,39 +186,56 @@ const InvitationsListPage = () => {
           </div>
           <div>
             <Label>Rôle</Label>
-            <Select
-              value={invitationFormData.role}
-              onValueChange={(value) => setInvitationFormData({ ...invitationFormData, role: value as UserRole, ownerId: '' })}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Sélectionner un rôle" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={USER_ROLES.OWNER_USER}>Utilisateur</SelectItem>
-                <SelectItem value={USER_ROLES.OWNER_ADMIN}>Admin Propriétaire</SelectItem>
-                <SelectItem value={USER_ROLES.SUPER_ADMIN}>Super Admin</SelectItem>
-              </SelectContent>
-            </Select>
+            {!roleConstraints.canSelectOwner ? (
+              <div className="p-2 border rounded-md bg-muted">
+                Utilisateur Propriétaire
+              </div>
+            ) : (
+              <Select
+                value={invitationFormData.role}
+                onValueChange={(value) => setInvitationFormData({ ...invitationFormData, role: value as UserRole, ownerId: '' })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionner un rôle" />
+                </SelectTrigger>
+                <SelectContent>
+                  {roleConstraints.allowedRoles.map((role) => (
+                    <SelectItem key={role} value={role}>
+                      {getRoleLabel(role)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
-          <div>
-            <Label>Propriétaire</Label>
-            <Select
-              value={invitationFormData.ownerId}
-              onValueChange={(value) => setInvitationFormData({ ...invitationFormData, ownerId: value })}
-              disabled={invitationFormData.role === USER_ROLES.SUPER_ADMIN}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={invitationFormData.role === USER_ROLES.SUPER_ADMIN ? 'Non requis pour Super Admin' : 'Sélectionner un propriétaire'} />
-              </SelectTrigger>
-              <SelectContent>
-                {ownersData?.data?.map((owner) => (
-                  <SelectItem key={owner.id} value={owner.id}>
-                    {owner.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          {!roleConstraints.canSelectOwner ? (
+            <div>
+              <Label>Propriétaire</Label>
+              <div className="p-2 border rounded-md bg-muted">
+                {roleConstraints.forcedOwnerId}
+              </div>
+            </div>
+          ) : (
+            <div>
+              <Label>Propriétaire</Label>
+              <Select
+                value={invitationFormData.ownerId}
+                onValueChange={(value) => setInvitationFormData({ ...invitationFormData, ownerId: value })}
+                disabled={invitationFormData.role === USER_ROLES.SUPER_ADMIN}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={invitationFormData.role === USER_ROLES.SUPER_ADMIN ? 'Non requis pour Super Admin' : 'Sélectionner un propriétaire'} />
+                </SelectTrigger>
+                <SelectContent>
+                  {ownersData?.data?.map((owner) => (
+                    <SelectItem key={owner.id} value={owner.id}>
+                      {owner.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </div>
       </FormDialog>
 

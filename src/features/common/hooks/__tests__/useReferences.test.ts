@@ -16,10 +16,6 @@ vi.mock('../../services/referenceService', () => ({
   },
 }));
 
-vi.mock('@/contexts/OwnerSelectionContext', () => ({
-  useOwnerSelection: () => ({ selectedOwnerId: 'owner-1' }),
-}));
-
 describe('common hooks', () => {
   beforeEach(() => {
     createTestQueryClient();

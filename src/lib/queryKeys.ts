@@ -17,7 +17,8 @@ export const queryKeys = {
   // Dashboard
   dashboard: {
     all: ['dashboard'] as const,
-    stats: (ownerId?: string | null) => ['dashboard', 'stats', ownerId] as const,
+    stats: () => ['dashboard', 'stats'] as const,
+    platformStats: () => ['dashboard', 'platformStats'] as const,
   },
 
   // Cattle
@@ -36,7 +37,7 @@ export const queryKeys = {
     lists: () => ['events', 'list'] as const,
     list: (filters: Record<string, unknown>) => ['events', 'list', filters] as const,
     details: (id: string | number) => ['events', 'details', id] as const,
-    recent: (ownerId?: string | null) => ['events', 'recent', ownerId] as const,
+    recent: () => ['events', 'recent'] as const,
   },
 
   // Treatments

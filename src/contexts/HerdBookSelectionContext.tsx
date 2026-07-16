@@ -2,7 +2,6 @@ import React, { createContext, useContext, useState, useEffect, useMemo, ReactNo
 import { HerdBook } from '@/types/herdbook';
 import { useHerdBooks } from '@/features/herdbook/hooks';
 import { useAuth } from '@/features/auth/AuthContext';
-import { useOwnerSelection } from './OwnerSelectionContext';
 
 interface HerdBookSelectionContextType {
     selectedHerdBookId: string | null;
@@ -17,14 +16,10 @@ const HerdBookSelectionContext = createContext<HerdBookSelectionContextType | un
 
 export const HerdBookSelectionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const { user } = useAuth();
-    const { selectedOwnerId } = useOwnerSelection();
     const [selectedHerdBookId, setSelectedHerdBookIdState] = useState<string | null>(null);
 
-    // Déterminer l'owner_id à utiliser
-    // Si super admin, utiliser l'owner sélectionné, sinon utiliser l'owner de l'utilisateur
-    const effectiveOwnerId = user?.role === 'SUPER_ADMIN'
-        ? selectedOwnerId
-        : (user?.ownerId || user?.owner?.id);
+    // Déterminer l'owner_id à utiliser - basé sur l'utilisateur connecté
+    const effectiveOwnerId = user?.ownerId || user?.owner?.id;
 
     // Charger les HerdBooks pour le propriétaire - SEULEMENT si l'utilisateur est connecté
     const { data: herdBooksData, isLoading, error } = useHerdBooks(effectiveOwnerId || undefined);

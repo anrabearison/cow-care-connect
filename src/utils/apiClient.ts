@@ -5,17 +5,11 @@ import {
     AppError,
     NetworkError,
     AuthenticationError,
+    ForbiddenError,
     createErrorFromStatus,
     ErrorMessages
 } from './errors';
 import { refreshManager } from './refreshManager';
-
-// Global getter for selected owner ID (will be set by App)
-let getSelectedOwnerIdFn: (() => string | null) | null = null;
-
-export const setOwnerIdGetter = (fn: () => string | null) => {
-    getSelectedOwnerIdFn = fn;
-};
 
 export interface ApiResponse<T> {
     data: T;
@@ -122,6 +116,11 @@ class ApiClient {
             throw new AuthenticationError();
         }
 
+        // Handle forbidden errors (403) - RBAC restriction
+        if (response.status === 403) {
+            throw new ForbiddenError('Accès non autorisé pour ce rôle');
+        }
+
         // Handle binary responses (like PDFs)
         if (asBlob) {
             if (!response.ok) {
@@ -153,19 +152,9 @@ class ApiClient {
         return data as T;
     }
 
-    private getSelectedOwnerId(): string | null {
-        return getSelectedOwnerIdFn?.() ?? null;
-    }
-
     private buildUrl(endpoint: string, params?: QueryParams): string {
-        const selectedOwnerId = this.getSelectedOwnerId();
-        // Skip owner_id for endpoint groups that don't accept owner filtering
-        const shouldSkipOwnerId =
-            endpoint.startsWith(API_ENDPOINTS.PASSPORT.BASE) ||
-            endpoint.startsWith(API_ENDPOINTS.AUTH.BASE);
         const allParams = {
             ...params,
-            ...(selectedOwnerId && !shouldSkipOwnerId && !endpoint.includes('owner_id=') && { owner_id: selectedOwnerId }),
         };
         const queryString = this.buildQueryString(allParams);
 

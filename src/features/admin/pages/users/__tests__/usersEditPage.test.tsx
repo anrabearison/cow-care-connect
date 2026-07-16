@@ -2,6 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import UsersEditPage from '../UsersEditPage';
 import { TestWrapper } from '@/test/test-utils';
+import { useAuth } from '@/features/auth/AuthContext';
+import { USER_ROLES } from '@/constants/roles';
 
 const { mockToast } = vi.hoisted(() => ({ mockToast: vi.fn() }));
 const { mockNavigate } = vi.hoisted(() => ({ mockNavigate: vi.fn() }));
@@ -10,6 +12,10 @@ const { mockUseUser } = vi.hoisted(() => ({ mockUseUser: vi.fn() }));
 
 vi.mock('@/components/ui/use-toast', () => ({
   useToast: () => ({ toast: mockToast }),
+}));
+
+vi.mock('@/features/auth/AuthContext', () => ({
+  useAuth: vi.fn(),
 }));
 
 vi.mock('../../../hooks/usersHooks', () => ({
@@ -25,6 +31,14 @@ vi.mock('react-router-dom', () => ({
 describe('UsersEditPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Default SUPER_ADMIN user
+    vi.mocked(useAuth).mockReturnValue({
+      user: { id: '1', name: 'Admin', email: 'admin@example.com', role: USER_ROLES.SUPER_ADMIN, ownerId: 'owner-1' },
+      login: vi.fn(),
+      loginWithGoogle: vi.fn(),
+      logout: vi.fn(),
+      isLoading: false,
+    });
     mockUseUser.mockReturnValue({
       data: { data: { id: '1', name: 'Test User', email: 'test@example.com', role: 'OWNER_USER', ownerId: '', isActive: true } },
       isLoading: false,
@@ -118,5 +132,107 @@ describe('UsersEditPage', () => {
 
     expect(screen.getByText('Erreur')).toBeInTheDocument();
     expect(screen.getByText('Utilisateur introuvable')).toBeInTheDocument();
+  });
+
+  it('OWNER_ADMIN cannot edit another OWNER_ADMIN', async () => {
+    vi.mocked(useAuth).mockReturnValue({
+      user: { id: '1', name: 'Admin', email: 'admin@example.com', role: USER_ROLES.OWNER_ADMIN, ownerId: 'owner-1' },
+      login: vi.fn(),
+      loginWithGoogle: vi.fn(),
+      logout: vi.fn(),
+      isLoading: false,
+    });
+
+    mockUseUser.mockReturnValue({
+      data: { data: { id: '2', name: 'Other Admin', email: 'other@example.com', role: USER_ROLES.OWNER_ADMIN, ownerId: 'owner-1', isActive: true } },
+      isLoading: false,
+      error: null,
+    });
+
+    render(
+      <TestWrapper>
+        <UsersEditPage />
+      </TestWrapper>
+    );
+
+    expect(screen.getByText('Accès refusé')).toBeInTheDocument();
+    expect(screen.getByText('Vous ne pouvez modifier que les utilisateurs de rôle Utilisateur Propriétaire.')).toBeInTheDocument();
+  });
+
+  it('OWNER_ADMIN cannot edit user from different owner', async () => {
+    vi.mocked(useAuth).mockReturnValue({
+      user: { id: '1', name: 'Admin', email: 'admin@example.com', role: USER_ROLES.OWNER_ADMIN, ownerId: 'owner-1' },
+      login: vi.fn(),
+      loginWithGoogle: vi.fn(),
+      logout: vi.fn(),
+      isLoading: false,
+    });
+
+    mockUseUser.mockReturnValue({
+      data: { data: { id: '2', name: 'Other User', email: 'other@example.com', role: USER_ROLES.OWNER_USER, ownerId: 'owner-2', isActive: true } },
+      isLoading: false,
+      error: null,
+    });
+
+    render(
+      <TestWrapper>
+        <UsersEditPage />
+      </TestWrapper>
+    );
+
+    expect(screen.getByText('Accès refusé')).toBeInTheDocument();
+    expect(screen.getByText('Vous ne pouvez modifier que les utilisateurs de votre propriétaire.')).toBeInTheDocument();
+  });
+
+  it('OWNER_ADMIN can edit OWNER_USER from same owner', async () => {
+    vi.mocked(useAuth).mockReturnValue({
+      user: { id: '1', name: 'Admin', email: 'admin@example.com', role: USER_ROLES.OWNER_ADMIN, ownerId: 'owner-1' },
+      login: vi.fn(),
+      loginWithGoogle: vi.fn(),
+      logout: vi.fn(),
+      isLoading: false,
+    });
+
+    mockUseUser.mockReturnValue({
+      data: { data: { id: '2', name: 'Regular User', email: 'user@example.com', role: USER_ROLES.OWNER_USER, ownerId: 'owner-1', isActive: true } },
+      isLoading: false,
+      error: null,
+    });
+
+    render(
+      <TestWrapper>
+        <UsersEditPage />
+      </TestWrapper>
+    );
+
+    expect(screen.getByText('Modifier l\'utilisateur')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('Regular User')).toBeInTheDocument();
+    expect(screen.getByText('Utilisateur Propriétaire')).toBeInTheDocument();
+    expect(screen.getByText('owner-1')).toBeInTheDocument();
+  });
+
+  it('SUPER_ADMIN can edit any user', async () => {
+    vi.mocked(useAuth).mockReturnValue({
+      user: { id: '1', name: 'Super Admin', email: 'super@example.com', role: USER_ROLES.SUPER_ADMIN, ownerId: null },
+      login: vi.fn(),
+      loginWithGoogle: vi.fn(),
+      logout: vi.fn(),
+      isLoading: false,
+    });
+
+    mockUseUser.mockReturnValue({
+      data: { data: { id: '2', name: 'Owner Admin', email: 'owner@example.com', role: USER_ROLES.OWNER_ADMIN, ownerId: 'owner-1', isActive: true } },
+      isLoading: false,
+      error: null,
+    });
+
+    render(
+      <TestWrapper>
+        <UsersEditPage />
+      </TestWrapper>
+    );
+
+    expect(screen.getByText('Modifier l\'utilisateur')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('Owner Admin')).toBeInTheDocument();
   });
 });

@@ -2,7 +2,6 @@ import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/utils/apiClient';
 import { API_CONFIG } from '@/config/api';
 import { RecentEvent } from '@/types/events';
-import { useOwnerSelection } from '@/contexts/OwnerSelectionContext';
 import { queryKeys } from '@/lib/queryKeys';
 
 interface EventResponse {
@@ -51,10 +50,8 @@ const fetchRecentEvents = async (): Promise<RecentEvent[]> => {
 };
 
 export const useRecentEvents = () => {
-    const { selectedOwnerId } = useOwnerSelection();
-
     return useQuery({
-        queryKey: queryKeys.events.recent(selectedOwnerId),
+        queryKey: queryKeys.events.recent(),
         queryFn: fetchRecentEvents,
         staleTime: 2 * 60 * 1000, // 2 minutes
     });

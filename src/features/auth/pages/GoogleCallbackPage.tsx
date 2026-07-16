@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
 import { Loader2 } from 'lucide-react';
+import { isSuperAdmin } from '@/constants/roles';
 
 export default function GoogleCallbackPage() {
   const navigate = useNavigate();
@@ -25,9 +26,11 @@ export default function GoogleCallbackPage() {
 
       try {
         const invitationToken = state ?? undefined;
-        const success = await loginWithGoogle(code, invitationToken);
-        if (success) {
-          navigate('/');
+        const loggedInUser = await loginWithGoogle(code, invitationToken);
+        if (loggedInUser) {
+          // Redirect SUPER_ADMIN to /admin, others to /
+          const redirectPath = isSuperAdmin(loggedInUser.role) ? '/admin' : '/';
+          navigate(redirectPath);
         } else {
           setError('Échec de l\'authentification avec Google');
           setTimeout(() => navigate('/login'), 3000);

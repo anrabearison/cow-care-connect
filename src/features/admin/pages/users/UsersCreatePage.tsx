@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
 import { useCreateUser } from '../../hooks/usersHooks';
+import { useAuth } from '@/features/auth/AuthContext';
+import { USER_ROLES, getRoleConstraints, type UserRole } from '@/constants/roles';
 
 interface FormState {
   name: string;
@@ -26,9 +28,13 @@ const initialFormState: FormState = {
 const UsersCreatePage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
   const createUserMutation = useCreateUser();
   const [formData, setFormData] = useState<FormState>(initialFormState);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Get role-based constraints
+  const roleConstraints = getRoleConstraints(user?.role as UserRole, user?.ownerId);
 
   const validate = () => {
     const nextErrors: Record<string, string> = {};
@@ -43,12 +49,16 @@ const UsersCreatePage = () => {
     e.preventDefault();
     if (!validate()) return;
 
+    // Use role constraints to determine effective values
+    const effectiveRole = roleConstraints.forcedRole || formData.role;
+    const effectiveOwnerId = roleConstraints.forcedOwnerId || (formData.ownerId || undefined);
+
     createUserMutation.mutate({
       name: formData.name,
       email: formData.email,
       password: formData.password,
-      role: formData.role,
-      ownerId: formData.ownerId || undefined,
+      role: effectiveRole,
+      ownerId: effectiveOwnerId,
     });
     toast({ title: 'Succès', description: 'Utilisateur créé avec succès' });
     navigate('/admin/users');
@@ -80,21 +90,36 @@ const UsersCreatePage = () => {
           </div>
           <div className="grid gap-2">
             <Label htmlFor="role">Rôle</Label>
-            <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value as any })}>
-              <SelectTrigger id="role">
-                <SelectValue placeholder="Sélectionner un rôle" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="SUPER_ADMIN">Super Administrateur</SelectItem>
-                <SelectItem value="OWNER_ADMIN">Admin Propriétaire</SelectItem>
-                <SelectItem value="OWNER_USER">Utilisateur Propriétaire</SelectItem>
-              </SelectContent>
-            </Select>
+            {!roleConstraints.canSelectOwner ? (
+              <div className="p-2 border rounded-md bg-muted">
+                Utilisateur Propriétaire
+              </div>
+            ) : (
+              <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value as FormState['role'] })}>
+                <SelectTrigger id="role">
+                  <SelectValue placeholder="Sélectionner un rôle" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="SUPER_ADMIN">Super Administrateur</SelectItem>
+                  <SelectItem value="OWNER_ADMIN">Admin Propriétaire</SelectItem>
+                  <SelectItem value="OWNER_USER">Utilisateur Propriétaire</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
           </div>
-          <div className="grid gap-2 md:col-span-2">
-            <Label htmlFor="ownerId">ID Propriétaire</Label>
-            <Input id="ownerId" value={formData.ownerId} onChange={(e) => setFormData({ ...formData, ownerId: e.target.value })} />
-          </div>
+          {!roleConstraints.canSelectOwner ? (
+            <div className="grid gap-2 md:col-span-2">
+              <Label htmlFor="ownerId">ID Propriétaire</Label>
+              <div className="p-2 border rounded-md bg-muted">
+                {roleConstraints.forcedOwnerId}
+              </div>
+            </div>
+          ) : (
+            <div className="grid gap-2 md:col-span-2">
+              <Label htmlFor="ownerId">ID Propriétaire</Label>
+              <Input id="ownerId" value={formData.ownerId} onChange={(e) => setFormData({ ...formData, ownerId: e.target.value })} />
+            </div>
+          )}
         </div>
 
         <div className="flex justify-end gap-4">
