@@ -144,10 +144,38 @@ const AppContent = () => {
               </FarmRoute>
             }
           />
-          <Route path="users" element={<UsersListPage />} />
-          <Route path="users/new" element={<UsersCreatePage />} />
-          <Route path="users/:id" element={<UsersDetailPage />} />
-          <Route path="users/:id/edit" element={<UsersEditPage />} />
+          <Route
+            path="users"
+            element={
+              <FarmRoute>
+                <UsersListPage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="users/new"
+            element={
+              <FarmRoute>
+                <UsersCreatePage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="users/:id"
+            element={
+              <FarmRoute>
+                <UsersDetailPage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="users/:id/edit"
+            element={
+              <FarmRoute>
+                <UsersEditPage />
+              </FarmRoute>
+            }
+          />
           <Route path="veterinarians" element={<VeterinariansListPage />} />
           <Route path="veterinarians/new" element={<VeterinariansCreatePage />} />
           <Route path="veterinarians/:id" element={<VeterinariansDetailPage />} />
@@ -236,10 +264,38 @@ const AppContent = () => {
           <Route path="characters/new" element={<CharactersCreatePage />} />
           <Route path="characters/:id" element={<CharactersDetailPage />} />
           <Route path="characters/:id/edit" element={<CharactersEditPage />} />
-          <Route path="herd-books" element={<HerdBooksListPage />} />
-          <Route path="herd-books/new" element={<HerdBookCreatePage />} />
-          <Route path="herd-books/:id" element={<HerdBookDetailPage />} />
-          <Route path="herd-books/:id/edit" element={<HerdBookEditPage />} />
+          <Route
+            path="herd-books"
+            element={
+              <FarmRoute>
+                <HerdBooksListPage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="herd-books/new"
+            element={
+              <FarmRoute>
+                <HerdBookCreatePage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="herd-books/:id"
+            element={
+              <FarmRoute>
+                <HerdBookDetailPage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="herd-books/:id/edit"
+            element={
+              <FarmRoute>
+                <HerdBookEditPage />
+              </FarmRoute>
+            }
+          />
           <Route
             path="herd-book-cattle"
             element={
@@ -296,14 +352,70 @@ const AppContent = () => {
               </FarmRoute>
             }
           />
-          <Route path="purchases" element={<PurchasesListPage />} />
-          <Route path="purchases/new" element={<PurchaseCreatePage />} />
-          <Route path="purchases/:id" element={<PurchaseDetailPage />} />
-          <Route path="purchases/:id/edit" element={<PurchaseEditPage />} />
-          <Route path="suppliers" element={<SuppliersListPage />} />
-          <Route path="suppliers/new" element={<SuppliersCreatePage />} />
-          <Route path="suppliers/:id" element={<SuppliersDetailPage />} />
-          <Route path="suppliers/:id/edit" element={<SuppliersEditPage />} />
+          <Route
+            path="purchases"
+            element={
+              <FarmRoute>
+                <PurchasesListPage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="purchases/new"
+            element={
+              <FarmRoute>
+                <PurchaseCreatePage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="purchases/:id"
+            element={
+              <FarmRoute>
+                <PurchaseDetailPage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="purchases/:id/edit"
+            element={
+              <FarmRoute>
+                <PurchaseEditPage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="suppliers"
+            element={
+              <FarmRoute>
+                <SuppliersListPage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="suppliers/new"
+            element={
+              <FarmRoute>
+                <SuppliersCreatePage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="suppliers/:id"
+            element={
+              <FarmRoute>
+                <SuppliersDetailPage />
+              </FarmRoute>
+            }
+          />
+          <Route
+            path="suppliers/:id/edit"
+            element={
+              <FarmRoute>
+                <SuppliersEditPage />
+              </FarmRoute>
+            }
+          />
           <Route
             path="owners"
             element={

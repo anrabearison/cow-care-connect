@@ -86,7 +86,7 @@ export const ADMIN_NAVIGATION_GROUPS: NavGroup[] = [
     label: 'Personnel',
     icon: User,
     items: [
-      { title: 'Utilisateurs', url: '/admin/users', icon: User, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN] },
+      { title: 'Utilisateurs', url: '/admin/users', icon: User, roles: [USER_ROLES.OWNER_ADMIN] },
       { title: 'Intervenants', url: '/admin/veterinarians', icon: Stethoscope, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN] },
     ],
   },
@@ -113,7 +113,7 @@ export const ADMIN_NAVIGATION_GROUPS: NavGroup[] = [
     label: 'Administration',
     icon: Folder,
     items: [
-      { title: 'Livres de troupeau', url: '/admin/herd-books', icon: Book, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN] },
+      { title: 'Livres de troupeau', url: '/admin/herd-books', icon: Book, roles: [USER_ROLES.OWNER_ADMIN] },
       { title: 'Invitations', url: '/admin/invitations', icon: Mail, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN] },
     ],
   },
@@ -121,8 +121,8 @@ export const ADMIN_NAVIGATION_GROUPS: NavGroup[] = [
     label: 'Achats',
     icon: ShoppingBag,
     items: [
-      { title: 'Historique achats', url: '/admin/purchases', icon: ShoppingCart, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN] },
-      { title: 'Fournisseurs', url: '/admin/suppliers', icon: Truck, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN] },
+      { title: 'Historique achats', url: '/admin/purchases', icon: ShoppingCart, roles: [USER_ROLES.OWNER_ADMIN] },
+      { title: 'Fournisseurs', url: '/admin/suppliers', icon: Truck, roles: [USER_ROLES.OWNER_ADMIN] },
     ],
   },
   {
