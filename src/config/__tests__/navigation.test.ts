@@ -65,14 +65,13 @@ describe('Navigation Configuration', () => {
   describe('Admin Navigation', () => {
     it('SUPER_ADMIN should see all admin groups', () => {
       const filtered = filterNavGroups(ADMIN_NAVIGATION_GROUPS, USER_ROLES.SUPER_ADMIN);
-      expect(filtered.length).toBe(7);
+      expect(filtered.length).toBe(6);
       expect(filtered.map(g => g.label)).toEqual([
         'Général',
         'Personnel',
         'Médical',
         'Référence',
         'Administration',
-        'Achats',
         'Super Admin',
       ]);
     });
@@ -97,6 +96,12 @@ describe('Navigation Configuration', () => {
       expect(medicalGroup).toBeDefined();
       expect(medicalGroup!.items.map(i => i.title)).not.toContain('Traitements');
       expect(medicalGroup!.items.map(i => i.title)).not.toContain('Événements');
+    });
+
+    it('SUPER_ADMIN should not see Achats (purchases, suppliers)', () => {
+      const filtered = filterNavGroups(ADMIN_NAVIGATION_GROUPS, USER_ROLES.SUPER_ADMIN);
+      const achatsGroup = filtered.find(g => g.label === 'Achats');
+      expect(achatsGroup).toBeUndefined();
     });
 
     it('OWNER_ADMIN should see all admin groups except Super Admin', () => {

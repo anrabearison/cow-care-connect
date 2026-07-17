@@ -86,7 +86,7 @@ export const ADMIN_NAVIGATION_GROUPS: NavGroup[] = [
     label: 'Personnel',
     icon: User,
     items: [
-      { title: 'Utilisateurs', url: '/admin/users', icon: User, roles: [USER_ROLES.OWNER_ADMIN] },
+      { title: 'Utilisateurs', url: '/admin/users', icon: User, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN] },
       { title: 'Intervenants', url: '/admin/veterinarians', icon: Stethoscope, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN] },
     ],
   },
