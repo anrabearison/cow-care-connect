@@ -144,38 +144,10 @@ const AppContent = () => {
               </FarmRoute>
             }
           />
-          <Route
-            path="users"
-            element={
-              <FarmRoute>
-                <UsersListPage />
-              </FarmRoute>
-            }
-          />
-          <Route
-            path="users/new"
-            element={
-              <FarmRoute>
-                <UsersCreatePage />
-              </FarmRoute>
-            }
-          />
-          <Route
-            path="users/:id"
-            element={
-              <FarmRoute>
-                <UsersDetailPage />
-              </FarmRoute>
-            }
-          />
-          <Route
-            path="users/:id/edit"
-            element={
-              <FarmRoute>
-                <UsersEditPage />
-              </FarmRoute>
-            }
-          />
+          <Route path="users" element={<UsersListPage />} />
+          <Route path="users/new" element={<UsersCreatePage />} />
+          <Route path="users/:id" element={<UsersDetailPage />} />
+          <Route path="users/:id/edit" element={<UsersEditPage />} />
           <Route path="veterinarians" element={<VeterinariansListPage />} />
           <Route path="veterinarians/new" element={<VeterinariansCreatePage />} />
           <Route path="veterinarians/:id" element={<VeterinariansDetailPage />} />
