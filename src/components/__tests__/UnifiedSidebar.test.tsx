@@ -204,7 +204,7 @@ describe('UnifiedSidebar Tests', () => {
 
       // Les autres groupes doivent être présents aussi (mais fermés)
       expect(screen.getByText('Référence')).toBeInTheDocument();
-      expect(screen.getByText('Médical')).toBeInTheDocument();
+      expect(screen.queryByText('Médical')).not.toBeInTheDocument(); // SUPER_ADMIN ne voit plus Médical
     });
   });
 
