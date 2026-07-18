@@ -66,12 +66,15 @@ export const FRONT_OFFICE_ADMIN_ITEMS: NavItem[] = [
 
 // ─── Admin Navigation (AdminLayout) ────────────────────────────────────────────
 
+export const ADMIN_STANDALONE_ITEMS: NavItem[] = [
+  { title: 'Tableau de bord', url: '/admin', icon: Settings, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN] },
+];
+
 export const ADMIN_NAVIGATION_GROUPS: NavGroup[] = [
   {
     label: 'Administration',
     icon: Settings,
     items: [
-      { title: 'Tableau de bord', url: '/admin', icon: Settings, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN] },
       { title: 'Livres de troupeau', url: '/admin/herd-books', icon: Book, roles: [USER_ROLES.OWNER_ADMIN] },
       { title: 'Invitations', url: '/admin/invitations', icon: Mail, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN] },
       { title: 'Propriétaires', url: '/admin/owners', icon: Crown, roles: [USER_ROLES.SUPER_ADMIN] },
@@ -81,8 +84,8 @@ export const ADMIN_NAVIGATION_GROUPS: NavGroup[] = [
     label: 'Gestion du troupeau',
     icon: Heart,
     items: [
-      { title: 'Bovins', url: '/admin/cattle', icon: Beef, roles: [USER_ROLES.OWNER_ADMIN, USER_ROLES.OWNER_USER] },
-      { title: 'Inscriptions bovins', url: '/admin/herd-book-cattle', icon: FileText, roles: [USER_ROLES.OWNER_ADMIN, USER_ROLES.OWNER_USER] },
+      { title: 'Bovins', url: '/admin/cattle', icon: Beef, roles: [USER_ROLES.OWNER_ADMIN] },
+      { title: 'Inscriptions bovins', url: '/admin/herd-book-cattle', icon: FileText, roles: [USER_ROLES.OWNER_ADMIN] },
     ],
   },
   {
@@ -97,8 +100,8 @@ export const ADMIN_NAVIGATION_GROUPS: NavGroup[] = [
     label: 'Médical',
     icon: Activity,
     items: [
-      { title: 'Traitements', url: '/admin/treatments', icon: Activity, roles: [USER_ROLES.OWNER_ADMIN, USER_ROLES.OWNER_USER] },
-      { title: 'Événements', url: '/admin/events', icon: Calendar, roles: [USER_ROLES.OWNER_ADMIN, USER_ROLES.OWNER_USER] },
+      { title: 'Traitements', url: '/admin/treatments', icon: Activity, roles: [USER_ROLES.OWNER_ADMIN] },
+      { title: 'Événements', url: '/admin/events', icon: Calendar, roles: [USER_ROLES.OWNER_ADMIN] },
     ],
   },
   {
