@@ -13,7 +13,7 @@ export interface HerdBookCattle {
     id: string;
     herd_book_id: string;
     cattle_id: string;
-    n_carnet: string | null;
+    n_carnet: number;
     category_id: string;
     status_id: string;
     created_at: string;

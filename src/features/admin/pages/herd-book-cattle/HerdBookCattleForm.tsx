@@ -280,11 +280,12 @@ const HerdBookCattleForm = ({
 
       {/* N° Carnet */}
       <div>
-        <Label htmlFor="nCarnet">N° Carnet</Label>
+        <Label htmlFor="nCarnet">N° Carnet *</Label>
         <Input
           id="nCarnet"
-          value={formData.nCarnet}
-          onChange={(e) => setFormData({ ...formData, nCarnet: e.target.value })}
+          type="number"
+          value={formData.nCarnet || ''}
+          onChange={(e) => setFormData({ ...formData, nCarnet: e.target.value ? parseInt(e.target.value, 10) : undefined as any })}
           disabled={isPending}
           placeholder="Numéro de carnet"
         />

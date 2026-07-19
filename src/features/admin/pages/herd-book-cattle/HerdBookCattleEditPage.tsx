@@ -24,7 +24,7 @@ const HerdBookCattleEditPage = () => {
   const [formData, setFormData] = useState<UpdateHerdBookCattleData>({ 
     herdBookId: "", 
     cattleId: "", 
-    nCarnet: "", 
+    nCarnet: undefined as unknown as number, 
     categoryId: "", 
     statusId: "" 
   });
@@ -101,7 +101,7 @@ const HerdBookCattleEditPage = () => {
       setFormData({
         herdBookId: item.data.herdBookId,
         cattleId: item.data.cattleId || "",
-        nCarnet: item.data.nCarnet || "",
+        nCarnet: item.data.nCarnet || undefined as unknown as number,
         categoryId: item.data.categoryId,
         statusId: item.data.statusId,
       });

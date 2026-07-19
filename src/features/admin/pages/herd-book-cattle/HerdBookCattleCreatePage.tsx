@@ -27,7 +27,7 @@ const HerdBookCattleCreatePage = () => {
   const [formData, setFormData] = useState<CreateHerdBookCattleData>({ 
     herdBookId: "", 
     cattleId: "", 
-    nCarnet: "", 
+    nCarnet: undefined as unknown as number, 
     categoryId: "", 
     statusId: "" 
   });
