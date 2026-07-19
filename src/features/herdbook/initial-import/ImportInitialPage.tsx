@@ -4,14 +4,27 @@ import { ImportForm } from './components/ImportForm';
 import { CsvUpload } from './components/CsvUpload';
 import { ValidationResults } from './components/ValidationResults';
 import { Confirmation } from './components/Confirmation';
+import { ImportCompletedModal } from './components/ImportCompletedModal';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Loader2 } from 'lucide-react';
+import { useHerdBookSelection } from '@/contexts/HerdBookSelectionContext';
+import { useEffect, useState } from 'react';
 
 /**
  * Page principale pour l'import initial HerdBook
  * Orchestre le workflow multi-étapes avec validation et confirmation
  */
 const ImportInitialContent = () => {
+  const { hasCompletedInitialImport, availableHerdBooks } = useHerdBookSelection();
+  const [showCompletedModal, setShowCompletedModal] = useState(false);
+
+  // Vérifier si l'import initial est déjà complété et afficher la modal
+  useEffect(() => {
+    if (hasCompletedInitialImport) {
+      setShowCompletedModal(true);
+    }
+  }, [hasCompletedInitialImport]);
+
   const {
     step,
     csvFile,
@@ -158,6 +171,14 @@ const ImportInitialContent = () => {
           )}
         </div>
       </div>
+
+      {/* Modal pour import déjà complété */}
+      <ImportCompletedModal
+        open={showCompletedModal}
+        onClose={() => setShowCompletedModal(false)}
+        herdBookName={availableHerdBooks[0]?.reference}
+        cattleCount={availableHerdBooks[0]?.cattle_count}
+      />
     </div>
   );
 };
