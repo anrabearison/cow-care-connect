@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -6,26 +6,28 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import OwnerForm, { OwnerFormValues } from "../../components/OwnerForm";
 import { useOwner, useUpdateOwner } from "../../hooks/ownersHooks";
 import { UpdateOwnerData } from "../services/ownersService";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 const OwnerEditPage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { toast: uiToast } = useToast();
-  
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<OwnerFormValues | null>(null);
+
   const { data: owner, isLoading, error } = useOwner(id!);
-  
+
   const initialData = useMemo(() => {
     if (!owner) return null;
     return {
       name: owner.name || "",
       email: owner.email || "",
-      contactInfo: owner.contactInfo || "",
       phone: owner.phone || "",
       address: owner.address || "",
       city: owner.city || "",
     };
   }, [owner]);
-  
+
   const updateMutation = useUpdateOwner({
     onSuccess: () => {
       uiToast({ title: "Succès", description: "Propriétaire mis à jour avec succès" });
@@ -37,19 +39,27 @@ const OwnerEditPage = () => {
       uiToast({ title: "Erreur", description: errorMessage, variant: "destructive" });
     },
   });
-  
+
   const handleSubmit = (data: OwnerFormValues) => {
+    setPendingData(data);
+    setIsConfirmDialogOpen(true);
+  };
+
+  const handleConfirmUpdate = () => {
+    if (!pendingData) return;
+
     const updateData: UpdateOwnerData = {
-      ...data,
-      email: data.email || undefined,
-      contactInfo: data.contactInfo || undefined,
-      phone: data.phone || undefined,
-      address: data.address || undefined,
-      city: data.city || undefined,
+      ...pendingData,
+      email: pendingData.email || undefined,
+      phone: pendingData.phone || undefined,
+      address: pendingData.address || undefined,
+      city: pendingData.city || undefined,
     };
     updateMutation.mutate({ id: id!, data: updateData });
+    setIsConfirmDialogOpen(false);
+    setPendingData(null);
   };
-  
+
   const handleCancel = () => {
     navigate('/admin/owners');
   };
@@ -99,6 +109,17 @@ const OwnerEditPage = () => {
           isPending={updateMutation.isPending}
         />
       </div>
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Modifier le propriétaire"
+        description={`Êtes-vous sûr de vouloir modifier le propriétaire "${pendingData?.name}" ?`}
+        onConfirm={handleConfirmUpdate}
+        confirmText="Modifier"
+        cancelText="Annuler"
+        loading={updateMutation.isPending}
+      />
     </div>
   );
 };

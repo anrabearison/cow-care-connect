@@ -94,8 +94,10 @@ export interface User {
 export interface Owner {
   id: string;
   name: string;
-  contact_info?: string;
+  email?: string;
+  phone?: string;
   address?: string;
+  city?: string;
   hasCompletedInitialImport?: boolean;
   created_at: string;
   updated_at: string;

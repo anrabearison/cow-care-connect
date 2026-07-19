@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -6,20 +6,22 @@ import { ArrowLeft } from "lucide-react";
 import OwnerForm, { OwnerFormValues } from "../../components/OwnerForm";
 import { useCreateOwner } from "../../hooks/ownersHooks";
 import { CreateOwnerData } from "../services/ownersService";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 const OwnerCreatePage = () => {
   const navigate = useNavigate();
   const { toast: uiToast } = useToast();
-  
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<OwnerFormValues | null>(null);
+
   const initialData = useMemo(() => ({
     name: "",
     email: "",
-    contactInfo: "",
     phone: "",
     address: "",
     city: "",
   }), []);
-  
+
   const createMutation = useCreateOwner({
     onSuccess: () => {
       uiToast({ title: "Succès", description: "Propriétaire créé avec succès" });
@@ -31,19 +33,27 @@ const OwnerCreatePage = () => {
       uiToast({ title: "Erreur", description: errorMessage, variant: "destructive" });
     },
   });
-  
+
   const handleSubmit = (data: OwnerFormValues) => {
+    setPendingData(data);
+    setIsConfirmDialogOpen(true);
+  };
+
+  const handleConfirmCreate = () => {
+    if (!pendingData) return;
+
     const createData: CreateOwnerData = {
-      ...data,
-      email: data.email || undefined,
-      contactInfo: data.contactInfo || undefined,
-      phone: data.phone || undefined,
-      address: data.address || undefined,
-      city: data.city || undefined,
+      ...pendingData,
+      email: pendingData.email || undefined,
+      phone: pendingData.phone || undefined,
+      address: pendingData.address || undefined,
+      city: pendingData.city || undefined,
     };
     createMutation.mutate(createData);
+    setIsConfirmDialogOpen(false);
+    setPendingData(null);
   };
-  
+
   const handleCancel = () => {
     navigate('/admin/owners');
   };
@@ -69,6 +79,17 @@ const OwnerCreatePage = () => {
           isPending={createMutation.isPending}
         />
       </div>
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Créer un propriétaire"
+        description={`Êtes-vous sûr de vouloir créer le propriétaire "${pendingData?.name}" ?`}
+        onConfirm={handleConfirmCreate}
+        confirmText="Créer"
+        cancelText="Annuler"
+        loading={createMutation.isPending}
+      />
     </div>
   );
 };

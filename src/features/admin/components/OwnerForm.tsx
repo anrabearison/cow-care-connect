@@ -11,7 +11,6 @@ import { Textarea } from '@/components/ui/textarea';
 const ownerSchema = z.object({
   name: z.string().min(1, "Le nom est requis"),
   email: z.string().email("Format d'email invalide").optional().or(z.literal('')),
-  contactInfo: z.string().optional(),
   phone: z.string().optional(),
   address: z.string().optional(),
   city: z.string().optional(),
@@ -95,15 +94,6 @@ const OwnerForm = ({
             placeholder="Téléphone"
             {...register('phone')}
             className={errors.phone ? 'border-destructive' : ''}
-          />
-        </FormField>
-
-        <FormField id="contactInfo" label="Contact Info" error={errors.contactInfo?.message}>
-          <Input
-            id="contactInfo"
-            placeholder="Informations de contact"
-            {...register('contactInfo')}
-            className={errors.contactInfo ? 'border-destructive' : ''}
           />
         </FormField>
 

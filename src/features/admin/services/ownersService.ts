@@ -5,7 +5,6 @@ export interface Owner {
   id: string;
   name: string;
   email?: string;
-  contactInfo?: string;
   phone?: string;
   address?: string;
   city?: string;
@@ -16,7 +15,6 @@ export interface Owner {
 export interface CreateOwnerData {
   name: string;
   email?: string;
-  contactInfo?: string;
   phone?: string;
   address?: string;
   city?: string;
@@ -25,7 +23,6 @@ export interface CreateOwnerData {
 export interface UpdateOwnerData {
   name?: string;
   email?: string;
-  contactInfo?: string;
   phone?: string;
   address?: string;
   city?: string;
