@@ -290,7 +290,7 @@ export default function CattleDetailsPage() {
         {/* Header */}
         <div className="flex items-center space-x-4 mb-8">
           <Link to="/cattle">
-            <Button variant="outline" size="icon" className="border-primary/20">
+            <Button variant="outline" size="icon" className="border-primary/20" aria-label="Retour">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>

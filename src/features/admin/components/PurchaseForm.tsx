@@ -193,6 +193,7 @@ const PurchaseForm = ({ mode, initialData, onSubmit, onCancel, isPending }: Purc
                   variant="ghost"
                   size="icon"
                   className="absolute top-2 right-2 h-6 w-6 text-destructive"
+                  aria-label="Retirer cet article"
                   onClick={() => removeItem(index)}
                 >
                   <Trash2 className="h-3 w-3" />

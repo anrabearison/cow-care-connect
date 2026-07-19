@@ -52,7 +52,7 @@ const CattleForm = ({
   return (
     <form onSubmit={onSubmit} className="space-y-6 rounded-lg border bg-background p-6 shadow-sm">
       <div className="flex items-center gap-4">
-        <Button type="button" variant="ghost" size="icon" onClick={onCancel}>
+        <Button type="button" variant="ghost" size="icon" onClick={onCancel} aria-label="Annuler">
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>

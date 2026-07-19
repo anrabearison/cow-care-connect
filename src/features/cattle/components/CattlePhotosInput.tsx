@@ -163,6 +163,7 @@ export function CattlePhotosInput({ value, onChange, disabled }: CattlePhotosInp
                   className="absolute left-2 top-1/2 h-8 w-8 -translate-y-1/2"
                   disabled={currentIndex === 0}
                   onClick={showPrevious}
+                  aria-label="Photo précédente"
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
@@ -173,6 +174,7 @@ export function CattlePhotosInput({ value, onChange, disabled }: CattlePhotosInp
                   className="absolute right-2 top-1/2 h-8 w-8 -translate-y-1/2"
                   disabled={currentIndex === photos.length - 1}
                   onClick={showNext}
+                  aria-label="Photo suivante"
                 >
                   <ChevronRight className="h-4 w-4" />
                 </Button>
@@ -185,10 +187,10 @@ export function CattlePhotosInput({ value, onChange, disabled }: CattlePhotosInp
               <Star className="h-4 w-4 mr-2" />
               Principale
             </Button>
-            <Button type="button" variant="outline" size="icon" onClick={() => moveCurrent(-1)} disabled={disabled || currentIndex === 0}>
+            <Button type="button" variant="outline" size="icon" onClick={() => moveCurrent(-1)} disabled={disabled || currentIndex === 0} aria-label="Déplacer la photo vers la gauche">
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <Button type="button" variant="outline" size="icon" onClick={() => moveCurrent(1)} disabled={disabled || currentIndex === photos.length - 1}>
+            <Button type="button" variant="outline" size="icon" onClick={() => moveCurrent(1)} disabled={disabled || currentIndex === photos.length - 1} aria-label="Déplacer la photo vers la droite">
               <ChevronRight className="h-4 w-4" />
             </Button>
             <Button type="button" variant="destructive" size="sm" onClick={removeCurrent} disabled={disabled}>

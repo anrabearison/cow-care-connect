@@ -338,6 +338,7 @@ export function UnifiedSidebar({ mode }: UnifiedSidebarProps) {
                           variant="ghost"
                           size="icon"
                           className="h-4 w-4 p-0"
+                          aria-label={isGroupCollapsed ? `Déplier ${group.label}` : `Replier ${group.label}`}
                           onClick={(e) => {
                             e.stopPropagation();
                             toggleGroup(group.label);

@@ -41,6 +41,7 @@ export const ChatbotFloatingButton: React.FC<ChatbotFloatingButtonProps> = ({
           onClick={() => setIsOpen(true)}
           className="fixed bottom-4 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 sm:bottom-6 sm:right-6"
           size="icon"
+          aria-label="Ouvrir l'assistant santé"
         >
           <MessageSquare className="h-6 w-6" />
         </Button>
@@ -64,6 +65,7 @@ export const ChatbotFloatingButton: React.FC<ChatbotFloatingButtonProps> = ({
                 size="icon"
                 onClick={() => setIsOpen(false)}
                 className="h-8 w-8"
+                aria-label="Fermer l'assistant santé"
               >
                 <X className="h-4 w-4" />
               </Button>

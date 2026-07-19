@@ -38,6 +38,7 @@ export function CattlePhotoCarousel({ cattle, className = '', imageClassName = '
             variant="secondary"
             size="icon"
             className="absolute left-2 top-1/2 h-8 w-8 -translate-y-1/2 bg-white/85 hover:bg-white"
+            aria-label="Photo précédente"
             onClick={(event) => {
               event.preventDefault();
               setIndex(value => (value === 0 ? images.length - 1 : value - 1));
@@ -50,6 +51,7 @@ export function CattlePhotoCarousel({ cattle, className = '', imageClassName = '
             variant="secondary"
             size="icon"
             className="absolute right-2 top-1/2 h-8 w-8 -translate-y-1/2 bg-white/85 hover:bg-white"
+            aria-label="Photo suivante"
             onClick={(event) => {
               event.preventDefault();
               setIndex(value => (value + 1) % images.length);
