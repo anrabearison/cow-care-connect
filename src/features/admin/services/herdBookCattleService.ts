@@ -39,7 +39,7 @@ export interface HerdBookCattle {
   herdBook?: { id: string; name: string };
   cattleId?: string;
   cattle?: { id: string; name: string; tagNumber: string };
-  nCarnet?: string;
+  nCarnet: number;
   categoryId: string;
   category?: { id: string; name: string };
   statusId: string;
@@ -54,7 +54,7 @@ export interface CreateHerdBookCattleData {
   herdBookId: string;
   cattleId?: string;
   cattle?: CattleData;
-  nCarnet?: string;
+  nCarnet: number;
   categoryId: string;
   statusId?: string;
 }
@@ -63,7 +63,7 @@ export interface UpdateHerdBookCattleData {
   herdBookId?: string;
   cattleId?: string;
   cattle?: CattleData;
-  nCarnet?: string;
+  nCarnet?: number;
   categoryId?: string;
   statusId?: string;
 }

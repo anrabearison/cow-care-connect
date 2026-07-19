@@ -38,7 +38,7 @@ describe('HerdBookCattleDetailPage', () => {
         cattleId: 'cattle1',
         categoryId: 'cat1',
         statusId: 'status1',
-        nCarnet: '123',
+        nCarnet: 123,
         herdBook: { id: 'hb1', reference: 'HB-001', year: 2024 },
         cattle: { id: 'cattle1', name: 'Bovin Test' },
         category: { id: 'cat1', name: 'Catégorie A' },
@@ -71,7 +71,7 @@ describe('HerdBookCattleDetailPage', () => {
         cattleId: 'cattle1',
         categoryId: 'cat1',
         statusId: 'status1',
-        nCarnet: '123',
+        nCarnet: 123,
       }
     });
 
@@ -96,7 +96,7 @@ describe('HerdBookCattleDetailPage', () => {
         cattleId: 'cattle1',
         categoryId: 'cat1',
         statusId: 'status1',
-        nCarnet: '123',
+        nCarnet: 123,
       }
     });
 
@@ -125,7 +125,7 @@ describe('HerdBookCattleDetailPage', () => {
         cattleId: 'cattle1',
         categoryId: 'cat1',
         statusId: 'status1',
-        nCarnet: '123',
+        nCarnet: 123,
       }
     });
 

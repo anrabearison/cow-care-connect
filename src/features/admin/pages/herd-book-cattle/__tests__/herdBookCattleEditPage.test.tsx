@@ -107,7 +107,7 @@ describe('HerdBookCattleEditPage', () => {
         cattleId: 'cattle1',
         categoryId: 'cat1',
         statusId: 'status1',
-        nCarnet: '123',
+        nCarnet: 123,
       }
     });
 
@@ -137,7 +137,7 @@ describe('HerdBookCattleEditPage', () => {
         cattleId: 'cattle1',
         categoryId: 'cat1',
         statusId: 'status1',
-        nCarnet: '123',
+        nCarnet: 123,
       }
     });
 
@@ -175,7 +175,7 @@ describe('HerdBookCattleEditPage', () => {
         cattleId: '',
         categoryId: '',
         statusId: '',
-        nCarnet: '',
+        nCarnet: 0,
       }
     });
 
