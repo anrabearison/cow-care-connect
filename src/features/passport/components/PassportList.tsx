@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { FileText, Download, Eye, Loader2, RefreshCw, Plus } from 'lucide-react';
+import { FileText, Download, Eye, Loader2, RefreshCw } from 'lucide-react';
 import { usePassports } from '../hooks';
 import { useHerdBookSelection } from '@/contexts/HerdBookSelectionContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -78,20 +78,14 @@ export function PassportList() {
   return (
     <Card className="mt-8 shadow-card-soft border-none bg-white/50 backdrop-blur-sm">
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-xl flex items-center gap-2">
-              <FileText className="h-5 w-5 text-primary" />
-              Derniers Passeports Générés
-            </CardTitle>
-            <CardDescription>
-              Historique des passeports pour le livre de troupeau sélectionné
-            </CardDescription>
-          </div>
-          <Button onClick={() => navigate('/admin/passports/new')}>
-            <Plus className="h-4 w-4 mr-2" />
-            Nouveau Passeport
-          </Button>
+        <div>
+          <CardTitle className="text-xl flex items-center gap-2">
+            <FileText className="h-5 w-5 text-primary" />
+            Derniers Passeports Générés
+          </CardTitle>
+          <CardDescription>
+            Historique des passeports pour le livre de troupeau sélectionné
+          </CardDescription>
         </div>
       </CardHeader>
       <CardContent>
