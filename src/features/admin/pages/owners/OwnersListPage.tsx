@@ -17,7 +17,19 @@ const OwnersListPage = () => {
   const [selectedItem, setSelectedItem] = useState<Owner | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  const deleteOwnerMutation = useDeleteOwner();
+  const deleteOwnerMutation = useDeleteOwner({
+    onSuccess: () => {
+      toast({ title: "Succès", description: "Propriétaire supprimé avec succès" });
+      setIsDeleteDialogOpen(false);
+      setSelectedItem(null);
+    },
+    onError: (error) => {
+      const errorMessage = error instanceof Error ? error.message : "Erreur lors de la suppression";
+      toast({ title: "Erreur", description: errorMessage, variant: "destructive" });
+      setIsDeleteDialogOpen(false);
+      setSelectedItem(null);
+    },
+  });
 
   const { data: data, isLoading } = useQuery({
     queryKey: queryKeys.owners.list({ page, q: search }),
@@ -49,8 +61,6 @@ const OwnersListPage = () => {
   const handleDeleteConfirm = () => {
     if (selectedItem) {
       deleteOwnerMutation.mutate(selectedItem.id);
-      setIsDeleteDialogOpen(false);
-      setSelectedItem(null);
     }
   };
 

@@ -102,7 +102,7 @@ const PassportDetailPage = () => {
     return (
       <div className="space-y-6 p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={handleCancel}>
+          <Button variant="ghost" size="icon" onClick={handleCancel} aria-label="Retour">
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
@@ -123,7 +123,7 @@ const PassportDetailPage = () => {
     <div className="space-y-6 p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={handleCancel}>
+          <Button variant="ghost" size="icon" onClick={handleCancel} aria-label="Retour">
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>

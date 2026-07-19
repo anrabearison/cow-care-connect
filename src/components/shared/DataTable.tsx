@@ -150,6 +150,7 @@ export function DataTable<T>({
                             size="icon"
                             onClick={() => onView(item)}
                             className="h-8 w-8"
+                            aria-label="Voir les détails"
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
@@ -160,6 +161,7 @@ export function DataTable<T>({
                             size="icon"
                             onClick={() => onEdit(item)}
                             className="h-8 w-8"
+                            aria-label="Modifier"
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
@@ -170,6 +172,7 @@ export function DataTable<T>({
                             size="icon"
                             onClick={() => onDelete(item)}
                             className="text-destructive hover:text-destructive h-8 w-8"
+                            aria-label="Supprimer"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -198,6 +201,7 @@ export function DataTable<T>({
               onClick={() => pagination.onPageChange(pagination.page - 1)}
               disabled={pagination.page === 1}
               className="flex-1 sm:flex-none"
+              aria-label="Page précédente"
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -207,6 +211,7 @@ export function DataTable<T>({
               onClick={() => pagination.onPageChange(pagination.page + 1)}
               disabled={pagination.page === totalPages}
               className="flex-1 sm:flex-none"
+              aria-label="Page suivante"
             >
               <ChevronRight className="h-4 w-4" />
             </Button>

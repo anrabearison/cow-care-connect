@@ -66,20 +66,26 @@ export const FRONT_OFFICE_ADMIN_ITEMS: NavItem[] = [
 
 // ─── Admin Navigation (AdminLayout) ────────────────────────────────────────────
 
+export const ADMIN_STANDALONE_ITEMS: NavItem[] = [
+  { title: 'Tableau de bord', url: '/admin', icon: Settings, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN] },
+];
+
 export const ADMIN_NAVIGATION_GROUPS: NavGroup[] = [
   {
-    label: 'Général',
+    label: 'Administration',
     icon: Settings,
     items: [
-      { title: 'Tableau de bord', url: '/admin', icon: Settings, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN] },
+      { title: 'Livres de troupeau', url: '/admin/herd-books', icon: Book, roles: [USER_ROLES.OWNER_ADMIN] },
+      { title: 'Invitations', url: '/admin/invitations', icon: Mail, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN] },
+      { title: 'Propriétaires', url: '/admin/owners', icon: Crown, roles: [USER_ROLES.SUPER_ADMIN] },
     ],
   },
   {
     label: 'Gestion du troupeau',
     icon: Heart,
     items: [
-      { title: 'Bovins', url: '/admin/cattle', icon: Beef, roles: [USER_ROLES.OWNER_ADMIN, USER_ROLES.OWNER_USER] },
-      { title: 'Inscriptions bovins', url: '/admin/herd-book-cattle', icon: FileText, roles: [USER_ROLES.OWNER_ADMIN, USER_ROLES.OWNER_USER] },
+      { title: 'Bovins', url: '/admin/cattle', icon: Beef, roles: [USER_ROLES.OWNER_ADMIN] },
+      { title: 'Inscriptions bovins', url: '/admin/herd-book-cattle', icon: FileText, roles: [USER_ROLES.OWNER_ADMIN] },
     ],
   },
   {
@@ -94,15 +100,15 @@ export const ADMIN_NAVIGATION_GROUPS: NavGroup[] = [
     label: 'Médical',
     icon: Activity,
     items: [
-      { title: 'Médicaments', url: '/admin/medicaments', icon: Pill, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN] },
-      { title: 'Traitements', url: '/admin/treatments', icon: Activity, roles: [USER_ROLES.OWNER_ADMIN, USER_ROLES.OWNER_USER] },
-      { title: 'Événements', url: '/admin/events', icon: Calendar, roles: [USER_ROLES.OWNER_ADMIN, USER_ROLES.OWNER_USER] },
+      { title: 'Traitements', url: '/admin/treatments', icon: Activity, roles: [USER_ROLES.OWNER_ADMIN] },
+      { title: 'Événements', url: '/admin/events', icon: Calendar, roles: [USER_ROLES.OWNER_ADMIN] },
     ],
   },
   {
     label: 'Référence',
     icon: Bookmark,
     items: [
+      { title: 'Médicaments', url: '/admin/medicaments', icon: Pill, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN] },
       { title: 'Catégories', url: '/admin/categories', icon: Tag, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN] },
       { title: 'Statuts', url: '/admin/status', icon: Flag, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN] },
       { title: 'Caractères', url: '/admin/characters', icon: Brain, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN] },
@@ -110,26 +116,11 @@ export const ADMIN_NAVIGATION_GROUPS: NavGroup[] = [
     ],
   },
   {
-    label: 'Administration',
-    icon: Folder,
-    items: [
-      { title: 'Livres de troupeau', url: '/admin/herd-books', icon: Book, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN] },
-      { title: 'Invitations', url: '/admin/invitations', icon: Mail, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN] },
-    ],
-  },
-  {
     label: 'Achats',
     icon: ShoppingBag,
     items: [
-      { title: 'Historique achats', url: '/admin/purchases', icon: ShoppingCart, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN] },
-      { title: 'Fournisseurs', url: '/admin/suppliers', icon: Truck, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN] },
-    ],
-  },
-  {
-    label: 'Super Admin',
-    icon: Crown,
-    items: [
-      { title: 'Propriétaires', url: '/admin/owners', icon: Folder, roles: [USER_ROLES.SUPER_ADMIN] },
+      { title: 'Historique achats', url: '/admin/purchases', icon: ShoppingCart, roles: [USER_ROLES.OWNER_ADMIN] },
+      { title: 'Fournisseurs', url: '/admin/suppliers', icon: Truck, roles: [USER_ROLES.OWNER_ADMIN] },
     ],
   },
 ];

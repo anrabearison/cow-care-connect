@@ -2,7 +2,6 @@
  * Centralized API client with error handling and authentication
  */
 import {
-    AppError,
     NetworkError,
     AuthenticationError,
     ForbiddenError,
@@ -30,31 +29,47 @@ type QueryParams = Record<string, QueryValue>;
 class ApiClient {
     private baseURL: string;
     private defaultTimeout: number = 60000; // 60 seconds (useful for free tier cold starts)
+    private readonly CSRF_COOKIE_NAME = 'csrf_token';
+    private readonly CSRF_HEADER_NAME = 'X-CSRF-Token';
+    private readonly CSRF_METHODS = ['POST', 'PUT', 'PATCH', 'DELETE'];
 
     constructor(baseURL: string) {
         this.baseURL = baseURL;
     }
 
     /**
-     * Handle authentication errors
-     * Note: Redirection will be handled by React Router via callback
+     * Reads the CSRF token from the (non-HttpOnly) csrf_token cookie.
+     * The backend sets this cookie after login so that the frontend can
+     * implement the Double Submit Cookie pattern.
      */
-    private handleAuthError(): void {
-        // Cookies HttpOnly are managed by the browser
-        // No localStorage cleanup needed
-        // Navigation will be handled by AuthContext
-        throw new AuthenticationError();
+    private getCsrfToken(): string | null {
+        const match = document.cookie
+            .split('; ')
+            .find((row) => row.startsWith(`${this.CSRF_COOKIE_NAME}=`));
+        return match ? decodeURIComponent(match.split('=')[1]) : null;
     }
 
     /**
      * Build headers (no Authorization header - cookies handle auth)
+     * Automatically injects the X-CSRF-Token header for mutable methods
+     * by reading the csrf_token cookie (Double Submit Cookie pattern).
      */
     private buildHeaders(config: RequestConfig = {}): HeadersInit {
         const hasFormDataBody = config.body instanceof FormData;
+        const method = (config.method || 'GET').toUpperCase();
+
         const headers: HeadersInit = {
             ...(hasFormDataBody ? {} : { 'Content-Type': 'application/json' }),
             ...config.headers,
         };
+
+        // Inject CSRF token for mutable methods (Double Submit Cookie pattern)
+        if (this.CSRF_METHODS.includes(method)) {
+            const csrfToken = this.getCsrfToken();
+            if (csrfToken) {
+                (headers as Record<string, string>)[this.CSRF_HEADER_NAME] = csrfToken;
+            }
+        }
 
         // No Authorization header - cookies HttpOnly handle authentication
         return headers;
@@ -268,5 +283,5 @@ class ApiClient {
 }
 
 // Export singleton instance
-import { API_CONFIG, API_ENDPOINTS } from '@/config/api';
+import { API_CONFIG } from '@/config/api';
 export const apiClient = new ApiClient(API_CONFIG.BASE_URL);

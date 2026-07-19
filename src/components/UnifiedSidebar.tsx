@@ -31,6 +31,7 @@ import {
   REPORT_ITEMS,
   FRONT_OFFICE_ADMIN_ITEMS,
   ADMIN_NAVIGATION_GROUPS,
+  ADMIN_STANDALONE_ITEMS,
   filterNavItems,
   filterNavGroups,
 } from '@/config/navigation';
@@ -109,6 +110,7 @@ export function UnifiedSidebar({ mode }: UnifiedSidebarProps) {
   const reportItems = useMemo(() => filterNavItems(REPORT_ITEMS, userRole), [userRole]);
   const frontofficeAdminItems = useMemo(() => filterNavItems(FRONT_OFFICE_ADMIN_ITEMS, userRole), [userRole]);
   const adminGroups = useMemo(() => filterNavGroups(ADMIN_NAVIGATION_GROUPS, userRole), [userRole]);
+  const adminStandaloneItems = useMemo(() => filterNavItems(ADMIN_STANDALONE_ITEMS, userRole), [userRole]);
 
   // Calculate the active group label based on current route (pure calculation, no state mutation)
   const activeGroupLabel = useMemo(() => {
@@ -299,6 +301,23 @@ export function UnifiedSidebar({ mode }: UnifiedSidebarProps) {
           </>
         ) : (
           <>
+            {/* Items admin autonomes (sans groupe/accordéon), ex: Tableau de bord */}
+            {adminStandaloneItems.length > 0 && (
+              <SidebarGroup>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {adminStandaloneItems.map((item) => (
+                      <UnifiedNavItem
+                        key={item.title}
+                        item={item}
+                        collapsed={collapsed}
+                        onNavClick={handleNavClick}
+                      />
+                    ))}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            )}
             {/* Admin navigation with groups */}
             {adminGroups.map((group) => {
               // Group is collapsed if user manually closed it AND it's not the active group
@@ -319,6 +338,7 @@ export function UnifiedSidebar({ mode }: UnifiedSidebarProps) {
                           variant="ghost"
                           size="icon"
                           className="h-4 w-4 p-0"
+                          aria-label={isGroupCollapsed ? `Déplier ${group.label}` : `Replier ${group.label}`}
                           onClick={(e) => {
                             e.stopPropagation();
                             toggleGroup(group.label);

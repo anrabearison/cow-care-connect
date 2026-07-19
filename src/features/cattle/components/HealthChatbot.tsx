@@ -8,6 +8,27 @@ import { ChatMessage, Message } from './ChatMessage';
 import { healthService, ChatMessage as ApiChatMessage } from '../services/health.service';
 import { Cattle } from '../types';
 
+type Severity = 'critical' | 'high' | 'medium' | 'low';
+
+const SEVERITY_CONFIG: Record<Severity, { label: string; badgeClassName: string }> = {
+  critical: {
+    label: 'Critique',
+    badgeClassName: 'bg-rose-600 text-white border-rose-600 hover:bg-rose-600',
+  },
+  high: {
+    label: 'Élevée',
+    badgeClassName: 'bg-orange-500 text-white border-orange-500 hover:bg-orange-500',
+  },
+  medium: {
+    label: 'Moyenne',
+    badgeClassName: 'bg-amber-400 text-amber-950 border-amber-400 hover:bg-amber-400',
+  },
+  low: {
+    label: 'Faible',
+    badgeClassName: 'bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-600',
+  },
+};
+
 interface HealthChatbotProps {
   cattleId: string;
   cattle: Cattle;
@@ -189,13 +210,28 @@ export const HealthChatbot: React.FC<HealthChatbotProps> = ({
           </Button>
         </div>
 
-        <div className="flex flex-col gap-2 rounded-lg border border-border/60 bg-white/70 px-3 py-2 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-2">
-            <ShieldAlert className="h-4 w-4 shrink-0 text-amber-600" />
-            <span>Gravité estimée : {severity === 'critical' ? 'critique' : severity === 'high' ? 'élevée' : severity === 'medium' ? 'moyenne' : 'faible'}</span>
+        {confidence !== null && (
+          <div
+            className={`flex flex-col gap-2 rounded-lg border px-3 py-2 text-xs sm:flex-row sm:items-center sm:justify-between ${
+              severity === 'critical' || severity === 'high'
+                ? 'border-rose-200 bg-rose-50'
+                : 'border-border/60 bg-white/70'
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <ShieldAlert
+                className={`h-4 w-4 shrink-0 ${
+                  severity === 'critical' || severity === 'high' ? 'text-rose-600' : 'text-amber-600'
+                }`}
+              />
+              <span className="text-muted-foreground">Gravité estimée :</span>
+              <Badge className={SEVERITY_CONFIG[severity].badgeClassName}>
+                {SEVERITY_CONFIG[severity].label}
+              </Badge>
+            </div>
+            <span className="text-muted-foreground">Confiance : {(confidence * 100).toFixed(0)}%</span>
           </div>
-          {confidence !== null && <span>Confiance : {(confidence * 100).toFixed(0)}%</span>}
-        </div>
+        )}
 
         {/* Warning */}
         <div className="flex items-start gap-2 rounded-lg border border-yellow-200 bg-yellow-50 p-3 text-xs text-muted-foreground">

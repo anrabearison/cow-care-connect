@@ -5,6 +5,7 @@ import {
   REPORT_ITEMS,
   FRONT_OFFICE_ADMIN_ITEMS,
   ADMIN_NAVIGATION_GROUPS,
+  ADMIN_STANDALONE_ITEMS,
   filterNavItems,
   filterNavGroups,
 } from '../navigation';
@@ -65,15 +66,11 @@ describe('Navigation Configuration', () => {
   describe('Admin Navigation', () => {
     it('SUPER_ADMIN should see all admin groups', () => {
       const filtered = filterNavGroups(ADMIN_NAVIGATION_GROUPS, USER_ROLES.SUPER_ADMIN);
-      expect(filtered.length).toBe(7);
+      expect(filtered.length).toBe(3);
       expect(filtered.map(g => g.label)).toEqual([
-        'Général',
-        'Personnel',
-        'Médical',
-        'Référence',
         'Administration',
-        'Achats',
-        'Super Admin',
+        'Personnel',
+        'Référence',
       ]);
     });
 
@@ -82,10 +79,7 @@ describe('Navigation Configuration', () => {
       const adminGroup = filtered.find(g => g.label === 'Administration');
       expect(adminGroup).toBeDefined();
       expect(adminGroup!.items.map(i => i.title)).toContain('Invitations');
-      
-      const superAdminGroup = filtered.find(g => g.label === 'Super Admin');
-      expect(superAdminGroup).toBeDefined();
-      expect(superAdminGroup!.items.map(i => i.title)).toContain('Propriétaires');
+      expect(adminGroup!.items.map(i => i.title)).toContain('Propriétaires');
     });
 
     it('SUPER_ADMIN should not see farm modules (cattle, events, treatments, passport, herd-book-cattle)', () => {
@@ -94,21 +88,24 @@ describe('Navigation Configuration', () => {
       expect(herdGroup).toBeUndefined();
       
       const medicalGroup = filtered.find(g => g.label === 'Médical');
-      expect(medicalGroup).toBeDefined();
-      expect(medicalGroup!.items.map(i => i.title)).not.toContain('Traitements');
-      expect(medicalGroup!.items.map(i => i.title)).not.toContain('Événements');
+      expect(medicalGroup).toBeUndefined();
+    });
+
+    it('SUPER_ADMIN should not see Achats (purchases, suppliers)', () => {
+      const filtered = filterNavGroups(ADMIN_NAVIGATION_GROUPS, USER_ROLES.SUPER_ADMIN);
+      const achatsGroup = filtered.find(g => g.label === 'Achats');
+      expect(achatsGroup).toBeUndefined();
     });
 
     it('OWNER_ADMIN should see all admin groups except Super Admin', () => {
       const filtered = filterNavGroups(ADMIN_NAVIGATION_GROUPS, USER_ROLES.OWNER_ADMIN);
-      expect(filtered.length).toBe(7);
+      expect(filtered.length).toBe(6);
       expect(filtered.map(g => g.label)).toEqual([
-        'Général',
+        'Administration',
         'Gestion du troupeau',
         'Personnel',
         'Médical',
         'Référence',
-        'Administration',
         'Achats',
       ]);
     });
@@ -126,9 +123,9 @@ describe('Navigation Configuration', () => {
 
     it('OWNER_ADMIN should see Medicaments', () => {
       const filtered = filterNavGroups(ADMIN_NAVIGATION_GROUPS, USER_ROLES.OWNER_ADMIN);
-      const medicalGroup = filtered.find(g => g.label === 'Médical');
-      expect(medicalGroup).toBeDefined();
-      expect(medicalGroup!.items.map(i => i.title)).toContain('Médicaments');
+      const referenceGroup = filtered.find(g => g.label === 'Référence');
+      expect(referenceGroup).toBeDefined();
+      expect(referenceGroup!.items.map(i => i.title)).toContain('Médicaments');
     });
 
     it('OWNER_ADMIN should see all farm modules', () => {
@@ -150,26 +147,18 @@ describe('Navigation Configuration', () => {
       expect(superAdminGroup).toBeUndefined();
     });
 
-    it('OWNER_USER should see only farm-related groups', () => {
+    it('OWNER_USER should not see any admin groups (blocked at AdminRoute level, menu now consistent with that)', () => {
       const filtered = filterNavGroups(ADMIN_NAVIGATION_GROUPS, USER_ROLES.OWNER_USER);
-      expect(filtered.length).toBe(2);
-      expect(filtered.map(g => g.label)).toEqual([
-        'Gestion du troupeau',
-        'Médical',
-      ]);
+      expect(filtered.length).toBe(0);
     });
 
-    it('OWNER_USER should see farm modules', () => {
+    it('OWNER_USER should not see farm modules in admin nav (only OWNER_ADMIN manages /admin/cattle etc.)', () => {
       const filtered = filterNavGroups(ADMIN_NAVIGATION_GROUPS, USER_ROLES.OWNER_USER);
       const herdGroup = filtered.find(g => g.label === 'Gestion du troupeau');
-      expect(herdGroup).toBeDefined();
-      expect(herdGroup!.items.map(i => i.title)).toContain('Bovins');
-      expect(herdGroup!.items.map(i => i.title)).toContain('Inscriptions bovins');
-      
+      expect(herdGroup).toBeUndefined();
+
       const medicalGroup = filtered.find(g => g.label === 'Médical');
-      expect(medicalGroup).toBeDefined();
-      expect(medicalGroup!.items.map(i => i.title)).toContain('Traitements');
-      expect(medicalGroup!.items.map(i => i.title)).toContain('Événements');
+      expect(medicalGroup).toBeUndefined();
     });
 
     it('OWNER_USER should not see Invitations', () => {
@@ -190,11 +179,38 @@ describe('Navigation Configuration', () => {
       expect(superAdminGroup).toBeUndefined();
     });
 
-    it('OWNER_USER should not see Medicaments (platform-only)', () => {
+    it('OWNER_USER should not see Medicaments (platform-only), nor any admin Médical group at all', () => {
       const filtered = filterNavGroups(ADMIN_NAVIGATION_GROUPS, USER_ROLES.OWNER_USER);
       const medicalGroup = filtered.find(g => g.label === 'Médical');
-      expect(medicalGroup).toBeDefined();
-      expect(medicalGroup!.items.map(i => i.title)).not.toContain('Médicaments');
+      expect(medicalGroup).toBeUndefined();
+    });
+  });
+
+  describe('Admin Standalone Items', () => {
+    it('Tableau de bord should be a standalone item, not inside any ADMIN_NAVIGATION_GROUPS group', () => {
+      const isInAnyGroup = ADMIN_NAVIGATION_GROUPS.some(g =>
+        g.items.some(i => i.title === 'Tableau de bord')
+      );
+      expect(isInAnyGroup).toBe(false);
+
+      const standaloneTitles = ADMIN_STANDALONE_ITEMS.map(i => i.title);
+      expect(standaloneTitles).toContain('Tableau de bord');
+    });
+
+    it('SUPER_ADMIN and OWNER_ADMIN should see Tableau de bord, OWNER_USER should not', () => {
+      expect(filterNavItems(ADMIN_STANDALONE_ITEMS, USER_ROLES.SUPER_ADMIN).map(i => i.title)).toContain('Tableau de bord');
+      expect(filterNavItems(ADMIN_STANDALONE_ITEMS, USER_ROLES.OWNER_ADMIN).map(i => i.title)).toContain('Tableau de bord');
+      expect(filterNavItems(ADMIN_STANDALONE_ITEMS, USER_ROLES.OWNER_USER).map(i => i.title)).not.toContain('Tableau de bord');
+    });
+
+    it('Administration group should still contain Livres de troupeau, Invitations and Propriétaires', () => {
+      const adminGroup = ADMIN_NAVIGATION_GROUPS.find(g => g.label === 'Administration');
+      expect(adminGroup).toBeDefined();
+      expect(adminGroup!.items.map(i => i.title)).toEqual([
+        'Livres de troupeau',
+        'Invitations',
+        'Propriétaires',
+      ]);
     });
   });
 
@@ -207,11 +223,9 @@ describe('Navigation Configuration', () => {
       expect(invitationsItem!.roles).toEqual([USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN]);
     });
 
-    it('Invitations should not be in Super Admin group', () => {
+    it('Invitations should not be accessible in other generic groups', () => {
       const superAdminGroup = ADMIN_NAVIGATION_GROUPS.find(g => g.label === 'Super Admin');
-      expect(superAdminGroup).toBeDefined();
-      const invitationsItem = superAdminGroup!.items.find(i => i.title === 'Invitations');
-      expect(invitationsItem).toBeUndefined();
+      expect(superAdminGroup).toBeUndefined(); // Group doesn't exist anymore
     });
   });
 
