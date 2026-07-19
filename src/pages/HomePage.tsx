@@ -21,8 +21,8 @@ const formatDate = (dateString: string) => {
 
 export default function HomePage() {
   const { user } = useAuth();
-  const { events: recentEvents, isLoading } = useRecentEvents();
-  const { stats, isLoading: statsLoading } = useDashboardStats();
+  const { data: recentEvents, isLoading } = useRecentEvents();
+  const { data: stats, isLoading: statsLoading } = useDashboardStats();
 
   return (
     <div className="min-h-screen bg-gradient-earth">
