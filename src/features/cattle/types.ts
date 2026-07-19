@@ -96,6 +96,7 @@ export interface Owner {
   name: string;
   contact_info?: string;
   address?: string;
+  hasCompletedInitialImport?: boolean;
   created_at: string;
   updated_at: string;
 }

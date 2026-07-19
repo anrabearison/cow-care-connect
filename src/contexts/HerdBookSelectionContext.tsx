@@ -10,6 +10,7 @@ interface HerdBookSelectionContextType {
     setSelectedHerdBookId: (id: string) => void;
     isLoading: boolean;
     error: string | null;
+    hasCompletedInitialImport: boolean;
 }
 
 const HerdBookSelectionContext = createContext<HerdBookSelectionContextType | undefined>(undefined);
@@ -63,6 +64,10 @@ export const HerdBookSelectionProvider: React.FC<{ children: ReactNode }> = ({ c
     // Trouver le HerdBook sélectionné
     const selectedHerdBook = availableHerdBooks.find(hb => hb.id === selectedHerdBookId) || null;
 
+    // Déterminer si l'import initial a été complété
+    // Utiliser le flag du backend si disponible, sinon fallback sur le nombre de HerdBooks
+    const hasCompletedInitialImport = user?.owner?.hasCompletedInitialImport || availableHerdBooks.length > 0;
+
     const value: HerdBookSelectionContextType = {
         selectedHerdBookId,
         selectedHerdBook,
@@ -70,6 +75,7 @@ export const HerdBookSelectionProvider: React.FC<{ children: ReactNode }> = ({ c
         setSelectedHerdBookId,
         isLoading,
         error: error ? String(error) : null,
+        hasCompletedInitialImport,
     };
 
     return (

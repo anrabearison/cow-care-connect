@@ -7,6 +7,7 @@ export interface HerdBookFilters {
     owner_id?: string;
     page?: number;
     per_page?: number;
+    [key: string]: any; // Index signature pour QueryParams
 }
 
 export const herdBookService = {
@@ -109,5 +110,36 @@ export const herdBookService = {
      */
     unregisterCattle: async (registrationId: string) => {
         return apiClient.delete(API_ENDPOINTS.HERD_BOOK_CATTLE.CATTLE_REGISTRATION(registrationId));
+    },
+
+    /**
+     * Dry-run initial import from CSV
+     */
+    dryRunInitialImport: async (formData: FormData) => {
+        return apiClient.post(API_ENDPOINTS.HERD_BOOKS.INITIAL_IMPORT.DRY_RUN, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+    },
+
+    /**
+     * Confirm initial import from CSV
+     */
+    confirmInitialImport: async (formData: FormData) => {
+        return apiClient.post(API_ENDPOINTS.HERD_BOOKS.INITIAL_IMPORT.CONFIRM, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+    },
+
+    /**
+     * Download CSV template for initial import
+     */
+    downloadCsvTemplate: async () => {
+        return apiClient.get(API_ENDPOINTS.HERD_BOOKS.INITIAL_IMPORT.TEMPLATE, {
+            responseType: 'blob',
+        });
     },
 };
