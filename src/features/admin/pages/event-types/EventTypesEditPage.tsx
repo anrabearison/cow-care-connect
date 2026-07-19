@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useEventType, useUpdateEventType } from "../../hooks/eventTypesHooks";
 import { UpdateEventTypeData } from "@/features/admin/services/eventTypesService";
 import { ArrowLeft, Loader2 } from "lucide-react";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 const initialFormState: UpdateEventTypeData = {
   name: "",
@@ -19,7 +20,9 @@ const EventTypesEditPage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
-  
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<UpdateEventTypeData | null>(null);
+
   const { data: eventType, isLoading, error } = useEventType(id || "");
   const updateEventTypeMutation = useUpdateEventType();
 
@@ -49,13 +52,30 @@ const EventTypesEditPage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate() || !id) return;
+    setPendingData(formData);
+    setIsConfirmDialogOpen(true);
+  };
 
-    updateEventTypeMutation.mutate({ id, data: formData });
-    toast({
-      title: "Succès",
-      description: "Type d'événement mis à jour avec succès",
+  const handleConfirmUpdate = () => {
+    if (!pendingData || !id) return;
+    updateEventTypeMutation.mutate({ id, data: pendingData }, {
+      onSuccess: () => {
+        toast({
+          title: "Succès",
+          description: "Type d'événement mis à jour avec succès",
+        });
+        navigate("/admin/event-types");
+      },
+      onError: (error) => {
+        toast({
+          title: "Erreur",
+          description: error instanceof Error ? error.message : "Erreur lors de la mise à jour",
+          variant: "destructive",
+        });
+      },
     });
-    navigate("/admin/event-types");
+    setIsConfirmDialogOpen(false);
+    setPendingData(null);
   };
 
   const handleCancel = () => {
@@ -142,6 +162,17 @@ const EventTypesEditPage = () => {
           </Button>
         </div>
       </form>
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Modifier le type d'événement"
+        description={`Êtes-vous sûr de vouloir modifier le type d'événement "${pendingData?.name}" ?`}
+        onConfirm={handleConfirmUpdate}
+        confirmText="Modifier"
+        cancelText="Annuler"
+        loading={updateEventTypeMutation.isPending}
+      />
     </div>
   );
 };

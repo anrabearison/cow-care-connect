@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { useEvent, useUpdateEvent } from '../../hooks/eventsHooks';
 import { Loader2 } from 'lucide-react';
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 
 interface FormState {
   cattleId: string;
@@ -33,6 +34,8 @@ const EventsEditPage = () => {
   const updateEventMutation = useUpdateEvent();
   const { data: event, isLoading, error } = useEvent(id!);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<FormState | null>(null);
 
   const initialData = useMemo(() => {
     if (!event || !event.data) return initialFormState;
@@ -79,20 +82,37 @@ const EventsEditPage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate() || !id) return;
+    setPendingData(formData);
+    setIsConfirmDialogOpen(true);
+  };
 
+  const handleConfirmUpdate = () => {
+    if (!pendingData || !id) return;
     updateEventMutation.mutate({
       id,
       data: {
-        cattleId: formData.cattleId,
-        eventTypeId: formData.eventTypeId || undefined,
-        type: formData.type || undefined,
-        date: formData.date,
-        description: formData.description,
-        details: formData.details || undefined,
+        cattleId: pendingData.cattleId,
+        eventTypeId: pendingData.eventTypeId || undefined,
+        type: pendingData.type || undefined,
+        date: pendingData.date,
+        description: pendingData.description,
+        details: pendingData.details || undefined,
+      },
+    }, {
+      onSuccess: () => {
+        toast({ title: 'Succès', description: 'Événement mis à jour avec succès' });
+        navigate(`/admin/events/${id}`);
+      },
+      onError: (error) => {
+        toast({ 
+          title: 'Erreur', 
+          description: error instanceof Error ? error.message : 'Erreur lors de la mise à jour',
+          variant: 'destructive' 
+        });
       },
     });
-    toast({ title: 'Succès', description: 'Événement mis à jour avec succès' });
-    navigate(`/admin/events/${id}`);
+    setIsConfirmDialogOpen(false);
+    setPendingData(null);
   };
 
   return (
@@ -137,6 +157,17 @@ const EventsEditPage = () => {
           <Button type="submit">Mettre à jour</Button>
         </div>
       </form>
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Modifier l'événement"
+        description={`Êtes-vous sûr de vouloir modifier l'événement pour le ${pendingData?.date} ?`}
+        onConfirm={handleConfirmUpdate}
+        confirmText="Modifier"
+        cancelText="Annuler"
+        loading={updateEventMutation.isPending}
+      />
     </div>
   );
 };

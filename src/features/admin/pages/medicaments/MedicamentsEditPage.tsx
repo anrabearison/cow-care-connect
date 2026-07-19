@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { useMedicament, useUpdateMedicament } from '../../hooks/medicamentsHooks';
 import { Loader2 } from 'lucide-react';
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 
 interface FormState {
   name: string;
@@ -45,6 +46,8 @@ const MedicamentsEditPage = () => {
   const updateMedicamentMutation = useUpdateMedicament();
   const { data: medicament, isLoading, error } = useMedicament(id!);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<FormState | null>(null);
 
   const initialData = useMemo(() => {
     if (!medicament || !medicament.data) return initialFormState;
@@ -97,26 +100,43 @@ const MedicamentsEditPage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate() || !id) return;
+    setPendingData(formData);
+    setIsConfirmDialogOpen(true);
+  };
 
+  const handleConfirmUpdate = () => {
+    if (!pendingData || !id) return;
     updateMedicamentMutation.mutate({
       id,
       data: {
-        name: formData.name,
-        type: formData.type,
-        dosageQuantity: formData.dosageQuantity ? Number(formData.dosageQuantity) : undefined,
-        dosageUnit: formData.dosageUnit || undefined,
-        dosageWeight: formData.dosageWeight ? Number(formData.dosageWeight) : undefined,
-        dosageWeightUnit: formData.dosageWeightUnit || undefined,
-        dosageNotes: formData.dosageNotes || undefined,
-        defaultRoute: formData.defaultRoute || undefined,
-        withdrawalPeriodMeat: formData.withdrawalPeriodMeat ? Number(formData.withdrawalPeriodMeat) : undefined,
-        withdrawalPeriodMilk: formData.withdrawalPeriodMilk ? Number(formData.withdrawalPeriodMilk) : undefined,
-        manufacturer: formData.manufacturer || undefined,
-        notes: formData.notes || undefined,
+        name: pendingData.name,
+        type: pendingData.type,
+        dosageQuantity: pendingData.dosageQuantity ? Number(pendingData.dosageQuantity) : undefined,
+        dosageUnit: pendingData.dosageUnit || undefined,
+        dosageWeight: pendingData.dosageWeight ? Number(pendingData.dosageWeight) : undefined,
+        dosageWeightUnit: pendingData.dosageWeightUnit || undefined,
+        dosageNotes: pendingData.dosageNotes || undefined,
+        defaultRoute: pendingData.defaultRoute || undefined,
+        withdrawalPeriodMeat: pendingData.withdrawalPeriodMeat ? Number(pendingData.withdrawalPeriodMeat) : undefined,
+        withdrawalPeriodMilk: pendingData.withdrawalPeriodMilk ? Number(pendingData.withdrawalPeriodMilk) : undefined,
+        manufacturer: pendingData.manufacturer || undefined,
+        notes: pendingData.notes || undefined,
+      },
+    }, {
+      onSuccess: () => {
+        toast({ title: 'Succès', description: 'Médicament mis à jour avec succès' });
+        navigate(`/admin/medicaments/${id}`);
+      },
+      onError: (error) => {
+        toast({ 
+          title: 'Erreur', 
+          description: error instanceof Error ? error.message : 'Erreur lors de la mise à jour',
+          variant: 'destructive' 
+        });
       },
     });
-    toast({ title: 'Succès', description: 'Médicament mis à jour avec succès' });
-    navigate(`/admin/medicaments/${id}`);
+    setIsConfirmDialogOpen(false);
+    setPendingData(null);
   };
 
   return (
@@ -185,6 +205,17 @@ const MedicamentsEditPage = () => {
           <Button type="submit">Mettre à jour</Button>
         </div>
       </form>
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Modifier le médicament"
+        description={`Êtes-vous sûr de vouloir modifier le médicament "${pendingData?.name}" ?`}
+        onConfirm={handleConfirmUpdate}
+        confirmText="Modifier"
+        cancelText="Annuler"
+        loading={updateMedicamentMutation.isPending}
+      />
     </div>
   );
 };

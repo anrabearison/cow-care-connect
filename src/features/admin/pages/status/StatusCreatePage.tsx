@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useCreateStatus } from "../../hooks/statusHooks";
 import { CreateStatusData } from "@/features/admin/services/statusService";
 import { ArrowLeft } from "lucide-react";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 const initialFormState: CreateStatusData = {
   name: "",
@@ -19,6 +20,8 @@ const StatusCreatePage = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState<CreateStatusData>(initialFormState);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<CreateStatusData | null>(null);
 
   const createStatusMutation = useCreateStatus();
 
@@ -34,13 +37,30 @@ const StatusCreatePage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    setPendingData(formData);
+    setIsConfirmDialogOpen(true);
+  };
 
-    createStatusMutation.mutate(formData);
-    toast({
-      title: "Succès",
-      description: "Statut créé avec succès",
+  const handleConfirmCreate = () => {
+    if (!pendingData) return;
+    createStatusMutation.mutate(pendingData, {
+      onSuccess: () => {
+        toast({
+          title: "Succès",
+          description: "Statut créé avec succès",
+        });
+        navigate("/admin/status");
+      },
+      onError: (error) => {
+        toast({
+          title: "Erreur",
+          description: error instanceof Error ? error.message : "Erreur lors de la création",
+          variant: "destructive",
+        });
+      },
     });
-    navigate("/admin/status");
+    setIsConfirmDialogOpen(false);
+    setPendingData(null);
   };
 
   const handleCancel = () => {
@@ -98,6 +118,17 @@ const StatusCreatePage = () => {
           </Button>
         </div>
       </form>
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Créer un statut"
+        description={`Êtes-vous sûr de vouloir créer le statut "${pendingData?.name}" ?`}
+        onConfirm={handleConfirmCreate}
+        confirmText="Créer"
+        cancelText="Annuler"
+        loading={createStatusMutation.isPending}
+      />
     </div>
   );
 };

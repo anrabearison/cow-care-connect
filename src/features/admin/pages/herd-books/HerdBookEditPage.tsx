@@ -1,15 +1,18 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import HerdBookForm, { HerdBookFormValues } from "../../components/HerdBookForm";
 import { useHerdBook, useUpdateHerdBook } from "../../hooks/herdBooksHooks";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 const HerdBookEditPage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { toast: uiToast } = useToast();
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<HerdBookFormValues | null>(null);
 
   const { data: herdBook, isLoading, error } = useHerdBook(id!);
 
@@ -35,15 +38,23 @@ const HerdBookEditPage = () => {
   });
 
   const handleSubmit = (data: HerdBookFormValues) => {
+    setPendingData(data);
+    setIsConfirmDialogOpen(true);
+  };
+
+  const handleConfirmUpdate = () => {
+    if (!pendingData || !id) return;
     updateMutation.mutate({
       id: id!,
       data: {
-        reference: data.reference,
-        year: data.year,
-        description: data.description || undefined,
-        ownerId: data.ownerId || undefined,
+        reference: pendingData.reference,
+        year: pendingData.year,
+        description: pendingData.description || undefined,
+        ownerId: pendingData.ownerId || undefined,
       },
     });
+    setIsConfirmDialogOpen(false);
+    setPendingData(null);
   };
 
   if (isLoading) {
@@ -91,6 +102,17 @@ const HerdBookEditPage = () => {
           isPending={updateMutation.isPending}
         />
       </div>
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Modifier le livre de troupeau"
+        description={`Êtes-vous sûr de vouloir modifier le livre de troupeau "${pendingData?.reference}" ?`}
+        onConfirm={handleConfirmUpdate}
+        confirmText="Modifier"
+        cancelText="Annuler"
+        loading={updateMutation.isPending}
+      />
     </div>
   );
 };

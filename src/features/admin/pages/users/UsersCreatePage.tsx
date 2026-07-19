@@ -10,6 +10,7 @@ import { useAuth } from '@/features/auth/AuthContext';
 import { useOwnersReferenceData } from '../../hooks/useOwnersReferenceData';
 import { USER_ROLES, getRoleConstraints, type UserRole } from '@/constants/roles';
 import { Loader2 } from 'lucide-react';
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 
 interface FormState {
   name: string;
@@ -35,6 +36,8 @@ const UsersCreatePage = () => {
   const { owners, isLoading: isLoadingOwners, isError: isErrorOwners } = useOwnersReferenceData();
   const [formData, setFormData] = useState<FormState>(initialFormState);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<FormState | null>(null);
 
   // Get role-based constraints
   const roleConstraints = getRoleConstraints(user?.role as UserRole, user?.ownerId);
@@ -55,20 +58,37 @@ const UsersCreatePage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    setPendingData(formData);
+    setIsConfirmDialogOpen(true);
+  };
 
+  const handleConfirmCreate = () => {
+    if (!pendingData) return;
     // Use role constraints to determine effective values
-    const effectiveRole = roleConstraints.forcedRole || formData.role;
-    const effectiveOwnerId = roleConstraints.forcedOwnerId || (formData.ownerId || undefined);
+    const effectiveRole = roleConstraints.forcedRole || pendingData.role;
+    const effectiveOwnerId = roleConstraints.forcedOwnerId || (pendingData.ownerId || undefined);
 
     createUserMutation.mutate({
-      name: formData.name,
-      email: formData.email,
-      password: formData.password,
+      name: pendingData.name,
+      email: pendingData.email,
+      password: pendingData.password,
       role: effectiveRole,
       ownerId: effectiveOwnerId,
+    }, {
+      onSuccess: () => {
+        toast({ title: 'Succès', description: 'Utilisateur créé avec succès' });
+        navigate('/admin/users');
+      },
+      onError: (error) => {
+        toast({ 
+          title: 'Erreur', 
+          description: error instanceof Error ? error.message : 'Erreur lors de la création',
+          variant: 'destructive' 
+        });
+      },
     });
-    toast({ title: 'Succès', description: 'Utilisateur créé avec succès' });
-    navigate('/admin/users');
+    setIsConfirmDialogOpen(false);
+    setPendingData(null);
   };
 
   return (
@@ -157,6 +177,17 @@ const UsersCreatePage = () => {
           <Button type="submit">Créer</Button>
         </div>
       </form>
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Créer un utilisateur"
+        description={`Êtes-vous sûr de vouloir créer l'utilisateur "${pendingData?.name}" (${pendingData?.email}) ?`}
+        onConfirm={handleConfirmCreate}
+        confirmText="Créer"
+        cancelText="Annuler"
+        loading={createUserMutation.isPending}
+      />
     </div>
   );
 };

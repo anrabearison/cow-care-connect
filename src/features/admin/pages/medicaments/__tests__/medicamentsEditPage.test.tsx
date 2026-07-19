@@ -70,26 +70,42 @@ describe('MedicamentsEditPage', () => {
       </TestWrapper>
     );
 
+    // Click the submit button to open the confirmation dialog
     fireEvent.click(screen.getByRole('button', { name: /^Mettre à jour$/i }));
 
+    // Wait for the confirmation dialog to appear (check for the description text)
     await waitFor(() => {
-      expect(mockMutate).toHaveBeenCalledWith({
-        id: '1',
-        data: {
-          name: 'Aspirin',
-          type: 'Painkiller',
-          dosageQuantity: 500,
-          dosageUnit: 'mg',
-          dosageWeight: 1,
-          dosageWeightUnit: 'kg',
-          dosageNotes: 'Take with food',
-          defaultRoute: 'Oral',
-          withdrawalPeriodMeat: 7,
-          withdrawalPeriodMilk: 3,
-          manufacturer: 'PharmaCo',
-          notes: 'Store in cool place',
+      expect(screen.getByText(/Êtes-vous sûr de vouloir modifier le médicament/i)).toBeInTheDocument();
+    });
+
+    // Click the confirm button in the dialog
+    fireEvent.click(screen.getByRole('button', { name: /^Modifier$/i }));
+
+    // Wait for the mutation to be called
+    await waitFor(() => {
+      expect(mockMutate).toHaveBeenCalledWith(
+        {
+          id: '1',
+          data: {
+            name: 'Aspirin',
+            type: 'Painkiller',
+            dosageQuantity: 500,
+            dosageUnit: 'mg',
+            dosageWeight: 1,
+            dosageWeightUnit: 'kg',
+            dosageNotes: 'Take with food',
+            defaultRoute: 'Oral',
+            withdrawalPeriodMeat: 7,
+            withdrawalPeriodMilk: 3,
+            manufacturer: 'PharmaCo',
+            notes: 'Store in cool place',
+          },
         },
-      });
+        expect.objectContaining({
+          onSuccess: expect.any(Function),
+          onError: expect.any(Function),
+        })
+      );
     });
   });
 

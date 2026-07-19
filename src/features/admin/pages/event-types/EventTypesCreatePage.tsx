@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useCreateEventType } from "../../hooks/eventTypesHooks";
 import { CreateEventTypeData } from "@/features/admin/services/eventTypesService";
 import { ArrowLeft } from "lucide-react";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 const initialFormState: CreateEventTypeData = {
   name: "",
@@ -20,6 +21,8 @@ const EventTypesCreatePage = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState<CreateEventTypeData>(initialFormState);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<CreateEventTypeData | null>(null);
 
   const createEventTypeMutation = useCreateEventType();
 
@@ -35,13 +38,30 @@ const EventTypesCreatePage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    setPendingData(formData);
+    setIsConfirmDialogOpen(true);
+  };
 
-    createEventTypeMutation.mutate(formData);
-    toast({
-      title: "Succès",
-      description: "Type d'événement créé avec succès",
+  const handleConfirmCreate = () => {
+    if (!pendingData) return;
+    createEventTypeMutation.mutate(pendingData, {
+      onSuccess: () => {
+        toast({
+          title: "Succès",
+          description: "Type d'événement créé avec succès",
+        });
+        navigate("/admin/event-types");
+      },
+      onError: (error) => {
+        toast({
+          title: "Erreur",
+          description: error instanceof Error ? error.message : "Erreur lors de la création",
+          variant: "destructive",
+        });
+      },
     });
-    navigate("/admin/event-types");
+    setIsConfirmDialogOpen(false);
+    setPendingData(null);
   };
 
   const handleCancel = () => {
@@ -109,6 +129,17 @@ const EventTypesCreatePage = () => {
           </Button>
         </div>
       </form>
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Créer un type d'événement"
+        description={`Êtes-vous sûr de vouloir créer le type d'événement "${pendingData?.name}" ?`}
+        onConfirm={handleConfirmCreate}
+        confirmText="Créer"
+        cancelText="Annuler"
+        loading={createEventTypeMutation.isPending}
+      />
     </div>
   );
 };

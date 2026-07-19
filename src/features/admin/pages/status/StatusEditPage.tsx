@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useStatus, useUpdateStatus } from "../../hooks/statusHooks";
 import { UpdateStatusData } from "@/features/admin/services/statusService";
 import { ArrowLeft, Loader2 } from "lucide-react";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 const initialFormState: UpdateStatusData = {
   name: "",
@@ -18,7 +19,9 @@ const StatusEditPage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
-  
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<UpdateStatusData | null>(null);
+
   const { data: status, isLoading, error } = useStatus(id || "");
   const updateStatusMutation = useUpdateStatus();
 
@@ -47,13 +50,30 @@ const StatusEditPage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate() || !id) return;
+    setPendingData(formData);
+    setIsConfirmDialogOpen(true);
+  };
 
-    updateStatusMutation.mutate({ id, data: formData });
-    toast({
-      title: "Succès",
-      description: "Statut mis à jour avec succès",
+  const handleConfirmUpdate = () => {
+    if (!pendingData || !id) return;
+    updateStatusMutation.mutate({ id, data: pendingData }, {
+      onSuccess: () => {
+        toast({
+          title: "Succès",
+          description: "Statut mis à jour avec succès",
+        });
+        navigate("/admin/status");
+      },
+      onError: (error) => {
+        toast({
+          title: "Erreur",
+          description: error instanceof Error ? error.message : "Erreur lors de la mise à jour",
+          variant: "destructive",
+        });
+      },
     });
-    navigate("/admin/status");
+    setIsConfirmDialogOpen(false);
+    setPendingData(null);
   };
 
   const handleCancel = () => {
@@ -130,6 +150,17 @@ const StatusEditPage = () => {
           </Button>
         </div>
       </form>
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Modifier le statut"
+        description={`Êtes-vous sûr de vouloir modifier le statut "${pendingData?.name}" ?`}
+        onConfirm={handleConfirmUpdate}
+        confirmText="Modifier"
+        cancelText="Annuler"
+        loading={updateStatusMutation.isPending}
+      />
     </div>
   );
 };

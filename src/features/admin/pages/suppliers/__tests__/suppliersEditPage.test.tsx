@@ -68,19 +68,35 @@ describe('SuppliersEditPage', () => {
       </TestWrapper>
     );
 
+    // Click the submit button to open the confirmation dialog
     fireEvent.click(screen.getByRole('button', { name: /^Mettre à jour$/i }));
 
+    // Wait for the confirmation dialog to appear (check for the description text)
     await waitFor(() => {
-      expect(mockMutate).toHaveBeenCalledWith({
-        id: '1',
-        data: {
-          name: 'Acme Supplies',
-          contactInfo: 'John Doe',
-          phone: '1234567890',
-          email: 'acme@example.com',
-          address: '456 Supply St',
+      expect(screen.getByText(/Êtes-vous sûr de vouloir modifier le fournisseur/i)).toBeInTheDocument();
+    });
+
+    // Click the confirm button in the dialog
+    fireEvent.click(screen.getByRole('button', { name: /^Modifier$/i }));
+
+    // Wait for the mutation to be called
+    await waitFor(() => {
+      expect(mockMutate).toHaveBeenCalledWith(
+        {
+          id: '1',
+          data: {
+            name: 'Acme Supplies',
+            contactInfo: 'John Doe',
+            phone: '1234567890',
+            email: 'acme@example.com',
+            address: '456 Supply St',
+          },
         },
-      });
+        expect.objectContaining({
+          onSuccess: expect.any(Function),
+          onError: expect.any(Function),
+        })
+      );
     });
   });
 

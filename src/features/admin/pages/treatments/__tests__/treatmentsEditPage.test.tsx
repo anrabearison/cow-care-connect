@@ -77,27 +77,43 @@ describe('TreatmentsEditPage', () => {
       </TestWrapper>
     );
 
+    // Click the submit button to open the confirmation dialog
     fireEvent.click(screen.getByRole('button', { name: /^Mettre à jour$/i }));
 
+    // Wait for the confirmation dialog to appear (check for the description text)
     await waitFor(() => {
-      expect(mockMutate).toHaveBeenCalledWith({
-        id: '1',
-        data: {
-          cattleId: 'cattle1',
-          type: 'Vaccination',
-          date: '2024-01-01',
-          product: 'Vaccine X',
-          dosage: {
-            quantity: 10,
-            unit: 'ml',
-            animalWeight: 500,
-            notes: 'Administer in neck',
+      expect(screen.getByText(/Êtes-vous sûr de vouloir modifier le traitement/i)).toBeInTheDocument();
+    });
+
+    // Click the confirm button in the dialog
+    fireEvent.click(screen.getByRole('button', { name: /^Modifier$/i }));
+
+    // Wait for the mutation to be called
+    await waitFor(() => {
+      expect(mockMutate).toHaveBeenCalledWith(
+        {
+          id: '1',
+          data: {
+            cattleId: 'cattle1',
+            type: 'Vaccination',
+            date: '2024-01-01',
+            product: 'Vaccine X',
+            dosage: {
+              quantity: 10,
+              unit: 'ml',
+              animalWeight: 500,
+              notes: 'Administer in neck',
+            },
+            administrationRoute: 'Intramuscular',
+            veterinarian: 'Dr. Smith',
+            notes: 'Annual vaccination',
           },
-          administrationRoute: 'Intramuscular',
-          veterinarian: 'Dr. Smith',
-          notes: 'Annual vaccination',
         },
-      });
+        expect.objectContaining({
+          onSuccess: expect.any(Function),
+          onError: expect.any(Function),
+        })
+      );
     });
   });
 

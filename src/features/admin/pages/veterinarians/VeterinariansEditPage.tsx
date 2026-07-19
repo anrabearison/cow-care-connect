@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { useVeterinarian, useUpdateVeterinarian } from '../../hooks/veterinariansHooks';
 import { Loader2 } from 'lucide-react';
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 
 interface FormState {
   name: string;
@@ -31,6 +32,8 @@ const VeterinariansEditPage = () => {
   const updateVeterinarianMutation = useUpdateVeterinarian();
   const { data: veterinarian, isLoading, error } = useVeterinarian(id!);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<FormState | null>(null);
 
   const initialData = useMemo(() => {
     if (!veterinarian || !veterinarian.data) return initialFormState;
@@ -75,19 +78,36 @@ const VeterinariansEditPage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate() || !id) return;
+    setPendingData(formData);
+    setIsConfirmDialogOpen(true);
+  };
 
+  const handleConfirmUpdate = () => {
+    if (!pendingData || !id) return;
     updateVeterinarianMutation.mutate({
       id,
       data: {
-        name: formData.name,
-        phone: formData.phone || undefined,
-        email: formData.email || undefined,
-        address: formData.address || undefined,
-        specialty: formData.specialty || undefined,
+        name: pendingData.name,
+        phone: pendingData.phone || undefined,
+        email: pendingData.email || undefined,
+        address: pendingData.address || undefined,
+        specialty: pendingData.specialty || undefined,
+      },
+    }, {
+      onSuccess: () => {
+        toast({ title: 'Succès', description: 'Vétérinaire mis à jour avec succès' });
+        navigate(`/admin/veterinarians/${id}`);
+      },
+      onError: (error) => {
+        toast({ 
+          title: 'Erreur', 
+          description: error instanceof Error ? error.message : 'Erreur lors de la mise à jour',
+          variant: 'destructive' 
+        });
       },
     });
-    toast({ title: 'Succès', description: 'Vétérinaire mis à jour avec succès' });
-    navigate(`/admin/veterinarians/${id}`);
+    setIsConfirmDialogOpen(false);
+    setPendingData(null);
   };
 
   return (
@@ -127,6 +147,17 @@ const VeterinariansEditPage = () => {
           <Button type="submit">Mettre à jour</Button>
         </div>
       </form>
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Modifier le vétérinaire"
+        description={`Êtes-vous sûr de vouloir modifier le vétérinaire "${pendingData?.name}" ?`}
+        onConfirm={handleConfirmUpdate}
+        confirmText="Modifier"
+        cancelText="Annuler"
+        loading={updateVeterinarianMutation.isPending}
+      />
     </div>
   );
 };

@@ -11,11 +11,14 @@ import { ArrowLeft } from "lucide-react";
 import { queryKeys } from "@/lib/queryKeys";
 import HerdBookCattleForm from "./HerdBookCattleForm";
 import { useHerdBookCattleReferenceData } from "../../hooks/useHerdBookCattleReferenceData";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 const HerdBookCattleCreatePage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<CreateHerdBookCattleData | null>(null);
   
   const { herdBooks, categories, statuses, isLoading: isLoadingRef, isError: isErrorRef, errors, refetch } = useHerdBookCattleReferenceData();
   
@@ -178,7 +181,15 @@ const HerdBookCattleCreatePage = () => {
       }
     }
 
-    createMutation.mutate(submitData);
+    setPendingData(submitData);
+    setIsConfirmDialogOpen(true);
+  };
+
+  const handleConfirmCreate = () => {
+    if (!pendingData) return;
+    createMutation.mutate(pendingData);
+    setIsConfirmDialogOpen(false);
+    setPendingData(null);
   };
 
   const handleCancel = () => {
@@ -252,6 +263,17 @@ const HerdBookCattleCreatePage = () => {
           />
         </>
       )}
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Créer une inscription bovine"
+        description="Êtes-vous sûr de vouloir créer cette inscription dans le livre de troupeau ?"
+        onConfirm={handleConfirmCreate}
+        confirmText="Créer"
+        cancelText="Annuler"
+        loading={createMutation.isPending}
+      />
     </div>
   );
 };

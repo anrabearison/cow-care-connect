@@ -97,19 +97,35 @@ describe('UsersEditPage', () => {
       </TestWrapper>
     );
 
+    // Click the submit button to open the confirmation dialog
     fireEvent.click(screen.getByRole('button', { name: /^Mettre à jour$/i }));
 
+    // Wait for the confirmation dialog to appear (check for the description text)
     await waitFor(() => {
-      expect(mockMutate).toHaveBeenCalledWith({
-        id: '1',
-        data: {
-          name: 'Test User',
-          email: 'test@example.com',
-          role: 'OWNER_USER',
-          ownerId: undefined,
-          isActive: true,
+      expect(screen.getByText(/Êtes-vous sûr de vouloir modifier l'utilisateur/i)).toBeInTheDocument();
+    });
+
+    // Click the confirm button in the dialog
+    fireEvent.click(screen.getByRole('button', { name: /^Modifier$/i }));
+
+    // Wait for the mutation to be called
+    await waitFor(() => {
+      expect(mockMutate).toHaveBeenCalledWith(
+        {
+          id: '1',
+          data: {
+            name: 'Test User',
+            email: 'test@example.com',
+            role: 'OWNER_USER',
+            ownerId: undefined,
+            isActive: true,
+          },
         },
-      });
+        expect.objectContaining({
+          onSuccess: expect.any(Function),
+          onError: expect.any(Function),
+        })
+      );
     });
   });
 

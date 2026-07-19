@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import CattleEditPage from '../CattleEditPage';
 import { TestWrapper } from '@/test/test-utils';
 
@@ -74,20 +74,33 @@ describe('CattleEditPage', () => {
     expect(screen.getByText('Bovin introuvable')).toBeInTheDocument();
   });
 
-  it('renders the edit page and submits updated cattle data', () => {
+  it('renders the edit page and submits updated cattle data', async () => {
     render(<TestWrapper><CattleEditPage /></TestWrapper>);
 
     expect(screen.getByText('Modifier le bovin')).toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText('Nom *'), { target: { value: 'Bovin modifié' } });
+    
+    // Click the submit button to open the confirmation dialog
     fireEvent.click(screen.getByRole('button', { name: /^Enregistrer$/i }));
 
-    expect(mockUpdateCattle).toHaveBeenCalledWith(
-      expect.objectContaining({
-        id: '1',
-        data: expect.objectContaining({ name: 'Bovin modifié' }),
-      }),
-      expect.objectContaining({ onSuccess: expect.any(Function) })
-    );
+    // Wait for the confirmation dialog to appear (check for the description text)
+    await waitFor(() => {
+      expect(screen.getByText(/Êtes-vous sûr de vouloir modifier le bovin/i)).toBeInTheDocument();
+    });
+
+    // Click the confirm button in the dialog
+    fireEvent.click(screen.getByRole('button', { name: /^Modifier$/i }));
+
+    // Wait for the mutation to be called
+    await waitFor(() => {
+      expect(mockUpdateCattle).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: '1',
+          data: expect.objectContaining({ name: 'Bovin modifié' }),
+        }),
+        expect.objectContaining({ onSuccess: expect.any(Function) })
+      );
+    });
   });
 });

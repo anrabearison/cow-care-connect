@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { useTreatment, useUpdateTreatment } from '../../hooks/treatmentsHooks';
 import { Loader2 } from 'lucide-react';
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 
 interface FormState {
   cattleId: string;
@@ -43,6 +44,8 @@ const TreatmentsEditPage = () => {
   const updateTreatmentMutation = useUpdateTreatment();
   const { data: treatment, isLoading, error } = useTreatment(id!);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<FormState | null>(null);
 
   const initialData = useMemo(() => {
     if (!treatment || !treatment.data) return initialFormState;
@@ -97,27 +100,44 @@ const TreatmentsEditPage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate() || !id) return;
+    setPendingData(formData);
+    setIsConfirmDialogOpen(true);
+  };
 
+  const handleConfirmUpdate = () => {
+    if (!pendingData || !id) return;
     updateTreatmentMutation.mutate({
       id,
       data: {
-        cattleId: formData.cattleId,
-        type: formData.type,
-        date: formData.date,
-        product: formData.product,
+        cattleId: pendingData.cattleId,
+        type: pendingData.type,
+        date: pendingData.date,
+        product: pendingData.product,
         dosage: {
-          quantity: Number(formData.dosageQuantity) || 0,
-          unit: formData.dosageUnit,
-          animalWeight: formData.dosageAnimalWeight ? Number(formData.dosageAnimalWeight) : undefined,
-          notes: formData.dosageNotes || undefined,
+          quantity: Number(pendingData.dosageQuantity) || 0,
+          unit: pendingData.dosageUnit,
+          animalWeight: pendingData.dosageAnimalWeight ? Number(pendingData.dosageAnimalWeight) : undefined,
+          notes: pendingData.dosageNotes || undefined,
         },
-        administrationRoute: formData.administrationRoute || undefined,
-        veterinarian: formData.veterinarian,
-        notes: formData.notes || undefined,
+        administrationRoute: pendingData.administrationRoute || undefined,
+        veterinarian: pendingData.veterinarian,
+        notes: pendingData.notes || undefined,
+      },
+    }, {
+      onSuccess: () => {
+        toast({ title: 'Succès', description: 'Traitement mis à jour avec succès' });
+        navigate(`/admin/treatments/${id}`);
+      },
+      onError: (error) => {
+        toast({ 
+          title: 'Erreur', 
+          description: error instanceof Error ? error.message : 'Erreur lors de la mise à jour',
+          variant: 'destructive' 
+        });
       },
     });
-    toast({ title: 'Succès', description: 'Traitement mis à jour avec succès' });
-    navigate(`/admin/treatments/${id}`);
+    setIsConfirmDialogOpen(false);
+    setPendingData(null);
   };
 
   return (
@@ -185,6 +205,17 @@ const TreatmentsEditPage = () => {
           <Button type="submit">Mettre à jour</Button>
         </div>
       </form>
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Modifier le traitement"
+        description={`Êtes-vous sûr de vouloir modifier le traitement "${pendingData?.product}" pour le ${pendingData?.date} ?`}
+        onConfirm={handleConfirmUpdate}
+        confirmText="Modifier"
+        cancelText="Annuler"
+        loading={updateTreatmentMutation.isPending}
+      />
     </div>
   );
 };
