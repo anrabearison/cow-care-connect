@@ -4,6 +4,7 @@ import { ImportForm } from './components/ImportForm';
 import { CsvUpload } from './components/CsvUpload';
 import { ValidationResults } from './components/ValidationResults';
 import { Confirmation } from './components/Confirmation';
+import { ImportSuccess } from './components/ImportSuccess';
 import { ImportCompletedModal } from './components/ImportCompletedModal';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Loader2 } from 'lucide-react';
@@ -29,6 +30,7 @@ const ImportInitialContent = () => {
     step,
     csvFile,
     dryRunResult,
+    importResult,
     form,
     dryRunMutation,
     confirmMutation,
@@ -81,8 +83,8 @@ const ImportInitialContent = () => {
         </div>
 
         {/* Progress Indicator */}
-        <div className="flex items-center justify-center gap-2" role="progressbar" aria-valuenow={['form', 'upload', 'validation', 'confirm'].indexOf(step) + 1} aria-valuemin={1} aria-valuemax={4} aria-label="Progression de l'import">
-          {['form', 'upload', 'validation', 'confirm'].map((s, index) => (
+        <div className="flex items-center justify-center gap-2" role="progressbar" aria-valuenow={['form', 'upload', 'validation', 'confirm', 'success'].indexOf(step) + 1} aria-valuemin={1} aria-valuemax={5} aria-label="Progression de l'import">
+          {['form', 'upload', 'validation', 'confirm', 'success'].map((s, index) => (
             <div
               key={s}
               className={`h-2 flex-1 rounded-full transition-colors ${
@@ -101,7 +103,13 @@ const ImportInitialContent = () => {
           </div>
         )}
 
-        {!isLoading && (
+        {!isLoading && step === 'success' && importResult && (
+          <div className="max-w-xl mx-auto">
+            <ImportSuccess result={importResult} />
+          </div>
+        )}
+
+        {!isLoading && step !== 'success' && (
           <div className="grid md:grid-cols-2 gap-6">
             {/* Left Column - Form */}
             <ImportForm

@@ -12,9 +12,10 @@ import { herdBookService } from '@/features/herdbook/services';
  * Gère le formulaire, l'upload CSV, la validation et la confirmation
  */
 export const useImportLogic = () => {
-  const [step, setStep] = useState<'form' | 'upload' | 'validation' | 'confirm'>('form');
+  const [step, setStep] = useState<'form' | 'upload' | 'validation' | 'confirm' | 'success'>('form');
   const [csvFile, setCsvFile] = useState<File | null>(null);
   const [dryRunResult, setDryRunResult] = useState<DryRunResult | null>(null);
+  const [importResult, setImportResult] = useState<ImportConfirmResult | null>(null);
   const [csvData, setCsvData] = useState<Record<string, string>[]>([]);
   
   const queryClient = useQueryClient();
@@ -90,7 +91,8 @@ export const useImportLogic = () => {
         title: 'Import réussi',
         description: `${result.cattleCount} bovins importés dans le HerdBook`,
       });
-      setStep('confirm');
+      setImportResult(result);
+      setStep('success');
     },
     onError: (error: Error) => {
       toast({
@@ -170,6 +172,7 @@ export const useImportLogic = () => {
     form.reset();
     setCsvFile(null);
     setDryRunResult(null);
+    setImportResult(null);
     setCsvData([]);
     setStep('form');
   }, [form]);
@@ -185,6 +188,7 @@ export const useImportLogic = () => {
     step,
     csvFile,
     dryRunResult,
+    importResult,
     csvData,
     
     // Formulaire

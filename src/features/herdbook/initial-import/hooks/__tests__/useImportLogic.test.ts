@@ -313,8 +313,11 @@ describe('useImportLogic', () => {
         await result.current.handleConfirm();
       });
 
-      // Just verify the mutation completed successfully
-      expect(result.current.step).toBe('confirm');
+      // After a real import success, the app should move to a distinct
+      // 'success' step (not re-show the 'confirm' screen with an active
+      // "Confirmer l'import" button on an already-completed, irreversible action).
+      expect(result.current.step).toBe('success');
+      expect(result.current.importResult).toEqual(mockResponse);
     });
   });
 
