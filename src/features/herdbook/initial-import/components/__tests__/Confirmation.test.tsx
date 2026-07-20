@@ -15,6 +15,7 @@ describe('Confirmation', () => {
         herdBookData={mockHerdBookData} 
         cattleCount={5} 
         onConfirm={vi.fn()} 
+        onBack={vi.fn()}
       />
     );
 
@@ -31,6 +32,7 @@ describe('Confirmation', () => {
         herdBookData={mockHerdBookData} 
         cattleCount={5} 
         onConfirm={vi.fn()} 
+        onBack={vi.fn()}
       />
     );
 
@@ -45,6 +47,7 @@ describe('Confirmation', () => {
         herdBookData={mockHerdBookData} 
         cattleCount={5} 
         onConfirm={onConfirm} 
+        onBack={vi.fn()}
       />
     );
 
@@ -60,6 +63,7 @@ describe('Confirmation', () => {
         herdBookData={mockHerdBookData} 
         cattleCount={5} 
         onConfirm={vi.fn()} 
+        onBack={vi.fn()}
         isLoading={true}
       />
     );
@@ -76,6 +80,7 @@ describe('Confirmation', () => {
         herdBookData={mockHerdBookData} 
         cattleCount={5} 
         onConfirm={vi.fn()} 
+        onBack={vi.fn()}
       />
     );
 
@@ -93,22 +98,27 @@ describe('Confirmation', () => {
         herdBookData={dataWithoutDescription} 
         cattleCount={5} 
         onConfirm={vi.fn()} 
+        onBack={vi.fn()}
       />
     );
 
     expect(screen.queryByText('Test description')).not.toBeInTheDocument();
   });
 
-  it('should show cancel button', () => {
+  it('should show a back button that calls onBack', () => {
+    const onBack = vi.fn();
     render(
-      <Confirmation 
-        herdBookData={mockHerdBookData} 
-        cattleCount={5} 
-        onConfirm={vi.fn()} 
+      <Confirmation
+        herdBookData={mockHerdBookData}
+        cattleCount={5}
+        onConfirm={vi.fn()}
+        onBack={onBack}
       />
     );
 
-    expect(screen.getByRole('button', { name: /annuler/i })).toBeInTheDocument();
+    const backButton = screen.getByRole('button', { name: /retour/i });
+    fireEvent.click(backButton);
+    expect(onBack).toHaveBeenCalled();
   });
 
   it('should show summary section', () => {
@@ -117,6 +127,7 @@ describe('Confirmation', () => {
         herdBookData={mockHerdBookData} 
         cattleCount={5} 
         onConfirm={vi.fn()} 
+        onBack={vi.fn()}
       />
     );
 

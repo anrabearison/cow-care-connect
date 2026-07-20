@@ -151,6 +151,7 @@ const ImportInitialContent = () => {
                   herdBookData={form.getValues()}
                   cattleCount={dryRunResult.validRowsCount}
                   onConfirm={handleConfirmImport}
+                  onBack={handleBackToForm}
                   isLoading={isLoading}
                 />
               )}

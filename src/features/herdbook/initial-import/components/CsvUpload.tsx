@@ -4,6 +4,7 @@ import { Upload, FileText, X, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useToast } from '@/hooks/use-toast';
 import { herdBookService } from '@/features/herdbook/services';
 
 interface CsvUploadProps {
@@ -14,6 +15,8 @@ interface CsvUploadProps {
 }
 
 export const CsvUpload = ({ onFileSelect, onRemove, selectedFile, isLoading = false }: CsvUploadProps) => {
+  const { toast } = useToast();
+
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       if (acceptedFiles.length > 0) {
@@ -45,6 +48,11 @@ export const CsvUpload = ({ onFileSelect, onRemove, selectedFile, isLoading = fa
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Erreur téléchargement template:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Téléchargement impossible',
+        description: 'Le template CSV n\'a pas pu être téléchargé. Veuillez réessayer.',
+      });
     }
   };
 

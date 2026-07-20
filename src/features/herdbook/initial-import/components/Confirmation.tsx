@@ -9,10 +9,11 @@ interface ConfirmationProps {
   herdBookData: InitialImportFormData;
   cattleCount: number;
   onConfirm: () => void;
+  onBack: () => void;
   isLoading?: boolean;
 }
 
-export const Confirmation = ({ herdBookData, cattleCount, onConfirm, isLoading = false }: ConfirmationProps) => {
+export const Confirmation = ({ herdBookData, cattleCount, onConfirm, onBack, isLoading = false }: ConfirmationProps) => {
   return (
     <Card role="region" aria-labelledby="confirm-title" aria-live="polite">
       <CardHeader>
@@ -61,11 +62,11 @@ export const Confirmation = ({ herdBookData, cattleCount, onConfirm, isLoading =
           <Button
             type="button"
             variant="outline"
-            onClick={() => window.history.back()}
+            onClick={onBack}
             disabled={isLoading}
-            aria-label="Annuler l'import"
+            aria-label="Retourner à l'étape précédente"
           >
-            Annuler
+            Retour
           </Button>
           <Button
             type="button"
