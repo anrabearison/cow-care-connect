@@ -179,7 +179,6 @@ export const useImportLogic = () => {
 
   // Vérifie si on peut passer à l'étape suivante
   const canProceed = useCallback(() => {
-    const herdBookData = form.getValues();
     return form.formState.isValid && csvFile !== null;
   }, [form.formState.isValid, csvFile]);
 

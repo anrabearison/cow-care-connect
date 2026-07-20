@@ -8,18 +8,20 @@ interface ImportCompletedModalProps {
   onClose: () => void;
   cattleCount?: number;
   herdBookName?: string;
+  herdBookId?: string;
 }
 
-export const ImportCompletedModal = ({ open, onClose, cattleCount, herdBookName }: ImportCompletedModalProps) => {
+export const ImportCompletedModal = ({ open, onClose, cattleCount, herdBookName, herdBookId }: ImportCompletedModalProps) => {
   const navigate = useNavigate();
+  const destination = herdBookId ? `/admin/herd-books/${herdBookId}` : '/admin';
 
   const handleClose = () => {
     onClose();
-    navigate('/admin');
+    navigate(destination);
   };
 
   const handleGoToAdmin = () => {
-    navigate('/admin');
+    navigate(destination);
   };
 
   return (
@@ -52,7 +54,7 @@ export const ImportCompletedModal = ({ open, onClose, cattleCount, herdBookName 
 
         <div className="flex flex-col gap-2 pt-4">
           <Button onClick={handleGoToAdmin} className="w-full">
-            Aller à l'administration
+            {herdBookId ? 'Voir le livre de troupeau' : "Aller à l'administration"}
             <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
           </Button>
         </div>

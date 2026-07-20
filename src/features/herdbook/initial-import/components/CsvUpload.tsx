@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useDropzone } from 'react-dropzone';
+import { useDropzone, FileRejection } from 'react-dropzone';
 import { Upload, FileText, X, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,12 +18,25 @@ export const CsvUpload = ({ onFileSelect, onRemove, selectedFile, isLoading = fa
   const { toast } = useToast();
 
   const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
+    (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
       if (acceptedFiles.length > 0) {
         onFileSelect(acceptedFiles[0]);
+        return;
+      }
+
+      if (rejectedFiles.length > 0) {
+        const rejection = rejectedFiles[0];
+        const isTooLarge = rejection.errors.some((e) => e.code === 'file-too-large');
+        toast({
+          variant: 'destructive',
+          title: 'Fichier invalide',
+          description: isTooLarge
+            ? 'Le fichier ne doit pas dépasser 5 Mo'
+            : 'Le fichier doit être au format CSV',
+        });
       }
     },
-    [onFileSelect]
+    [onFileSelect, toast]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

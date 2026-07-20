@@ -186,6 +186,7 @@ const ImportInitialContent = () => {
         open={showCompletedModal}
         onClose={() => setShowCompletedModal(false)}
         herdBookName={availableHerdBooks[0]?.reference}
+        herdBookId={availableHerdBooks[0]?.id}
         cattleCount={availableHerdBooks[0]?.cattle_count}
       />
     </div>
