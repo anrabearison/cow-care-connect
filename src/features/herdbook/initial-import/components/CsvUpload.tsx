@@ -1,6 +1,6 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useDropzone, FileRejection } from 'react-dropzone';
-import { Upload, FileText, X, Download } from 'lucide-react';
+import { Upload, FileText, X, Download, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -16,6 +16,7 @@ interface CsvUploadProps {
 
 export const CsvUpload = ({ onFileSelect, onRemove, selectedFile, isLoading = false }: CsvUploadProps) => {
   const { toast } = useToast();
+  const [isDownloadingTemplate, setIsDownloadingTemplate] = useState(false);
 
   const onDrop = useCallback(
     (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
@@ -51,6 +52,8 @@ export const CsvUpload = ({ onFileSelect, onRemove, selectedFile, isLoading = fa
   });
 
   const handleDownloadTemplate = async () => {
+    if (isDownloadingTemplate) return;
+    setIsDownloadingTemplate(true);
     try {
       const blob = await herdBookService.downloadCsvTemplate() as Blob;
       const url = URL.createObjectURL(blob);
@@ -66,6 +69,8 @@ export const CsvUpload = ({ onFileSelect, onRemove, selectedFile, isLoading = fa
         title: 'Téléchargement impossible',
         description: 'Le template CSV n\'a pas pu être téléchargé. Veuillez réessayer.',
       });
+    } finally {
+      setIsDownloadingTemplate(false);
     }
   };
 
@@ -84,10 +89,15 @@ export const CsvUpload = ({ onFileSelect, onRemove, selectedFile, isLoading = fa
             variant="outline"
             size="sm"
             onClick={handleDownloadTemplate}
+            disabled={isDownloadingTemplate}
             className="gap-2"
             aria-label="Télécharger le template CSV"
           >
-            <Download className="h-4 w-4" />
+            {isDownloadingTemplate ? (
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+            ) : (
+              <Download className="h-4 w-4" aria-hidden="true" />
+            )}
             Télécharger le template
           </Button>
         </div>
