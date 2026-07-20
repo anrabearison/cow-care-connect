@@ -116,22 +116,14 @@ export const herdBookService = {
      * Dry-run initial import from CSV
      */
     dryRunInitialImport: async (formData: FormData) => {
-        return apiClient.post(API_ENDPOINTS.HERD_BOOKS.INITIAL_IMPORT.DRY_RUN, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
+        return apiClient.post(API_ENDPOINTS.HERD_BOOKS.INITIAL_IMPORT.DRY_RUN, formData);
     },
 
     /**
      * Confirm initial import from CSV
      */
     confirmInitialImport: async (formData: FormData) => {
-        return apiClient.post(API_ENDPOINTS.HERD_BOOKS.INITIAL_IMPORT.CONFIRM, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
+        return apiClient.post(API_ENDPOINTS.HERD_BOOKS.INITIAL_IMPORT.CONFIRM, formData);
     },
 
     /**
