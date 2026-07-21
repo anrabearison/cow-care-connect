@@ -21,6 +21,7 @@ export const ImportCompletedModal = ({ open, onClose, cattleCount, herdBookName,
   };
 
   const handleGoToAdmin = () => {
+    onClose();
     navigate(destination);
   };
 
