@@ -6,8 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Cattle } from '@/features/cattle/types';
-import { referenceService } from '@/features/common/services/referenceService';
-import { useToast } from '@/hooks/use-toast';
+import { useCharacters } from '@/features/common/hooks/useReferences';
 import { useHerdBookSelection } from '@/contexts/HerdBookSelectionContext';
 import { Calendar } from 'lucide-react';
 
@@ -18,8 +17,8 @@ interface AddPurchaseModalProps {
 }
 
 export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpenChange, onAdd }) => {
-    const { toast } = useToast();
-    const [characters, setCharacters] = useState<{ id: string, name: string }[]>([]);
+    const { data: charactersData } = useCharacters();
+    const characters = Array.isArray(charactersData?.data) ? charactersData.data : [];
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     // HerdBook selection
@@ -54,30 +53,17 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
         purchaseNotes: ''
     });
 
+    // Default the character field to the first available one, once the
+    // (cached, shared) reference data has loaded and none has been chosen yet.
     useEffect(() => {
-        const fetchReferenceData = async () => {
-            const charactersResponse = await referenceService.getCharacters();
-
-            if (charactersResponse.success) {
-                setCharacters(charactersResponse.data);
-                // Set default character to first one if available
-                if (charactersResponse.data.length > 0 && !formData.character) {
-                    setFormData(prev => ({ ...prev, character: charactersResponse.data[0].id }));
-                }
-            } else {
-                toast({
-                    variant: "destructive",
-                    title: "Erreur",
-                    description: "Impossible de charger les caractères"
-                });
-            }
-        };
-
-        if (open) {
-            fetchReferenceData();
+        if (characters.length > 0) {
+            setFormData(prev =>
+                prev.character === 'none'
+                    ? { ...prev, character: characters[0].id }
+                    : prev
+            );
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [open, toast]);
+    }, [characters]);
 
 
     const validateForm = () => {

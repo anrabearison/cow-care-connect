@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,8 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Cattle } from '@/features/cattle/types';
-import { cattleService } from '@/features/cattle/services';
-import { useToast } from '@/hooks/use-toast';
+import { useCharacters } from '@/features/common/hooks/useReferences';
 import { useHerdBookSelection } from '@/contexts/HerdBookSelectionContext';
 
 interface AddCattleModalProps {
@@ -17,9 +16,9 @@ interface AddCattleModalProps {
 }
 
 export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChange, onAdd }) => {
-    const { toast } = useToast();
     const { selectedHerdBook } = useHerdBookSelection();
-    const [characters, setCharacters] = useState<{ id: string, name: string }[]>([]);
+    const { data: charactersData } = useCharacters();
+    const characters = Array.isArray(charactersData?.data) ? charactersData.data : [];
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     const [formData, setFormData] = useState({
@@ -41,25 +40,6 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
         purchaseHealthStatus: '',
         purchaseNotes: ''
     });
-
-    useEffect(() => {
-        const fetchCharacters = async () => {
-            const response = await cattleService.getCharacters();
-            if (response.success) {
-                setCharacters(response.data);
-            } else {
-                toast({
-                    variant: "destructive",
-                    title: "Erreur",
-                    description: "Impossible de charger les caractères"
-                });
-            }
-        };
-
-        if (open) {
-            fetchCharacters();
-        }
-    }, [open, toast]);
 
     const validateForm = () => {
         const newErrors: Record<string, string> = {};

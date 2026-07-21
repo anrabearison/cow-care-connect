@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { useHerdBookSelection } from '@/contexts/HerdBookSelectionContext';
 import { useEffect, useState } from 'react';
+import type { InitialImportFormData } from './schemas/initialImport.schema';
 
 /**
  * Page principale pour l'import initial HerdBook
@@ -43,7 +44,7 @@ const ImportInitialContent = () => {
     isLoading,
   } = useImportLogic();
 
-  const handleFormSubmit = (data: any) => {
+  const handleFormSubmit = (data: InitialImportFormData) => {
     if (csvFile) {
       handleDryRun();
     }
