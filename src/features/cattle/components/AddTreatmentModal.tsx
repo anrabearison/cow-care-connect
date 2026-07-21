@@ -1,4 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +13,38 @@ import { useMedicaments, useVeterinarians } from '@/features/common/hooks/useRef
 import { Medicament } from '@/features/common/types';
 import { getTodayDate } from '@/utils/dateUtils';
 
+const treatmentFormSchema = z.object({
+    type: z.enum(['ANTIBIOTIQUE', 'VACCIN', 'VERMIFUGE', 'ANTI_INFLAMMATOIRE', 'VITAMINE', 'AUTRE'], {
+        errorMap: () => ({ message: "Le type de traitement est obligatoire" }),
+    }),
+    date: z.string().min(1, "La date est obligatoire"),
+    product: z.string().min(1, "Le médicament est obligatoire"),
+    dosage: z.object({
+        quantity: z.coerce.number().min(0.01, "La dose est obligatoire"),
+        unit: z.string(),
+        weight: z.coerce.number().optional(),
+        notes: z.string().optional(),
+    }),
+    veterinarian: z.string().min(1, "L'intervenant est obligatoire"),
+    notes: z.string().optional(),
+});
+
+type TreatmentFormValues = z.infer<typeof treatmentFormSchema>;
+
+const buildDefaultValues = (): TreatmentFormValues => ({
+    type: '' as TreatmentFormValues['type'],
+    date: getTodayDate(),
+    product: '',
+    dosage: {
+        quantity: 0,
+        unit: 'ml',
+        weight: 0,
+        notes: '',
+    },
+    veterinarian: '',
+    notes: '',
+});
+
 interface AddTreatmentModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
@@ -18,20 +53,8 @@ interface AddTreatmentModalProps {
 }
 
 export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOpenChange, onAdd, cattleName }) => {
-    const [errors, setErrors] = useState<Record<string, string>>({});
-    const [formData, setFormData] = useState({
-        type: '' as Treatment['type'],
-        date: getTodayDate(),
-        product: '',
-        dosage: {
-            quantity: 0,
-            unit: 'ml',
-            weight: 0,
-            notes: ''
-        },
-        veterinarian: '',
-        notes: ''
-    });
+    // Poids de l'animal : sert uniquement à calculer la dose recommandée,
+    // ne fait pas partie du payload Treatment soumis.
     const [animalWeight, setAnimalWeight] = useState<number>(0);
     const [selectedMedicament, setSelectedMedicament] = useState<Medicament | null>(null);
 
@@ -43,78 +66,64 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
     const veterinarians = useMemo(() => Array.isArray(veterinariansData?.data) ? veterinariansData.data : [], [veterinariansData?.data]);
     const loading = medicamentsLoading || veterinariansLoading;
 
+    const {
+        register,
+        handleSubmit,
+        watch,
+        setValue,
+        reset,
+        formState: { errors },
+    } = useForm<TreatmentFormValues>({
+        resolver: zodResolver(treatmentFormSchema),
+        defaultValues: buildDefaultValues(),
+    });
+
+    const type = watch('type');
+    const product = watch('product');
+    const dosageUnit = watch('dosage.unit');
+    const veterinarian = watch('veterinarian');
 
     // Update selected medicament when product changes
     useEffect(() => {
-        if (formData.product) {
-            const med = medicaments.find(m => m.id === formData.product);
+        if (product) {
+            const med = medicaments.find(m => m.id === product);
             setSelectedMedicament(med || null);
 
             // Set default unit if available
             if (med?.dosage?.unit) {
-                setFormData(prev => ({
-                    ...prev,
-                    dosage: { ...prev.dosage, unit: med.dosage!.unit }
-                }));
+                setValue('dosage.unit', med.dosage.unit);
             }
         } else {
             setSelectedMedicament(null);
         }
-    }, [formData.product, medicaments]);
+    }, [product, medicaments, setValue]);
 
     // Calculate dose when weight or medicament changes
     useEffect(() => {
         if (selectedMedicament?.dosage?.weight && selectedMedicament.dosage.quantity && animalWeight > 0) {
             const dose = (animalWeight / selectedMedicament.dosage.weight) * selectedMedicament.dosage.quantity;
-            setFormData(prev => ({
-                ...prev,
-                dosage: {
-                    ...prev.dosage,
-                    quantity: parseFloat(dose.toFixed(2)),
-                    weight: animalWeight
-                }
-            }));
+            setValue('dosage.quantity', parseFloat(dose.toFixed(2)));
+            setValue('dosage.weight', animalWeight);
         }
-    }, [selectedMedicament, animalWeight]);
+    }, [selectedMedicament, animalWeight, setValue]);
 
-    const validateForm = () => {
-        const newErrors: Record<string, string> = {};
-
-        if (!formData.type) newErrors.type = "Le type de traitement est obligatoire";
-        if (!formData.date) newErrors.date = "La date est obligatoire";
-        if (!formData.product) newErrors.product = "Le médicament est obligatoire";
-        if (!formData.dosage.quantity) newErrors.dosage = "La dose est obligatoire";
-        if (!formData.veterinarian) newErrors.veterinarian = "L'intervenant est obligatoire";
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+    const onSubmit = (data: TreatmentFormValues) => {
+        onAdd(data);
+        reset(buildDefaultValues());
+        setAnimalWeight(0);
+        onOpenChange(false);
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (validateForm()) {
-            onAdd(formData);
-            setFormData({
-                type: '' as Treatment['type'],
-                date: getTodayDate(),
-                product: '',
-                dosage: {
-                    quantity: 0,
-                    unit: 'ml',
-                    weight: 0,
-                    notes: ''
-                },
-                veterinarian: '',
-                notes: ''
-            });
+    const handleOpenChange = (nextOpen: boolean) => {
+        if (!nextOpen) {
+            reset(buildDefaultValues());
             setAnimalWeight(0);
-            setErrors({});
-            onOpenChange(false);
         }
+        onOpenChange(nextOpen);
     };
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Ajouter un traitement</DialogTitle>
@@ -122,16 +131,13 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                         Enregistrez un nouveau traitement pour {cattleName}.
                     </DialogDescription>
                 </DialogHeader>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="grid gap-4 py-4">
                         <div className="grid gap-2">
                             <Label htmlFor="type">Type de traitement *</Label>
                             <Select
-                                value={formData.type}
-                                onValueChange={(value) => {
-                                    setFormData({ ...formData, type: value as Treatment['type'] });
-                                    if (errors.type) setErrors({ ...errors, type: '' });
-                                }}
+                                value={type}
+                                onValueChange={(value) => setValue('type', value as TreatmentFormValues['type'], { shouldValidate: true })}
                             >
                                 <SelectTrigger id="type" className={errors.type ? 'border-red-500' : ''}>
                                     <SelectValue placeholder="Sélectionner un type" />
@@ -145,7 +151,7 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                                     <SelectItem value="AUTRE">Autre</SelectItem>
                                 </SelectContent>
                             </Select>
-                            {errors.type && <p className="text-sm text-red-500">{errors.type}</p>}
+                            {errors.type && <p className="text-sm text-red-500">{errors.type.message}</p>}
                         </div>
 
                         <div className="grid gap-2">
@@ -153,24 +159,17 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                             <Input
                                 id="date"
                                 type="date"
-                                value={formData.date}
-                                onChange={(e) => {
-                                    setFormData({ ...formData, date: e.target.value });
-                                    if (errors.date) setErrors({ ...errors, date: '' });
-                                }}
+                                {...register('date')}
                                 className={errors.date ? 'border-red-500' : ''}
                             />
-                            {errors.date && <p className="text-sm text-red-500">{errors.date}</p>}
+                            {errors.date && <p className="text-sm text-red-500">{errors.date.message}</p>}
                         </div>
 
                         <div className="grid gap-2">
                             <Label htmlFor="product">Médicament *</Label>
                             <Select
-                                value={formData.product}
-                                onValueChange={(value) => {
-                                    setFormData({ ...formData, product: value });
-                                    if (errors.product) setErrors({ ...errors, product: '' });
-                                }}
+                                value={product}
+                                onValueChange={(value) => setValue('product', value, { shouldValidate: true })}
                                 disabled={loading}
                             >
                                 <SelectTrigger id="product" className={errors.product ? 'border-red-500' : ''}>
@@ -187,7 +186,7 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                                     ))}
                                 </SelectContent>
                             </Select>
-                            {errors.product && <p className="text-sm text-red-500">{errors.product}</p>}
+                            {errors.product && <p className="text-sm text-red-500">{errors.product.message}</p>}
                         </div>
 
                         <div className="grid gap-2">
@@ -224,26 +223,16 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                                     id="dosage-quantite"
                                     type="number"
                                     step="0.01"
-                                    value={formData.dosage.quantity || ''}
-                                    onChange={(e) => {
-                                        setFormData({
-                                            ...formData,
-                                            dosage: { ...formData.dosage, quantity: parseFloat(e.target.value) }
-                                        });
-                                        if (errors.dosage) setErrors({ ...errors, dosage: '' });
-                                    }}
-                                    className={errors.dosage ? 'border-red-500' : ''}
+                                    {...register('dosage.quantity', { valueAsNumber: true })}
+                                    className={errors.dosage?.quantity ? 'border-red-500' : ''}
                                 />
-                                {errors.dosage && <p className="text-sm text-red-500">{errors.dosage}</p>}
+                                {errors.dosage?.quantity && <p className="text-sm text-red-500">{errors.dosage.quantity.message}</p>}
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="dosage-unite">Unité *</Label>
                                 <Select
-                                    value={formData.dosage.unit}
-                                    onValueChange={(value) => setFormData({
-                                        ...formData,
-                                        dosage: { ...formData.dosage, unit: value }
-                                    })}
+                                    value={dosageUnit}
+                                    onValueChange={(value) => setValue('dosage.unit', value)}
                                 >
                                     <SelectTrigger id="dosage-unite">
                                         <SelectValue />
@@ -261,11 +250,8 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                         <div className="grid gap-2">
                             <Label htmlFor="veterinarian">Intervenant *</Label>
                             <Select
-                                value={formData.veterinarian}
-                                onValueChange={(value) => {
-                                    setFormData({ ...formData, veterinarian: value });
-                                    if (errors.veterinarian) setErrors({ ...errors, veterinarian: '' });
-                                }}
+                                value={veterinarian}
+                                onValueChange={(value) => setValue('veterinarian', value, { shouldValidate: true })}
                                 disabled={loading}
                             >
                                 <SelectTrigger id="veterinarian" className={errors.veterinarian ? 'border-red-500' : ''}>
@@ -282,7 +268,7 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                                     ))}
                                 </SelectContent>
                             </Select>
-                            {errors.veterinarian && <p className="text-sm text-red-500">{errors.veterinarian}</p>}
+                            {errors.veterinarian && <p className="text-sm text-red-500">{errors.veterinarian.message}</p>}
                         </div>
 
                         <div className="grid gap-2">
@@ -290,14 +276,13 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                             <Textarea
                                 id="notes"
                                 placeholder="Observations ou remarques..."
-                                value={formData.notes}
-                                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                                {...register('notes')}
                                 rows={3}
                             />
                         </div>
                     </div>
                     <DialogFooter className="flex-col sm:flex-row gap-2">
-                        <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="w-full sm:w-auto">
+                        <Button type="button" variant="outline" onClick={() => handleOpenChange(false)} className="w-full sm:w-auto">
                             Annuler
                         </Button>
                         <Button type="submit" className="w-full sm:w-auto">Enregistrer</Button>

@@ -1,4 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
@@ -8,6 +11,26 @@ import { Cattle } from '@/features/cattle/types';
 import { useCattleReferenceData } from '../../hooks/useCattleReferenceData';
 import CattleForm, { CattleFormState } from './CattleForm';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
+
+const cattleFormSchema = z.object({
+  name: z.string().min(1, 'Le nom est obligatoire'),
+  nickname: z.string(),
+  gender: z.string().min(1, 'Le sexe est obligatoire'),
+  birthDate: z.string().min(1, 'La date de naissance est obligatoire'),
+  characterId: z.string(),
+  brand: z.string(),
+  distinctiveSign: z.string(),
+  nCarnet: z.string(),
+  sourceType: z.enum(['ACHETE', 'NE_DANS_TROUPEAU']),
+  motherId: z.string(),
+  fatherId: z.string(),
+  purchaseSupplier: z.string(),
+  purchaseDate: z.string(),
+  purchasePrice: z.string(),
+  purchaseWeight: z.string(),
+  purchaseHealthStatus: z.string(),
+  purchaseNotes: z.string(),
+});
 
 const initialFormState: CattleFormState = {
   name: '',
@@ -34,10 +57,36 @@ const CattleCreatePage = () => {
   const { toast } = useToast();
   const createCattleMutation = useCreateCattle();
   const { characters, herdBooks, isLoading, isError, errors, refetch } = useCattleReferenceData();
-  const [formData, setFormData] = useState<CattleFormState>(initialFormState);
-  const [errorsState, setErrorsState] = useState<Record<string, string>>({});
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [pendingData, setPendingData] = useState<CattleFormState | null>(null);
+
+  // CattleForm is a controlled component shared with CattleEditPage
+  // (formData/setFormData/errors as a plain Record<string,string>).
+  // We drive it here from react-hook-form + zod without changing its
+  // contract, so CattleEditPage is unaffected.
+  const {
+    watch,
+    setValue,
+    handleSubmit,
+    formState: { errors: formErrors },
+  } = useForm<CattleFormState>({
+    resolver: zodResolver(cattleFormSchema),
+    defaultValues: initialFormState,
+  });
+
+  const formData = watch();
+  const setFormData = (data: CattleFormState) => {
+    (Object.keys(data) as (keyof CattleFormState)[]).forEach((key) => {
+      if (data[key] !== formData[key]) {
+        setValue(key, data[key] as never, { shouldValidate: false });
+      }
+    });
+  };
+  const errorsState: Record<string, string> = Object.fromEntries(
+    Object.entries(formErrors)
+      .filter(([, value]) => value?.message)
+      .map(([key, value]) => [key, value!.message as string])
+  );
 
   useEffect(() => {
     if (isError) {
@@ -54,20 +103,14 @@ const CattleCreatePage = () => {
 
   const defaultHerdBookId = useMemo(() => herdBooks[0]?.id || '', [herdBooks]);
 
-  const validateForm = () => {
-    const nextErrors: Record<string, string> = {};
-    if (!formData.name) nextErrors.name = 'Le nom est obligatoire';
-    if (!formData.gender) nextErrors.gender = 'Le sexe est obligatoire';
-    if (!formData.birthDate) nextErrors.birthDate = 'La date de naissance est obligatoire';
-    setErrorsState(nextErrors);
-    return Object.keys(nextErrors).length === 0;
+  const onValid = (data: CattleFormState) => {
+    setPendingData(data);
+    setIsConfirmDialogOpen(true);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
-    setPendingData(formData);
-    setIsConfirmDialogOpen(true);
+    handleSubmit(onValid)(e);
   };
 
   const handleConfirmCreate = () => {
@@ -140,7 +183,7 @@ const CattleCreatePage = () => {
         setFormData={setFormData}
         characters={characters}
         isPending={createCattleMutation.isPending}
-        onSubmit={handleSubmit}
+        onSubmit={handleFormSubmit}
         onCancel={handleCancel}
         errors={errorsState}
         submitLabel={createCattleMutation.isPending ? 'Création...' : 'Créer'}
