@@ -77,7 +77,9 @@ const CattleCreatePage = () => {
   const formData = watch();
   const setFormData = (data: CattleFormState) => {
     (Object.keys(data) as (keyof CattleFormState)[]).forEach((key) => {
-      setValue(key, data[key] as never, { shouldValidate: false });
+      if (data[key] !== formData[key]) {
+        setValue(key, data[key] as never, { shouldValidate: false });
+      }
     });
   };
   const errorsState: Record<string, string> = Object.fromEntries(

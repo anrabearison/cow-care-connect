@@ -67,6 +67,7 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
         handleSubmit,
         watch,
         setValue,
+        getValues,
         reset,
         formState: { errors },
     } = useForm<PurchaseFormValues>({
@@ -92,15 +93,14 @@ export const AddPurchaseModal: React.FC<AddPurchaseModalProps> = ({ open, onOpen
 
     // Default the character field to the first available one, once the
     // (cached, shared) reference data has loaded and none has been chosen yet.
+    // getValues() is a non-reactive read, so this effect only needs to depend
+    // on `characters` — it won't refire (and override a manual selection)
+    // just because the user picks a character.
     useEffect(() => {
-        if (characters.length > 0) {
-            setValue(
-                'character',
-                (prevCharacter => (prevCharacter === 'none' ? characters[0].id : prevCharacter))(character)
-            );
+        if (characters.length > 0 && getValues('character') === 'none') {
+            setValue('character', characters[0].id);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [characters]);
+    }, [characters, getValues, setValue]);
 
     const onSubmit = (data: PurchaseFormValues) => {
         const cattleData: Omit<Cattle, 'id' | 'events' | 'treatments'> = {

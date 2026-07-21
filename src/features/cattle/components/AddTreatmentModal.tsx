@@ -14,7 +14,9 @@ import { Medicament } from '@/features/common/types';
 import { getTodayDate } from '@/utils/dateUtils';
 
 const treatmentFormSchema = z.object({
-    type: z.string().min(1, "Le type de traitement est obligatoire"),
+    type: z.enum(['ANTIBIOTIQUE', 'VACCIN', 'VERMIFUGE', 'ANTI_INFLAMMATOIRE', 'VITAMINE', 'AUTRE'], {
+        errorMap: () => ({ message: "Le type de traitement est obligatoire" }),
+    }),
     date: z.string().min(1, "La date est obligatoire"),
     product: z.string().min(1, "Le médicament est obligatoire"),
     dosage: z.object({
@@ -30,7 +32,7 @@ const treatmentFormSchema = z.object({
 type TreatmentFormValues = z.infer<typeof treatmentFormSchema>;
 
 const buildDefaultValues = (): TreatmentFormValues => ({
-    type: '',
+    type: '' as TreatmentFormValues['type'],
     date: getTodayDate(),
     product: '',
     dosage: {
@@ -135,7 +137,7 @@ export const AddTreatmentModal: React.FC<AddTreatmentModalProps> = ({ open, onOp
                             <Label htmlFor="type">Type de traitement *</Label>
                             <Select
                                 value={type}
-                                onValueChange={(value) => setValue('type', value, { shouldValidate: true })}
+                                onValueChange={(value) => setValue('type', value as TreatmentFormValues['type'], { shouldValidate: true })}
                             >
                                 <SelectTrigger id="type" className={errors.type ? 'border-red-500' : ''}>
                                     <SelectValue placeholder="Sélectionner un type" />
