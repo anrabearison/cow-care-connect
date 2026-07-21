@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,6 +10,28 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Cattle } from '@/features/cattle/types';
 import { getTodayDate } from '@/utils/dateUtils';
+
+const birthFormSchema = z.object({
+    name: z.string().min(1, "Le nom du veau est obligatoire"),
+    nickname: z.string().optional(),
+    gender: z.string().min(1, "Le sexe est obligatoire"),
+    birthDate: z.string().min(1, "La date de naissance est obligatoire"),
+    brand: z.string().optional(),
+    distinctiveSign: z.string().optional(),
+    birthDescription: z.string().optional(),
+});
+
+type BirthFormValues = z.infer<typeof birthFormSchema>;
+
+const buildDefaultValues = (): BirthFormValues => ({
+    name: '',
+    nickname: '',
+    gender: '',
+    birthDate: getTodayDate(),
+    brand: '',
+    distinctiveSign: '',
+    birthDescription: '',
+});
 
 interface AddBirthModalProps {
     open: boolean;
@@ -17,66 +42,49 @@ interface AddBirthModalProps {
 }
 
 export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange, onAdd, motherName, motherId }) => {
-    const [errors, setErrors] = useState<Record<string, string>>({});
-    const [formData, setFormData] = useState({
-        name: '',
-        nickname: '',
-        gender: '' as 'M' | 'F' | '',
-        birthDate: getTodayDate(),
-        character: 1,
-        brand: '',
-        distinctiveSign: '',
-        birthDescription: ''
+    const {
+        register,
+        handleSubmit,
+        watch,
+        setValue,
+        reset,
+        formState: { errors },
+    } = useForm<BirthFormValues>({
+        resolver: zodResolver(birthFormSchema),
+        defaultValues: buildDefaultValues(),
     });
 
-    const validateForm = () => {
-        const newErrors: Record<string, string> = {};
+    const gender = watch('gender');
 
-        if (!formData.name) newErrors.name = "Le nom du veau est obligatoire";
-        if (!formData.gender) newErrors.gender = "Le sexe est obligatoire";
-        if (!formData.birthDate) newErrors.birthDate = "La date de naissance est obligatoire";
+    const onSubmit = (data: BirthFormValues) => {
+        const calfData: Omit<Cattle, 'id' | 'events' | 'treatments' | 'source'> = {
+            name: data.name,
+            nickname: data.nickname || undefined,
+            gender: data.gender as 'M' | 'F',
+            birthDate: data.birthDate,
+            character: {
+                id: 'docile',
+                name: 'Docile'
+            },
+            brand: data.brand || undefined,
+            distinctiveSign: data.distinctiveSign || undefined,
+            // photo, status, source removed as not supported by backend on birth create
+        };
 
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+        onAdd(calfData);
+        reset(buildDefaultValues());
+        onOpenChange(false);
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (validateForm()) {
-            const calfData: Omit<Cattle, 'id' | 'events' | 'treatments' | 'source'> = {
-                name: formData.name,
-                nickname: formData.nickname || undefined,
-                gender: formData.gender as 'M' | 'F',
-                birthDate: formData.birthDate,
-                character: {
-                    id: 'docile',
-                    name: 'Docile'
-                },
-                brand: formData.brand || undefined,
-                distinctiveSign: formData.distinctiveSign || undefined,
-                // photo, status, source removed as not supported by backend on birth create
-            };
-
-            onAdd(calfData);
-
-            // Reset form
-            setFormData({
-                name: '',
-                nickname: '',
-                gender: '',
-                birthDate: getTodayDate(),
-                character: 1,
-                brand: '',
-                distinctiveSign: '',
-                birthDescription: ''
-            });
-            setErrors({});
-            onOpenChange(false);
+    const handleOpenChange = (nextOpen: boolean) => {
+        if (!nextOpen) {
+            reset(buildDefaultValues());
         }
+        onOpenChange(nextOpen);
     };
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Enregistrer une naissance</DialogTitle>
@@ -84,7 +92,7 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                         Enregistrez la naissance d'un veau pour {motherName}.
                     </DialogDescription>
                 </DialogHeader>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="grid gap-4 py-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="grid gap-2">
@@ -92,14 +100,10 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                                 <Input
                                     id="name"
                                     placeholder="Ex: Petit Vato"
-                                    value={formData.name}
-                                    onChange={(e) => {
-                                        setFormData({ ...formData, name: e.target.value });
-                                        if (errors.name) setErrors({ ...errors, name: '' });
-                                    }}
+                                    {...register('name')}
                                     className={errors.name ? 'border-red-500' : ''}
                                 />
-                                {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
+                                {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
                             </div>
 
                             <div className="grid gap-2">
@@ -107,8 +111,7 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                                 <Input
                                     id="nickname"
                                     placeholder="Ex: Vato"
-                                    value={formData.nickname}
-                                    onChange={(e) => setFormData({ ...formData, nickname: e.target.value })}
+                                    {...register('nickname')}
                                 />
                             </div>
                         </div>
@@ -117,11 +120,8 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                             <div className="grid gap-2">
                                 <Label htmlFor="gender">Sexe *</Label>
                                 <Select
-                                    defaultValue={formData.gender || undefined}
-                                    onValueChange={(value) => {
-                                        setFormData({ ...formData, gender: value as 'M' | 'F' });
-                                        if (errors.gender) setErrors({ ...errors, gender: '' });
-                                    }}
+                                    value={gender || undefined}
+                                    onValueChange={(value) => setValue('gender', value, { shouldValidate: true })}
                                 >
                                     <SelectTrigger id="gender" className={errors.gender ? 'border-red-500' : ''}>
                                         <SelectValue placeholder="Sélectionner le sexe" />
@@ -131,7 +131,7 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                                         <SelectItem value="F">Femelle</SelectItem>
                                     </SelectContent>
                                 </Select>
-                                {errors.gender && <p className="text-sm text-red-500">{errors.gender}</p>}
+                                {errors.gender && <p className="text-sm text-red-500">{errors.gender.message}</p>}
                             </div>
 
                             <div className="grid gap-2">
@@ -139,14 +139,10 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                                 <Input
                                     id="birthDate"
                                     type="date"
-                                    value={formData.birthDate}
-                                    onChange={(e) => {
-                                        setFormData({ ...formData, birthDate: e.target.value });
-                                        if (errors.birthDate) setErrors({ ...errors, birthDate: '' });
-                                    }}
+                                    {...register('birthDate')}
                                     className={errors.birthDate ? 'border-red-500' : ''}
                                 />
-                                {errors.birthDate && <p className="text-sm text-red-500">{errors.birthDate}</p>}
+                                {errors.birthDate && <p className="text-sm text-red-500">{errors.birthDate.message}</p>}
                             </div>
                         </div>
 
@@ -156,8 +152,7 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                                 <Input
                                     id="brand"
                                     placeholder="Ex: M-001"
-                                    value={formData.brand}
-                                    onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
+                                    {...register('brand')}
                                 />
                             </div>
 
@@ -166,8 +161,7 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                                 <Input
                                     id="distinctiveSign"
                                     placeholder="Ex: Tache blanche"
-                                    value={formData.distinctiveSign}
-                                    onChange={(e) => setFormData({ ...formData, distinctiveSign: e.target.value })}
+                                    {...register('distinctiveSign')}
                                 />
                             </div>
                         </div>
@@ -177,8 +171,7 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                             <Textarea
                                 id="birthDescription"
                                 placeholder="Ex: Naissance sans complications, poids 35kg"
-                                value={formData.birthDescription}
-                                onChange={(e) => setFormData({ ...formData, birthDescription: e.target.value })}
+                                {...register('birthDescription')}
                                 rows={3}
                             />
                         </div>
@@ -193,7 +186,7 @@ export const AddBirthModal: React.FC<AddBirthModalProps> = ({ open, onOpenChange
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                        <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
                             Annuler
                         </Button>
                         <Button type="submit">Enregistrer</Button>
