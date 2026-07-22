@@ -1,4 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,9 +9,50 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Cattle } from '@/features/cattle/types';
-import { cattleService } from '@/features/cattle/services';
-import { useToast } from '@/hooks/use-toast';
+import { useCharacters } from '@/features/common/hooks/useReferences';
 import { useHerdBookSelection } from '@/contexts/HerdBookSelectionContext';
+
+const cattleFormSchema = z.object({
+    name: z.string().min(1, "Le nom est obligatoire"),
+    nickname: z.string().optional(),
+    gender: z.string().min(1, "Le sexe est obligatoire"),
+    birthDate: z.string().min(1, "La date de naissance est obligatoire"),
+    character: z.string().optional(),
+    brand: z.string().optional(),
+    distinctiveSign: z.string().optional(),
+    nCarnet: z.string().optional(),
+    sourceType: z.enum(['ACHETE', 'NE_DANS_TROUPEAU']),
+    motherId: z.string().optional(),
+    fatherId: z.string().optional(),
+    purchaseSupplier: z.string().optional(),
+    purchaseDate: z.string().optional(),
+    purchasePrice: z.string().optional(),
+    purchaseWeight: z.string().optional(),
+    purchaseHealthStatus: z.string().optional(),
+    purchaseNotes: z.string().optional(),
+});
+
+type CattleFormValues = z.infer<typeof cattleFormSchema>;
+
+const defaultValues: CattleFormValues = {
+    name: '',
+    nickname: '',
+    gender: '',
+    birthDate: '',
+    character: '',
+    brand: '',
+    distinctiveSign: '',
+    nCarnet: '',
+    sourceType: 'ACHETE',
+    motherId: '',
+    fatherId: '',
+    purchaseSupplier: '',
+    purchaseDate: '',
+    purchasePrice: '',
+    purchaseWeight: '',
+    purchaseHealthStatus: '',
+    purchaseNotes: '',
+};
 
 interface AddCattleModalProps {
     open: boolean;
@@ -17,124 +61,75 @@ interface AddCattleModalProps {
 }
 
 export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChange, onAdd }) => {
-    const { toast } = useToast();
     const { selectedHerdBook } = useHerdBookSelection();
-    const [characters, setCharacters] = useState<{ id: string, name: string }[]>([]);
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    const { data: charactersData } = useCharacters();
+    const characters = Array.isArray(charactersData?.data) ? charactersData.data : [];
 
-    const [formData, setFormData] = useState({
-        name: '',
-        nickname: '',
-        gender: '' as 'M' | 'F' | '',
-        birthDate: '',
-        character: 1,
-        brand: '',
-        distinctiveSign: '',
-        nCarnet: '',
-        sourceType: 'ACHETE' as 'ACHETE' | 'NE_DANS_TROUPEAU',
-        motherId: '',
-        fatherId: '',
-        purchaseSupplier: '',
-        purchaseDate: '',
-        purchasePrice: '',
-        purchaseWeight: '',
-        purchaseHealthStatus: '',
-        purchaseNotes: ''
+    const {
+        register,
+        handleSubmit,
+        watch,
+        setValue,
+        reset,
+        formState: { errors },
+    } = useForm<CattleFormValues>({
+        resolver: zodResolver(cattleFormSchema),
+        defaultValues,
     });
 
+    const gender = watch('gender');
+    const character = watch('character');
+    const sourceType = watch('sourceType');
+
+    // Default the character field to the first available one, once the
+    // (cached, shared) reference data has loaded and none has been chosen yet.
     useEffect(() => {
-        const fetchCharacters = async () => {
-            const response = await cattleService.getCharacters();
-            if (response.success) {
-                setCharacters(response.data);
-            } else {
-                toast({
-                    variant: "destructive",
-                    title: "Erreur",
-                    description: "Impossible de charger les caractères"
-                });
-            }
-        };
-
-        if (open) {
-            fetchCharacters();
+        if (characters.length > 0 && !character) {
+            setValue('character', characters[0].id.toString());
         }
-    }, [open, toast]);
+    }, [characters, character, setValue]);
 
-    const validateForm = () => {
-        const newErrors: Record<string, string> = {};
-
-        if (!formData.name) newErrors.name = "Le nom est obligatoire";
-        if (!formData.gender) newErrors.gender = "Le sexe est obligatoire";
-        if (!formData.birthDate) newErrors.birthDate = "La date de naissance est obligatoire";
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!validateForm()) {
-            return;
-        }
-
+    const onSubmit = (data: CattleFormValues) => {
         const cattleData: Omit<Cattle, 'id' | 'events' | 'treatments'> = {
-            name: formData.name,
-            nickname: formData.nickname || undefined,
-            gender: formData.gender as 'M' | 'F',
-            birthDate: formData.birthDate,
+            name: data.name,
+            nickname: data.nickname || undefined,
+            gender: data.gender as 'M' | 'F',
+            birthDate: data.birthDate,
             character: {
-                id: formData.character.toString(),
-                name: characters.find(c => c.id === formData.character.toString())?.name || 'Docile'
+                id: data.character || '',
+                name: characters.find(c => c.id.toString() === data.character)?.name || 'Docile'
             },
-            brand: formData.brand || undefined,
-            distinctiveSign: formData.distinctiveSign || undefined,
+            brand: data.brand || undefined,
+            distinctiveSign: data.distinctiveSign || undefined,
             photo: undefined,
             // status removed as not supported by backend on create
-            motherId: formData.sourceType === 'NE_DANS_TROUPEAU' && formData.motherId ? formData.motherId : undefined,
-            fatherId: formData.sourceType === 'NE_DANS_TROUPEAU' && formData.fatherId ? formData.fatherId : undefined,
+            motherId: data.sourceType === 'NE_DANS_TROUPEAU' && data.motherId ? data.motherId : undefined,
+            fatherId: data.sourceType === 'NE_DANS_TROUPEAU' && data.fatherId ? data.fatherId : undefined,
             source: {
-                type: formData.sourceType,
-                supplier: formData.sourceType === 'ACHETE' ? formData.purchaseSupplier : undefined,
-                purchaseDate: formData.sourceType === 'ACHETE' && formData.purchaseDate ? formData.purchaseDate : undefined,
-                purchasePrice: formData.sourceType === 'ACHETE' && formData.purchasePrice ? parseFloat(formData.purchasePrice) : undefined,
-                purchaseWeight: formData.sourceType === 'ACHETE' && formData.purchaseWeight ? parseFloat(formData.purchaseWeight) : undefined,
-                purchaseHealthStatus: formData.sourceType === 'ACHETE' ? formData.purchaseHealthStatus : undefined,
-                purchaseNotes: formData.sourceType === 'ACHETE' ? formData.purchaseNotes : undefined,
+                type: data.sourceType,
+                supplier: data.sourceType === 'ACHETE' ? data.purchaseSupplier : undefined,
+                purchaseDate: data.sourceType === 'ACHETE' && data.purchaseDate ? data.purchaseDate : undefined,
+                purchasePrice: data.sourceType === 'ACHETE' && data.purchasePrice ? parseFloat(data.purchasePrice) : undefined,
+                purchaseWeight: data.sourceType === 'ACHETE' && data.purchaseWeight ? parseFloat(data.purchaseWeight) : undefined,
+                purchaseHealthStatus: data.sourceType === 'ACHETE' ? data.purchaseHealthStatus : undefined,
+                purchaseNotes: data.sourceType === 'ACHETE' ? data.purchaseNotes : undefined,
             }
         };
 
-        onAdd(cattleData, formData.nCarnet || undefined);
-        resetForm();
+        onAdd(cattleData, data.nCarnet || undefined);
+        reset(defaultValues);
         onOpenChange(false);
     };
 
-    const resetForm = () => {
-        setFormData({
-            name: '',
-            nickname: '',
-            gender: '',
-            birthDate: '',
-            character: 1,
-            brand: '',
-            distinctiveSign: '',
-            nCarnet: '',
-            sourceType: 'ACHETE',
-            motherId: '',
-            fatherId: '',
-            purchaseSupplier: '',
-            purchaseDate: '',
-            purchasePrice: '',
-            purchaseWeight: '',
-            purchaseHealthStatus: '',
-            purchaseNotes: ''
-        });
-        setErrors({});
+    const handleOpenChange = (nextOpen: boolean) => {
+        if (!nextOpen) {
+            reset(defaultValues);
+        }
+        onOpenChange(nextOpen);
     };
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Ajouter un nouvel animal</DialogTitle>
@@ -142,7 +137,7 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                         Remplissez les informations ci-dessous pour ajouter un nouvel animal au troupeau.
                     </DialogDescription>
                 </DialogHeader>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="grid gap-6 py-4">
                         {/* Informations Générales */}
                         <div>
@@ -152,31 +147,23 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                     <Label htmlFor="name">Nom *</Label>
                                     <Input
                                         id="name"
-                                        value={formData.name}
-                                        onChange={(e) => {
-                                            setFormData({ ...formData, name: e.target.value });
-                                            if (errors.name) setErrors({ ...errors, name: '' });
-                                        }}
+                                        {...register('name')}
                                         className={errors.name ? 'border-red-500' : ''}
                                     />
-                                    {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
+                                    {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="nickname">Surnom</Label>
                                     <Input
                                         id="nickname"
-                                        value={formData.nickname}
-                                        onChange={(e) => setFormData({ ...formData, nickname: e.target.value })}
+                                        {...register('nickname')}
                                     />
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="gender">Sexe *</Label>
                                     <Select
-                                        value={formData.gender}
-                                        onValueChange={(value) => {
-                                            setFormData({ ...formData, gender: value as 'M' | 'F' });
-                                            if (errors.gender) setErrors({ ...errors, gender: '' });
-                                        }}
+                                        value={gender}
+                                        onValueChange={(value) => setValue('gender', value, { shouldValidate: true })}
                                     >
                                         <SelectTrigger id="gender" className={errors.gender ? 'border-red-500' : ''}>
                                             <SelectValue placeholder="Sélectionner" />
@@ -186,27 +173,23 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                             <SelectItem value="F">Femelle</SelectItem>
                                         </SelectContent>
                                     </Select>
-                                    {errors.gender && <p className="text-sm text-red-500">{errors.gender}</p>}
+                                    {errors.gender && <p className="text-sm text-red-500">{errors.gender.message}</p>}
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="birthDate">Date de naissance *</Label>
                                     <Input
                                         id="birthDate"
                                         type="date"
-                                        value={formData.birthDate}
-                                        onChange={(e) => {
-                                            setFormData({ ...formData, birthDate: e.target.value });
-                                            if (errors.birthDate) setErrors({ ...errors, birthDate: '' });
-                                        }}
+                                        {...register('birthDate')}
                                         className={errors.birthDate ? 'border-red-500' : ''}
                                     />
-                                    {errors.birthDate && <p className="text-sm text-red-500">{errors.birthDate}</p>}
+                                    {errors.birthDate && <p className="text-sm text-red-500">{errors.birthDate.message}</p>}
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="character">Caractère</Label>
                                     <Select
-                                        value={formData.character.toString()}
-                                        onValueChange={(value) => setFormData({ ...formData, character: parseInt(value) })}
+                                        value={character}
+                                        onValueChange={(value) => setValue('character', value)}
                                     >
                                         <SelectTrigger id="character">
                                             <SelectValue />
@@ -224,16 +207,14 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                     <Label htmlFor="brand">Marque</Label>
                                     <Input
                                         id="brand"
-                                        value={formData.brand}
-                                        onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
+                                        {...register('brand')}
                                     />
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="nCarnet">N° Carnet</Label>
                                     <Input
                                         id="nCarnet"
-                                        value={formData.nCarnet}
-                                        onChange={(e) => setFormData({ ...formData, nCarnet: e.target.value })}
+                                        {...register('nCarnet')}
                                         placeholder="Numéro de carnet pour le livre de troupeau"
                                     />
                                 </div>
@@ -247,8 +228,8 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                 <div className="grid gap-2">
                                     <Label htmlFor="sourceType">Type d'origine</Label>
                                     <Select
-                                        value={formData.sourceType}
-                                        onValueChange={(value) => setFormData({ ...formData, sourceType: value as 'ACHETE' | 'NE_DANS_TROUPEAU' })}
+                                        value={sourceType}
+                                        onValueChange={(value) => setValue('sourceType', value as 'ACHETE' | 'NE_DANS_TROUPEAU')}
                                     >
                                         <SelectTrigger id="sourceType">
                                             <SelectValue />
@@ -260,14 +241,13 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                     </Select>
                                 </div>
 
-                                {formData.sourceType === 'ACHETE' && (
+                                {sourceType === 'ACHETE' && (
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border p-4 rounded-md bg-muted/20">
                                         <div className="grid gap-2">
                                             <Label htmlFor="purchaseSupplier">Fournisseur</Label>
                                             <Input
                                                 id="purchaseSupplier"
-                                                value={formData.purchaseSupplier}
-                                                onChange={(e) => setFormData({ ...formData, purchaseSupplier: e.target.value })}
+                                                {...register('purchaseSupplier')}
                                                 placeholder="Nom du fournisseur"
                                             />
                                         </div>
@@ -276,8 +256,7 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                             <Input
                                                 id="purchaseDate"
                                                 type="date"
-                                                value={formData.purchaseDate}
-                                                onChange={(e) => setFormData({ ...formData, purchaseDate: e.target.value })}
+                                                {...register('purchaseDate')}
                                             />
                                         </div>
                                         <div className="grid gap-2">
@@ -285,8 +264,7 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                             <Input
                                                 id="purchasePrice"
                                                 type="number"
-                                                value={formData.purchasePrice}
-                                                onChange={(e) => setFormData({ ...formData, purchasePrice: e.target.value })}
+                                                {...register('purchasePrice')}
                                                 placeholder="Ex: 500000"
                                             />
                                         </div>
@@ -295,8 +273,7 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                             <Input
                                                 id="purchaseWeight"
                                                 type="number"
-                                                value={formData.purchaseWeight}
-                                                onChange={(e) => setFormData({ ...formData, purchaseWeight: e.target.value })}
+                                                {...register('purchaseWeight')}
                                                 placeholder="Ex: 250"
                                             />
                                         </div>
@@ -304,8 +281,7 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                             <Label htmlFor="purchaseHealthStatus">État de santé à l'achat</Label>
                                             <Input
                                                 id="purchaseHealthStatus"
-                                                value={formData.purchaseHealthStatus}
-                                                onChange={(e) => setFormData({ ...formData, purchaseHealthStatus: e.target.value })}
+                                                {...register('purchaseHealthStatus')}
                                                 placeholder="Ex: En bonne santé"
                                             />
                                         </div>
@@ -313,8 +289,7 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                             <Label htmlFor="purchaseNotes">Notes d'achat</Label>
                                             <Textarea
                                                 id="purchaseNotes"
-                                                value={formData.purchaseNotes}
-                                                onChange={(e) => setFormData({ ...formData, purchaseNotes: e.target.value })}
+                                                {...register('purchaseNotes')}
                                                 placeholder="Notes supplémentaires sur l'achat"
                                                 rows={3}
                                             />
@@ -322,14 +297,13 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                     </div>
                                 )}
 
-                                {formData.sourceType === 'NE_DANS_TROUPEAU' && (
+                                {sourceType === 'NE_DANS_TROUPEAU' && (
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border p-4 rounded-md bg-muted/20">
                                         <div className="grid gap-2">
                                             <Label htmlFor="motherId">ID de la mère</Label>
                                             <Input
                                                 id="motherId"
-                                                value={formData.motherId}
-                                                onChange={(e) => setFormData({ ...formData, motherId: e.target.value })}
+                                                {...register('motherId')}
                                                 placeholder="UUID du bovin mère"
                                             />
                                         </div>
@@ -337,8 +311,7 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                                             <Label htmlFor="fatherId">ID du père</Label>
                                             <Input
                                                 id="fatherId"
-                                                value={formData.fatherId}
-                                                onChange={(e) => setFormData({ ...formData, fatherId: e.target.value })}
+                                                {...register('fatherId')}
                                                 placeholder="UUID du bovin père (Optionnel)"
                                             />
                                         </div>
@@ -348,7 +321,7 @@ export const AddCattleModal: React.FC<AddCattleModalProps> = ({ open, onOpenChan
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                        <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
                             Annuler
                         </Button>
                         <Button type="submit">Ajouter</Button>

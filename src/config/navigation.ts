@@ -2,7 +2,7 @@ import {
   Home, Beef, User, Settings, IdCard, ShieldCheck, ClipboardList,
   ArrowRightLeft, Stethoscope, Pill, Calendar, Activity, Tag, Flag,
   Brain, Book, Mail, ShoppingCart, Truck, Crown, Folder, Heart,
-  FileText, ShoppingBag, Bookmark, LucideIcon
+  FileText, ShoppingBag, Bookmark, Upload, LucideIcon
 } from 'lucide-react';
 import { UserRole, USER_ROLES } from '@/constants/roles';
 
@@ -75,6 +75,7 @@ export const ADMIN_NAVIGATION_GROUPS: NavGroup[] = [
     label: 'Administration',
     icon: Settings,
     items: [
+      { title: 'Import initial', url: '/herdbook/initial-import', icon: Upload, roles: [USER_ROLES.OWNER_ADMIN] },
       { title: 'Livres de troupeau', url: '/admin/herd-books', icon: Book, roles: [USER_ROLES.OWNER_ADMIN] },
       { title: 'Invitations', url: '/admin/invitations', icon: Mail, roles: [USER_ROLES.SUPER_ADMIN, USER_ROLES.OWNER_ADMIN] },
       { title: 'Propriétaires', url: '/admin/owners', icon: Crown, roles: [USER_ROLES.SUPER_ADMIN] },

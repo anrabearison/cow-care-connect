@@ -99,8 +99,8 @@ const UsersDetailPage = () => {
             <div>
               <label className="text-sm font-medium text-muted-foreground">Propriétaire</label>
               <p className="text-lg">{user.data.owner.name}</p>
-              {user.data.owner.contactInfo && (
-                <p className="text-sm text-muted-foreground">{user.data.owner.contactInfo}</p>
+              {user.data.owner.phone && (
+                <p className="text-sm text-muted-foreground">{user.data.owner.phone}</p>
               )}
               {user.data.owner.address && (
                 <p className="text-sm text-muted-foreground">{user.data.owner.address}</p>

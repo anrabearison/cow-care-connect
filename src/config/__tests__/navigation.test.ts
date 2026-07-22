@@ -86,7 +86,7 @@ describe('Navigation Configuration', () => {
       const filtered = filterNavGroups(ADMIN_NAVIGATION_GROUPS, USER_ROLES.SUPER_ADMIN);
       const herdGroup = filtered.find(g => g.label === 'Gestion du troupeau');
       expect(herdGroup).toBeUndefined();
-      
+
       const medicalGroup = filtered.find(g => g.label === 'Médical');
       expect(medicalGroup).toBeUndefined();
     });
@@ -115,7 +115,7 @@ describe('Navigation Configuration', () => {
       const personnelGroup = filtered.find(g => g.label === 'Personnel');
       expect(personnelGroup).toBeDefined();
       expect(personnelGroup!.items.map(i => i.title)).toContain('Utilisateurs');
-      
+
       const adminGroup = filtered.find(g => g.label === 'Administration');
       expect(adminGroup).toBeDefined();
       expect(adminGroup!.items.map(i => i.title)).toContain('Invitations');
@@ -134,7 +134,7 @@ describe('Navigation Configuration', () => {
       expect(herdGroup).toBeDefined();
       expect(herdGroup!.items.map(i => i.title)).toContain('Bovins');
       expect(herdGroup!.items.map(i => i.title)).toContain('Inscriptions bovins');
-      
+
       const medicalGroup = filtered.find(g => g.label === 'Médical');
       expect(medicalGroup).toBeDefined();
       expect(medicalGroup!.items.map(i => i.title)).toContain('Traitements');
@@ -203,10 +203,11 @@ describe('Navigation Configuration', () => {
       expect(filterNavItems(ADMIN_STANDALONE_ITEMS, USER_ROLES.OWNER_USER).map(i => i.title)).not.toContain('Tableau de bord');
     });
 
-    it('Administration group should still contain Livres de troupeau, Invitations and Propriétaires', () => {
+    it('Administration group should contain Import initial, Livres de troupeau, Invitations and Propriétaires', () => {
       const adminGroup = ADMIN_NAVIGATION_GROUPS.find(g => g.label === 'Administration');
       expect(adminGroup).toBeDefined();
       expect(adminGroup!.items.map(i => i.title)).toEqual([
+        'Import initial',
         'Livres de troupeau',
         'Invitations',
         'Propriétaires',

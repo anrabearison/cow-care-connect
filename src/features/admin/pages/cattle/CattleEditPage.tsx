@@ -7,6 +7,7 @@ import { useCattleById, useUpdateCattle } from '@/features/cattle/hooks';
 import { Cattle } from '@/features/cattle/types';
 import { useCattleReferenceData } from '../../hooks/useCattleReferenceData';
 import CattleForm, { CattleFormState } from './CattleForm';
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 
 const CattleEditPage = () => {
   const navigate = useNavigate();
@@ -15,6 +16,8 @@ const CattleEditPage = () => {
   const { cattle, loading, error } = useCattleById(id || '');
   const { characters, isLoading: isReferencesLoading, isError, errors, refetch } = useCattleReferenceData();
   const updateCattleMutation = useUpdateCattle();
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<CattleFormState | null>(null);
   const [formData, setFormData] = useState<CattleFormState>({
     name: '',
     nickname: '',
@@ -72,32 +75,40 @@ const CattleEditPage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!cattle) return;
+    setPendingData(formData);
+    setIsConfirmDialogOpen(true);
+  };
+
+  const handleConfirmUpdate = () => {
+    if (!pendingData || !cattle) return;
 
     const payload: Partial<Cattle> = {
-      name: formData.name,
-      nickname: formData.nickname || undefined,
-      gender: formData.gender as 'M' | 'F',
-      birthDate: formData.birthDate,
-      character: formData.characterId ? { id: formData.characterId, name: characters.find((char) => char.id === formData.characterId)?.name || 'Docile' } : undefined,
-      brand: formData.brand || undefined,
-      distinctiveSign: formData.distinctiveSign || undefined,
-      nCarnet: formData.nCarnet || undefined,
-      motherId: formData.sourceType === 'NE_DANS_TROUPEAU' && formData.motherId ? formData.motherId : undefined,
-      fatherId: formData.sourceType === 'NE_DANS_TROUPEAU' && formData.fatherId ? formData.fatherId : undefined,
+      name: pendingData.name,
+      nickname: pendingData.nickname || undefined,
+      gender: pendingData.gender as 'M' | 'F',
+      birthDate: pendingData.birthDate,
+      character: pendingData.characterId ? { id: pendingData.characterId, name: characters.find((char) => char.id === pendingData.characterId)?.name || 'Docile' } : undefined,
+      brand: pendingData.brand || undefined,
+      distinctiveSign: pendingData.distinctiveSign || undefined,
+      nCarnet: pendingData.nCarnet || undefined,
+      motherId: pendingData.sourceType === 'NE_DANS_TROUPEAU' && pendingData.motherId ? pendingData.motherId : undefined,
+      fatherId: pendingData.sourceType === 'NE_DANS_TROUPEAU' && pendingData.fatherId ? pendingData.fatherId : undefined,
       source: {
-        type: formData.sourceType,
-        supplier: formData.sourceType === 'ACHETE' ? formData.purchaseSupplier : undefined,
-        purchaseDate: formData.sourceType === 'ACHETE' && formData.purchaseDate ? formData.purchaseDate : undefined,
-        purchasePrice: formData.sourceType === 'ACHETE' && formData.purchasePrice ? parseFloat(formData.purchasePrice) : undefined,
-        purchaseWeight: formData.sourceType === 'ACHETE' && formData.purchaseWeight ? parseFloat(formData.purchaseWeight) : undefined,
-        purchaseHealthStatus: formData.sourceType === 'ACHETE' ? formData.purchaseHealthStatus : undefined,
-        purchaseNotes: formData.sourceType === 'ACHETE' ? formData.purchaseNotes : undefined,
+        type: pendingData.sourceType,
+        supplier: pendingData.sourceType === 'ACHETE' ? pendingData.purchaseSupplier : undefined,
+        purchaseDate: pendingData.sourceType === 'ACHETE' && pendingData.purchaseDate ? pendingData.purchaseDate : undefined,
+        purchasePrice: pendingData.sourceType === 'ACHETE' && pendingData.purchasePrice ? parseFloat(pendingData.purchasePrice) : undefined,
+        purchaseWeight: pendingData.sourceType === 'ACHETE' && pendingData.purchaseWeight ? parseFloat(pendingData.purchaseWeight) : undefined,
+        purchaseHealthStatus: pendingData.sourceType === 'ACHETE' ? pendingData.purchaseHealthStatus : undefined,
+        purchaseNotes: pendingData.sourceType === 'ACHETE' ? pendingData.purchaseNotes : undefined,
       },
     };
 
     updateCattleMutation.mutate({ id: cattle.id, data: payload }, {
       onSuccess: () => navigate('/admin/cattle'),
     });
+    setIsConfirmDialogOpen(false);
+    setPendingData(null);
   };
 
   const handleCancel = () => {
@@ -148,6 +159,17 @@ const CattleEditPage = () => {
         onSubmit={handleSubmit}
         onCancel={handleCancel}
         submitLabel={updateCattleMutation.isPending ? 'Enregistrement...' : 'Enregistrer'}
+      />
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Modifier le bovin"
+        description={`Êtes-vous sûr de vouloir modifier le bovin "${pendingData?.name}" ?`}
+        onConfirm={handleConfirmUpdate}
+        confirmText="Modifier"
+        cancelText="Annuler"
+        loading={updateCattleMutation.isPending}
       />
     </div>
   );

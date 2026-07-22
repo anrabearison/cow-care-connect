@@ -10,12 +10,15 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import { queryKeys } from "@/lib/queryKeys";
 import HerdBookCattleForm from "./HerdBookCattleForm";
 import { useHerdBookCattleReferenceData } from "../../hooks/useHerdBookCattleReferenceData";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 const HerdBookCattleEditPage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<UpdateHerdBookCattleData | null>(null);
   
   const { herdBooks, categories, statuses, isLoading: isLoadingRef, isError: isErrorRef, errors, refetch } = useHerdBookCattleReferenceData();
   
@@ -126,7 +129,15 @@ const HerdBookCattleEditPage = () => {
       return;
     }
 
-    updateMutation.mutate({ id: id!, data: formData });
+    setPendingData(formData);
+    setIsConfirmDialogOpen(true);
+  };
+
+  const handleConfirmUpdate = () => {
+    if (!pendingData || !id) return;
+    updateMutation.mutate({ id: id!, data: pendingData });
+    setIsConfirmDialogOpen(false);
+    setPendingData(null);
   };
 
   const handleCancel = () => {
@@ -203,6 +214,17 @@ const HerdBookCattleEditPage = () => {
         onSubmit={handleSubmit}
         onCancel={handleCancel}
         isPending={updateMutation.isPending}
+      />
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Modifier l'inscription"
+        description="Êtes-vous sûr de vouloir modifier cette inscription dans le livre de troupeau ?"
+        onConfirm={handleConfirmUpdate}
+        confirmText="Modifier"
+        cancelText="Annuler"
+        loading={updateMutation.isPending}
       />
     </div>
   );

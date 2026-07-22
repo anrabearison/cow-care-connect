@@ -1,4 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
@@ -7,6 +10,27 @@ import { useCreateCattle } from '@/features/cattle/hooks';
 import { Cattle } from '@/features/cattle/types';
 import { useCattleReferenceData } from '../../hooks/useCattleReferenceData';
 import CattleForm, { CattleFormState } from './CattleForm';
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
+
+const cattleFormSchema = z.object({
+  name: z.string().min(1, 'Le nom est obligatoire'),
+  nickname: z.string(),
+  gender: z.string().min(1, 'Le sexe est obligatoire'),
+  birthDate: z.string().min(1, 'La date de naissance est obligatoire'),
+  characterId: z.string(),
+  brand: z.string(),
+  distinctiveSign: z.string(),
+  nCarnet: z.string(),
+  sourceType: z.enum(['ACHETE', 'NE_DANS_TROUPEAU']),
+  motherId: z.string(),
+  fatherId: z.string(),
+  purchaseSupplier: z.string(),
+  purchaseDate: z.string(),
+  purchasePrice: z.string(),
+  purchaseWeight: z.string(),
+  purchaseHealthStatus: z.string(),
+  purchaseNotes: z.string(),
+});
 
 const initialFormState: CattleFormState = {
   name: '',
@@ -33,8 +57,36 @@ const CattleCreatePage = () => {
   const { toast } = useToast();
   const createCattleMutation = useCreateCattle();
   const { characters, herdBooks, isLoading, isError, errors, refetch } = useCattleReferenceData();
-  const [formData, setFormData] = useState<CattleFormState>(initialFormState);
-  const [errorsState, setErrorsState] = useState<Record<string, string>>({});
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<CattleFormState | null>(null);
+
+  // CattleForm is a controlled component shared with CattleEditPage
+  // (formData/setFormData/errors as a plain Record<string,string>).
+  // We drive it here from react-hook-form + zod without changing its
+  // contract, so CattleEditPage is unaffected.
+  const {
+    watch,
+    setValue,
+    handleSubmit,
+    formState: { errors: formErrors },
+  } = useForm<CattleFormState>({
+    resolver: zodResolver(cattleFormSchema),
+    defaultValues: initialFormState,
+  });
+
+  const formData = watch();
+  const setFormData = (data: CattleFormState) => {
+    (Object.keys(data) as (keyof CattleFormState)[]).forEach((key) => {
+      if (data[key] !== formData[key]) {
+        setValue(key, data[key] as never, { shouldValidate: false });
+      }
+    });
+  };
+  const errorsState: Record<string, string> = Object.fromEntries(
+    Object.entries(formErrors)
+      .filter(([, value]) => value?.message)
+      .map(([key, value]) => [key, value!.message as string])
+  );
 
   useEffect(() => {
     if (isError) {
@@ -51,48 +103,50 @@ const CattleCreatePage = () => {
 
   const defaultHerdBookId = useMemo(() => herdBooks[0]?.id || '', [herdBooks]);
 
-  const validateForm = () => {
-    const nextErrors: Record<string, string> = {};
-    if (!formData.name) nextErrors.name = 'Le nom est obligatoire';
-    if (!formData.gender) nextErrors.gender = 'Le sexe est obligatoire';
-    if (!formData.birthDate) nextErrors.birthDate = 'La date de naissance est obligatoire';
-    setErrorsState(nextErrors);
-    return Object.keys(nextErrors).length === 0;
+  const onValid = (data: CattleFormState) => {
+    setPendingData(data);
+    setIsConfirmDialogOpen(true);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    handleSubmit(onValid)(e);
+  };
+
+  const handleConfirmCreate = () => {
+    if (!pendingData) return;
 
     const cattleData: Omit<Cattle, 'id' | 'events' | 'treatments'> = {
-      name: formData.name,
-      nickname: formData.nickname || undefined,
-      gender: formData.gender as 'M' | 'F',
-      birthDate: formData.birthDate,
-      character: formData.characterId
-        ? { id: formData.characterId, name: characters.find((char) => char.id === formData.characterId)?.name || 'Docile' }
+      name: pendingData.name,
+      nickname: pendingData.nickname || undefined,
+      gender: pendingData.gender as 'M' | 'F',
+      birthDate: pendingData.birthDate,
+      character: pendingData.characterId
+        ? { id: pendingData.characterId, name: characters.find((char) => char.id === pendingData.characterId)?.name || 'Docile' }
         : undefined,
-      brand: formData.brand || undefined,
-      distinctiveSign: formData.distinctiveSign || undefined,
+      brand: pendingData.brand || undefined,
+      distinctiveSign: pendingData.distinctiveSign || undefined,
       photo: undefined,
-      motherId: formData.sourceType === 'NE_DANS_TROUPEAU' && formData.motherId ? formData.motherId : undefined,
-      fatherId: formData.sourceType === 'NE_DANS_TROUPEAU' && formData.fatherId ? formData.fatherId : undefined,
+      motherId: pendingData.sourceType === 'NE_DANS_TROUPEAU' && pendingData.motherId ? pendingData.motherId : undefined,
+      fatherId: pendingData.sourceType === 'NE_DANS_TROUPEAU' && pendingData.fatherId ? pendingData.fatherId : undefined,
       source: {
-        type: formData.sourceType,
-        supplier: formData.sourceType === 'ACHETE' ? formData.purchaseSupplier : undefined,
-        purchaseDate: formData.sourceType === 'ACHETE' && formData.purchaseDate ? formData.purchaseDate : undefined,
-        purchasePrice: formData.sourceType === 'ACHETE' && formData.purchasePrice ? parseFloat(formData.purchasePrice) : undefined,
-        purchaseWeight: formData.sourceType === 'ACHETE' && formData.purchaseWeight ? parseFloat(formData.purchaseWeight) : undefined,
-        purchaseHealthStatus: formData.sourceType === 'ACHETE' ? formData.purchaseHealthStatus : undefined,
-        purchaseNotes: formData.sourceType === 'ACHETE' ? formData.purchaseNotes : undefined,
+        type: pendingData.sourceType,
+        supplier: pendingData.sourceType === 'ACHETE' ? pendingData.purchaseSupplier : undefined,
+        purchaseDate: pendingData.sourceType === 'ACHETE' && pendingData.purchaseDate ? pendingData.purchaseDate : undefined,
+        purchasePrice: pendingData.sourceType === 'ACHETE' && pendingData.purchasePrice ? parseFloat(pendingData.purchasePrice) : undefined,
+        purchaseWeight: pendingData.sourceType === 'ACHETE' && pendingData.purchaseWeight ? parseFloat(pendingData.purchaseWeight) : undefined,
+        purchaseHealthStatus: pendingData.sourceType === 'ACHETE' ? pendingData.purchaseHealthStatus : undefined,
+        purchaseNotes: pendingData.sourceType === 'ACHETE' ? pendingData.purchaseNotes : undefined,
       },
     };
 
     createCattleMutation.mutate({
       cattle: cattleData,
       herdBookId: defaultHerdBookId || undefined,
-      nCarnet: formData.nCarnet || undefined,
+      nCarnet: pendingData.nCarnet || undefined,
     });
+    setIsConfirmDialogOpen(false);
+    setPendingData(null);
   };
 
   const handleCancel = () => {
@@ -129,10 +183,21 @@ const CattleCreatePage = () => {
         setFormData={setFormData}
         characters={characters}
         isPending={createCattleMutation.isPending}
-        onSubmit={handleSubmit}
+        onSubmit={handleFormSubmit}
         onCancel={handleCancel}
         errors={errorsState}
         submitLabel={createCattleMutation.isPending ? 'Création...' : 'Créer'}
+      />
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Créer un bovin"
+        description={`Êtes-vous sûr de vouloir créer le bovin "${pendingData?.name}" ?`}
+        onConfirm={handleConfirmCreate}
+        confirmText="Créer"
+        cancelText="Annuler"
+        loading={createCattleMutation.isPending}
       />
     </div>
   );

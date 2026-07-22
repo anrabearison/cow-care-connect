@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useCreateCharacter } from "../../hooks/charactersHooks";
 import { CreateCharacterData } from "@/features/admin/services/charactersService";
 import { ArrowLeft } from "lucide-react";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 const initialFormState: CreateCharacterData = {
   name: "",
@@ -19,6 +20,7 @@ const CharactersCreatePage = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState<CreateCharacterData>(initialFormState);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
   const createCharacterMutation = useCreateCharacter();
 
@@ -34,13 +36,27 @@ const CharactersCreatePage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    setIsConfirmDialogOpen(true);
+  };
 
-    createCharacterMutation.mutate(formData);
-    toast({
-      title: "Succès",
-      description: "Caractère créé avec succès",
+  const handleConfirmCreate = () => {
+    createCharacterMutation.mutate(formData, {
+      onSuccess: () => {
+        toast({
+          title: "Succès",
+          description: "Caractère créé avec succès",
+        });
+        navigate("/admin/characters");
+      },
+      onError: (error) => {
+        toast({
+          title: "Erreur",
+          description: error instanceof Error ? error.message : "Erreur lors de la création",
+          variant: "destructive",
+        });
+      },
     });
-    navigate("/admin/characters");
+    setIsConfirmDialogOpen(false);
   };
 
   const handleCancel = () => {
@@ -98,6 +114,17 @@ const CharactersCreatePage = () => {
           </Button>
         </div>
       </form>
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Créer un caractère"
+        description={`Êtes-vous sûr de vouloir créer le caractère "${formData.name}" ?`}
+        onConfirm={handleConfirmCreate}
+        confirmText="Créer"
+        cancelText="Annuler"
+        loading={createCharacterMutation.isPending}
+      />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback, ReactNode } from 'react';
 import { HerdBook } from '@/types/herdbook';
 import { useHerdBooks } from '@/features/herdbook/hooks';
 import { useAuth } from '@/features/auth/AuthContext';
@@ -10,6 +10,7 @@ interface HerdBookSelectionContextType {
     setSelectedHerdBookId: (id: string) => void;
     isLoading: boolean;
     error: string | null;
+    hasCompletedInitialImport: boolean;
 }
 
 const HerdBookSelectionContext = createContext<HerdBookSelectionContextType | undefined>(undefined);
@@ -50,7 +51,7 @@ export const HerdBookSelectionProvider: React.FC<{ children: ReactNode }> = ({ c
     }, [effectiveOwnerId]);
 
     // Fonction pour changer le HerdBook sélectionné
-    const setSelectedHerdBookId = (id: string) => {
+    const setSelectedHerdBookId = useCallback((id: string) => {
         setSelectedHerdBookIdState(id);
 
         // Sauvegarder dans localStorage
@@ -58,19 +59,35 @@ export const HerdBookSelectionProvider: React.FC<{ children: ReactNode }> = ({ c
             const storageKey = `selectedHerdBook_${effectiveOwnerId}`;
             localStorage.setItem(storageKey, id);
         }
-    };
+    }, [effectiveOwnerId]);
 
     // Trouver le HerdBook sélectionné
-    const selectedHerdBook = availableHerdBooks.find(hb => hb.id === selectedHerdBookId) || null;
+    const selectedHerdBook = useMemo(
+        () => availableHerdBooks.find(hb => hb.id === selectedHerdBookId) || null,
+        [availableHerdBooks, selectedHerdBookId]
+    );
 
-    const value: HerdBookSelectionContextType = {
+    // Déterminer si l'import initial a été complété
+    // Utiliser le flag du backend si disponible, sinon fallback sur le nombre de HerdBooks
+    const hasCompletedInitialImport = user?.owner?.hasCompletedInitialImport || availableHerdBooks.length > 0;
+
+    const value: HerdBookSelectionContextType = useMemo(() => ({
         selectedHerdBookId,
         selectedHerdBook,
         availableHerdBooks,
         setSelectedHerdBookId,
         isLoading,
         error: error ? String(error) : null,
-    };
+        hasCompletedInitialImport,
+    }), [
+        selectedHerdBookId,
+        selectedHerdBook,
+        availableHerdBooks,
+        setSelectedHerdBookId,
+        isLoading,
+        error,
+        hasCompletedInitialImport,
+    ]);
 
     return (
         <HerdBookSelectionContext.Provider value={value}>

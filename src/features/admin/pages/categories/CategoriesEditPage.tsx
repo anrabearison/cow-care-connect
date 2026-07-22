@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useCategory, useUpdateCategory } from "../../hooks/categoriesHooks";
 import { UpdateCategoryData } from "@/features/admin/services/categoriesService";
 import { ArrowLeft, Loader2 } from "lucide-react";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 const initialFormState: UpdateCategoryData = {
   name: "",
@@ -16,7 +17,9 @@ const CategoriesEditPage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
-  
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<UpdateCategoryData | null>(null);
+
   const { data: category, isLoading, error } = useCategory(id || "");
   const updateCategoryMutation = useUpdateCategory();
 
@@ -44,13 +47,30 @@ const CategoriesEditPage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate() || !id) return;
+    setPendingData(formData);
+    setIsConfirmDialogOpen(true);
+  };
 
-    updateCategoryMutation.mutate({ id, data: formData });
-    toast({
-      title: "Succès",
-      description: "Catégorie mise à jour avec succès",
+  const handleConfirmUpdate = () => {
+    if (!pendingData || !id) return;
+    updateCategoryMutation.mutate({ id, data: pendingData }, {
+      onSuccess: () => {
+        toast({
+          title: "Succès",
+          description: "Catégorie mise à jour avec succès",
+        });
+        navigate("/admin/categories");
+      },
+      onError: (error) => {
+        toast({
+          title: "Erreur",
+          description: error instanceof Error ? error.message : "Erreur lors de la mise à jour",
+          variant: "destructive",
+        });
+      },
     });
-    navigate("/admin/categories");
+    setIsConfirmDialogOpen(false);
+    setPendingData(null);
   };
 
   const handleCancel = () => {
@@ -116,6 +136,17 @@ const CategoriesEditPage = () => {
           </Button>
         </div>
       </form>
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Modifier la catégorie"
+        description={`Êtes-vous sûr de vouloir modifier la catégorie "${pendingData?.name}" ?`}
+        onConfirm={handleConfirmUpdate}
+        confirmText="Modifier"
+        cancelText="Annuler"
+        loading={updateCategoryMutation.isPending}
+      />
     </div>
   );
 };

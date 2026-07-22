@@ -10,6 +10,7 @@ import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useOwnersReferenceData } from '../../hooks/useOwnersReferenceData';
 import { USER_ROLES, getRoleConstraints, type UserRole } from '@/constants/roles';
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 
 interface FormState {
   name: string;
@@ -36,6 +37,8 @@ const UsersEditPage = () => {
   const { data: user, isLoading, error } = useUser(id!);
   const { owners, isLoading: isLoadingOwners, isError: isErrorOwners } = useOwnersReferenceData();
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<FormState | null>(null);
 
   // Get role-based constraints
   const roleConstraints = getRoleConstraints(currentUser?.role as UserRole, currentUser?.ownerId);
@@ -113,23 +116,40 @@ const UsersEditPage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate() || !id) return;
+    setPendingData(formData);
+    setIsConfirmDialogOpen(true);
+  };
 
+  const handleConfirmUpdate = () => {
+    if (!pendingData || !id) return;
     // Use role constraints to determine effective values
-    const effectiveRole = roleConstraints.forcedRole || formData.role;
-    const effectiveOwnerId = roleConstraints.forcedOwnerId || (formData.ownerId || undefined);
+    const effectiveRole = roleConstraints.forcedRole || pendingData.role;
+    const effectiveOwnerId = roleConstraints.forcedOwnerId || (pendingData.ownerId || undefined);
 
     updateUserMutation.mutate({
       id,
       data: {
-        name: formData.name,
-        email: formData.email,
+        name: pendingData.name,
+        email: pendingData.email,
         role: effectiveRole,
         ownerId: effectiveOwnerId,
-        isActive: formData.isActive,
+        isActive: pendingData.isActive,
+      },
+    }, {
+      onSuccess: () => {
+        toast({ title: 'Succès', description: 'Utilisateur mis à jour avec succès' });
+        navigate(`/admin/users/${id}`);
+      },
+      onError: (error) => {
+        toast({ 
+          title: 'Erreur', 
+          description: error instanceof Error ? error.message : 'Erreur lors de la mise à jour',
+          variant: 'destructive' 
+        });
       },
     });
-    toast({ title: 'Succès', description: 'Utilisateur mis à jour avec succès' });
-    navigate(`/admin/users/${id}`);
+    setIsConfirmDialogOpen(false);
+    setPendingData(null);
   };
 
   return (
@@ -224,6 +244,17 @@ const UsersEditPage = () => {
           <Button type="submit">Mettre à jour</Button>
         </div>
       </form>
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Modifier l'utilisateur"
+        description={`Êtes-vous sûr de vouloir modifier l'utilisateur "${pendingData?.name}" (${pendingData?.email}) ?`}
+        onConfirm={handleConfirmUpdate}
+        confirmText="Modifier"
+        cancelText="Annuler"
+        loading={updateUserMutation.isPending}
+      />
     </div>
   );
 };

@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { useCreateTreatment } from '../../hooks/treatmentsHooks';
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 
 interface FormState {
   cattleId: string;
@@ -41,6 +42,8 @@ const TreatmentsCreatePage = () => {
   const createTreatmentMutation = useCreateTreatment();
   const [formData, setFormData] = useState<FormState>(initialFormState);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<FormState | null>(null);
 
   const validate = () => {
     const nextErrors: Record<string, string> = {};
@@ -56,24 +59,41 @@ const TreatmentsCreatePage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    setPendingData(formData);
+    setIsConfirmDialogOpen(true);
+  };
 
+  const handleConfirmCreate = () => {
+    if (!pendingData) return;
     createTreatmentMutation.mutate({
-      cattleId: formData.cattleId,
-      type: formData.type,
-      date: formData.date,
-      product: formData.product,
+      cattleId: pendingData.cattleId,
+      type: pendingData.type,
+      date: pendingData.date,
+      product: pendingData.product,
       dosage: {
-        quantity: Number(formData.dosageQuantity) || 0,
-        unit: formData.dosageUnit,
-        animalWeight: formData.dosageAnimalWeight ? Number(formData.dosageAnimalWeight) : undefined,
-        notes: formData.dosageNotes || undefined,
+        quantity: Number(pendingData.dosageQuantity) || 0,
+        unit: pendingData.dosageUnit,
+        animalWeight: pendingData.dosageAnimalWeight ? Number(pendingData.dosageAnimalWeight) : undefined,
+        notes: pendingData.dosageNotes || undefined,
       },
-      administrationRoute: formData.administrationRoute || undefined,
-      veterinarian: formData.veterinarian,
-      notes: formData.notes || undefined,
+      administrationRoute: pendingData.administrationRoute || undefined,
+      veterinarian: pendingData.veterinarian,
+      notes: pendingData.notes || undefined,
+    }, {
+      onSuccess: () => {
+        toast({ title: 'Succès', description: 'Traitement créé avec succès' });
+        navigate('/admin/treatments');
+      },
+      onError: (error) => {
+        toast({ 
+          title: 'Erreur', 
+          description: error instanceof Error ? error.message : 'Erreur lors de la création',
+          variant: 'destructive' 
+        });
+      },
     });
-    toast({ title: 'Succès', description: 'Traitement créé avec succès' });
-    navigate('/admin/treatments');
+    setIsConfirmDialogOpen(false);
+    setPendingData(null);
   };
 
   return (
@@ -141,6 +161,17 @@ const TreatmentsCreatePage = () => {
           <Button type="submit">Créer</Button>
         </div>
       </form>
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Créer un traitement"
+        description={`Êtes-vous sûr de vouloir créer le traitement "${pendingData?.product}" pour le ${pendingData?.date} ?`}
+        onConfirm={handleConfirmCreate}
+        confirmText="Créer"
+        cancelText="Annuler"
+        loading={createTreatmentMutation.isPending}
+      />
     </div>
   );
 };

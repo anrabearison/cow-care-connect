@@ -68,19 +68,35 @@ describe('VeterinariansEditPage', () => {
       </TestWrapper>
     );
 
+    // Click the submit button to open the confirmation dialog
     fireEvent.click(screen.getByRole('button', { name: /^Mettre à jour$/i }));
 
+    // Wait for the confirmation dialog to appear (check for the description text)
     await waitFor(() => {
-      expect(mockMutate).toHaveBeenCalledWith({
-        id: '1',
-        data: {
-          name: 'Dr. Smith',
-          phone: '1234567890',
-          email: 'dr@example.com',
-          address: '123 Main St',
-          specialty: 'General',
+      expect(screen.getByText(/Êtes-vous sûr de vouloir modifier le vétérinaire/i)).toBeInTheDocument();
+    });
+
+    // Click the confirm button in the dialog
+    fireEvent.click(screen.getByRole('button', { name: /^Modifier$/i }));
+
+    // Wait for the mutation to be called
+    await waitFor(() => {
+      expect(mockMutate).toHaveBeenCalledWith(
+        {
+          id: '1',
+          data: {
+            name: 'Dr. Smith',
+            phone: '1234567890',
+            email: 'dr@example.com',
+            address: '123 Main St',
+            specialty: 'General',
+          },
         },
-      });
+        expect.objectContaining({
+          onSuccess: expect.any(Function),
+          onError: expect.any(Function),
+        })
+      );
     });
   });
 

@@ -11,6 +11,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React from 'react';
 import HomePage from '../HomePage';
 
 // ── Mocks ────────────────────────────────────────────────────────────────
@@ -19,6 +20,17 @@ import HomePage from '../HomePage';
 vi.mock('@/features/auth/AuthContext', () => ({
   useAuth: () => ({
     user: { name: 'Test User', role: 'OWNER_ADMIN', ownerId: 'owner-1' },
+  }),
+}));
+
+// Mock HerdBookSelectionContext
+vi.mock('@/contexts/HerdBookSelectionContext', () => ({
+  HerdBookSelectionProvider: ({ children }: {children: React.ReactNode}) => children,
+  useHerdBookSelection: () => ({
+    hasCompletedInitialImport: true,
+    availableHerdBooks: [],
+    selectedHerdBook: null,
+    setSelectedHerdBook: vi.fn(),
   }),
 }));
 
@@ -49,11 +61,15 @@ function renderHomePage() {
     defaultOptions: { queries: { retry: false } },
   });
 
+  const HerdBookSelectionProvider = ({ children }: {children: React.ReactNode}) => children;
+
   return render(
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter>
-        <HomePage />
-      </MemoryRouter>
+      <HerdBookSelectionProvider>
+        <MemoryRouter>
+          <HomePage />
+        </MemoryRouter>
+      </HerdBookSelectionProvider>
     </QueryClientProvider>,
   );
 }

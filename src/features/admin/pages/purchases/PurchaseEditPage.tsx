@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -6,11 +6,14 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import PurchaseForm, { PurchaseFormValues } from "../../components/PurchaseForm";
 import { usePurchase, useUpdatePurchase } from "../../hooks/purchasesHooks";
 import { UpdatePurchaseData } from "../services/purchasesService";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 const PurchaseEditPage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { toast: uiToast } = useToast();
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<UpdatePurchaseData | null>(null);
 
   const { data: purchase, isLoading, error } = usePurchase(id!);
 
@@ -57,7 +60,15 @@ const PurchaseEditPage = () => {
         healthStatus: item.healthStatus || undefined,
       })),
     };
-    updateMutation.mutate({ id: id!, data: updateData });
+    setPendingData(updateData);
+    setIsConfirmDialogOpen(true);
+  };
+
+  const handleConfirmUpdate = () => {
+    if (!pendingData || !id) return;
+    updateMutation.mutate({ id, data: pendingData });
+    setIsConfirmDialogOpen(false);
+    setPendingData(null);
   };
 
   if (isLoading) {
@@ -107,6 +118,17 @@ const PurchaseEditPage = () => {
           isPending={updateMutation.isPending}
         />
       </div>
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Modifier l'achat"
+        description={`Êtes-vous sûr de vouloir modifier l'achat du ${pendingData?.purchaseDate} ?`}
+        onConfirm={handleConfirmUpdate}
+        confirmText="Modifier"
+        cancelText="Annuler"
+        loading={updateMutation.isPending}
+      />
     </div>
   );
 };

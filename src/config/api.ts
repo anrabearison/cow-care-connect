@@ -36,6 +36,11 @@ export const API_ENDPOINTS = {
   HERD_BOOKS: {
     ...HERD_BOOKS,
     CATTLE: (herdBookId: string | number) => `${HERD_BOOKS.BASE}/${herdBookId}/cattle`,
+    INITIAL_IMPORT: {
+      DRY_RUN: `${HERD_BOOKS.BASE}/initial-import/dry-run`,
+      CONFIRM: `${HERD_BOOKS.BASE}/initial-import/confirm`,
+      TEMPLATE: `${HERD_BOOKS.BASE}/initial-import/template`,
+    },
   },
   HERD_BOOK_CATTLE: {
     ...HERD_BOOK_CATTLE,

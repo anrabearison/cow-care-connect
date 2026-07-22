@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { useCreateEvent } from '../../hooks/eventsHooks';
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 
 interface FormState {
   cattleId: string;
@@ -31,6 +32,8 @@ const EventsCreatePage = () => {
   const createEventMutation = useCreateEvent();
   const [formData, setFormData] = useState<FormState>(initialFormState);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<FormState | null>(null);
 
   const validate = () => {
     const nextErrors: Record<string, string> = {};
@@ -43,17 +46,34 @@ const EventsCreatePage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    setPendingData(formData);
+    setIsConfirmDialogOpen(true);
+  };
 
+  const handleConfirmCreate = () => {
+    if (!pendingData) return;
     createEventMutation.mutate({
-      cattleId: formData.cattleId,
-      eventTypeId: formData.eventTypeId || undefined,
-      type: formData.type || undefined,
-      date: formData.date,
-      description: formData.description,
-      details: formData.details || undefined,
+      cattleId: pendingData.cattleId,
+      eventTypeId: pendingData.eventTypeId || undefined,
+      type: pendingData.type || undefined,
+      date: pendingData.date,
+      description: pendingData.description,
+      details: pendingData.details || undefined,
+    }, {
+      onSuccess: () => {
+        toast({ title: 'Succès', description: 'Événement créé avec succès' });
+        navigate('/admin/events');
+      },
+      onError: (error) => {
+        toast({ 
+          title: 'Erreur', 
+          description: error instanceof Error ? error.message : 'Erreur lors de la création',
+          variant: 'destructive' 
+        });
+      },
     });
-    toast({ title: 'Succès', description: 'Événement créé avec succès' });
-    navigate('/admin/events');
+    setIsConfirmDialogOpen(false);
+    setPendingData(null);
   };
 
   return (
@@ -98,6 +118,17 @@ const EventsCreatePage = () => {
           <Button type="submit">Créer</Button>
         </div>
       </form>
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Créer un événement"
+        description={`Êtes-vous sûr de vouloir créer l'événement pour le ${pendingData?.date} ?`}
+        onConfirm={handleConfirmCreate}
+        confirmText="Créer"
+        cancelText="Annuler"
+        loading={createEventMutation.isPending}
+      />
     </div>
   );
 };

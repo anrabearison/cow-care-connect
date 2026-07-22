@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { useSupplier, useUpdateSupplier } from '../../hooks/purchasesHooks';
 import { Loader2 } from 'lucide-react';
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 
 interface FormState {
   name: string;
@@ -31,6 +32,8 @@ const SuppliersEditPage = () => {
   const updateSupplierMutation = useUpdateSupplier();
   const { data: supplier, isLoading, error } = useSupplier(id!);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<FormState | null>(null);
 
   const initialData = useMemo(() => {
     if (!supplier || !supplier.data) return initialFormState;
@@ -75,19 +78,36 @@ const SuppliersEditPage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate() || !id) return;
+    setPendingData(formData);
+    setIsConfirmDialogOpen(true);
+  };
 
+  const handleConfirmUpdate = () => {
+    if (!pendingData || !id) return;
     updateSupplierMutation.mutate({
       id,
       data: {
-        name: formData.name,
-        contactInfo: formData.contactInfo || undefined,
-        phone: formData.phone || undefined,
-        email: formData.email || undefined,
-        address: formData.address || undefined,
+        name: pendingData.name,
+        contactInfo: pendingData.contactInfo || undefined,
+        phone: pendingData.phone || undefined,
+        email: pendingData.email || undefined,
+        address: pendingData.address || undefined,
+      },
+    }, {
+      onSuccess: () => {
+        toast({ title: 'Succès', description: 'Fournisseur mis à jour avec succès' });
+        navigate(`/admin/suppliers/${id}`);
+      },
+      onError: (error) => {
+        toast({ 
+          title: 'Erreur', 
+          description: error instanceof Error ? error.message : 'Erreur lors de la mise à jour',
+          variant: 'destructive' 
+        });
       },
     });
-    toast({ title: 'Succès', description: 'Fournisseur mis à jour avec succès' });
-    navigate(`/admin/suppliers/${id}`);
+    setIsConfirmDialogOpen(false);
+    setPendingData(null);
   };
 
   return (
@@ -127,6 +147,17 @@ const SuppliersEditPage = () => {
           <Button type="submit">Mettre à jour</Button>
         </div>
       </form>
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Modifier le fournisseur"
+        description={`Êtes-vous sûr de vouloir modifier le fournisseur "${pendingData?.name}" ?`}
+        onConfirm={handleConfirmUpdate}
+        confirmText="Modifier"
+        cancelText="Annuler"
+        loading={updateSupplierMutation.isPending}
+      />
     </div>
   );
 };

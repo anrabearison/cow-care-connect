@@ -1,15 +1,18 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, TrendingUp, Users, Activity } from 'lucide-react';
+import { Calendar, TrendingUp, Users, Activity, AlertCircle } from 'lucide-react';
 import { getTypeEvenementIcon, getTypeEvenementName } from '@/features/events/utils';
 import { useAuth } from '@/features/auth/AuthContext';
+import { useHerdBookSelection } from '@/contexts/HerdBookSelectionContext';
+import { isOwnerAdmin } from '@/constants/roles';
 import heroImage from '@/assets/hero-cattle.jpg';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRecentEvents } from '@/hooks/useRecentEvents';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { CARD_HOVER_CLASSES } from '@/constants/ui';
+import { useEffect } from 'react';
 
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString('fr-FR', {
@@ -21,8 +24,58 @@ const formatDate = (dateString: string) => {
 
 export default function HomePage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const { hasCompletedInitialImport, isLoading: herdBookLoading } = useHerdBookSelection();
   const { data: recentEvents, isLoading } = useRecentEvents();
   const { data: stats, isLoading: statsLoading } = useDashboardStats();
+
+  // Rediriger vers l'import initial si pas encore complété ET si l'utilisateur a le rôle OWNER_ADMIN
+  useEffect(() => {
+    if (!herdBookLoading && !hasCompletedInitialImport && isOwnerAdmin(user?.role)) {
+      navigate('/herdbook/initial-import', { replace: true });
+    }
+  }, [hasCompletedInitialImport, herdBookLoading, user?.role, navigate]);
+
+  // Afficher un loader pendant la vérification
+  if (herdBookLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-earth">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">Vérification de l'import initial...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Si l'import initial n'est pas complété et l'utilisateur n'a pas OWNER_ADMIN, afficher un message
+  if (!hasCompletedInitialImport && !isOwnerAdmin(user?.role)) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-earth">
+        <Card className="max-w-md mx-4">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-amber-500" />
+              HerdBook non initialisé
+            </CardTitle>
+            <CardDescription>
+              Votre propriétaire n'a pas encore initialisé le HerdBook. Veuillez contacter votre administrateur.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => window.location.reload()} variant="outline" className="w-full">
+              Actualiser
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Si l'import initial n'est pas complété mais l'utilisateur a OWNER_ADMIN, ne rien afficher (la redirection se fera)
+  if (!hasCompletedInitialImport) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-earth">

@@ -116,10 +116,6 @@ const OwnerDetailPage = () => {
               <Label className="text-muted-foreground">Ville</Label>
               <p className="font-medium mt-1">{owner.city || "-"}</p>
             </div>
-            <div>
-              <Label className="text-muted-foreground">Contact Info</Label>
-              <p className="font-medium mt-1">{owner.contactInfo || "-"}</p>
-            </div>
             <div className="md:col-span-2">
               <Label className="text-muted-foreground">Adresse</Label>
               <p className="font-medium mt-1 whitespace-pre-wrap">{owner.address || "-"}</p>

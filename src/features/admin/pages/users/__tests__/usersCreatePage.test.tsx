@@ -68,6 +68,61 @@ describe('UsersCreatePage', () => {
     });
   });
 
+  it('submits the form with valid data', async () => {
+    vi.mocked(useAuth).mockReturnValue({ 
+      user: { id: '1', name: 'Admin', email: 'admin@example.com', role: 'SUPER_ADMIN', ownerId: 'owner-1' },
+      login: vi.fn(),
+      loginWithGoogle: vi.fn(),
+      logout: vi.fn(),
+      isLoading: false,
+    });
+    
+    render(
+      <TestWrapper>
+        <UsersCreatePage />
+      </TestWrapper>
+    );
+
+    // Fill required fields
+    fireEvent.change(screen.getByLabelText('Nom *'), { target: { value: 'Test User' } });
+    fireEvent.change(screen.getByLabelText('Email *'), { target: { value: 'test@example.com' } });
+    fireEvent.change(screen.getByLabelText('Mot de passe *'), { target: { value: 'password123' } });
+
+    // Select owner from dropdown by clicking the combobox and then the option
+    const ownerSelect = screen.getByRole('combobox', { name: /Propriétaire/i });
+    fireEvent.click(ownerSelect);
+    // Use getAllByText and get the span element (not the option)
+    const ownerOptions = screen.getAllByText('Owner 1');
+    fireEvent.click(ownerOptions[1]); // Click the span element
+
+    // Click the submit button to open the confirmation dialog
+    fireEvent.click(screen.getByRole('button', { name: /^Créer$/i }));
+
+    // Wait for the confirmation dialog to appear (check for the description text)
+    await waitFor(() => {
+      expect(screen.getByText(/Êtes-vous sûr de vouloir créer l'utilisateur/i)).toBeInTheDocument();
+    });
+
+    // Click the confirm button in the dialog
+    fireEvent.click(screen.getByRole('button', { name: /^Créer$/i }));
+
+    // Wait for the mutation to be called
+    await waitFor(() => {
+      expect(mockMutate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'Test User',
+          email: 'test@example.com',
+          password: 'password123',
+          ownerId: 'owner-1',
+        }),
+        expect.objectContaining({
+          onSuccess: expect.any(Function),
+          onError: expect.any(Function),
+        })
+      );
+    });
+  });
+
   it('restricts role selection for OWNER_ADMIN', async () => {
     vi.mocked(useAuth).mockReturnValue({ 
       user: { id: '1', name: 'Admin', email: 'admin@example.com', role: 'OWNER_ADMIN', ownerId: 'owner-1' },

@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { useCreateSupplier } from '../../hooks/purchasesHooks';
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 
 interface FormState {
   name: string;
@@ -29,6 +30,7 @@ const SuppliersCreatePage = () => {
   const createSupplierMutation = useCreateSupplier();
   const [formData, setFormData] = useState<FormState>(initialFormState);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
   const validate = () => {
     const nextErrors: Record<string, string> = {};
@@ -40,16 +42,30 @@ const SuppliersCreatePage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    setIsConfirmDialogOpen(true);
+  };
 
+  const handleConfirmCreate = () => {
     createSupplierMutation.mutate({
       name: formData.name,
       contactInfo: formData.contactInfo || undefined,
       phone: formData.phone || undefined,
       email: formData.email || undefined,
       address: formData.address || undefined,
+    }, {
+      onSuccess: () => {
+        toast({ title: 'Succès', description: 'Fournisseur créé avec succès' });
+        navigate('/admin/suppliers');
+      },
+      onError: (error) => {
+        toast({ 
+          title: 'Erreur', 
+          description: error instanceof Error ? error.message : 'Erreur lors de la création',
+          variant: 'destructive' 
+        });
+      },
     });
-    toast({ title: 'Succès', description: 'Fournisseur créé avec succès' });
-    navigate('/admin/suppliers');
+    setIsConfirmDialogOpen(false);
   };
 
   return (
@@ -89,6 +105,17 @@ const SuppliersCreatePage = () => {
           <Button type="submit">Créer</Button>
         </div>
       </form>
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Créer un fournisseur"
+        description={`Êtes-vous sûr de vouloir créer le fournisseur "${formData.name}" ?`}
+        onConfirm={handleConfirmCreate}
+        confirmText="Créer"
+        cancelText="Annuler"
+        loading={createSupplierMutation.isPending}
+      />
     </div>
   );
 };

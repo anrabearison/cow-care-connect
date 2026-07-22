@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useCharacter, useUpdateCharacter } from "../../hooks/charactersHooks";
 import { UpdateCharacterData } from "@/features/admin/services/charactersService";
 import { ArrowLeft, Loader2 } from "lucide-react";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 const initialFormState: UpdateCharacterData = {
   name: "",
@@ -18,7 +19,9 @@ const CharactersEditPage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
-  
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<UpdateCharacterData | null>(null);
+
   const { data: character, isLoading, error } = useCharacter(id || "");
   const updateCharacterMutation = useUpdateCharacter();
 
@@ -47,13 +50,30 @@ const CharactersEditPage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate() || !id) return;
+    setPendingData(formData);
+    setIsConfirmDialogOpen(true);
+  };
 
-    updateCharacterMutation.mutate({ id, data: formData });
-    toast({
-      title: "Succès",
-      description: "Caractère mis à jour avec succès",
+  const handleConfirmUpdate = () => {
+    if (!pendingData || !id) return;
+    updateCharacterMutation.mutate({ id, data: pendingData }, {
+      onSuccess: () => {
+        toast({
+          title: "Succès",
+          description: "Caractère mis à jour avec succès",
+        });
+        navigate("/admin/characters");
+      },
+      onError: (error) => {
+        toast({
+          title: "Erreur",
+          description: error instanceof Error ? error.message : "Erreur lors de la mise à jour",
+          variant: "destructive",
+        });
+      },
     });
-    navigate("/admin/characters");
+    setIsConfirmDialogOpen(false);
+    setPendingData(null);
   };
 
   const handleCancel = () => {
@@ -130,6 +150,17 @@ const CharactersEditPage = () => {
           </Button>
         </div>
       </form>
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Modifier le caractère"
+        description={`Êtes-vous sûr de vouloir modifier le caractère "${pendingData?.name}" ?`}
+        onConfirm={handleConfirmUpdate}
+        confirmText="Modifier"
+        cancelText="Annuler"
+        loading={updateCharacterMutation.isPending}
+      />
     </div>
   );
 };

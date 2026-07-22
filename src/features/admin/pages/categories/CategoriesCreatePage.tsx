@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useCreateCategory } from "../../hooks/categoriesHooks";
 import { CreateCategoryData } from "@/features/admin/services/categoriesService";
 import { ArrowLeft } from "lucide-react";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 const initialFormState: CreateCategoryData = {
   name: "",
@@ -17,6 +18,7 @@ const CategoriesCreatePage = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState<CreateCategoryData>(initialFormState);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
   const createCategoryMutation = useCreateCategory();
 
@@ -32,13 +34,27 @@ const CategoriesCreatePage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    setIsConfirmDialogOpen(true);
+  };
 
-    createCategoryMutation.mutate(formData);
-    toast({
-      title: "Succès",
-      description: "Catégorie créée avec succès",
+  const handleConfirmCreate = () => {
+    createCategoryMutation.mutate(formData, {
+      onSuccess: () => {
+        toast({
+          title: "Succès",
+          description: "Catégorie créée avec succès",
+        });
+        navigate("/admin/categories");
+      },
+      onError: (error) => {
+        toast({
+          title: "Erreur",
+          description: error instanceof Error ? error.message : "Erreur lors de la création",
+          variant: "destructive",
+        });
+      },
     });
-    navigate("/admin/categories");
+    setIsConfirmDialogOpen(false);
   };
 
   const handleCancel = () => {
@@ -85,6 +101,17 @@ const CategoriesCreatePage = () => {
           </Button>
         </div>
       </form>
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Créer une catégorie"
+        description={`Êtes-vous sûr de vouloir créer la catégorie "${formData.name}" ?`}
+        onConfirm={handleConfirmCreate}
+        confirmText="Créer"
+        cancelText="Annuler"
+        loading={createCategoryMutation.isPending}
+      />
     </div>
   );
 };

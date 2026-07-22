@@ -26,7 +26,7 @@ describe('UsersDetailPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockUseUser.mockReturnValue({
-      data: { data: { id: '1', name: 'Test User', email: 'test@example.com', role: 'OWNER_USER', isActive: true, owner: { id: 'owner-1', name: 'Test Owner', contactInfo: 'test@owner.com', address: '123 Owner St' } } },
+      data: { data: { id: '1', name: 'Test User', email: 'test@example.com', role: 'OWNER_USER', isActive: true, owner: { id: 'owner-1', name: 'Test Owner', phone: '034 00 000 00', address: '123 Owner St' } } },
       isLoading: false,
       error: null,
     });
@@ -91,7 +91,7 @@ describe('UsersDetailPage', () => {
     );
 
     expect(screen.getByText('Test Owner')).toBeInTheDocument();
-    expect(screen.getByText('test@owner.com')).toBeInTheDocument();
+    expect(screen.getByText('034 00 000 00')).toBeInTheDocument();
     expect(screen.getByText('123 Owner St')).toBeInTheDocument();
   });
 

@@ -1,14 +1,17 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { ArrowLeft } from "lucide-react";
 import HerdBookForm, { HerdBookFormValues } from "../../components/HerdBookForm";
 import { useCreateHerdBook } from "../../hooks/herdBooksHooks";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 const HerdBookCreatePage = () => {
   const navigate = useNavigate();
   const { toast: uiToast } = useToast();
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<HerdBookFormValues | null>(null);
 
   const initialData = useMemo<HerdBookFormValues>(() => ({
     reference: "",
@@ -29,12 +32,21 @@ const HerdBookCreatePage = () => {
   });
 
   const handleSubmit = (data: HerdBookFormValues) => {
+    setPendingData(data);
+    setIsConfirmDialogOpen(true);
+  };
+
+  const handleConfirmCreate = () => {
+    if (!pendingData) return;
+
     createMutation.mutate({
-      reference: data.reference,
-      year: data.year,
-      description: data.description || undefined,
-      ownerId: data.ownerId || undefined,
+      reference: pendingData.reference,
+      year: pendingData.year,
+      description: pendingData.description || undefined,
+      ownerId: pendingData.ownerId || undefined,
     });
+    setIsConfirmDialogOpen(false);
+    setPendingData(null);
   };
 
   return (
@@ -58,6 +70,17 @@ const HerdBookCreatePage = () => {
           isPending={createMutation.isPending}
         />
       </div>
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Créer un livre de troupeau"
+        description={`Êtes-vous sûr de vouloir créer le livre de troupeau "${pendingData?.reference}" ?`}
+        onConfirm={handleConfirmCreate}
+        confirmText="Créer"
+        cancelText="Annuler"
+        loading={createMutation.isPending}
+      />
     </div>
   );
 };

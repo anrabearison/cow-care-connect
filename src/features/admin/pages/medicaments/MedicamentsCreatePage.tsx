@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { useCreateMedicament } from '../../hooks/medicamentsHooks';
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 
 interface FormState {
   name: string;
@@ -43,6 +44,8 @@ const MedicamentsCreatePage = () => {
   const createMedicamentMutation = useCreateMedicament();
   const [formData, setFormData] = useState<FormState>(initialFormState);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<FormState | null>(null);
 
   const validate = () => {
     const nextErrors: Record<string, string> = {};
@@ -55,23 +58,40 @@ const MedicamentsCreatePage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    setPendingData(formData);
+    setIsConfirmDialogOpen(true);
+  };
 
+  const handleConfirmCreate = () => {
+    if (!pendingData) return;
     createMedicamentMutation.mutate({
-      name: formData.name,
-      type: formData.type,
-      dosageQuantity: formData.dosageQuantity ? Number(formData.dosageQuantity) : undefined,
-      dosageUnit: formData.dosageUnit || undefined,
-      dosageWeight: formData.dosageWeight ? Number(formData.dosageWeight) : undefined,
-      dosageWeightUnit: formData.dosageWeightUnit || undefined,
-      dosageNotes: formData.dosageNotes || undefined,
-      defaultRoute: formData.defaultRoute || undefined,
-      withdrawalPeriodMeat: formData.withdrawalPeriodMeat ? Number(formData.withdrawalPeriodMeat) : undefined,
-      withdrawalPeriodMilk: formData.withdrawalPeriodMilk ? Number(formData.withdrawalPeriodMilk) : undefined,
-      manufacturer: formData.manufacturer || undefined,
-      notes: formData.notes || undefined,
+      name: pendingData.name,
+      type: pendingData.type,
+      dosageQuantity: pendingData.dosageQuantity ? Number(pendingData.dosageQuantity) : undefined,
+      dosageUnit: pendingData.dosageUnit || undefined,
+      dosageWeight: pendingData.dosageWeight ? Number(pendingData.dosageWeight) : undefined,
+      dosageWeightUnit: pendingData.dosageWeightUnit || undefined,
+      dosageNotes: pendingData.dosageNotes || undefined,
+      defaultRoute: pendingData.defaultRoute || undefined,
+      withdrawalPeriodMeat: pendingData.withdrawalPeriodMeat ? Number(pendingData.withdrawalPeriodMeat) : undefined,
+      withdrawalPeriodMilk: pendingData.withdrawalPeriodMilk ? Number(pendingData.withdrawalPeriodMilk) : undefined,
+      manufacturer: pendingData.manufacturer || undefined,
+      notes: pendingData.notes || undefined,
+    }, {
+      onSuccess: () => {
+        toast({ title: 'Succès', description: 'Médicament créé avec succès' });
+        navigate('/admin/medicaments');
+      },
+      onError: (error) => {
+        toast({ 
+          title: 'Erreur', 
+          description: error instanceof Error ? error.message : 'Erreur lors de la création',
+          variant: 'destructive' 
+        });
+      },
     });
-    toast({ title: 'Succès', description: 'Médicament créé avec succès' });
-    navigate('/admin/medicaments');
+    setIsConfirmDialogOpen(false);
+    setPendingData(null);
   };
 
   return (
@@ -140,6 +160,17 @@ const MedicamentsCreatePage = () => {
           <Button type="submit">Créer</Button>
         </div>
       </form>
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Créer un médicament"
+        description={`Êtes-vous sûr de vouloir créer le médicament "${pendingData?.name}" ?`}
+        onConfirm={handleConfirmCreate}
+        confirmText="Créer"
+        cancelText="Annuler"
+        loading={createMedicamentMutation.isPending}
+      />
     </div>
   );
 };

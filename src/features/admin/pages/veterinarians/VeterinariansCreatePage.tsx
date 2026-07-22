@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { useCreateVeterinarian } from '../../hooks/veterinariansHooks';
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 
 interface FormState {
   name: string;
@@ -29,6 +30,8 @@ const VeterinariansCreatePage = () => {
   const createVeterinarianMutation = useCreateVeterinarian();
   const [formData, setFormData] = useState<FormState>(initialFormState);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<FormState | null>(null);
 
   const validate = () => {
     const nextErrors: Record<string, string> = {};
@@ -40,16 +43,33 @@ const VeterinariansCreatePage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    setPendingData(formData);
+    setIsConfirmDialogOpen(true);
+  };
 
+  const handleConfirmCreate = () => {
+    if (!pendingData) return;
     createVeterinarianMutation.mutate({
-      name: formData.name,
-      phone: formData.phone || undefined,
-      email: formData.email || undefined,
-      address: formData.address || undefined,
-      specialty: formData.specialty || undefined,
+      name: pendingData.name,
+      phone: pendingData.phone || undefined,
+      email: pendingData.email || undefined,
+      address: pendingData.address || undefined,
+      specialty: pendingData.specialty || undefined,
+    }, {
+      onSuccess: () => {
+        toast({ title: 'Succès', description: 'Vétérinaire créé avec succès' });
+        navigate('/admin/veterinarians');
+      },
+      onError: (error) => {
+        toast({ 
+          title: 'Erreur', 
+          description: error instanceof Error ? error.message : 'Erreur lors de la création',
+          variant: 'destructive' 
+        });
+      },
     });
-    toast({ title: 'Succès', description: 'Vétérinaire créé avec succès' });
-    navigate('/admin/veterinarians');
+    setIsConfirmDialogOpen(false);
+    setPendingData(null);
   };
 
   return (
@@ -89,6 +109,17 @@ const VeterinariansCreatePage = () => {
           <Button type="submit">Créer</Button>
         </div>
       </form>
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Créer un vétérinaire"
+        description={`Êtes-vous sûr de vouloir créer le vétérinaire "${pendingData?.name}" ?`}
+        onConfirm={handleConfirmCreate}
+        confirmText="Créer"
+        cancelText="Annuler"
+        loading={createVeterinarianMutation.isPending}
+      />
     </div>
   );
 };

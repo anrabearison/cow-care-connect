@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -6,10 +6,13 @@ import { ArrowLeft } from "lucide-react";
 import PurchaseForm, { PurchaseFormValues } from "../../components/PurchaseForm";
 import { useCreatePurchase } from "../../hooks/purchasesHooks";
 import { CreatePurchaseData } from "../services/purchasesService";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 const PurchaseCreatePage = () => {
   const navigate = useNavigate();
   const { toast: uiToast } = useToast();
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<CreatePurchaseData | null>(null);
 
   const today = useMemo(() => new Date().toISOString().split('T')[0], []);
 
@@ -49,7 +52,15 @@ const PurchaseCreatePage = () => {
         healthStatus: item.healthStatus || undefined,
       })),
     };
-    createMutation.mutate(createData);
+    setPendingData(createData);
+    setIsConfirmDialogOpen(true);
+  };
+
+  const handleConfirmCreate = () => {
+    if (!pendingData) return;
+    createMutation.mutate(pendingData);
+    setIsConfirmDialogOpen(false);
+    setPendingData(null);
   };
 
   return (
@@ -73,6 +84,17 @@ const PurchaseCreatePage = () => {
           isPending={createMutation.isPending}
         />
       </div>
+
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onOpenChange={setIsConfirmDialogOpen}
+        title="Créer un achat"
+        description={`Êtes-vous sûr de vouloir créer cet achat pour le ${pendingData?.purchaseDate} ?`}
+        onConfirm={handleConfirmCreate}
+        confirmText="Créer"
+        cancelText="Annuler"
+        loading={createMutation.isPending}
+      />
     </div>
   );
 };

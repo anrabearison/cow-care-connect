@@ -18,6 +18,7 @@ const CattleDetailsPage = lazy(() => import("@/features/cattle/pages/CattleDetai
 const ReportsPage = lazy(() => import("@/features/reports/pages/ReportsPage"));
 const PassportReportPage = lazy(() => import("@/features/reports/pages/PassportReportPage"));
 const ProfilePage = lazy(() => import("@/features/auth/pages/ProfilePage"));
+const ImportInitialPage = lazy(() => import("@/features/herdbook/initial-import/ImportInitialPage"));
 const LoginPage = lazy(() => import("@/features/auth/pages/LoginPage"));
 const GoogleCallbackPage = lazy(() => import("@/features/auth/pages/GoogleCallbackPage"));
 const InvitationPage = lazy(() => import("@/features/auth/pages/InvitationPage"));
@@ -471,6 +472,14 @@ const AppContent = () => {
               <FarmRoute>
                 <PassportReportPage />
               </FarmRoute>
+            }
+          />
+          <Route
+            path="herdbook/initial-import"
+            element={
+              <OwnerAdminRoute>
+                <ImportInitialPage />
+              </OwnerAdminRoute>
             }
           />
           <Route path="profile" element={<ProfilePage />} />
