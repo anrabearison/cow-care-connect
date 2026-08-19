@@ -10,8 +10,6 @@ import { queryKeys } from '@/lib/queryKeys';
  * @param filters - Additional filters
  */
 export const useCattle = (herdBookId: string, filters?: Omit<CattleFilters, 'herd_book_id'>) => {
-  const { toast } = useToast();
-
   // Merge herdBookId with other filters
   const allFilters: CattleFilters & { herd_book_id?: string } = {
     ...filters,
@@ -28,11 +26,7 @@ export const useCattle = (herdBookId: string, filters?: Omit<CattleFilters, 'her
       const response = await cattleService.getCattleList(allFilters);
 
       if (!response.success) {
-        toast({
-          variant: "destructive",
-          title: "Erreur",
-          description: response.message || 'Erreur lors du chargement des données'
-        });
+        // Throw without toast — global queryCache.onError in AppProviders handles the notification
         throw new Error(response.message || 'Erreur lors du chargement des données');
       }
 
