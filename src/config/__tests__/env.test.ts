@@ -2,7 +2,7 @@
  * Tests de validation des variables d'environnement
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { validateEnv } from '../env';
 
 describe('Environment Variables Validation Tests', () => {
@@ -10,7 +10,6 @@ describe('Environment Variables Validation Tests', () => {
     it('doit valider avec succès toutes les variables présentes', () => {
       const envVars = {
         VITE_API_URL: 'http://localhost:3000',
-        VITE_ADMIN_API_URL: 'http://localhost:3000/api/v1',
         VITE_FRONT_OFFICE_URL: 'http://localhost:8085',
         VITE_GOOGLE_CLIENT_ID: 'test-google-client-id',
         NODE_ENV: 'development',
@@ -19,7 +18,6 @@ describe('Environment Variables Validation Tests', () => {
       const validatedEnv = validateEnv(envVars);
 
       expect(validatedEnv.VITE_API_URL).toBe('http://localhost:3000');
-      expect(validatedEnv.VITE_ADMIN_API_URL).toBe('http://localhost:3000/api/v1');
       expect(validatedEnv.VITE_FRONT_OFFICE_URL).toBe('http://localhost:8085');
       expect(validatedEnv.VITE_GOOGLE_CLIENT_ID).toBe('test-google-client-id');
       expect(validatedEnv.NODE_ENV).toBe('development');
@@ -29,7 +27,6 @@ describe('Environment Variables Validation Tests', () => {
   describe('Scénario 2: Variable absente', () => {
     it('doit rejeter si VITE_API_URL est absent', () => {
       const envVars = {
-        VITE_ADMIN_API_URL: 'http://localhost:3000/api/v1',
         VITE_FRONT_OFFICE_URL: 'http://localhost:8085',
         VITE_GOOGLE_CLIENT_ID: 'test-google-client-id',
       };
@@ -40,7 +37,6 @@ describe('Environment Variables Validation Tests', () => {
     it('doit rejeter si VITE_GOOGLE_CLIENT_ID est absent', () => {
       const envVars = {
         VITE_API_URL: 'http://localhost:3000',
-        VITE_ADMIN_API_URL: 'http://localhost:3000/api/v1',
         VITE_FRONT_OFFICE_URL: 'http://localhost:8085',
       };
 
@@ -52,7 +48,6 @@ describe('Environment Variables Validation Tests', () => {
     it('doit rejeter si VITE_API_URL est vide', () => {
       const envVars = {
         VITE_API_URL: '',
-        VITE_ADMIN_API_URL: 'http://localhost:3000/api/v1',
         VITE_FRONT_OFFICE_URL: 'http://localhost:8085',
         VITE_GOOGLE_CLIENT_ID: 'test-google-client-id',
       };
@@ -63,7 +58,6 @@ describe('Environment Variables Validation Tests', () => {
     it('doit rejeter si VITE_GOOGLE_CLIENT_ID est vide', () => {
       const envVars = {
         VITE_API_URL: 'http://localhost:3000',
-        VITE_ADMIN_API_URL: 'http://localhost:3000/api/v1',
         VITE_FRONT_OFFICE_URL: 'http://localhost:8085',
         VITE_GOOGLE_CLIENT_ID: '',
       };
@@ -76,7 +70,6 @@ describe('Environment Variables Validation Tests', () => {
     it('doit rejeter si VITE_API_URL n\'est pas une URL valide', () => {
       const envVars = {
         VITE_API_URL: 'not-a-valid-url',
-        VITE_ADMIN_API_URL: 'http://localhost:3000/api/v1',
         VITE_FRONT_OFFICE_URL: 'http://localhost:8085',
         VITE_GOOGLE_CLIENT_ID: 'test-google-client-id',
       };
@@ -87,7 +80,6 @@ describe('Environment Variables Validation Tests', () => {
     it('doit rejeter si VITE_FRONT_OFFICE_URL n\'est pas une URL valide', () => {
       const envVars = {
         VITE_API_URL: 'http://localhost:3000',
-        VITE_ADMIN_API_URL: 'http://localhost:3000/api/v1',
         VITE_FRONT_OFFICE_URL: 'invalid-url',
         VITE_GOOGLE_CLIENT_ID: 'test-google-client-id',
       };
@@ -100,7 +92,6 @@ describe('Environment Variables Validation Tests', () => {
     it('doit détecter le mode production', () => {
       const envVars = {
         VITE_API_URL: 'https://api.ombiko.mg',
-        VITE_ADMIN_API_URL: 'https://api.ombiko.mg/api/v1',
         VITE_FRONT_OFFICE_URL: 'https://ombiko.mg',
         VITE_GOOGLE_CLIENT_ID: 'test-google-client-id',
         NODE_ENV: 'production',
@@ -115,7 +106,6 @@ describe('Environment Variables Validation Tests', () => {
     it('doit détecter le mode développement', () => {
       const envVars = {
         VITE_API_URL: 'http://localhost:3000',
-        VITE_ADMIN_API_URL: 'http://localhost:3000/api/v1',
         VITE_FRONT_OFFICE_URL: 'http://localhost:8085',
         VITE_GOOGLE_CLIENT_ID: 'test-google-client-id',
         NODE_ENV: 'development',
@@ -130,7 +120,6 @@ describe('Environment Variables Validation Tests', () => {
     it('doit détecter le mode test', () => {
       const envVars = {
         VITE_API_URL: 'http://localhost:3000',
-        VITE_ADMIN_API_URL: 'http://localhost:3000/api/v1',
         VITE_FRONT_OFFICE_URL: 'http://localhost:8085',
         VITE_GOOGLE_CLIENT_ID: 'test-google-client-id',
         NODE_ENV: 'test',
@@ -145,7 +134,6 @@ describe('Environment Variables Validation Tests', () => {
     it('doit valider sans NODE_ENV (optionnel)', () => {
       const envVars = {
         VITE_API_URL: 'http://localhost:3000',
-        VITE_ADMIN_API_URL: 'http://localhost:3000/api/v1',
         VITE_FRONT_OFFICE_URL: 'http://localhost:8085',
         VITE_GOOGLE_CLIENT_ID: 'test-google-client-id',
       };
@@ -159,7 +147,6 @@ describe('Environment Variables Validation Tests', () => {
     it('doit retourner un objet avec toutes les propriétés requises', () => {
       const envVars = {
         VITE_API_URL: 'http://localhost:3000',
-        VITE_ADMIN_API_URL: 'http://localhost:3000/api/v1',
         VITE_FRONT_OFFICE_URL: 'http://localhost:8085',
         VITE_GOOGLE_CLIENT_ID: 'test-google-client-id',
         NODE_ENV: 'development',
@@ -168,7 +155,6 @@ describe('Environment Variables Validation Tests', () => {
       const validatedEnv = validateEnv(envVars);
 
       expect(validatedEnv).toHaveProperty('VITE_API_URL');
-      expect(validatedEnv).toHaveProperty('VITE_ADMIN_API_URL');
       expect(validatedEnv).toHaveProperty('VITE_FRONT_OFFICE_URL');
       expect(validatedEnv).toHaveProperty('VITE_GOOGLE_CLIENT_ID');
       expect(validatedEnv).toHaveProperty('NODE_ENV');

@@ -96,9 +96,6 @@ export const API_CONFIG = {
     EVENTS: API_ENDPOINTS.EVENTS.BASE,
     TREATMENTS: API_ENDPOINTS.TREATMENTS.BASE,
   },
-
-  // Configuration pour React Admin
-  ADMIN_API_URL: import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:3000/api/v1'
 };
 
 // Helper pour construire les URLs complètes

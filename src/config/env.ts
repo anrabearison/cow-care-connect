@@ -9,7 +9,6 @@ import { z } from 'zod';
 const envSchema = z.object({
   // API Configuration
   VITE_API_URL: z.string().url('VITE_API_URL doit être une URL valide').min(1, 'VITE_API_URL est requis'),
-  VITE_ADMIN_API_URL: z.string().url('VITE_ADMIN_API_URL doit être une URL valide').min(1, 'VITE_ADMIN_API_URL est requis'),
 
   // Front Office Configuration
   VITE_FRONT_OFFICE_URL: z.string().url('VITE_FRONT_OFFICE_URL doit être une URL valide').min(1, 'VITE_FRONT_OFFICE_URL est requis'),
@@ -31,7 +30,6 @@ export function validateEnv(envVars: Record<string, string | undefined> = import
   try {
     const env = envSchema.parse({
       VITE_API_URL: envVars.VITE_API_URL,
-      VITE_ADMIN_API_URL: envVars.VITE_ADMIN_API_URL,
       VITE_FRONT_OFFICE_URL: envVars.VITE_FRONT_OFFICE_URL,
       VITE_GOOGLE_CLIENT_ID: envVars.VITE_GOOGLE_CLIENT_ID,
       NODE_ENV: envVars.NODE_ENV,
